@@ -27,17 +27,42 @@ export type IndustryDomain = {
   summary: LocaleText
 }
 
+/** Learning-path order: start here, then go deeper. */
 export const DOMAINS: IndustryDomain[] = [
   {
-    id: 'distributed-systems',
-    slug: 'distributed-systems',
+    id: 'frontend-architecture',
+    slug: 'frontend-architecture',
     titles: {
-      en: 'Distributed systems & consensus',
-      bn: 'বিতরণকৃত সিস্টেম ও ঐকমত্য',
+      en: 'Frontend architecture & micro-packaging',
+      bn: 'ফ্রন্টএন্ড আর্কিটেকচার ও মাইক্রো-প্যাকেজিং',
     },
     summary: {
-      en: 'CAP, PACELC, consensus, clocks, split brain, and the failure modes that appear once a service spans more than one machine.',
-      bn: 'ক্যাপ, প্যাসেলসি, ঐকমত্য, ঘড়ি, স্প্লিট ব্রেইন-একাধিক মেশিনে ছড়িয়ে পড়লে যে ব্যর্থতার ধরনগুলো দেখা যায়।',
+      en: 'Micro-frontends, micro-packaging, state at scale, WebSockets, hydration, and modular UI systems.',
+      bn: 'মাইক্রো-ফ্রন্টএন্ড, মাইক্রো-প্যাকেজিং, স্কেলে স্টেট, ওয়েবসকেট, হাইড্রেশন এবং মডুলার ইউআই সিস্টেম।',
+    },
+  },
+  {
+    id: 'api-integration',
+    slug: 'api-integration',
+    titles: {
+      en: 'API & integration',
+      bn: 'এপিআই ও ইন্টিগ্রেশন',
+    },
+    summary: {
+      en: 'Retries, circuit breakers, rate limits, idempotency keys, webhooks, and timeout budgets across service boundaries.',
+      bn: 'রিট্রাই, সার্কিট ব্রেকার, রেট লিমিট, আইডেমপোটেন্সি কী, ওয়েবহুক এবং সার্ভিস সীমানায় টাইমআউট বাজেট।',
+    },
+  },
+  {
+    id: 'auth-security',
+    slug: 'auth-security',
+    titles: {
+      en: 'Auth, security & tenancy',
+      bn: 'অথেন্টিকেশন, নিরাপত্তা ও টেন্যান্সি',
+    },
+    summary: {
+      en: 'RBAC, OAuth, tokens, CSRF, tenant isolation, and the identity mistakes that turn into incidents.',
+      bn: 'আরবিএসি, ওঅথ, টোকেন, সিএসআরএফ, টেন্যান্ট আইসোলেশন-পরিচয় সংক্রান্ত ভুল যেগুলো ইনসিডেন্টে পরিণত হয়।',
     },
   },
   {
@@ -77,63 +102,15 @@ export const DOMAINS: IndustryDomain[] = [
     },
   },
   {
-    id: 'api-integration',
-    slug: 'api-integration',
+    id: 'performance-capacity',
+    slug: 'performance-capacity',
     titles: {
-      en: 'API & integration',
-      bn: 'এপিআই ও ইন্টিগ্রেশন',
+      en: 'Performance & capacity',
+      bn: 'পারফরম্যান্স ও ক্যাপাসিটি',
     },
     summary: {
-      en: 'Retries, circuit breakers, rate limits, idempotency keys, webhooks, and timeout budgets across service boundaries.',
-      bn: 'রিট্রাই, সার্কিট ব্রেকার, রেট লিমিট, আইডেমপোটেন্সি কী, ওয়েবহুক এবং সার্ভিস সীমানায় টাইমআউট বাজেট।',
-    },
-  },
-  {
-    id: 'auth-security',
-    slug: 'auth-security',
-    titles: {
-      en: 'Auth, security & tenancy',
-      bn: 'অথেন্টিকেশন, নিরাপত্তা ও টেন্যান্সি',
-    },
-    summary: {
-      en: 'RBAC, OAuth, tokens, CSRF, tenant isolation, and the identity mistakes that turn into incidents.',
-      bn: 'আরবিএসি, ওঅথ, টোকেন, সিএসআরএফ, টেন্যান্ট আইসোলেশন-পরিচয় সংক্রান্ত ভুল যেগুলো ইনসিডেন্টে পরিণত হয়।',
-    },
-  },
-  {
-    id: 'frontend-architecture',
-    slug: 'frontend-architecture',
-    titles: {
-      en: 'Frontend architecture & micro-packaging',
-      bn: 'ফ্রন্টএন্ড আর্কিটেকচার ও মাইক্রো-প্যাকেজিং',
-    },
-    summary: {
-      en: 'Micro-frontends, micro-packaging, state at scale, WebSockets, hydration, and modular UI systems.',
-      bn: 'মাইক্রো-ফ্রন্টএন্ড, মাইক্রো-প্যাকেজিং, স্কেলে স্টেট, ওয়েবসকেট, হাইড্রেশন এবং মডুলার ইউআই সিস্টেম।',
-    },
-  },
-  {
-    id: 'devops-containers',
-    slug: 'devops-containers',
-    titles: {
-      en: 'DevOps, containers & Kubernetes',
-      bn: 'ডেভঅপস, কন্টেইনার ও কুবারনেটিস',
-    },
-    summary: {
-      en: 'Docker layers, rollouts, blue-green, canary, probes, OOM, and the deploy machinery that keeps production boring.',
-      bn: 'ডকার লেয়ার, রোলআউট, ব্লু-গ্রিন, ক্যানারি, প্রোব, ওওএম-প্রোডাকশনকে স্থির রাখে এমন ডিপ্লয় যন্ত্রপাতি।',
-    },
-  },
-  {
-    id: 'networking-edge',
-    slug: 'networking-edge',
-    titles: {
-      en: 'Networking & edge / nginx',
-      bn: 'নেটওয়ার্কিং ও এজ / এনজিনেক্স',
-    },
-    summary: {
-      en: 'Reverse proxies, TLS, HTTP/2–3, DNS failover, load balancing, and what actually happens at the edge.',
-      bn: 'রিভার্স প্রক্সি, টিএলএস, এইচটিটিপি/২–৩, ডিএনএস ফেইলওভার, লোড ব্যালেন্সিং-এজে আসলে কী ঘটে।',
+      en: 'Little’s Law, Amdahl, p99 tails, pools, GC, and planning throughput before the pager fires.',
+      bn: 'লিটলস ল, আডাল, পি৯৯ টেইল, পুল, জিসি-পেজার বাজার আগে থ্রুপুট পরিকল্পনা।',
     },
   },
   {
@@ -161,15 +138,39 @@ export const DOMAINS: IndustryDomain[] = [
     },
   },
   {
-    id: 'performance-capacity',
-    slug: 'performance-capacity',
+    id: 'devops-containers',
+    slug: 'devops-containers',
     titles: {
-      en: 'Performance & capacity',
-      bn: 'পারফরম্যান্স ও ক্যাপাসিটি',
+      en: 'DevOps, containers & Kubernetes',
+      bn: 'ডেভঅপস, কন্টেইনার ও কুবারনেটিস',
     },
     summary: {
-      en: 'Little’s Law, Amdahl, p99 tails, pools, GC, and planning throughput before the pager fires.',
-      bn: 'লিটলস ল, আডাল, পি৯৯ টেইল, পুল, জিসি-পেজার বাজার আগে থ্রুপুট পরিকল্পনা।',
+      en: 'Docker layers, rollouts, blue-green, canary, probes, OOM, and the deploy machinery that keeps production boring.',
+      bn: 'ডকার লেয়ার, রোলআউট, ব্লু-গ্রিন, ক্যানারি, প্রোব, ওওএম-প্রোডাকশনকে স্থির রাখে এমন ডিপ্লয় যন্ত্রপাতি।',
+    },
+  },
+  {
+    id: 'networking-edge',
+    slug: 'networking-edge',
+    titles: {
+      en: 'Networking & edge / nginx',
+      bn: 'নেটওয়ার্কিং ও এজ / এনজিনেক্স',
+    },
+    summary: {
+      en: 'Reverse proxies, TLS, HTTP/2–3, DNS failover, load balancing, and what actually happens at the edge.',
+      bn: 'রিভার্স প্রক্সি, টিএলএস, এইচটিটিপি/২–৩, ডিএনএস ফেইলওভার, লোড ব্যালেন্সিং-এজে আসলে কী ঘটে।',
+    },
+  },
+  {
+    id: 'distributed-systems',
+    slug: 'distributed-systems',
+    titles: {
+      en: 'Distributed systems & consensus',
+      bn: 'বিতরণকৃত সিস্টেম ও ঐকমত্য',
+    },
+    summary: {
+      en: 'CAP, PACELC, consensus, clocks, split brain, and the failure modes that appear once a service spans more than one machine.',
+      bn: 'ক্যাপ, প্যাসেলসি, ঐকমত্য, ঘড়ি, স্প্লিট ব্রেইন-একাধিক মেশিনে ছড়িয়ে পড়লে যে ব্যর্থতার ধরনগুলো দেখা যায়।',
     },
   },
   {

@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest'
 
 import { CAPABILITIES, SERVICE_PITCHES } from '@/content/capabilities'
+import { hasArticle } from '@/content/articles/loadArticle'
 import { TOPIC_COUNT } from '@/content/catalog-stats'
 import { DOMAINS, getTopicsByDomain } from '@/content/industry-topics'
 import { TOPICS } from '@/content/industry-topics/topics'
@@ -47,12 +48,37 @@ describe('industry knowledge library', () => {
     }
   })
 
+  it('maps a beginner track of foundation lessons', () => {
+    expect(TOPICS.filter((topic) => topic.difficulty === 'intro').length).toBeGreaterThanOrEqual(20)
+    expect(TOPICS[0]?.difficulty).toBe('intro')
+  })
+
+  it('numbers every topic on a beginner to advanced path', () => {
+    expect(TOPICS.map((topic) => topic.lesson)).toEqual(
+      Array.from({ length: TOPICS.length }, (_, index) => index + 1),
+    )
+    const rank = { intro: 0, intermediate: 1, advanced: 2 }
+    for (let index = 1; index < TOPICS.length; index += 1) {
+      const prev = TOPICS[index - 1]
+      const current = TOPICS[index]
+      if (!prev || !current) continue
+      expect(rank[current.difficulty]).toBeGreaterThanOrEqual(rank[prev.difficulty])
+    }
+  })
+
   it('points systemsLinks at real concepts', () => {
     const conceptSlugs = new Set(SYSTEM_CONCEPTS.map((concept) => concept.slug))
     for (const topic of TOPICS) {
       for (const link of topic.systemsLinks) {
         expect(conceptSlugs.has(link)).toBe(true)
       }
+    }
+  })
+
+  it('ships English and Bengali articles for every topic', () => {
+    for (const topic of TOPICS) {
+      expect(hasArticle(topic.slug, 'en'), topic.slug).toBe(true)
+      expect(hasArticle(topic.slug, 'bn'), topic.slug).toBe(true)
     }
   })
 })

@@ -3,11 +3,14 @@ export {
   TOPICS,
   getTopicBySlug,
   getTopicsByDomain,
+  getTopicsByDifficulty,
+  getAdjacentInCurriculum,
+  formatLesson,
   type IndustryTopic,
 } from './topics'
 
 import { DOMAINS, type DomainSlug } from './domains'
-import { TOPICS, getTopicBySlug, getTopicsByDomain } from './topics'
+import { TOPICS, getTopicBySlug, getTopicsByDomain, getAdjacentInCurriculum } from './topics'
 
 export function getDomainBySlug(slug: DomainSlug) {
   return DOMAINS.find((domain) => domain.slug === slug)
@@ -38,14 +41,8 @@ export function getTopicCountByDomain(): Record<DomainSlug, number> {
   return counts
 }
 
-export function getAdjacentTopicsInDomain(domain: DomainSlug, slug: string) {
-  const topics = getTopicsByDomain(domain)
-  const index = topics.findIndex((t) => t.slug === slug)
-  if (index === -1) return { prev: undefined, next: undefined }
-  return {
-    prev: index > 0 ? topics[index - 1] : undefined,
-    next: index < topics.length - 1 ? topics[index + 1] : undefined,
-  }
+export function getAdjacentTopicsInDomain(_domain: DomainSlug, slug: string) {
+  return getAdjacentInCurriculum(slug)
 }
 
 export const industryTopicsIndex = {
@@ -56,4 +53,5 @@ export const industryTopicsIndex = {
   getTopicsByDomain,
   getTopicCount,
   getTopicsByStatus,
+  getAdjacentInCurriculum,
 } as const

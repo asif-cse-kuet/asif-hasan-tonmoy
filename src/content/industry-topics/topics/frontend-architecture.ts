@@ -152,11 +152,11 @@ const topics: IndustryTopic[] = [
     domain: 'frontend-architecture',
     titles: {
       en: 'Accessibility in shared component systems',
-      bn: 'shared component system-এ accessibility',
+      bn: 'শেয়ার করা কম্পোনেন্ট সিস্টেমে অ্যাক্সেসিবিলিটি',
     },
     summary: {
       en: 'Focus traps, ARIA contracts, and why a11y regressions scale as fast as the component that carries them.',
-      bn: 'focus trap, ARIA contract, আর a11y regression component-এর মতোই দ্রুত ছড়ায় কেন।',
+      bn: 'ফোকাস ট্র্যাপ, ARIA চুক্তি, আর অ্যাক্সেসিবিলিটি বাগ একটা কম্পোনেন্টের সাথে কত দ্রুত সব স্ক্রিনে ছড়ায়।',
     },
     tags: ['accessibility', 'aria', 'wcag', 'components', 'focus-management'],
     difficulty: 'intermediate',

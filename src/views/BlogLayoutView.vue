@@ -40,7 +40,7 @@ const { pick } = useLocaleText()
       <TopicTree />
     </aside>
 
-    <div class="min-w-0 flex-1 px-4 py-8 sm:px-8">
+    <div class="min-w-0 flex-1 px-4 py-8 sm:px-8 lg:px-10">
       <RouterView />
     </div>
   </div>

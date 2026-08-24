@@ -162,7 +162,8 @@
     color: var(--color-mist);
     font-size: 1rem;
     line-height: 1.75;
-    max-width: 72ch;
+    width: 100%;
+    max-width: none;
   }
 
   .prose-article > * + * {
@@ -299,6 +300,12 @@
     max-width: 100%;
     height: auto;
     border-radius: 0.5rem;
+  }
+
+  .prose-article .mermaid-host,
+  .prose-article .mermaid-host svg {
+    width: 100%;
+    max-width: 100%;
   }
 
   .mermaid-host {

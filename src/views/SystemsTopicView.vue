@@ -9,7 +9,8 @@ import SystemsTopicNav from '@/components/systems/SystemsTopicNav.vue'
 import { useLocaleText } from '@/composables/useLocaleText'
 import { hasArticle, loadArticle } from '@/content/articles/loadArticle'
 import {
-  getAdjacentTopicsInDomain,
+  formatLesson,
+  getAdjacentInCurriculum,
   getDomainBySlug,
   getTopicBySlug,
 } from '@/content/industry-topics'
@@ -18,9 +19,9 @@ import { getSystemConceptBySlug } from '@/content/systems'
 import type { Locale } from '@/content/types'
 
 const route = useRoute()
-const { pick, currentLocale } = useLocaleText()
+const { pick, blogLocale } = useLocaleText()
 
-const articleLocale = ref<Locale>(currentLocale.value)
+const articleLocale = ref<Locale>(blogLocale.value)
 const markdown = ref('')
 const loading = ref(false)
 
@@ -28,7 +29,7 @@ const domainSlug = computed(() => String(route.params.domain) as DomainSlug)
 const slug = computed(() => String(route.params.slug))
 const topic = computed(() => getTopicBySlug(slug.value))
 const domain = computed(() => getDomainBySlug(domainSlug.value))
-const adjacent = computed(() => getAdjacentTopicsInDomain(domainSlug.value, slug.value))
+const adjacent = computed(() => getAdjacentInCurriculum(slug.value))
 
 const concepts = computed(() =>
   (topic.value?.systemsLinks ?? [])
@@ -47,6 +48,14 @@ const localeOptions: { value: Locale; label: string }[] = [
   { value: 'bn', label: 'বাংলা' },
 ]
 
+const difficultyLabel = computed(() => {
+  const difficulty = topic.value?.difficulty
+  if (!difficulty) return ''
+  if (difficulty === 'intro') return pick({ en: 'Beginner', bn: 'শুরুর ধাপ' })
+  if (difficulty === 'intermediate') return pick({ en: 'Intermediate', bn: 'মাঝারি ধাপ' })
+  return pick({ en: 'Advanced', bn: 'উন্নত ধাপ' })
+})
+
 const missingLocale = computed(
   () => Boolean(topic.value) && !hasArticle(slug.value, articleLocale.value),
 )
@@ -63,13 +72,13 @@ async function loadContent() {
 }
 
 watch([slug, articleLocale], loadContent, { immediate: true })
-watch(currentLocale, (locale) => {
+watch(blogLocale, (locale) => {
   articleLocale.value = locale
 })
 </script>
 
 <template>
-  <div class="py-2 sm:py-4">
+  <div class="w-full py-2 sm:py-4">
     <nav class="mb-5 flex flex-wrap items-center gap-2 text-sm text-mist/70">
       <RouterLink to="/systems" class="no-underline hover:text-glow">
         {{ pick({ en: 'My Engineering Blog', bn: 'ইঞ্জিনিয়ারিং ব্লগ' }) }}
@@ -81,10 +90,14 @@ watch(currentLocale, (locale) => {
     </nav>
 
     <template v-if="topic">
-      <PageHero :title="pick(topic.titles)" :subtitle="pick(topic.summary)" />
+      <PageHero
+        :kicker="`${formatLesson(topic.lesson)}. ${difficultyLabel}`"
+        :title="pick(topic.titles)"
+        :subtitle="pick(topic.summary)"
+      />
 
       <div class="mb-5 flex flex-wrap items-center gap-1.5">
-        <span class="chip">{{ topic.difficulty }}</span>
+        <span class="chip">{{ difficultyLabel }}</span>
         <span v-for="tag in topic.tags" :key="tag" class="chip">{{ tag }}</span>
       </div>
 
@@ -122,7 +135,7 @@ watch(currentLocale, (locale) => {
 
       <ArticleRenderer v-else-if="markdown" :markdown="markdown" />
 
-      <div v-else class="max-w-3xl space-y-4">
+      <div v-else class="w-full space-y-4">
         <p class="text-mist">{{ pick(topic.summary) }}</p>
         <p class="rounded-md border border-steel/60 bg-ink-soft/50 px-4 py-3 text-sm text-mist italic">
           {{
@@ -164,7 +177,7 @@ watch(currentLocale, (locale) => {
         </ul>
       </section>
 
-      <SystemsTopicNav :domain-slug="domainSlug" :prev="adjacent.prev" :next="adjacent.next" />
+      <SystemsTopicNav :prev="adjacent.prev" :next="adjacent.next" />
     </template>
 
     <p v-else class="mt-8 text-mist">

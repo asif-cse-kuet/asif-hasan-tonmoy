@@ -14,4 +14,6 @@ export type IndustryTopic = {
   related: string[]
   /** Slugs from src/content/systems (core concept atlas). */
   systemsLinks: string[]
+  /** 1-based position in the beginner → advanced reading path. */
+  lesson?: number
 }

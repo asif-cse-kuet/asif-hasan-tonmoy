@@ -3,7 +3,7 @@ import { computed, onBeforeUnmount, watch } from 'vue'
 import { RouterLink, useRoute } from 'vue-router'
 
 import LangToggle from '@/components/LangToggle.vue'
-import { useLocaleText } from '@/composables/useLocaleText'
+import { isEngineeringBlogRoute, useLocaleText } from '@/composables/useLocaleText'
 import { PROFILE } from '@/content/profile'
 import { useUiStore } from '@/stores/ui'
 
@@ -25,6 +25,8 @@ const items = computed<NavItem[]>(() => [
   { label: pick({ en: 'My Engineering Blog', bn: 'ইঞ্জিনিয়ারিং ব্লগ' }), to: '/systems' },
   { label: pick({ en: 'Software to business', bn: 'সফটওয়্যার থেকে ব্যবসা' }), to: '/marketing' },
 ])
+
+const isBlog = computed(() => isEngineeringBlogRoute(route.path))
 
 function target(item: NavItem) {
   return item.to ?? { path: '/', hash: item.hash }
@@ -78,7 +80,7 @@ onBeforeUnmount(() => {
       </nav>
 
       <div class="flex shrink-0 items-center gap-2">
-        <LangToggle />
+        <LangToggle v-if="isBlog" />
         <a
           :href="PROFILE.telHref"
           class="hidden rounded-md border border-steel px-3 py-1.5 text-sm font-semibold text-paper no-underline hover:border-glow hover:text-glow md:inline-block"

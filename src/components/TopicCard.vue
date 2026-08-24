@@ -2,6 +2,7 @@
 import { RouterLink } from 'vue-router'
 
 import type { IndustryTopic } from '@/content/industry-topics/topics'
+import { formatLesson } from '@/content/industry-topics'
 import { useLocaleText } from '@/composables/useLocaleText'
 
 defineProps<{
@@ -18,7 +19,10 @@ const { pick } = useLocaleText()
     class="surface-card block p-5 no-underline transition-colors hover:border-glow/50"
   >
     <div class="flex flex-wrap items-start justify-between gap-2">
-      <h3 class="font-display text-lg font-semibold text-paper">{{ pick(topic.titles) }}</h3>
+      <h3 class="font-display text-lg font-semibold text-paper">
+        <span class="font-mono text-sm text-accent-soft">{{ formatLesson(topic.lesson) }}.</span>
+        {{ pick(topic.titles) }}
+      </h3>
       <span
         class="rounded px-2 py-0.5 text-xs uppercase tracking-wide"
         :class="{
