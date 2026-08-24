@@ -1,11 +1,11 @@
-> **Scenario** — A support agent renames a customer in the detail drawer. The list behind it still shows the old name, the header breadcrumb shows the new one, and a hard refresh fixes it. Three Pinia stores hold three copies of the same customer object and only one of them was updated.
+> **Scenario** - A support agent renames a customer in the detail drawer. The list behind it still shows the old name, the header breadcrumb shows the new one, and a hard refresh fixes it. Three Pinia stores hold three copies of the same customer object and only one of them was updated.
 
 ## Why it matters
 
 - Duplicated entities produce "impossible" bugs that only reproduce after a specific navigation order, so they survive QA and land on the on-call engineer at 2am.
 - Every store that caches a server entity is an unmanaged cache. Without a TTL or invalidation rule it drifts the moment another tab, another user, or a webhook changes the row.
 - Store sprawl inflates the bundle and the mental model. A 40-store app where each store fetches on mount easily fires 15+ duplicate requests per navigation.
-- Naive fixes — refetching everything on every route change — turn a correctness bug into an INP regression, because JSON parsing and re-rendering block the main thread past the 200 ms target.
+- Naive fixes - refetching everything on every route change - turn a correctness bug into an INP regression, because JSON parsing and re-rendering block the main thread past the 200 ms target.
 
 ## Symptoms
 
@@ -38,7 +38,7 @@ flowchart TD
 
 1. Server cache and client state are mixed in the same store with no distinction in lifetime or ownership.
 2. Entities are stored as nested arrays instead of normalised by id, so one row exists in many places.
-3. No invalidation contract — mutations update local state instead of invalidating the queries that derive from it.
+3. No invalidation contract - mutations update local state instead of invalidating the queries that derive from it.
 4. Stores fetch in `onMounted` without deduplication, so concurrent components trigger duplicate requests.
 5. Derived data is copied into state rather than computed, so it goes stale independently.
 6. Cache entries are never evicted, and nothing reconciles across browser tabs.
@@ -50,7 +50,7 @@ flowchart TD
 Client state is what only the browser knows: modal open, selected tab, draft text, filter chips. Server cache is a local replica of something the API owns. Client state belongs in Pinia; server cache belongs behind a query layer with a key, a TTL, and an invalidation rule.
 
 ```ts
-// stores/ui.ts — client state only
+// stores/ui.ts - client state only
 export const useUiStore = defineStore('ui', () => {
   const drawerOpen = ref(false)
   const activeFilters = ref<string[]>([])
@@ -112,7 +112,7 @@ Hand-patching every affected view is where drift comes from; invalidation keeps 
 
 ### 5. Bound the cache
 
-Give each key a `staleTime` (serve immediately, refetch in background) and a `gcTime` (evict). A practical starting point for admin UIs is `staleTime: 30_000` and `gcTime: 5 * 60_000`. Cap the entity map — evict least-recently-used entries above ~2000 rows so a long session doesn't grow the heap unbounded.
+Give each key a `staleTime` (serve immediately, refetch in background) and a `gcTime` (evict). A practical starting point for admin UIs is `staleTime: 30_000` and `gcTime: 5 * 60_000`. Cap the entity map - evict least-recently-used entries above ~2000 rows so a long session doesn't grow the heap unbounded.
 
 ### 6. Reconcile across tabs
 

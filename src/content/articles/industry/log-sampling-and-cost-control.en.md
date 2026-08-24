@@ -1,12 +1,12 @@
-> **Scenario** — The observability invoice is $41,000 a month against a $14,000 compute bill. Finance asks for a 60% cut by next quarter. The team's first move is to set retention to 3 days globally, and two weeks later a customer disputes a transaction from 11 days ago with no logs to check.
+> **Scenario** - The observability invoice is $41,000 a month against a $14,000 compute bill. Finance asks for a 60% cut by next quarter. The team's first move is to set retention to 3 days globally, and two weeks later a customer disputes a transaction from 11 days ago with no logs to check.
 
 ## Why it matters
 
-- When telemetry costs more than the system it observes, someone will cut it — badly, and usually during a budget cycle rather than a design review.
+- When telemetry costs more than the system it observes, someone will cut it - badly, and usually during a budget cycle rather than a design review.
 - Blanket retention cuts delete audit and billing evidence while leaving high-volume debug noise untouched.
 - Uniform sampling deletes rare events, which is exactly the population you keep logs for.
 - Ingest spikes on incidents are the norm: the day you need logs most is the day the pipeline drops them under rate limits.
-- Cost per useful answer, not cost per gigabyte, is the metric that matters — and it is improvable by an order of magnitude.
+- Cost per useful answer, not cost per gigabyte, is the metric that matters - and it is improvable by an order of magnitude.
 
 ## Symptoms
 
@@ -21,7 +21,7 @@
 
 ## How it breaks
 
-Log volume is dominated by a small number of high-frequency, low-value events: health checks, per-item loop logs, successful cache hits, and framework debug lines that shipped enabled. Because the pipeline treats every line equally, the cheap events crowd out the expensive ones. During an incident, error volume rises tenfold and the collector hits its rate limit, so it drops records — often randomly, which means it drops errors too. Then cost pressure arrives and the only lever anybody knows is global retention, so everything gets shortened together, including the compliance-relevant subset that was never the problem.
+Log volume is dominated by a small number of high-frequency, low-value events: health checks, per-item loop logs, successful cache hits, and framework debug lines that shipped enabled. Because the pipeline treats every line equally, the cheap events crowd out the expensive ones. During an incident, error volume rises tenfold and the collector hits its rate limit, so it drops records - often randomly, which means it drops errors too. Then cost pressure arrives and the only lever anybody knows is global retention, so everything gets shortened together, including the compliance-relevant subset that was never the problem.
 
 ```mermaid
 flowchart TD
@@ -117,7 +117,7 @@ transforms:
 Then the exact count is always available in Prometheus even when only 5% of lines are stored.
 
 ```promql
-# Ingest volume by service — the cost attribution query
+# Ingest volume by service - the cost attribution query
 topk(10, sum by (service) (rate(telemetry_log_events_total[1h])))
 
 # Bytes per service per day, if your collector exports size

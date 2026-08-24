@@ -1,9 +1,9 @@
-> **Scenario** — Checkout page ৩০ সেকেন্ড ঝুলে থেকে generic error দেখাল। Trace বলছে browser ১৫s-এ হাল ছেড়েছে, কিন্তু API gateway `orders`-এর জন্য ৩০s অপেক্ষা করেছে, `orders` `inventory`-র জন্য ৩০s, আর `inventory` vendor call-এর জন্য ৩০s। প্রতিটি hop framework default ব্যবহার করেছে। স্থানীয়ভাবে কেউ ভুল নয়; পুরো system-টাই ভুল।
+> **Scenario** - Checkout page ৩০ সেকেন্ড ঝুলে থেকে generic error দেখাল। Trace বলছে browser ১৫s-এ হাল ছেড়েছে, কিন্তু API gateway `orders`-এর জন্য ৩০s অপেক্ষা করেছে, `orders` `inventory`-র জন্য ৩০s, আর `inventory` vendor call-এর জন্য ৩০s। প্রতিটি hop framework default ব্যবহার করেছে। স্থানীয়ভাবে কেউ ভুল নয়; পুরো system-টাই ভুল।
 
 ## Why it matters
 
 - User চলে যাওয়ার পরেও কাজ চলতে থাকে। কেউ পড়বে না এমন response বানাতে database connection ও worker slot পুড়ে।
-- একটি ধীর dependency সব upstream pool ভরিয়ে দেয় — এক service degrade থেকে পুরো outage।
+- একটি ধীর dependency সব upstream pool ভরিয়ে দেয় - এক service degrade থেকে পুরো outage।
 - লম্বা timeout-এর উপর retry জমে: ৩ retry সহ ৩০s timeout মানে ৯০s tail, যা কেউ বাজেট করেনি।
 - Caller যদি না জানে কত সময় বাকি, load shedding কাজ করতে পারে না।
 - প্রতিটি span-এ "timeout" দেখালেও কারও deadline সেটা বোঝা যায় না, ফলে triage দ্বিগুণ সময় নেয়।
@@ -20,7 +20,7 @@
 
 ## How it breaks
 
-প্রতিটি service আলাদাভাবে timeout সেট করে, সাধারণত framework default কপি করে। ফলে timeout call chain জুড়ে shared budget ভাগ না হয়ে *যোগ* হয়। সবচেয়ে গভীর hop পুরো request-এর সমান সময় পায়, তাই entry point সবসময় আগে হাল ছাড়ে — আর তখনো প্রতিটি downstream hop resource ধরে বসে আছে।
+প্রতিটি service আলাদাভাবে timeout সেট করে, সাধারণত framework default কপি করে। ফলে timeout call chain জুড়ে shared budget ভাগ না হয়ে *যোগ* হয়। সবচেয়ে গভীর hop পুরো request-এর সমান সময় পায়, তাই entry point সবসময় আগে হাল ছাড়ে - আর তখনো প্রতিটি downstream hop resource ধরে বসে আছে।
 
 দ্বিতীয় প্রভাব আরও খারাপ। Gateway request ছেড়ে দিলে connection বন্ধ হয়, কিন্তু downstream request cancel হয় না। Inventory row lock ধরে রাখে, vendor call চলতে থাকে, আর client-এর নতুন retry ওই সব কাজের *দ্বিতীয়* কপি শুরু করে।
 
@@ -202,7 +202,7 @@ flowchart LR
 ## Verification checklist
 
 - [ ] Vendor stub-এ ৫s delay দিয়ে দেখুন browser ৩s budget-এর মধ্যে `504` পায়, ৩০s-এ নয়।
-- [ ] Trace sample-এ nested span duration-এর যোগফল entry-point budget ছাড়ায় না — assert করুন।
+- [ ] Trace sample-এ nested span duration-এর যোগফল entry-point budget ছাড়ায় না - assert করুন।
 - [ ] Downstream log-এ ৪০ms বাকি নিয়ে কাজ শুরুর বদলে `deadline_exhausted` দেখাচ্ছে কিনা দেখুন।
 - [ ] Client থেকে request abort করে নিশ্চিত করুন এরপর কোনো row লেখা হয় না।
 - [ ] যেখানে `proxy_next_upstream` আছে সেখানে `proxy_next_upstream_timeout`-ও আছে কিনা দেখুন।
@@ -210,7 +210,7 @@ flowchart LR
 
 ## Anti-patterns
 
-- Dependency ধীর হলে সব timeout বাড়ানো — queue লম্বা হয়, user তবু চলে যায়।
+- Dependency ধীর হলে সব timeout বাড়ানো - queue লম্বা হয়, user তবু চলে যায়।
 - health check, batch job ও interactive request-এ একই global `HTTP_TIMEOUT=30`।
 - Connect ও read timeout-কে একই knob ভাবা; read ৩s হলেও connect ৩০০ms-এর নিচে থাকা উচিত।
 - Budget থেকে বাদ না দিয়ে retry যোগ করা, ফলে worst case `timeout × (retries + 1)`।

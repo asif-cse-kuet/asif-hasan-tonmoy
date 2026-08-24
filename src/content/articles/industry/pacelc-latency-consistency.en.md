@@ -1,9 +1,9 @@
-> **Scenario** — Checkout p99 jumps from 180ms to 2.4s after ops moves the order database to a three-region cluster with `quorum` writes. No node is down, no alert fired on the database, and the only change was "better durability".
+> **Scenario** - Checkout p99 jumps from 180ms to 2.4s after ops moves the order database to a three-region cluster with `quorum` writes. No node is down, no alert fired on the database, and the only change was "better durability".
 
 ## Why it matters
 
 - Every synchronous cross-region write pays at least one round trip: 70ms US-East to US-West, 160ms to Frankfurt, 240ms to Singapore. That cost is paid on the request path, not in the background.
-- The failure is invisible to database dashboards. Replication lag is zero — that is the *point* of a synchronous quorum — so the cost lands entirely in application latency.
+- The failure is invisible to database dashboards. Replication lag is zero - that is the *point* of a synchronous quorum - so the cost lands entirely in application latency.
 - Timeout budgets are usually set for single-region latency. A 500ms upstream timeout in front of a 700ms quorum write turns a healthy cluster into a 100% error rate.
 - CAP gives teams the vocabulary for the partition case only, so the normal-operation tradeoff gets made by accident, in a Terraform variable, by someone who was optimizing for durability.
 
@@ -12,7 +12,7 @@
 | Signal | What you observe |
 |---|---|
 | Write p99 | 8-15x baseline, tightly clustered around a multiple of inter-region RTT |
-| Write p50 | Barely changed — only the requests that hit the far replica are slow |
+| Write p50 | Barely changed - only the requests that hit the far replica are slow |
 | Replication lag | Flat at 0ms, so the storage team says the cluster is healthy |
 | Error rate | Upstream 504s from the API gateway, not database errors |
 | Latency histogram | Bimodal, with a second hump exactly at `local + RTT_to_second_nearest_region` |
@@ -20,9 +20,9 @@
 
 ## How it breaks
 
-PACELC extends CAP with the half that matters on a normal Tuesday: **if there is a Partition, choose Availability or Consistency; Else, choose Latency or Consistency.** A single-region Postgres primary is PC/EC — it is consistent in both branches, and it can be because "the network" is a rack. The moment the replica set spans regions, EC becomes expensive: the write cannot acknowledge until enough replicas have durably accepted it, and "enough" now includes a machine 4,000km away.
+PACELC extends CAP with the half that matters on a normal Tuesday: **if there is a Partition, choose Availability or Consistency; Else, choose Latency or Consistency.** A single-region Postgres primary is PC/EC - it is consistent in both branches, and it can be because "the network" is a rack. The moment the replica set spans regions, EC becomes expensive: the write cannot acknowledge until enough replicas have durably accepted it, and "enough" now includes a machine 4,000km away.
 
-The subtle part is *which* replica sets the latency. With `N=3, W=2` across three regions, a write in US-East must reach either US-West (70ms) or Frankfurt (160ms). The observed latency is the *second-fastest* acknowledgement, so p50 tracks the near replica and p99 tracks the far one — that is where the bimodal histogram comes from. Push to `W=3` (or `majority` on a five-node cluster spanning four regions) and every write pays the slowest link.
+The subtle part is *which* replica sets the latency. With `N=3, W=2` across three regions, a write in US-East must reach either US-West (70ms) or Frankfurt (160ms). The observed latency is the *second-fastest* acknowledgement, so p50 tracks the near replica and p99 tracks the far one - that is where the bimodal histogram comes from. Push to `W=3` (or `majority` on a five-node cluster spanning four regions) and every write pays the slowest link.
 
 ```mermaid
 sequenceDiagram
@@ -92,7 +92,7 @@ members:
   - { host: db-apse1-az1, priority: 0, votes: 0, hidden: true }
 ```
 
-You have now chosen EL for the cross-region case and EC within the region — an explicit decision instead of an emergent one.
+You have now chosen EL for the cross-region case and EC within the region - an explicit decision instead of an emergent one.
 
 ### 3. Route reads by staleness tolerance
 
@@ -124,7 +124,7 @@ If `consistency="strong"` is more than ~10% of write volume, that is a design re
 
 ### 5. Widen timeout budgets from the inside out
 
-Each hop's timeout must exceed the sum of downstream budgets plus retries. For a 2,000ms quorum write with one retry, the calling service needs ≥4,500ms and the gateway more than that — or you must reject the write concern, not the timeout.
+Each hop's timeout must exceed the sum of downstream budgets plus retries. For a 2,000ms quorum write with one retry, the calling service needs ≥4,500ms and the gateway more than that - or you must reject the write concern, not the timeout.
 
 ## Target design
 
@@ -161,7 +161,7 @@ flowchart LR
 
 ## Anti-patterns
 
-- Raising every upstream timeout until the 504s stop — you have converted an error rate into 3s pages and hidden the cause.
+- Raising every upstream timeout until the 504s stop - you have converted an error rate into 3s pages and hidden the cause.
 - Setting `w: 'majority'` cluster-wide "for safety" while the quorum spans three continents.
 - Adding read replicas in far regions and then pinning all reads to the primary anyway.
 - Treating replication lag of 0ms as proof of health when the cost has moved into request latency.

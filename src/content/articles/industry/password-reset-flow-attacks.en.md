@@ -1,4 +1,4 @@
-> **Scenario** — Support reports that three accounts were taken over overnight. All three received a legitimate-looking reset email from your domain. The link pointed at `https://attacker.example/reset?token=…` because the mailer built the URL from the incoming `Host` header.
+> **Scenario** - Support reports that three accounts were taken over overnight. All three received a legitimate-looking reset email from your domain. The link pointed at `https://attacker.example/reset?token=…` because the mailer built the URL from the incoming `Host` header.
 
 ## Why it matters
 

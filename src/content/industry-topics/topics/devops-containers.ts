@@ -1,6 +1,6 @@
 import type { IndustryTopic } from '../topic-types'
 
-/** DevOps, containers & Kubernetes wave — build, ship, and roll back safely. */
+/** DevOps, containers & Kubernetes wave - build, ship, and roll back safely. */
 const topics: IndustryTopic[] = [
   {
     id: 'docker-image-layer-optimization',
@@ -65,8 +65,8 @@ const topics: IndustryTopic[] = [
       bn: 'Blue-green vs canary release',
     },
     summary: {
-      en: 'Instant cutover versus gradual exposure — which one your database schema and error budget can actually afford.',
-      bn: 'instant cutover vs gradual exposure — আপনার database schema ও error budget আসলে কোনটা afford করে।',
+      en: 'Instant cutover versus gradual exposure - which one your database schema and error budget can actually afford.',
+      bn: 'instant cutover vs gradual exposure - আপনার database schema ও error budget আসলে কোনটা afford করে।',
     },
     tags: ['deploy', 'canary', 'blue-green', 'traffic-shifting', 'kubernetes'],
     difficulty: 'intermediate',
@@ -101,8 +101,8 @@ const topics: IndustryTopic[] = [
       bn: 'সঠিক signal-এ autoscaling',
     },
     summary: {
-      en: 'CPU is a proxy, not a symptom — scaling on queue depth, concurrency, and latency instead.',
-      bn: 'CPU একটা proxy, symptom নয় — বরং queue depth, concurrency ও latency দেখে scale করা।',
+      en: 'CPU is a proxy, not a symptom - scaling on queue depth, concurrency, and latency instead.',
+      bn: 'CPU একটা proxy, symptom নয় - বরং queue depth, concurrency ও latency দেখে scale করা।',
     },
     tags: ['kubernetes', 'hpa', 'autoscaling', 'keda', 'capacity'],
     difficulty: 'advanced',

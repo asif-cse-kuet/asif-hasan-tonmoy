@@ -1,4 +1,4 @@
-> **Scenario** — একটি collaborative document editor লেখা app server-এর `updated_at = NOW()` দিয়ে edit রাখে আর last-write-wins দিয়ে conflict মেটায়। ব্যর্থ NTP sync-এর পর একটি server-এর clock ৪.২ সেকেন্ড এগিয়ে। এক ঘণ্টা ধরে বাকি তিন server-এর প্রতিটি edit "পুরনো" বলে চুপচাপ বাদ পড়ে।
+> **Scenario** - একটি collaborative document editor লেখা app server-এর `updated_at = NOW()` দিয়ে edit রাখে আর last-write-wins দিয়ে conflict মেটায়। ব্যর্থ NTP sync-এর পর একটি server-এর clock ৪.২ সেকেন্ড এগিয়ে। এক ঘণ্টা ধরে বাকি তিন server-এর প্রতিটি edit "পুরনো" বলে চুপচাপ বাদ পড়ে।
 
 ## Why it matters
 
@@ -21,7 +21,7 @@
 
 ## How it breaks
 
-প্রতিটি মেশিনে দুটি clock আছে, আর ভুলটা বাছাই করাই পুরো bug। `CLOCK_REALTIME` (`Date.now()`, `time.time()`, `NOW()`) civil time মাপে এবং *adjusted* — সামনে বা পিছনে লাফাতে পারে। `CLOCK_MONOTONIC` (`performance.now()`, `time.monotonic()`, `clock_gettime`) শুধু সামনে যায়, কিন্তু মেশিনের বাইরে তার কোনো অর্থ নেই।
+প্রতিটি মেশিনে দুটি clock আছে, আর ভুলটা বাছাই করাই পুরো bug। `CLOCK_REALTIME` (`Date.now()`, `time.time()`, `NOW()`) civil time মাপে এবং *adjusted* - সামনে বা পিছনে লাফাতে পারে। `CLOCK_MONOTONIC` (`performance.now()`, `time.monotonic()`, `clock_gettime`) শুধু সামনে যায়, কিন্তু মেশিনের বাইরে তার কোনো অর্থ নেই।
 
 Failure-টা একটি সরল সত্য থেকে আসে: দুই মেশিনের `CLOCK_REALTIME` তুলনা করে আপনি happens-before সম্পর্ক পাবেন না। ভালো NTP থাকলেও datacenter-এ offset সাধারণত ±১-১০ms, ইন্টারনেট জুড়ে ±১০০ms। sync ভাঙলে সেকেন্ডে যায়। বাস্তবে ৫০ms ব্যবধানের দুই write উল্টো ক্রমের timestamp বহন করতে পারে, আর last-write-wins নতুনটিকে চিরতরে ফেলে দেবে।
 
@@ -53,7 +53,7 @@ sequenceDiagram
 
 ## How to solve it
 
-### 1. Wall clock দিয়ে conflict মেটাবেন না — logical clock ব্যবহার করুন
+### 1. Wall clock দিয়ে conflict মেটাবেন না - logical clock ব্যবহার করুন
 
 Hybrid logical clock (HLC) মানুষের পড়ার জন্য physical অংশ রাখে, আর logical counter wall clock ভুল হলেও monotonicity ও causality নিশ্চিত করে।
 
@@ -123,7 +123,7 @@ deadline_budget_ms = 800  # the callee starts its own monotonic timer
 
 ### 3. Ordering timestamp এক জায়গা থেকে তৈরি করুন
 
-Ordering-এ physical time লাগলে সেটা একটি authority — database — থেকে নিন, যাতে সব তুলনা একটি clock ভাগ করে।
+Ordering-এ physical time লাগলে সেটা একটি authority - database - থেকে নিন, যাতে সব তুলনা একটি clock ভাগ করে।
 
 ```sql
 -- Server clocks never touch the ordering column.
@@ -144,7 +144,7 @@ Conflict ফেরানো last-write-wins-এর চেয়ে সর্ব�
 ### 4. Time infrastructure ঠিক করুন ও monitor করুন
 
 ```conf
-# /etc/chrony/chrony.conf — cloud instances should use the hypervisor clock source.
+# /etc/chrony/chrony.conf - cloud instances should use the hypervisor clock source.
 server 169.254.169.123 prefer iburst minpoll 4 maxpoll 4   # AWS Time Sync Service
 pool time.cloudflare.com iburst maxsources 4               # independent backup
 makestep 1.0 3        # allow big steps only during the first 3 updates after boot
@@ -205,7 +205,7 @@ flowchart TD
 
 ## Anti-patterns
 
-- Timestamp তুলনায় কয়েক সেকেন্ডের "grace period" যোগ করা — ছোট skew লুকায়, বড় skew-এ কিছুই করে না।
+- Timestamp তুলনায় কয়েক সেকেন্ডের "grace period" যোগ করা - ছোট skew লুকায়, বড় skew-এ কিছুই করে না।
 - একটি upstream-এ NTP চালিয়ে alert ছাড়া রেখে correctness-এর জন্য সেই timestamp-এ ভরসা করা।
 - একই ordering column-এ application ও database-generated timestamp মেশানো।
 - Rate limit enforce করতে `Date.now()` delta ব্যবহার, তারপর NTP step-এর সময় পার হওয়া burst debug করা।

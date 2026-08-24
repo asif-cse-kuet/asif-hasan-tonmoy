@@ -1,9 +1,9 @@
-> **Scenario** — একটি pricing service cache-aside ব্যবহার করে। support agent একটি product-এর দাম 4,200 থেকে 3,900 করেন, write commit হয়, cache delete হয়। দুই ঘণ্টা পরেও ছয়টি app pod-এর একটিতে customer 4,200 দেখছে। Database ঠিক আছে; cache-এ এমন একটি value আছে যা কোনো writer কখনো লেখেনি।
+> **Scenario** - একটি pricing service cache-aside ব্যবহার করে। support agent একটি product-এর দাম 4,200 থেকে 3,900 করেন, write commit হয়, cache delete হয়। দুই ঘণ্টা পরেও ছয়টি app pod-এর একটিতে customer 4,200 দেখছে। Database ঠিক আছে; cache-এ এমন একটি value আছে যা কোনো writer কখনো লেখেনি।
 
 ## Why it matters
 
 - Cache-aside-এ একটি সুপরিচিত interleaving আছে যেখানে ধীর reader আপনার update-এর *আগে* fetch করা value দিয়ে fresh entry overwrite করে, আর সেই stale entry পুরো TTL টিকে যায়।
-- ভুল দাম, ভুল balance, ভুল permission flag — এগুলো correctness bug, performance bug নয়; এতে refund আর support ticket তৈরি হয়।
+- ভুল দাম, ভুল balance, ভুল permission flag - এগুলো correctness bug, performance bug নয়; এতে refund আর support ticket তৈরি হয়।
 - Write strategy ঠিক করে cache down হলে কী হবে। write-through প্রতিটি write-এর dependency-তে cache বসায়; cache-aside বসায় না।
 - Write-behind throughput-এর জন্য durability বিক্রি করে। dirty entry memory-তে থাকা অবস্থায় process মরলে সেই write হারিয়ে যায়, কেউ জানাবে না।
 - দল প্রথম sprint-এ অনানুষ্ঠানিকভাবে একবার strategy বেছে নেয় এবং বছরের পর বছর তার consistency profile বহন করে।
@@ -12,8 +12,8 @@
 
 | Signal | What you observe |
 |--------|------------------|
-| Stale reads | কিছু pod পুরনো value দেয়, কিছু নতুন — ঠিক এক TTL ধরে |
-| Reproducibility | চাইলে reproduce হয় না — concurrent slow read লাগে |
+| Stale reads | কিছু pod পুরনো value দেয়, কিছু নতুন - ঠিক এক TTL ধরে |
+| Reproducibility | চাইলে reproduce হয় না - concurrent slow read লাগে |
 | Write path errors | write-through-এ: Redis unreachable হলে save-এ 500 |
 | Data loss | write-behind-এ: pod OOMKill-এর পর row নেই, কোনো error log-ও নেই |
 | Cache/DB drift | reconciliation job ছোট কিন্তু non-zero শতাংশ mismatch পায় |
@@ -141,7 +141,7 @@ flowchart LR
 |--------|------|------|-------------|
 | Cache-aside | cache outage-এ ধীর হয়, ভাঙে না; যা পড়া হয় তাই cache | classic stale-write race; প্রতিটি writer-কে invalidate মনে রাখতে হয় | read-heavy workload, staleness সহনীয় (default পছন্দ) |
 | Write-through | write-এর পর cache সবসময় populated; post-write miss নেই | write latency-তে cache যুক্ত; cache down মানে write fail বা drift | write বিরল, read কখনো miss করা যাবে না |
-| Write-behind | সর্বনিম্ন write latency, DB write batch হয় | crash-এ data loss; ordering ও duplicate আপনার দায় | metric, counter — loss-tolerant high-volume write |
+| Write-behind | সর্বনিম্ন write latency, DB write batch হয় | crash-এ data loss; ordering ও duplicate আপনার দায় | metric, counter - loss-tolerant high-volume write |
 | Read-through (library-owned) | consistent access pattern, ad-hoc miss code নেই | database call লুকিয়ে ফেলে; trace ও timeout কঠিন | অনেক service একটি cache client library ভাগ করে |
 | Versioned CAS on top of any of these | দেরিতে আসা writer fresh data clobber করতে পারে না | version source ও Lua/atomic support লাগে | কয়েক লাইন জটিলতার চেয়ে correctness বেশি গুরুত্বপূর্ণ |
 
@@ -151,16 +151,16 @@ flowchart LR
 - [ ] write burst জুড়ে `redis-cli HGET price:42 v` কখনো কমে না।
 - [ ] Redis kill করে দেখুন write path সফল হয় (cache-aside) নাকি স্পষ্ট error দিয়ে জোরে fail করে (write-through)।
 - [ ] nightly reconciliation job cached key-র sample database-এর সাথে মিলিয়ে mismatch count metric হিসেবে দেয়।
-- [ ] প্রতিটি writer path — admin UI, CLI import, queue worker, API — invalidation test suite-এ আছে।
+- [ ] প্রতিটি writer path - admin UI, CLI import, queue worker, API - invalidation test suite-এ আছে।
 - [ ] প্রতিটি write-এর পর delayed double-delete job queue-তে আসে এবং delay window-এর মধ্যে শেষ হয়।
 
 ## Anti-patterns
 
-- transaction commit-এর *আগে* cache update — rollback হলে cache স্থায়ীভাবে এগিয়ে থাকে।
+- transaction commit-এর *আগে* cache update - rollback হলে cache স্থায়ীভাবে এগিয়ে থাকে।
 - database transaction-এর ভেতর invalidate করা: অন্য session নতুন row দেখার আগেই delete ঘটে যায়।
 - request handler থেকে `DEL` + `SET` করে pod জুড়ে ordering-এ ভরসা করা।
 - durable buffer ছাড়া write-behind, এবং postmortem-এ গ্যাপ আবিষ্কার করা।
-- invalidation strategy হিসেবে "clear all cache" admin button — correctness bug-কে stampede-এ পরিণত করে।
+- invalidation strategy হিসেবে "clear all cache" admin button - correctness bug-কে stampede-এ পরিণত করে।
 - একই entity-র জন্য service-ভেদে ভিন্ন TTL, ফলে stale window নির্ভর করে কোন service-কে জিজ্ঞেস করলেন তার উপর।
 
 ## Related

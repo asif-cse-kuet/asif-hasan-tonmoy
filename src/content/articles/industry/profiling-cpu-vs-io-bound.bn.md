@@ -1,9 +1,9 @@
-> **Scenario** — একটি invoicing endpoint 480 ms নেয়। দল দুই সপ্তাহ ধরে একটি PDF layout loop optimise করে, কারণ CPU flamegraph-এ সেটাই প্রভাবশালী। Latency নামে 465 ms-এ। Flamegraph CPU নিয়ে ঠিক ছিল, request নিয়ে ভুল: ওই 480 ms-এর 410 ms কেটেছে একটি synchronous S3 upload-এ blocked হয়ে, যা on-CPU profile-এ কখনো দেখা যায় না।
+> **Scenario** - একটি invoicing endpoint 480 ms নেয়। দল দুই সপ্তাহ ধরে একটি PDF layout loop optimise করে, কারণ CPU flamegraph-এ সেটাই প্রভাবশালী। Latency নামে 465 ms-এ। Flamegraph CPU নিয়ে ঠিক ছিল, request নিয়ে ভুল: ওই 480 ms-এর 410 ms কেটেছে একটি synchronous S3 upload-এ blocked হয়ে, যা on-CPU profile-এ কখনো দেখা যায় না।
 
 ## Why it matters
 
 - On-CPU profiler শুধু চলমান thread sample করে। অপেক্ষার সময় অদৃশ্য, আর বেশিরভাগ web request মূলত অপেক্ষাই করে।
-- ভুল অর্ধেক optimise করা নিরপেক্ষ নয় — সপ্তাহখানেক engineering পোড়ে আর SLO অপরিবর্তিত থাকে।
+- ভুল অর্ধেক optimise করা নিরপেক্ষ নয় - সপ্তাহখানেক engineering পোড়ে আর SLO অপরিবর্তিত থাকে।
 - কোন অর্ধেকে আছেন জানলে পরের প্রতিটি সিদ্ধান্ত বদলায়: pool size, concurrency model, instance type, autoscaling metric।
 - ভুল নির্ণয় প্রায়ই scale up (বড় CPU) করায়, যখন আসল সমাধান ছিল scale out বা async।
 - আসল concurrency-তে profile করলে এমন contention ধরা পড়ে যা single-request profiling গঠনগতভাবেই দেখতে পারে না।
@@ -12,7 +12,7 @@
 
 | Signal | What you observe |
 |---|---|
-| CPU utilisation vs latency | latency উঁচু, CPU 40%-এর নিচে — আপনি IO-bound |
+| CPU utilisation vs latency | latency উঁচু, CPU 40%-এর নিচে - আপনি IO-bound |
 | Flamegraph | একটি লম্বা stack প্রভাবশালী, তবু মোট sampled time request time-এর অনেক নিচে |
 | Thread state | অনেক thread `WAITING` / `TIMED_WAITING`, অল্প `RUNNABLE` |
 | `pidstat` output | কম `%usr`, কিছুটা `%system`, উঁচু `%wait` |
@@ -28,13 +28,13 @@
 - **on-CPU time** = 70 ms (profiler যা sample করল)
 - **off-CPU time** = 480 − 70 = **410 ms**
 
-CPU fraction = 70 / 480 = **14.6%**। On-CPU flamegraph আপনাকে ওই 70 ms-এর *আকার* দেখায়, বাকি 410 নিয়ে কিছুই বলে না। PDF loop যদি ওই 70 ms-এর 60% হয় — 42 ms — তবে পুরোপুরি সরালেও 480-এর মধ্যে 42 ms বাঁচে, অর্থাৎ **8.75%** উন্নতি। দুই সপ্তাহে মিলল 15 ms, কারণ তাত্ত্বিক সর্বোচ্চ ছিল 42 ms আর loop পুরোপুরি সরানো যায়নি।
+CPU fraction = 70 / 480 = **14.6%**। On-CPU flamegraph আপনাকে ওই 70 ms-এর *আকার* দেখায়, বাকি 410 নিয়ে কিছুই বলে না। PDF loop যদি ওই 70 ms-এর 60% হয় - 42 ms - তবে পুরোপুরি সরালেও 480-এর মধ্যে 42 ms বাঁচে, অর্থাৎ **8.75%** উন্নতি। দুই সপ্তাহে মিলল 15 ms, কারণ তাত্ত্বিক সর্বোচ্চ ছিল 42 ms আর loop পুরোপুরি সরানো যায়নি।
 
 এদিকে wait ratio বলে দেয় কত concurrency দরকার। pod-প্রতি 6 core আর Goetz-এর formula-য়:
 
 threads = cores × utilisation × (1 + wait/service) = 6 × 0.85 × (1 + 410/70) = 6 × 0.85 × 6.86 = **35 thread**
 
-Service configured ছিল 8-এ। pod-প্রতি 8 thread-এ max throughput 8 / 0.480 = **16.7 req/s**, অথচ thread constraint না হলে CPU সামলাতে পারত 6 core / 0.070 s = **85 req/s**। Pod তার CPU-limited capacity-র 20%-এ চলছিল, আর CPU graph — 6 core-এর 14.6% × 16.7 req/s ≈ 20% — "ঠিক" দেখাচ্ছিল।
+Service configured ছিল 8-এ। pod-প্রতি 8 thread-এ max throughput 8 / 0.480 = **16.7 req/s**, অথচ thread constraint না হলে CPU সামলাতে পারত 6 core / 0.070 s = **85 req/s**। Pod তার CPU-limited capacity-র 20%-এ চলছিল, আর CPU graph - 6 core-এর 14.6% × 16.7 req/s ≈ 20% - "ঠিক" দেখাচ্ছিল।
 
 পুরো failure-টা এটাই: যে profiler request-এর মাত্র 14.6% দেখে, তা দিয়ে 100%-এর কাজের plan করা।
 
@@ -121,7 +121,7 @@ PY
 ### 4. ফাঁকটা instrument করুন, যাতে আর profiler না লাগে
 
 ```ts
-// src/tracing/spans.ts — প্রতিটি boundary crossing-এ একটি span
+// src/tracing/spans.ts - প্রতিটি boundary crossing-এ একটি span
 import { trace, SpanStatusCode } from '@opentelemetry/api'
 
 const tracer = trace.getTracer('invoicing')
@@ -157,7 +157,7 @@ return reply.code(202).send({ status: 'processing', jobId })
 // Request 480ms থেকে ~70ms। PDF loop optimisation লাগেনি।
 ```
 
-CPU-bound: request-প্রতি কাজ কমান (ভালো algorithm, cache, precompute), নয়তো core যোগ করুন — এই ক্রমে।
+CPU-bound: request-প্রতি কাজ কমান (ভালো algorithm, cache, precompute), নয়তো core যোগ করুন - এই ক্রমে।
 
 ## Target design
 

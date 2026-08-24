@@ -1,10 +1,10 @@
-> **Scenario** — A three-node etcd cluster backing Kubernetes starts logging `leader changed` every 40 seconds. The API server times out on writes, controllers stop reconciling, and `etcdctl endpoint health` reports all three members healthy between the flaps.
+> **Scenario** - A three-node etcd cluster backing Kubernetes starts logging `leader changed` every 40 seconds. The API server times out on writes, controllers stop reconciling, and `etcdctl endpoint health` reports all three members healthy between the flaps.
 
 ## Why it matters
 
-- Raft is the control plane for etcd, Consul, CockroachDB, TiKV, and most Kafka KRaft deployments. When it degrades, nothing above it can make progress — deploys, service discovery, and leases all stall at once.
+- Raft is the control plane for etcd, Consul, CockroachDB, TiKV, and most Kafka KRaft deployments. When it degrades, nothing above it can make progress - deploys, service discovery, and leases all stall at once.
 - Every write is bounded by `fsync` on a majority of nodes. A disk whose p99 fsync is 80ms caps the cluster at roughly 12 sequential commits per second per key, no matter how many cores you add.
-- The paper's safety guarantees hold; the operational failure modes live in the parts it deliberately leaves open — snapshotting, log compaction, membership change, and timeout tuning.
+- The paper's safety guarantees hold; the operational failure modes live in the parts it deliberately leaves open - snapshotting, log compaction, membership change, and timeout tuning.
 - A cluster that keeps electing new leaders has 100% availability by the health check and 0% availability to its users.
 
 ## Symptoms
@@ -21,11 +21,11 @@
 
 ## How it breaks
 
-The election timeout is a bet that a healthy leader can send a heartbeat within it. etcd defaults to a 100ms heartbeat interval and a 1,000ms election timeout — sized for a LAN. Three things break that bet.
+The election timeout is a bet that a healthy leader can send a heartbeat within it. etcd defaults to a 100ms heartbeat interval and a 1,000ms election timeout - sized for a LAN. Three things break that bet.
 
 First, **fsync latency blocks the leader's own append.** A Raft leader must persist an entry locally before counting it toward the quorum. On an EBS gp2 volume shared with the kubelet's logs, p99 fsync can reach 300ms. The leader misses heartbeats not because the network is bad but because it is stuck in a syscall.
 
-Second, **snapshot transfer starves the heartbeat path.** When a follower falls behind the leader's compacted log, the leader must ship a full snapshot — 800MB of Kubernetes objects on a busy cluster. If that transfer shares the peer connection and there is no bandwidth limit, heartbeats to the *other* follower queue behind it.
+Second, **snapshot transfer starves the heartbeat path.** When a follower falls behind the leader's compacted log, the leader must ship a full snapshot - 800MB of Kubernetes objects on a busy cluster. If that transfer shares the peer connection and there is no bandwidth limit, heartbeats to the *other* follower queue behind it.
 
 Third, **flapping is self-reinforcing.** Each election costs at least one election timeout of unavailability, then the new leader has a cold `nextIndex` for each follower and re-probes the log. Under a write backlog, the new leader immediately falls behind, misses heartbeats, and loses the next election.
 
@@ -70,7 +70,7 @@ fio --name=wal --rw=write --bs=2300 --size=64m --ioengine=sync \
 lsblk -o NAME,MOUNTPOINT,MODEL | grep -E 'etcd|containerd'
 ```
 
-If p99 is above 25ms, no timeout tuning will save the cluster — move the WAL to a dedicated NVMe device (`--wal-dir=/mnt/etcd-wal`) before touching anything else.
+If p99 is above 25ms, no timeout tuning will save the cluster - move the WAL to a dedicated NVMe device (`--wal-dir=/mnt/etcd-wal`) before touching anything else.
 
 ### 2. Size the timeouts to measured RTT, not to defaults
 
@@ -118,7 +118,7 @@ etcdctl endpoint status -w table   # confirm RAFT INDEX within a few hundred of 
 etcdctl member promote <member-id>
 ```
 
-Learner mode is the single most useful operational feature not in the original paper — it removes the "new member drags the quorum down" failure entirely.
+Learner mode is the single most useful operational feature not in the original paper - it removes the "new member drags the quorum down" failure entirely.
 
 ### 5. Read without paying for consensus where it is safe
 
@@ -175,7 +175,7 @@ flowchart TD
 
 ## Anti-patterns
 
-- Growing to 7 members to "improve availability" — you have made every write slower and every election harder.
+- Growing to 7 members to "improve availability" - you have made every write slower and every election harder.
 - Lowering the election timeout to detect failures faster while fsync p99 is 200ms.
 - Running etcd on the same disk as container images or application logs.
 - Restarting members in a loop during flapping; each restart forces another election and another log probe.

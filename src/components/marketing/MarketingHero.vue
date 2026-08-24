@@ -15,13 +15,13 @@ const hireUrl = UPWORK_METRICS.hireUrl
       {{ UPWORK_METRICS.status }}
     </span>
     <h1 class="font-display text-3xl font-semibold tracking-tight text-paper sm:text-4xl lg:text-5xl">
-      {{ pick({ en: 'Software to business expertise', bn: 'সফটওয়্যার থেকে ব্যবসা — দক্ষতা' }) }}
+      {{ pick({ en: 'Software to business expertise', bn: 'সফটওয়্যার থেকে ব্যবসা - দক্ষতা' }) }}
     </h1>
     <p class="mt-3 max-w-3xl text-lg text-mist">
       {{
         pick({
-          en: 'I do not “also do marketing.” I spent 8+ years as the growth operator for 50+ owners — then I started shipping the software those funnels depend on. Put me in as Tech Lead, Marketing Director, or both chairs at once.',
-          bn: 'আমি “মার্কেটিংও করি” বলি না। ৮+ বছর ৫০+ মালিকের গ্রোথ অপারেটর ছিলাম — তারপর সেই ফানেল যে সফটওয়্যার চালায় সেটাই শিপ করি। টেক লিড, মার্কেটিং ডিরেক্টর, বা দুই আসনই দিন।',
+          en: 'I do not “also do marketing.” I spent 8+ years as the growth operator for 50+ owners - then I started shipping the software those funnels depend on. Put me in as Tech Lead, Marketing Director, or both chairs at once.',
+          bn: 'আমি “মার্কেটিংও করি” বলি না। ৮+ বছর ৫০+ মালিকের গ্রোথ অপারেটর ছিলাম - তারপর সেই ফানেল যে সফটওয়্যার চালায় সেটাই শিপ করি। টেক লিড, মার্কেটিং ডিরেক্টর, বা দুই আসনই দিন।',
         })
       }}
     </p>

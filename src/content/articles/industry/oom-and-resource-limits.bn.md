@@ -1,9 +1,9 @@
-> **পরিস্থিতি** — একটা Node.js worker প্রতি ৪০ মিনিটে exit code 137 নিয়ে restart হয়। App-এর নিজের metric-এ memory ঠিকঠাক, heap কখনো ৯০০ MB ছাড়ায় না, container limit ১ GiB। এদিকে কেউ "সাহায্য করতে" `cpu: 500m` limit বসানোর পর API pod-এর p99 তিনগুণ হয়েছে।
+> **পরিস্থিতি** - একটা Node.js worker প্রতি ৪০ মিনিটে exit code 137 নিয়ে restart হয়। App-এর নিজের metric-এ memory ঠিকঠাক, heap কখনো ৯০০ MB ছাড়ায় না, container limit ১ GiB। এদিকে কেউ "সাহায্য করতে" `cpu: 500m` limit বসানোর পর API pod-এর p99 তিনগুণ হয়েছে।
 
 ## কেন গুরুত্বপূর্ণ
 
 - `OOMKilled` মানে SIGKILL: graceful shutdown নেই, flush নেই, in-flight request ও unacknowledged queue message হারিয়ে যায়।
-- CPU limit মারে না, throttle করে — এমন latency তৈরি করে যা দেখতে slow dependency-র মতো, ফলে টিম দিনের পর দিন ভুল system debug করে।
+- CPU limit মারে না, throttle করে - এমন latency তৈরি করে যা দেখতে slow dependency-র মতো, ফলে টিম দিনের পর দিন ভুল system debug করে।
 - Scheduling চলে request দিয়ে, limit দিয়ে নয়। ভুল request মানে হয় cluster খরচের অপচয়, নয়তো node এত ঠাসা যে সব একসাথে degrade করে।
 - Memory limit একটা কঠিন দেয়াল, আর বেশিরভাগ runtime cgroup-এর কথা না জানলে host memory দেখে heap ঠিক করে।
 
@@ -23,7 +23,7 @@
 
 **Memory:** cgroup limit RSS-এর *পাশাপাশি* page cache, off-heap allocation, thread stack ও native library arena গোনে। `-Xmx900m` দেওয়া JVM বা ৯০০ MB heap-এর Node process সহজেই ১.৩ GiB RSS ব্যবহার করে। Kernel-এর OOM killer আপনার heap dashboard পড়ে না; সে cgroup counter পড়ে এবং PID 1 মেরে দেয়।
 
-**CPU:** limit প্রয়োগ হয় ১০০ms period-এ CFS quota দিয়ে। `cpu: 500m` মানে প্রতি ১০০ms-এ ৫০ms CPU। ৮০ms CPU দরকার এমন request মাঝপথে থেমে ৫০ms পরে আবার চলে — গড় utilisation আরামদায়ক ৪৫% দেখালেও latency দৃশ্যমান ধাপে বাড়ে।
+**CPU:** limit প্রয়োগ হয় ১০০ms period-এ CFS quota দিয়ে। `cpu: 500m` মানে প্রতি ১০০ms-এ ৫০ms CPU। ৮০ms CPU দরকার এমন request মাঝপথে থেমে ৫০ms পরে আবার চলে - গড় utilisation আরামদায়ক ৪৫% দেখালেও latency দৃশ্যমান ধাপে বাড়ে।
 
 ```mermaid
 flowchart TD
@@ -122,13 +122,13 @@ flowchart LR
 - [ ] Peak load-এ latency-sensitive pod-এ `cpu.stat`-এর `nr_throttled` প্রায় শূন্য।
 - [ ] প্রত্যাশিত traffic-এর ২ গুণ load test-এ working set memory limit-এর ৮০%-এর নিচে থাকে।
 - [ ] গুরুত্বপূর্ণ service-এ `kubectl describe pod` QoS Class `Guaranteed` দেখায়।
-- [ ] Heap flag limit থেকে derive করা — `kubectl exec ... -- node -e 'console.log(v8.getHeapStatistics().heap_size_limit)'` দিয়ে যাচাই।
+- [ ] Heap flag limit থেকে derive করা - `kubectl exec ... -- node -e 'console.log(v8.getHeapStatistics().heap_size_limit)'` দিয়ে যাচাই।
 - [ ] ইচ্ছাকৃত leak test-এ exit 137 হয় *এবং* user টের পাওয়ার আগেই alert বাজে।
 - [ ] Restart count ও OOM kill latency-র একই dashboard-এ আছে।
 
 ## Anti-pattern
 
-- "সমাধান" হিসেবে memory limit দ্বিগুণ করা — leak এখন ৪০-এর বদলে ৮০ মিনিট নেয়।
+- "সমাধান" হিসেবে memory limit দ্বিগুণ করা - leak এখন ৪০-এর বদলে ৮০ মিনিট নেয়।
 - "template-এ ছিল" বলে এক service-এর request/limit অন্যটাতে copy করা।
 - Fairness-এর নামে সব pod-এ `cpu: 1` limit বসিয়ে তারপর তিন মাস ধরে tail latency debug করা।
 - Scratch space-এ `emptyDir: {medium: Memory}` ব্যবহার করে limit-এর হিসাবে না ধরা।

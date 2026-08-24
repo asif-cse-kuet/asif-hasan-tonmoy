@@ -81,10 +81,10 @@ export const MARKETING_CASE_METRICS: MarketingMetric[] = [
 ]
 
 export const MARKETING_ROLES = [
-  'Cozy Cottage — Tech Lead + Marketing',
-  'Enterprising Society — Head of Marketing',
-  'Tribus Technology — Software Developer',
-  'Shabash Fakibaj — Web Coordinator',
+  'Cozy Cottage - Tech Lead + Marketing',
+  'Enterprising Society - Head of Marketing',
+  'Tribus Technology - Software Developer',
+  'Shabash Fakibaj - Web Coordinator',
 ] as const
 
 export const MARKETING_SKILL_GROUPS: MarketingSkillGroup[] = [

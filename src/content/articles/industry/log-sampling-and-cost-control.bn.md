@@ -1,12 +1,12 @@
-> **Scenario** — Observability invoice মাসে $41,000, অথচ compute bill $14,000। Finance পরের quarter-এ 60% কমানোর কথা বলছে। দলের প্রথম পদক্ষেপ: globally retention 3 দিন। দুই সপ্তাহ পর এক customer 11 দিন আগের transaction নিয়ে dispute করে — যাচাই করার কোনো log নেই।
+> **Scenario** - Observability invoice মাসে $41,000, অথচ compute bill $14,000। Finance পরের quarter-এ 60% কমানোর কথা বলছে। দলের প্রথম পদক্ষেপ: globally retention 3 দিন। দুই সপ্তাহ পর এক customer 11 দিন আগের transaction নিয়ে dispute করে - যাচাই করার কোনো log নেই।
 
 ## Why it matters
 
-- Telemetry-র খরচ যে system পর্যবেক্ষণ করছে তার চেয়ে বেশি হলে কেউ কাটবেই — খারাপভাবে, আর সাধারণত design review-তে নয়, budget cycle-এ।
+- Telemetry-র খরচ যে system পর্যবেক্ষণ করছে তার চেয়ে বেশি হলে কেউ কাটবেই - খারাপভাবে, আর সাধারণত design review-তে নয়, budget cycle-এ।
 - Blanket retention কাটা audit ও billing evidence মুছে দেয়, high-volume debug noise অটুট থাকে।
-- Uniform sampling বিরল event মোছে — যে population-এর জন্যই log রাখা হয়।
+- Uniform sampling বিরল event মোছে - যে population-এর জন্যই log রাখা হয়।
 - Incident-এ ingest spike স্বাভাবিক: যেদিন log সবচেয়ে দরকার, সেদিনই rate limit-এ pipeline সেগুলো ফেলে দেয়।
-- গুরুত্বপূর্ণ metric per-gigabyte cost নয়, প্রতি কাজের উত্তরের cost — এবং সেটি এক order of magnitude উন্নত করা যায়।
+- গুরুত্বপূর্ণ metric per-gigabyte cost নয়, প্রতি কাজের উত্তরের cost - এবং সেটি এক order of magnitude উন্নত করা যায়।
 
 ## Symptoms
 
@@ -21,7 +21,7 @@
 
 ## How it breaks
 
-Log volume-এ প্রাধান্য পায় অল্প কিছু high-frequency, low-value event: health check, per-item loop log, সফল cache hit, আর enabled হয়ে ship হওয়া framework debug লাইন। Pipeline প্রতিটি লাইনকে সমান ধরে, তাই সস্তা event দামি event-কে চাপা দেয়। Incident-এর সময় error volume দশগুণ হয়, collector rate limit-এ পৌঁছে record drop করে — প্রায়ই randomly, অর্থাৎ error-ও পড়ে যায়। এরপর cost চাপ আসে, আর সবার জানা একমাত্র lever global retention; ফলে সব একসাথে ছোট হয়, যে compliance-সংশ্লিষ্ট অংশটি কখনো সমস্যা ছিল না সেটিসহ।
+Log volume-এ প্রাধান্য পায় অল্প কিছু high-frequency, low-value event: health check, per-item loop log, সফল cache hit, আর enabled হয়ে ship হওয়া framework debug লাইন। Pipeline প্রতিটি লাইনকে সমান ধরে, তাই সস্তা event দামি event-কে চাপা দেয়। Incident-এর সময় error volume দশগুণ হয়, collector rate limit-এ পৌঁছে record drop করে - প্রায়ই randomly, অর্থাৎ error-ও পড়ে যায়। এরপর cost চাপ আসে, আর সবার জানা একমাত্র lever global retention; ফলে সব একসাথে ছোট হয়, যে compliance-সংশ্লিষ্ট অংশটি কখনো সমস্যা ছিল না সেটিসহ।
 
 ```mermaid
 flowchart TD
@@ -44,7 +44,7 @@ flowchart TD
 3. Health check, readiness probe ও static asset request পূর্ণ volume-এ log করা।
 4. Per-tenant নয়, পুরো service-এর জন্য production-এ debug-level logging চালু রাখা।
 5. Cost attribution নেই, তাই কোনো team নিজের bill দেখে না।
-6. Priority ছাড়া rate limit, তাই drop হয় random — lowest-value-first নয়।
+6. Priority ছাড়া rate limit, তাই drop হয় random - lowest-value-first নয়।
 
 ## How to solve it
 
@@ -95,7 +95,7 @@ transforms:
 
 ### 3. Detail ফেললেও aggregate সত্য ধরে রাখুন
 
-Sampling count নষ্ট করে — যদি sample rate record না করেন বা counting metric-এ না সরান।
+Sampling count নষ্ট করে - যদি sample rate record না করেন বা counting metric-এ না সরান।
 
 ```yaml
 # Emit a metric from logs so totals survive sampling.
@@ -117,7 +117,7 @@ transforms:
 তখন মাত্র 5% লাইন সংরক্ষিত হলেও সঠিক count সবসময় Prometheus-এ থাকে।
 
 ```promql
-# Ingest volume by service — the cost attribution query
+# Ingest volume by service - the cost attribution query
 topk(10, sum by (service) (rate(telemetry_log_events_total[1h])))
 
 # Bytes per service per day, if your collector exports size
@@ -154,7 +154,7 @@ transforms:
       .http.status >= 400
 ```
 
-এতে "trace খুলুন, তারপর তার log পড়ুন" workflow নির্ভরযোগ্য হয় — যেটাই আসলে incident সমাধান করে।
+এতে "trace খুলুন, তারপর তার log পড়ুন" workflow নির্ভরযোগ্য হয় - যেটাই আসলে incident সমাধান করে।
 
 ### 6. Drop-কে সরব ও priority-যুক্ত করুন
 

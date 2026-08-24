@@ -1,4 +1,4 @@
-> **Scenario** — An ops assistant exposes eleven tools. In one week it calls `create_refund` twice for the same order, passes `"2024-13-45"` as a date, and invents a tool named `list_all_refunds` that does not exist. Each failure surfaces as a 500 in the API and a confused user.
+> **Scenario** - An ops assistant exposes eleven tools. In one week it calls `create_refund` twice for the same order, passes `"2024-13-45"` as a date, and invents a tool named `list_all_refunds` that does not exist. Each failure surfaces as a 500 in the API and a confused user.
 
 ## Why it matters
 
@@ -20,7 +20,7 @@
 
 ## How it breaks
 
-The model produces a token sequence that looks like a valid call. If the schema is loose — free-form strings, optional fields, no enums — nearly anything passes syntactic validation and fails at the business layer. When it fails, the usual pattern is to feed the error back and let the model try again. Without an attempt counter that loop can run until the request times out, and without an idempotency key each attempt that *partially* succeeded has already written state.
+The model produces a token sequence that looks like a valid call. If the schema is loose - free-form strings, optional fields, no enums - nearly anything passes syntactic validation and fails at the business layer. When it fails, the usual pattern is to feed the error back and let the model try again. Without an attempt counter that loop can run until the request times out, and without an idempotency key each attempt that *partially* succeeded has already written state.
 
 ```mermaid
 sequenceDiagram

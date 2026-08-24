@@ -1,4 +1,4 @@
-> **Scenario** — A delivery app buffers events while riders are offline. On Monday a rider reconnects after six hours in a basement car park and flushes 400 events with Sunday timestamps. The daily revenue rollup for Sunday already closed at 02:00, the streaming job assigned everything to Monday's window, and two reports now disagree by 3.2%.
+> **Scenario** - A delivery app buffers events while riders are offline. On Monday a rider reconnects after six hours in a basement car park and flushes 400 events with Sunday timestamps. The daily revenue rollup for Sunday already closed at 02:00, the streaming job assigned everything to Monday's window, and two reports now disagree by 3.2%.
 
 ## Why it matters
 
@@ -23,7 +23,7 @@
 
 Most pipelines start by using processing time, because it is always available and monotonic. The aggregate is `GROUP BY DATE_TRUNC('day', ingested_at)`, which is correct on a quiet day and wrong during every backlog.
 
-Switching to event time exposes the second problem: you must decide when a window is final. Without a watermark, the job either keeps every window open forever (unbounded state) or closes on a fixed wall-clock schedule (drops late events silently). Client clock skew makes it worse — an event can arrive with a timestamp in the future, and a naive watermark computed as `max(event_time)` jumps forward and immediately marks legitimate events as late.
+Switching to event time exposes the second problem: you must decide when a window is final. Without a watermark, the job either keeps every window open forever (unbounded state) or closes on a fixed wall-clock schedule (drops late events silently). Client clock skew makes it worse - an event can arrive with a timestamp in the future, and a naive watermark computed as `max(event_time)` jumps forward and immediately marks legitimate events as late.
 
 ```mermaid
 flowchart TD
@@ -212,7 +212,7 @@ stateDiagram-v2
 
 ## Anti-patterns
 
-- Using `ingested_at` for business metrics and event time for engineering metrics — the two dashboards will never agree.
+- Using `ingested_at` for business metrics and event time for engineering metrics - the two dashboards will never agree.
 - Setting allowed lateness to zero to keep state small, then treating the `late_dropped` counter as informational.
 - Trusting client timestamps without clamping. One device with a wrong clock can poison the watermark for the whole stream.
 - Deriving the watermark from a per-partition maximum without taking the minimum across partitions; an idle partition then stalls or an active one races ahead.

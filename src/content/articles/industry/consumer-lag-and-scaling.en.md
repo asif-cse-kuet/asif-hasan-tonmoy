@@ -1,10 +1,10 @@
-> **Scenario** — A Black Friday promotion pushes 1.4M notification jobs into Redis. Horizon shows 12 workers at 100% CPU and a queue depth chart that is a straight line upward. Someone scales the worker deployment from 12 to 120 pods. Throughput barely moves, the database connection pool saturates, p99 checkout latency triples, and the backlog is still 900k at 03:40.
+> **Scenario** - A Black Friday promotion pushes 1.4M notification jobs into Redis. Horizon shows 12 workers at 100% CPU and a queue depth chart that is a straight line upward. Someone scales the worker deployment from 12 to 120 pods. Throughput barely moves, the database connection pool saturates, p99 checkout latency triples, and the backlog is still 900k at 03:40.
 
 ## Why it matters
 
 - Backlog measured in messages tells you nothing about recovery time. 900k messages at 400/s is 37 minutes; at 40/s it is 6 hours. Only the drain rate matters.
 - Adding consumers past the parallelism limit (partition count in Kafka, connection or DB capacity elsewhere) adds contention, not throughput.
-- Async backlogs become synchronous incidents when shared resources — the database, an upstream API, a connection pool — are the real bottleneck.
+- Async backlogs become synchronous incidents when shared resources - the database, an upstream API, a connection pool - are the real bottleneck.
 - Users experience lag as "the email never arrived", which support cannot distinguish from a bug.
 - Autoscaling on CPU is the wrong signal for queue workers; a blocked worker waiting on I/O shows low CPU while lag grows.
 
@@ -15,7 +15,7 @@
 | Consumer lag | Monotonic growth with no plateau, in messages and in seconds |
 | Throughput after scaling | Flat or *lower* after adding workers |
 | Database | Connection pool exhausted, lock waits climbing |
-| Worker CPU | Low, while lag increases — workers are I/O blocked |
+| Worker CPU | Low, while lag increases - workers are I/O blocked |
 | Kafka partitions | Idle consumers in the group because members exceed partitions |
 | Rebalance rate | Frequent rebalances triggered by scaling events |
 

@@ -1,10 +1,10 @@
-> **Scenario** — A release renames `users.name` to `users.full_name` in one migration. During the rolling update, old pods still `SELECT name` and start throwing 500s. Rolling back the deployment does not help, because the column is already gone.
+> **Scenario** - A release renames `users.name` to `users.full_name` in one migration. During the rolling update, old pods still `SELECT name` and start throwing 500s. Rolling back the deployment does not help, because the column is already gone.
 
 ## Why it matters
 
 - A rolling update guarantees a window where old and new application code run against one shared schema. Any migration that is not backwards compatible turns that window into an outage.
 - Destructive DDL removes your rollback option. Once the column is dropped, `kubectl rollout undo` restores code that cannot run.
-- Migrations that take a table-level lock block writes for their entire duration — on a large table under load, that is a full stop.
+- Migrations that take a table-level lock block writes for their entire duration - on a large table under load, that is a full stop.
 - Running migrations from every replica simultaneously causes duplicate execution, lock contention, or a corrupted migration ledger.
 
 ## Symptoms

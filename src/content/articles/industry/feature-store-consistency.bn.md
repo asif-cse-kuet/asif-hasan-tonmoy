@@ -1,9 +1,9 @@
-> **Scenario** — একটি fraud model offline-এ 0.91 AUC দেয়, production-এ 0.68। Offline training set-এ `txn_count_7d` পুরো সপ্তাহের data সহ warehouse table থেকে হিসাব হয়েছিল; online serving path এমন একটি Redis key পড়ে যা প্রতি ৩০ মিনিটে refresh করার job নয় দিন ধরে নীরবে fail করছে।
+> **Scenario** - একটি fraud model offline-এ 0.91 AUC দেয়, production-এ 0.68। Offline training set-এ `txn_count_7d` পুরো সপ্তাহের data সহ warehouse table থেকে হিসাব হয়েছিল; online serving path এমন একটি Redis key পড়ে যা প্রতি ৩০ মিনিটে refresh করার job নয় দিন ধরে নীরবে fail করছে।
 
 ## Why it matters
 
-- Offline/online divergence unit test ও CI-তে অদৃশ্য। Model, code, schema — সব "ঠিক"; শুধু value আলাদা।
-- Stale বা ভুল হিসাব করা feature error দেয় না — আত্মবিশ্বাসী ভুল prediction দেয়। Fraud-এ সেটা টাকা; ranking-এ engagement; triage classifier-এ ভুল label করা ticket।
+- Offline/online divergence unit test ও CI-তে অদৃশ্য। Model, code, schema - সব "ঠিক"; শুধু value আলাদা।
+- Stale বা ভুল হিসাব করা feature error দেয় না - আত্মবিশ্বাসী ভুল prediction দেয়। Fraud-এ সেটা টাকা; ranking-এ engagement; triage classifier-এ ভুল label করা ticket।
 - Point-in-time leakage offline metric ফুলিয়ে দেয়, তাই team এমন model ship করে যা dashboard-এর দাবি অনুযায়ী কখনও ভালো ছিল না। এরপরের প্রতিটি experiment একটি কল্পিত baseline-এর বিরুদ্ধে মাপা হয়।
 - একই feature-এর দুটি implementation মানে দুই on-call owner আর definition বদলালে দুই জায়গায় fix। কয়েক সপ্তাহেই definition drift করে।
 - খারাপ prediction debug করতে request-time-এর exact feature vector পুনর্গঠন লাগে। Logged feature value না থাকলে সেটা অনুমান।
@@ -23,7 +23,7 @@
 
 মূল সমস্যা: একই feature দুই code path-এ হিসাব হচ্ছে। Training warehouse পড়ে data scientist-এর লেখা `pandas` job দিয়ে। Serving পড়ে platform engineer-এর লেখা আলাদা SQL job-এর ভরা key-value store থেকে। দুটোকে একমত হতে বাধ্য করার কিছু নেই।
 
-Point-in-time correctness আরও সূক্ষ্ম ব্যর্থতা। Training query শুধু `user_id`-তে feature table join করে *current* feature value নেয় — যা label event-এর পরে হিসাব হয়েছে। Model তখন এমন তথ্য থেকে শেখে যা prediction time-এ ছিলই না।
+Point-in-time correctness আরও সূক্ষ্ম ব্যর্থতা। Training query শুধু `user_id`-তে feature table join করে *current* feature value নেয় - যা label event-এর পরে হিসাব হয়েছে। Model তখন এমন তথ্য থেকে শেখে যা prediction time-এ ছিলই না।
 
 ```mermaid
 flowchart LR
@@ -55,7 +55,7 @@ flowchart LR
 Transform একবার define করে দুই path generate করুন। পূর্ণ feature-store product ছাড়াও, দুই job-এর রেফার করা একটিমাত্র SQL expression দুটি হাতে-লেখা implementation-এর চেয়ে ভালো।
 
 ```sql
--- features/txn_count_7d.sql — the ONLY definition
+-- features/txn_count_7d.sql - the ONLY definition
 SELECT
   t.user_id,
   t.as_of_ts,

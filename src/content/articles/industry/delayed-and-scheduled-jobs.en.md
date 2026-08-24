@@ -1,4 +1,4 @@
-> **Scenario** — A subscription platform schedules renewal reminders with `dispatch()->delay(now()->addDays(3))`. Every reminder is created at signup time, and signups cluster during business hours. At 09:00 UTC on a Monday, 240,000 delayed jobs become due within the same minute. Redis `zrangebyscore` returns them all, workers grab everything, the mailer API rate-limits at 100/s, and the retry storm pushes the queue backlog to five hours.
+> **Scenario** - A subscription platform schedules renewal reminders with `dispatch()->delay(now()->addDays(3))`. Every reminder is created at signup time, and signups cluster during business hours. At 09:00 UTC on a Monday, 240,000 delayed jobs become due within the same minute. Redis `zrangebyscore` returns them all, workers grab everything, the mailer API rate-limits at 100/s, and the retry storm pushes the queue backlog to five hours.
 
 ## Why it matters
 

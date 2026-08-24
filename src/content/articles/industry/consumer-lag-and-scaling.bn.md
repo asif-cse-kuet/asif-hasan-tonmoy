@@ -1,10 +1,10 @@
-> **Scenario** — Black Friday promotion Redis-এ ১৪ লক্ষ notification job ঢেলে দেয়। Horizon দেখাচ্ছে ১২টা worker ১০০% CPU-তে আর queue depth chart সোজা ওপরের দিকে। কেউ worker deployment ১২ থেকে ১২০ pod-এ scale করে। Throughput প্রায় নড়ে না, database connection pool saturate হয়, checkout p99 তিনগুণ হয়, আর ০৩:৪০-এ backlog তখনও ৯ লক্ষ।
+> **Scenario** - Black Friday promotion Redis-এ ১৪ লক্ষ notification job ঢেলে দেয়। Horizon দেখাচ্ছে ১২টা worker ১০০% CPU-তে আর queue depth chart সোজা ওপরের দিকে। কেউ worker deployment ১২ থেকে ১২০ pod-এ scale করে। Throughput প্রায় নড়ে না, database connection pool saturate হয়, checkout p99 তিনগুণ হয়, আর ০৩:৪০-এ backlog তখনও ৯ লক্ষ।
 
 ## Why it matters
 
 - Message-এ মাপা backlog recovery time সম্পর্কে কিছুই বলে না। ৪০০/s-এ ৯ লক্ষ মানে ৩৭ মিনিট; ৪০/s-এ ৬ ঘণ্টা। শুধু drain rate-ই গুরুত্বপূর্ণ।
 - parallelism limit (Kafka-তে partition count, অন্যত্র connection বা DB capacity) পেরিয়ে consumer বাড়ালে throughput নয়, contention বাড়ে।
-- shared resource — database, upstream API, connection pool — আসল bottleneck হলে async backlog synchronous incident-এ পরিণত হয়।
+- shared resource - database, upstream API, connection pool - আসল bottleneck হলে async backlog synchronous incident-এ পরিণত হয়।
 - User-এর কাছে lag মানে "email আসেনি", যা support bug থেকে আলাদা করতে পারে না।
 - Queue worker-এ CPU-ভিত্তিক autoscaling ভুল signal; I/O-তে blocked worker কম CPU দেখায় অথচ lag বাড়তে থাকে।
 
@@ -15,7 +15,7 @@
 | Consumer lag | message ও সেকেন্ড দুটোতেই plateau ছাড়া একটানা বৃদ্ধি |
 | Throughput after scaling | worker বাড়ানোর পর flat বা *কম* |
 | Database | connection pool নিঃশেষ, lock wait বাড়ছে |
-| Worker CPU | কম, অথচ lag বাড়ছে — worker I/O-তে blocked |
+| Worker CPU | কম, অথচ lag বাড়ছে - worker I/O-তে blocked |
 | Kafka partitions | group-এ idle consumer, কারণ member সংখ্যা partition-এর বেশি |
 | Rebalance rate | scaling event-এ ঘন ঘন rebalance |
 
@@ -43,7 +43,7 @@ sequenceDiagram
 2. Consumer সংখ্যা topic-এর partition count ছাড়িয়ে যাওয়া, ফলে বাড়তি member idle।
 3. আসল bottleneck একটা shared downstream (database, third-party API, mailer) যার নিজস্ব concurrency ceiling আছে।
 4. per-worker rate limit নেই, তাই worker-রা একই দুর্লভ resource-এর জন্য লড়ে।
-5. lag নয়, CPU-তে autoscaling — I/O-bound worker-কে idle বলে ভুল পড়া।
+5. lag নয়, CPU-তে autoscaling - I/O-bound worker-কে idle বলে ভুল পড়া।
 6. নতুন worker-এর cold-start খরচ (migration, cache warm-up, JIT) ছোট spike-এ তাদের অবদানের চেয়ে বেশি।
 
 ## How to solve it
@@ -131,7 +131,7 @@ const dbLimit = pLimit(6)          // per worker
 await Promise.all(batch.map((msg) => dbLimit(() => handle(msg))))
 ```
 
-মোট database concurrency দাঁড়ায় `workers × 6` — এমন একটা সংখ্যা যা নিয়ে ভাবা ও cap করা যায়।
+মোট database concurrency দাঁড়ায় `workers × 6` - এমন একটা সংখ্যা যা নিয়ে ভাবা ও cap করা যায়।
 
 ## Target design
 

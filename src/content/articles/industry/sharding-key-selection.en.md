@@ -1,4 +1,4 @@
-> **Scenario** — A B2B analytics product sharded `events` by `event_id` hash for even distribution. Eighteen months later every customer-facing query filters by `tenant_id` and date, so each dashboard load fans out to all 16 shards, and p99 is the slowest shard plus network. Resharding by `tenant_id` is now a two-quarter project.
+> **Scenario** - A B2B analytics product sharded `events` by `event_id` hash for even distribution. Eighteen months later every customer-facing query filters by `tenant_id` and date, so each dashboard load fans out to all 16 shards, and p99 is the slowest shard plus network. Resharding by `tenant_id` is now a two-quarter project.
 
 ## Why it matters
 
@@ -21,9 +21,9 @@
 
 ## How it breaks
 
-Two distinct failures follow from one decision. If the key has no correlation with the query predicate, every read becomes scatter-gather: the coordinator queries all shards, waits for the slowest, and merges in application memory. Tail latency compounds — with 16 shards each having a 1% chance of a 200 ms hiccup, roughly 15% of requests hit at least one slow shard.
+Two distinct failures follow from one decision. If the key has no correlation with the query predicate, every read becomes scatter-gather: the coordinator queries all shards, waits for the slowest, and merges in application memory. Tail latency compounds - with 16 shards each having a 1% chance of a 200 ms hiccup, roughly 15% of requests hit at least one slow shard.
 
-If the key correlates too strongly with load — `tenant_id` where one tenant is 40% of traffic, or a timestamp where all writes go to "today" — you get the opposite problem: one shard saturates while the rest idle, and you cannot add capacity by adding shards.
+If the key correlates too strongly with load - `tenant_id` where one tenant is 40% of traffic, or a timestamp where all writes go to "today" - you get the opposite problem: one shard saturates while the rest idle, and you cannot add capacity by adding shards.
 
 ```mermaid
 flowchart TD
@@ -45,7 +45,7 @@ flowchart TD
 1. Choosing the key for *even distribution* alone, ignoring the dominant query predicate.
 2. Choosing a monotonic key (auto-increment id, `created_at`) so all writes target the newest shard.
 3. Low-cardinality keys (`country`, `status`, `plan`) that cannot spread beyond a handful of values.
-4. Mutable keys — sharding by a value the product later allows users to change, forcing cross-shard row moves.
+4. Mutable keys - sharding by a value the product later allows users to change, forcing cross-shard row moves.
 5. No tenant-size analysis before launch, so whale tenants were never modelled.
 6. Modulo-based routing (`hash % 16`) which forces a full rebalance every time the shard count changes.
 
@@ -67,7 +67,7 @@ ORDER BY total_exec_time DESC
 LIMIT 20;
 ```
 
-If 85% of the time is spent on queries filtered by `tenant_id`, the key is `tenant_id` — even if that means uneven shards you must manage separately.
+If 85% of the time is spent on queries filtered by `tenant_id`, the key is `tenant_id` - even if that means uneven shards you must manage separately.
 
 ### 2. Prefer a composite key: locality plus spread
 
@@ -77,7 +77,7 @@ Shard by tenant, then range or hash *within* the tenant, so single-tenant querie
 -- Routing value stored on every row, computed once at insert
 ALTER TABLE events ADD COLUMN shard_key text;
 
--- tenant:bucket — small tenants get one bucket, whales get many
+-- tenant:bucket - small tenants get one bucket, whales get many
 UPDATE events
 SET shard_key = tenant_id || ':' ||
                 (abs(hashtext(event_id::text)) % CASE
@@ -138,7 +138,7 @@ WHERE shard_key >= 'tenant_0088:0' AND shard_key < 'tenant_0089:0';
 
 ### 5. Keep a small set of global tables
 
-Reference data (plans, feature flags, currency rates) is replicated to every shard rather than joined across them. Anything genuinely global — the tenant directory, auth — lives in a separate unsharded store with its own scaling story.
+Reference data (plans, feature flags, currency rates) is replicated to every shard rather than joined across them. Anything genuinely global - the tenant directory, auth - lives in a separate unsharded store with its own scaling story.
 
 ### 6. Isolate whales before they hurt neighbours
 
@@ -165,7 +165,7 @@ flowchart LR
 | Hash on tenant id | Single-shard tenant queries | Whale tenants create hot shards | B2B SaaS, per-tenant workloads |
 | Range on time | Cheap retention (drop old partitions) | All writes hit the newest partition | Append-only telemetry with time-bounded reads |
 | Composite `tenant:bucket` | Locality plus whale splitting | Routing logic and a directory to maintain | Mixed tenant sizes |
-| Don't shard yet — partition | Reversible, one operational surface | Bounded by one machine's write capacity | Below ~2 TB or ~20 k writes/s |
+| Don't shard yet - partition | Reversible, one operational surface | Bounded by one machine's write capacity | Below ~2 TB or ~20 k writes/s |
 
 ## Verification checklist
 

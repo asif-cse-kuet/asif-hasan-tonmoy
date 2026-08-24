@@ -1,11 +1,11 @@
-> **Scenario** — A celebrity posts a link to one product. `product:88231` now receives 140,000 GETs per second. The Redis Cluster has 12 shards; eleven of them sit at 8% CPU while the shard owning that key saturates a single core, and every unrelated key on that shard starts timing out at 200 ms.
+> **Scenario** - A celebrity posts a link to one product. `product:88231` now receives 140,000 GETs per second. The Redis Cluster has 12 shards; eleven of them sit at 8% CPU while the shard owning that key saturates a single core, and every unrelated key on that shard starts timing out at 200 ms.
 
 ## Why it matters
 
-- Redis is single-threaded per shard for command execution. A hot key does not spread across cores — it pins one core, and no amount of adding shards helps.
+- Redis is single-threaded per shard for command execution. A hot key does not spread across cores - it pins one core, and no amount of adding shards helps.
 - The blast radius is everything co-located on that slot's shard. Unrelated features degrade because they share a node with a viral key.
 - Cluster autoscaling makes it worse: adding nodes redistributes slots but the hot slot still lands entirely on one node.
-- Large values amplify it. A 400 KB serialized object at 140k QPS is 56 GB/s of network — you hit the NIC before you hit the CPU.
+- Large values amplify it. A 400 KB serialized object at 140k QPS is 56 GB/s of network - you hit the NIC before you hit the CPU.
 - These events are unpredictable and short. By the time a human reacts, the traffic has moved to a different key.
 
 ## Symptoms
@@ -21,7 +21,7 @@
 
 ## How it breaks
 
-Redis Cluster maps a key to one of 16,384 hash slots by `CRC16(key) mod 16384`, and each slot lives on exactly one primary. A single key is therefore a single slot on a single node executing commands on a single thread. Sharding is a *distribution* mechanism, not a *replication* one — it cannot split one key's load.
+Redis Cluster maps a key to one of 16,384 hash slots by `CRC16(key) mod 16384`, and each slot lives on exactly one primary. A single key is therefore a single slot on a single node executing commands on a single thread. Sharding is a *distribution* mechanism, not a *replication* one - it cannot split one key's load.
 
 Head-of-line blocking finishes the job. Commands queue on the hot node; a large value's serialization occupies the event loop; every other client with a key on that node waits behind it.
 
@@ -37,7 +37,7 @@ flowchart TD
 
 ## Root causes
 
-1. One logical key equals one slot equals one thread — no horizontal path for a single key.
+1. One logical key equals one slot equals one thread - no horizontal path for a single key.
 2. No local L1 cache, so every request goes over the network for the same bytes.
 3. Reads not served by replicas, leaving the primary as the only source.
 4. Value size large enough that serialization and network dominate.
@@ -83,7 +83,7 @@ export async function writeHot(key: string, value: string, ttl: number) {
 }
 ```
 
-The `{h0}`…`{h15}` hash tags force Redis to hash only the braced portion, giving you deterministic control over slot placement. Do the fan-out only for keys detected as hot — 16× write amplification on every key is not a trade you want by default.
+The `{h0}`…`{h15}` hash tags force Redis to hash only the braced portion, giving you deterministic control over slot placement. Do the fan-out only for keys detected as hot - 16× write amplification on every key is not a trade you want by default.
 
 ### 3. Put a small L1 in front
 
@@ -159,7 +159,7 @@ flowchart LR
 
 ## Anti-patterns
 
-- Adding shards to fix a hot key — the slot does not split.
+- Adding shards to fix a hot key - the slot does not split.
 - `KEYS *` or a long-running `MONITOR` on a node that is already saturated.
 - Fanning out every key by default, multiplying memory and write cost across the whole keyspace.
 - Storing a 400 KB blob and reading all of it to render one field.

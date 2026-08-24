@@ -1,4 +1,4 @@
-> **Scenario** — A "import from URL" feature lets customers point at a CSV on their own server. Someone points it at `http://169.254.169.254/latest/meta-data/iam/…` and the response body is rendered back into the import preview. The application had no vulnerability in its own code — it just fetched what it was told.
+> **Scenario** - A "import from URL" feature lets customers point at a CSV on their own server. Someone points it at `http://169.254.169.254/latest/meta-data/iam/…` and the response body is rendered back into the import preview. The application had no vulnerability in its own code - it just fetched what it was told.
 
 ## Why it matters
 
@@ -20,7 +20,7 @@
 
 ## How it breaks
 
-Validation typically happens on the *string*, while the connection happens against the *resolved address*. An attacker supplies a hostname that passes the string check and resolves to a private address — or resolves to a public address on the first lookup (validation) and a private one on the second (connection). Redirects add a second chance: the initial URL is fine, and hop two goes wherever the attacker wants.
+Validation typically happens on the *string*, while the connection happens against the *resolved address*. An attacker supplies a hostname that passes the string check and resolves to a private address - or resolves to a public address on the first lookup (validation) and a private one on the second (connection). Redirects add a second chance: the initial URL is fine, and hop two goes wherever the attacker wants.
 
 ```mermaid
 sequenceDiagram
@@ -148,7 +148,7 @@ aws ec2 modify-instance-metadata-options \
 
 ### 6. Do not echo upstream responses
 
-Return a normalised result — row count, detected columns, a validation summary — rather than the raw body. Log the upstream detail server-side. Blind SSRF is much less useful than reflected SSRF.
+Return a normalised result - row count, detected columns, a validation summary - rather than the raw body. Log the upstream detail server-side. Blind SSRF is much less useful than reflected SSRF.
 
 ### 7. Alert on the signal
 

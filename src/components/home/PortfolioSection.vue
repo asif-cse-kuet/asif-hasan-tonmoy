@@ -37,8 +37,8 @@ const visible = computed(() => {
     :title="pick({ en: 'Things that left the laptop', bn: 'ল্যাপটপ ছেড়ে যাওয়া কাজ' })"
     :lead="
       pick({
-        en: 'Production platforms first. Demos and repos where they exist — SuperCards and the BRAC social build sit at the end until their live walkthroughs land.',
-        bn: 'আগে প্রোডাকশন প্ল্যাটফর্ম। SuperCards ও BRAC সোশ্যাল বিল্ড তালিকার শেষে — লাইভ ওয়াকথ্রু আসবে।',
+        en: 'Production platforms first. Demos and repos where they exist - SuperCards and the BRAC social build sit at the end until their live walkthroughs land.',
+        bn: 'আগে প্রোডাকশন প্ল্যাটফর্ম। SuperCards ও BRAC সোশ্যাল বিল্ড তালিকার শেষে - লাইভ ওয়াকথ্রু আসবে।',
       })
     "
   >

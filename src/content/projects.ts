@@ -21,12 +21,12 @@ export const PROJECTS: Project[] = [
     slug: 'ticketing-system',
     tier: 'T1',
     titles: {
-      en: 'Ticketing System — Frontend & Backend',
-      bn: 'টিকেটিং সিস্টেম — ফ্রন্টএন্ড ও ব্যাকএন্ড',
+      en: 'Ticketing System - Frontend & Backend',
+      bn: 'টিকেটিং সিস্টেম - ফ্রন্টএন্ড ও ব্যাকএন্ড',
     },
     summary: {
-      en: 'Full-stack support ticketing with Vue/Quasar frontend and Laravel backend — chat integration and role-aware workflows.',
-      bn: 'Vue/Quasar ফ্রন্টএন্ড ও Laravel ব্যাকএন্ডে ফুলস্ট্যাক সাপোর্ট টিকেটিং — চ্যাট ইন্টিগ্রেশন ও রোল-অবগত ওয়ার্কফ্লো।',
+      en: 'Full-stack support ticketing with Vue/Quasar frontend and Laravel backend - chat integration and role-aware workflows.',
+      bn: 'Vue/Quasar ফ্রন্টএন্ড ও Laravel ব্যাকএন্ডে ফুলস্ট্যাক সাপোর্ট টিকেটিং - চ্যাট ইন্টিগ্রেশন ও রোল-অবগত ওয়ার্কফ্লো।',
     },
     stack: ['Vue 3', 'Quasar', 'Pinia', 'Laravel', 'MySQL'],
     links: [
@@ -43,8 +43,8 @@ export const PROJECTS: Project[] = [
       bn: 'Dockerized রেজিস্ট্রেশন ও Gmail Email API',
     },
     summary: {
-      en: 'Containerized user registration with scheduled Gmail API email delivery — production-ready DevOps path.',
-      bn: 'Gmail API ইমেইল ডেলিভারির সাথে কন্টেইনারাইজড ইউজার রেজিস্ট্রেশন — প্রোডাকশন-রেডি DevOps পথ।',
+      en: 'Containerized user registration with scheduled Gmail API email delivery - production-ready DevOps path.',
+      bn: 'Gmail API ইমেইল ডেলিভারির সাথে কন্টেইনারাইজড ইউজার রেজিস্ট্রেশন - প্রোডাকশন-রেডি DevOps পথ।',
     },
     stack: ['Laravel', 'Docker', 'Gmail API', 'MySQL'],
     links: [
@@ -80,8 +80,8 @@ export const PROJECTS: Project[] = [
       bn: 'Tree Explorer',
     },
     summary: {
-      en: 'Interactive tree visualization app deployed on Vercel — algorithms meet polished UI.',
-      bn: 'Vercel-এ ডিপ্লয় করা ইন্টারঅ্যাকটিভ ট্রি ভিজুয়ালাইজেশন — অ্যালগরিদম ও পরিশীলিত UI।',
+      en: 'Interactive tree visualization app deployed on Vercel - algorithms meet polished UI.',
+      bn: 'Vercel-এ ডিপ্লয় করা ইন্টারঅ্যাকটিভ ট্রি ভিজুয়ালাইজেশন - অ্যালগরিদম ও পরিশীলিত UI।',
     },
     stack: ['Vue', 'Vite', 'Vercel'],
     links: [{ label: 'Live demo', url: 'https://tree-explorer-coral.vercel.app/' }],
@@ -92,8 +92,8 @@ export const PROJECTS: Project[] = [
     slug: 'transmentalnet-research',
     tier: 'T1',
     titles: {
-      en: 'TransMentalNet-6 — Bengali Mental Health NLP',
-      bn: 'TransMentalNet-6 — বাংলা মানসিক স্বাস্থ্য NLP',
+      en: 'TransMentalNet-6 - Bengali Mental Health NLP',
+      bn: 'TransMentalNet-6 - বাংলা মানসিক স্বাস্থ্য NLP',
     },
     summary: {
       en: 'ICCIT 2025 paper: optimized transformer for imbalanced Bengali mental illness classification (F1 66.35%).',
@@ -132,8 +132,8 @@ export const PROJECTS: Project[] = [
       bn: 'মাল্টি-চ্যানেল গ্রোথ পোর্টফোলিও',
     },
     summary: {
-      en: '70+ social triumphs across Pinterest and Instagram — Roasty 1.5M views, Jennifer 3.8M, ReneeRoaming 6.6M.',
-      bn: 'Pinterest ও Instagram-এ ৭০+ সোশ্যাল সাফল্য — Roasty ১.৫M, Jennifer ৩.৮M, ReneeRoaming ৬.৬M ভিউ।',
+      en: '70+ social triumphs across Pinterest and Instagram - Roasty 1.5M views, Jennifer 3.8M, ReneeRoaming 6.6M.',
+      bn: 'Pinterest ও Instagram-এ ৭০+ সোশ্যাল সাফল্য - Roasty ১.৫M, Jennifer ৩.৮M, ReneeRoaming ৬.৬M ভিউ।',
     },
     stack: ['Pinterest', 'Instagram', 'SEO', 'Content strategy'],
     links: [{ label: 'Legacy proof', url: 'https://sites.google.com/view/asifhasan/home' }],
@@ -217,8 +217,8 @@ export const PROJECTS: Project[] = [
     tier: 'T2',
     titles: { en: 'FontUploader', bn: 'FontUploader' },
     summary: {
-      en: 'Font grouping via JSON/AJAX — solved complex API query construction bugs.',
-      bn: 'JSON/AJAX দিয়ে ফন্ট গ্রুপিং — জটিল API query construction বাগ সমাধান।',
+      en: 'Font grouping via JSON/AJAX - solved complex API query construction bugs.',
+      bn: 'JSON/AJAX দিয়ে ফন্ট গ্রুপিং - জটিল API query construction বাগ সমাধান।',
     },
     stack: ['Laravel', 'AJAX', 'JSON'],
     links: [],
@@ -290,8 +290,8 @@ export const PROJECTS: Project[] = [
     tier: 'T1',
     titles: { en: 'BRAC Social Project', bn: 'BRAC সোশ্যাল প্রজেক্ট' },
     summary: {
-      en: 'Production social-impact build with BRAC — programme records, field reporting, and operator dashboards. Demo assets landing next.',
-      bn: 'BRAC-এর সাথে প্রোডাকশন সোশ্যাল-ইমপ্যাক্ট বিল্ড — প্রোগ্রাম রেকর্ড, ফিল্ড রিপোর্টিং ও অপারেটর ড্যাশবোর্ড। ডেমো অ্যাসেট শীঘ্রই।',
+      en: 'Production social-impact build with BRAC - programme records, field reporting, and operator dashboards. Demo assets landing next.',
+      bn: 'BRAC-এর সাথে প্রোডাকশন সোশ্যাল-ইমপ্যাক্ট বিল্ড - প্রোগ্রাম রেকর্ড, ফিল্ড রিপোর্টিং ও অপারেটর ড্যাশবোর্ড। ডেমো অ্যাসেট শীঘ্রই।',
     },
     stack: ['Laravel', 'Vue 3', 'MySQL'],
     links: [],

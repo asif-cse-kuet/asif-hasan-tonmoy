@@ -1,9 +1,9 @@
-> **Scenario** — A nightly reconciliation job takes 6 hours on 4 workers. The team scales to 32 workers expecting 45 minutes and gets 2 h 10 m. At 64 workers it gets *worse* — 2 h 35 m. Somebody says "the workers must be too small" and orders bigger instances.
+> **Scenario** - A nightly reconciliation job takes 6 hours on 4 workers. The team scales to 32 workers expecting 45 minutes and gets 2 h 10 m. At 64 workers it gets *worse* - 2 h 35 m. Somebody says "the workers must be too small" and orders bigger instances.
 
 ## Why it matters
 
 - Parallel speedup has a hard mathematical ceiling. Buying more workers past that ceiling converts money into contention.
-- The retrograde region — where adding capacity makes things slower — is real and common. It is the single most expensive misdiagnosis in batch and fan-out systems.
+- The retrograde region - where adding capacity makes things slower - is real and common. It is the single most expensive misdiagnosis in batch and fan-out systems.
 - Amdahl's Law gives you the maximum achievable speedup *before* you spend a sprint on parallelisation.
 - The same arithmetic explains why a 5% serial section caps you at 20× no matter how much hardware you rent.
 - On-call pays for this: a job that used to finish before the business day now overruns into it.
@@ -15,7 +15,7 @@
 | Speedup curve | Flattens, then bends downward past some worker count |
 | Per-worker throughput | Falls as worker count rises |
 | Lock wait / `pg_locks` | Grows superlinearly with workers |
-| CPU on workers | High `%sys`, low `%usr` — coordination, not work |
+| CPU on workers | High `%sys`, low `%usr` - coordination, not work |
 | Coordinator node | Saturated while workers idle |
 | Job duration variance | Widens sharply after scaling out |
 
@@ -63,7 +63,7 @@ flowchart TD
 ## Root causes
 
 1. A serial phase (manifest read, report write, advisory lock) nobody timed separately.
-2. Shared mutable state — a single summary row updated by every worker — turning parallel work into a lock queue.
+2. Shared mutable state - a single summary row updated by every worker - turning parallel work into a lock queue.
 3. A coordinator that broadcasts progress to all workers, creating O(N²) messages.
 4. Uneven partitioning, so the job is bounded by the slowest shard regardless of N.
 5. Scaling decisions made on intuition instead of a measured speedup curve.
@@ -142,7 +142,7 @@ def write_report(conn, run_id: str, out) -> None:
 ### 4. Cap the fleet at the measured peak
 
 ```yaml
-# recon-job.yaml — do not let the queue autoscaler run past N*
+# recon-job.yaml - do not let the queue autoscaler run past N*
 apiVersion: batch/v1
 kind: Job
 metadata:

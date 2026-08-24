@@ -1,11 +1,11 @@
-> **Scenario** — Marketing এমন campaign চালু করে যা প্রতিটি shared link-এ `?utm_source=…&utm_campaign=…&fbclid=…` জুড়ে দেয়। CDN প্রতিটি আলাদা query string-কে আলাদা object ধরে। রাতারাতি edge hit ratio 94% থেকে 31%-এ নামে, origin egress তিনগুণ হয়, আর মাসিক CDN বিল একজন ইঞ্জিনিয়ারের খরচের সমান বাড়ে।
+> **Scenario** - Marketing এমন campaign চালু করে যা প্রতিটি shared link-এ `?utm_source=…&utm_campaign=…&fbclid=…` জুড়ে দেয়। CDN প্রতিটি আলাদা query string-কে আলাদা object ধরে। রাতারাতি edge hit ratio 94% থেকে 31%-এ নামে, origin egress তিনগুণ হয়, আর মাসিক CDN বিল একজন ইঞ্জিনিয়ারের খরচের সমান বাড়ে।
 
 ## Why it matters
 
-- Hit ratio কোনো vanity metric নয়। 94%-এ origin প্রতি 100 request-এর 6টি serve করে; 31%-এ 69টি — কোনো code deploy ছাড়াই marketing পরিবর্তনে origin load 11 গুণ।
+- Hit ratio কোনো vanity metric নয়। 94%-এ origin প্রতি 100 request-এর 6টি serve করে; 31%-এ 69টি - কোনো code deploy ছাড়াই marketing পরিবর্তনে origin load 11 গুণ।
 - Cache fragmentation *latency*-ও নষ্ট করে। edge-এ miss মানে origin পর্যন্ত পুরো round trip, প্রায়ই মহাসাগর পেরিয়ে।
 - Egress ও origin compute-এর বিল হয়। fragmentation fixed cost-কে variable cost বানায়, যা marketing দলের সৃজনশীলতার সাথে scale করে।
-- ঢিলেঢালা `Vary` header `User-Agent` ধরে fragment করতে পারে, যার cardinality কার্যত সীমাহীন — একটি object হাজার হাজার হয়ে যায়।
+- ঢিলেঢালা `Vary` header `User-Agent` ধরে fragment করতে পারে, যার cardinality কার্যত সীমাহীন - একটি object হাজার হাজার হয়ে যায়।
 - উল্টো ব্যর্থতা আরও খারাপ: যে parameter সত্যিই response বদলায় তাকে normalize করে ফেললে সবাইকে ভুল content দেওয়া হয়।
 
 ## Symptoms
@@ -23,7 +23,7 @@
 
 Cache key ডিফল্টে পুরো request line: scheme, host, path ও সম্পূর্ণ query string, সাথে `Vary` header যা নাম করে। উচ্চ cardinality-র যেকোনো উপাদান একই content-এর জন্য সংরক্ষিত object সংখ্যা গুণ করে দেয়।
 
-Cookie সবচেয়ে নীরব অপরাধী। origin যদি কোনো cacheable response-এ `Set-Cookie` পাঠায়, বেশিরভাগ proxy সেটিকে একেবারেই cache করে না — object fragment হয় না, বরং কখনোই cache হয় না। দুই ব্যর্থতাই একই কম hit ratio হিসেবে দেখা দেয়।
+Cookie সবচেয়ে নীরব অপরাধী। origin যদি কোনো cacheable response-এ `Set-Cookie` পাঠায়, বেশিরভাগ proxy সেটিকে একেবারেই cache করে না - object fragment হয় না, বরং কখনোই cache হয় না। দুই ব্যর্থতাই একই কম hit ratio হিসেবে দেখা দেয়।
 
 ```mermaid
 flowchart TD
@@ -86,7 +86,7 @@ server {
 }
 ```
 
-nginx-এর সামনে CDN থাকলে সেখানেও একই allow-list দিন — দুটি key সংজ্ঞা মিলতে হবে, নাহলে দ্বিতীয় একটি fragmentation layer তৈরি হয়।
+nginx-এর সামনে CDN থাকলে সেখানেও একই allow-list দিন - দুটি key সংজ্ঞা মিলতে হবে, নাহলে দ্বিতীয় একটি fragmentation layer তৈরি হয়।
 
 ### 2. Normalize deterministically in the application
 
@@ -119,7 +119,7 @@ Vary: Accept-Encoding, Accept-Language
 Surrogate-Key: product-42 catalog
 ```
 
-device-নির্দিষ্ট output-এর জন্য edge-এ low-cardinality signal বানান — user agent থেকে derived `X-Device: mobile|desktop` — এবং তার উপর `Vary` করুন।
+device-নির্দিষ্ট output-এর জন্য edge-এ low-cardinality signal বানান - user agent থেকে derived `X-Device: mobile|desktop` - এবং তার উপর `Vary` করুন।
 
 ### 4. Use surrogate keys for purging
 
@@ -167,8 +167,8 @@ flowchart LR
 
 ## Anti-patterns
 
-- `Vary: *` — নিরাপত্তা ব্যবস্থার মতো দেখায়, আসলে সব response uncacheable করে।
-- "নিরাপদ থাকতে" cache key-তে session cookie রাখা — এটি user-প্রতি একটি object।
+- `Vary: *` - নিরাপত্তা ব্যবস্থার মতো দেখায়, আসলে সব response uncacheable করে।
+- "নিরাপদ থাকতে" cache key-তে session cookie রাখা - এটি user-প্রতি একটি object।
 - handler যে parameter সত্যিই পড়ে তা বাদ দেওয়া, ফলে page 2-তে সবাই page 1 পায়।
 - CDN-এ normalize করে nginx-এ না করা, ফলে প্রথমটির পেছনে দ্বিতীয় fragmentation layer।
 - third party-র বানানো URL-এ URL ধরে purge করা, যেগুলো আপনি enumerate করতে পারেন না।

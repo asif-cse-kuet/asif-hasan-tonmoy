@@ -1,11 +1,11 @@
-> **Scenario** — A JVM search service holds p50 at 18 ms but p99 spikes to 1.4 s every 40 seconds, in a perfect sawtooth. Heap graphs look "fine" — usage climbs and drops. The dropping is the problem: each drop is a 900 ms stop-the-world pause, and every request in flight at that moment eats it.
+> **Scenario** - A JVM search service holds p50 at 18 ms but p99 spikes to 1.4 s every 40 seconds, in a perfect sawtooth. Heap graphs look "fine" - usage climbs and drops. The dropping is the problem: each drop is a 900 ms stop-the-world pause, and every request in flight at that moment eats it.
 
 ## Why it matters
 
 - Garbage collection pauses are invisible in averages and dominate the tail. A 900 ms pause every 40 s ruins p99 while barely touching p50.
 - During a stop-the-world pause the process answers nothing: health checks fail, load balancers eject the node, and a capacity problem becomes a rollout problem.
 - Memory pressure shows up as latency long before it shows up as `OutOfMemoryError`, so teams debug the wrong subsystem for days.
-- Allocation rate is a design property. It is set by how you serialise, buffer, and copy — not by the collector you picked.
+- Allocation rate is a design property. It is set by how you serialise, buffer, and copy - not by the collector you picked.
 - The same physics applies to Node.js (V8 major GC), Go (assist and mark phases), and PHP (request-scoped arenas, so mostly exempt).
 
 ## Symptoms
@@ -24,13 +24,13 @@
 
 Do the arithmetic. Take a heap of 4 GB with a 1 GB young generation, and measure allocation rate from the GC log:
 
-Young collections happen every time eden fills. If eden is 800 MB and allocation rate is 400 MB/s, a young GC fires every 800 / 400 = **2 seconds**. Each young pause is short — say 12 ms. That costs 12 / 2000 = **0.6%** of wall time. Tolerable.
+Young collections happen every time eden fills. If eden is 800 MB and allocation rate is 400 MB/s, a young GC fires every 800 / 400 = **2 seconds**. Each young pause is short - say 12 ms. That costs 12 / 2000 = **0.6%** of wall time. Tolerable.
 
 The problem is **promotion**. If 5% of allocations survive the young collection, promotion rate is 400 × 0.05 = **20 MB/s** into the old generation. The old generation has 3 GB. It fills in 3,000 / 20 = **150 seconds**, and then a full collection runs.
 
-Except the observed period is 40 seconds, not 150. That means promotion is roughly 3,000 / 40 = **75 MB/s**, so the surviving fraction is 75 / 400 ≈ **19%**, not 5%. Something is holding objects past their young lifetime. In this service it was a 30-second `Caffeine` cache of deserialised documents: entries survive several young collections, get promoted, then die when evicted — the worst possible shape, because they cost a promotion *and* a full-collection scan.
+Except the observed period is 40 seconds, not 150. That means promotion is roughly 3,000 / 40 = **75 MB/s**, so the surviving fraction is 75 / 400 ≈ **19%**, not 5%. Something is holding objects past their young lifetime. In this service it was a 30-second `Caffeine` cache of deserialised documents: entries survive several young collections, get promoted, then die when evicted - the worst possible shape, because they cost a promotion *and* a full-collection scan.
 
-Now the pause cost. A full collection of a 3 GB old generation on a 4-core container, with a collector doing roughly 3.5 GB/s of marking, needs about 3.0 / 3.5 = **0.86 s** — the 900 ms observed. Requests arriving during that window queue. At 1,200 req/s, a 900 ms pause traps 1,200 × 0.9 = **1,080 requests**, each of which now reports its own latency plus up to 900 ms. That is exactly 1,080 / (1,200 × 40) = **2.25%** of requests per cycle — enough to own p99 (which starts at the worst 1%) and nothing else.
+Now the pause cost. A full collection of a 3 GB old generation on a 4-core container, with a collector doing roughly 3.5 GB/s of marking, needs about 3.0 / 3.5 = **0.86 s** - the 900 ms observed. Requests arriving during that window queue. At 1,200 req/s, a 900 ms pause traps 1,200 × 0.9 = **1,080 requests**, each of which now reports its own latency plus up to 900 ms. That is exactly 1,080 / (1,200 × 40) = **2.25%** of requests per cycle - enough to own p99 (which starts at the worst 1%) and nothing else.
 
 ```mermaid
 flowchart TD
@@ -125,7 +125,7 @@ Cache<String, byte[]> cache = Caffeine.newBuilder()
 ### 4. Choose a pause-target collector and size the heap for it
 
 ```yaml
-# deployment.yaml — ZGC for pause-sensitive services
+# deployment.yaml - ZGC for pause-sensitive services
 env:
   - name: JAVA_TOOL_OPTIONS
     value: >-

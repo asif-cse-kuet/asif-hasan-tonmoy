@@ -1,9 +1,9 @@
-> **Scenario** — রাত ০২:১৪-এ RabbitMQ-এর একটা payments consumer আর এগোচ্ছে না। queue depth ৪১,০০০-এ আটকে, ছয়টা worker-এর CPU pinned, আর log-এ একই `order.settled` message সেকেন্ডে ৯০০ বার parse হয়ে reject হচ্ছে। এক producer `null` currency code সহ payload পাঠিয়েছে, deploy-এর পর থেকে consumer সেটাই redeliver করে যাচ্ছে।
+> **Scenario** - রাত ০২:১৪-এ RabbitMQ-এর একটা payments consumer আর এগোচ্ছে না। queue depth ৪১,০০০-এ আটকে, ছয়টা worker-এর CPU pinned, আর log-এ একই `order.settled` message সেকেন্ডে ৯০০ বার parse হয়ে reject হচ্ছে। এক producer `null` currency code সহ payload পাঠিয়েছে, deploy-এর পর থেকে consumer সেটাই redeliver করে যাচ্ছে।
 
 ## Why it matters
 
-- একটা malformed message পুরো consumer capacity খেয়ে ফেলে, আর পেছনে queue unbounded বাড়ে — একটা bad record থেকে পূর্ণ outage।
-- Unbounded redelivery loop যে log volume ও metric cardinality বানায় তার খরচ incident-এর চেয়েও বেশি হতে পারে — ৯০০/s error loop দিনে প্রায় ৭.৮ কোটি log line লেখে।
+- একটা malformed message পুরো consumer capacity খেয়ে ফেলে, আর পেছনে queue unbounded বাড়ে - একটা bad record থেকে পূর্ণ outage।
+- Unbounded redelivery loop যে log volume ও metric cardinality বানায় তার খরচ incident-এর চেয়েও বেশি হতে পারে - ৯০০/s error loop দিনে প্রায় ৭.৮ কোটি log line লেখে।
 - Downstream SLA চুপচাপ ভাঙে: queue "up", consumer "healthy", customer support escalate না করা পর্যন্ত কেউ page পায় না।
 - DLQ না থাকলে inspect করার মতো artifact-ই থাকে না। bad message শুধু log noise-এ বাঁচে, postmortem-এ replay করার কিছু নেই।
 - On-call প্রথম ৩০ মিনিট broker ঠিক আছে প্রমাণ করতেই খরচ করে, payload-কে কেউ সন্দেহ করে না।
@@ -21,7 +21,7 @@
 
 ## How it breaks
 
-Consumer message নেয়, deserialisation বা domain invariant throw করে, framework-এর error handler `basic.nack` করে `requeue=true` দিয়ে। RabbitMQ message-টা queue-এর head-এ ফিরিয়ে দেয় এবং সঙ্গে সঙ্গে redeliver করে। default path-এ কোনো attempt counter নেই, তাই loop চলে CPU-র গতিতে। Kafka-তে আকার আলাদা হলেও ফল একই: consumer offset commit করার আগেই throw করে, পরের poll-এ partition শেষ committed offset-এ rewind করে, একই record replay হয় — বাড়তি হলো ওই partition-এর পেছনের সবকিছুও block।
+Consumer message নেয়, deserialisation বা domain invariant throw করে, framework-এর error handler `basic.nack` করে `requeue=true` দিয়ে। RabbitMQ message-টা queue-এর head-এ ফিরিয়ে দেয় এবং সঙ্গে সঙ্গে redeliver করে। default path-এ কোনো attempt counter নেই, তাই loop চলে CPU-র গতিতে। Kafka-তে আকার আলাদা হলেও ফল একই: consumer offset commit করার আগেই throw করে, পরের poll-এ partition শেষ committed offset-এ rewind করে, একই record replay হয় - বাড়তি হলো ওই partition-এর পেছনের সবকিছুও block।
 
 ```mermaid
 sequenceDiagram
@@ -155,7 +155,7 @@ flowchart LR
 
 ## Verification checklist
 
-- [ ] staging-এ ইচ্ছাকৃত malformed message publish করে দেখুন সেটা প্রত্যাশিত retry window-এর মধ্যেই DLQ-তে পড়ে — আগেও নয়, কখনো-না-ও নয়।
+- [ ] staging-এ ইচ্ছাকৃত malformed message publish করে দেখুন সেটা প্রত্যাশিত retry window-এর মধ্যেই DLQ-তে পড়ে - আগেও নয়, কখনো-না-ও নয়।
 - [ ] `x-death` header (বা সমতুল্য metadata) original queue, reason ও count রাখছে কিনা যাচাই করুন।
 - [ ] poison message retry হওয়ার সময় valid message-এর throughput অপরিবর্তিত আছে কিনা দেখুন।
 - [ ] `dlq_depth > 0` ১৫ মিনিটের মধ্যে alert তুলছে কিনা পরীক্ষা করুন।
@@ -164,9 +164,9 @@ flowchart LR
 
 ## Anti-patterns
 
-- সব exception ধরে ack করে দেওয়া — bug-কে স্থায়ী নীরব data loss-এ পরিণত করে।
+- সব exception ধরে ack করে দেওয়া - bug-কে স্থায়ী নীরব data loss-এ পরিণত করে।
 - "কিছু যেন না হারায়" বলে `tries = 0` (unlimited) সেট করা।
-- schema violation-এ exponential backoff retry — ৬০০ সেকেন্ডে payload valid হবে না।
+- schema violation-এ exponential backoff retry - ৬০০ সেকেন্ডে payload valid হবে না।
 - DLQ-কে ত্রৈমাসিক হাতে-drain করা queue হিসেবে ব্যবহার করা।
 - শুধু DLQ *rate*-এ alert দেওয়া; একটামাত্র আটকে থাকা message কখনো rate threshold ছোঁয় না।
 - failed payload storage-এ না লিখে log-এ লেখা, ফলে replay মানে grep করা।

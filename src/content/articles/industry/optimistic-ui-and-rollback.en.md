@@ -1,11 +1,11 @@
-> **Scenario** — A kanban board applies card moves optimistically. A user drags card 42 to "Done", then immediately renames it. The move request fails with a 409 and the rollback restores the pre-move snapshot — wiping the rename that succeeded two seconds later. The user re-types it, and support logs it as "app randomly loses edits".
+> **Scenario** - A kanban board applies card moves optimistically. A user drags card 42 to "Done", then immediately renames it. The move request fails with a 409 and the rollback restores the pre-move snapshot - wiping the rename that succeeded two seconds later. The user re-types it, and support logs it as "app randomly loses edits".
 
 ## Why it matters
 
 - Optimistic updates remove 200–800 ms of perceived latency per interaction. On a board with dozens of drags per session, that is the difference between a tool people like and one they tolerate.
 - Naive rollback restores a whole-object snapshot, which silently destroys any change the user made in between. Data loss is worse than slowness.
 - Retrying a failed mutation without an idempotency key can create duplicates: the first request actually succeeded, the response was lost, and now there are two orders.
-- Getting this wrong is expensive to detect. There is no server error to alert on — the server is fine. Only the user notices.
+- Getting this wrong is expensive to detect. There is no server error to alert on - the server is fine. Only the user notices.
 
 ## Symptoms
 
@@ -47,7 +47,7 @@ sequenceDiagram
 3. Retries without an idempotency key, producing duplicates on network flakes.
 4. No server-version check, so a stale client overwrites a newer server value.
 5. Pending state stored on the entity, so a failure path that forgets to clear it strands the UI.
-6. All errors treated the same — a 409 conflict needs a merge, a 500 needs a retry, a 422 needs a form error.
+6. All errors treated the same - a 409 conflict needs a merge, a 500 needs a retry, a 422 needs a form error.
 
 ## How to solve it
 
@@ -168,7 +168,7 @@ stateDiagram-v2
 
 ## Verification checklist
 
-- [ ] Move an item, rename it, then force the move to fail — the rename survives.
+- [ ] Move an item, rename it, then force the move to fail - the rename survives.
 - [ ] Double-click submit with the network throttled; exactly one record is created.
 - [ ] Replay the same `Idempotency-Key` in curl; the server returns the original response.
 - [ ] Simulate a 412; the UI shows a conflict message and adopts the server value.

@@ -1,12 +1,12 @@
-> **Scenario** — একটি checkout API স্থিরভাবে 1,200 req/s চালাচ্ছে, mean latency 40 ms। Marketing একটি push notification পাঠাল, arrival rate লাফিয়ে 2,000 req/s হল, আর নয় সেকেন্ডের মধ্যে service 504 ফেরত দিতে শুরু করল — অথচ CPU 55%-ও ছাড়ায়নি। কিছুই "slow" নয়; service একসাথে এত request ধরে রাখতেই পারে না।
+> **Scenario** - একটি checkout API স্থিরভাবে 1,200 req/s চালাচ্ছে, mean latency 40 ms। Marketing একটি push notification পাঠাল, arrival rate লাফিয়ে 2,000 req/s হল, আর নয় সেকেন্ডের মধ্যে service 504 ফেরত দিতে শুরু করল - অথচ CPU 55%-ও ছাড়ায়নি। কিছুই "slow" নয়; service একসাথে এত request ধরে রাখতেই পারে না।
 
 ## Why it matters
 
 - Capacity incident প্রায় কখনোই CPU incident নয়। এগুলো **concurrency** incident, আর concurrency-ই সেই সংখ্যা যেটা কেউ graph করে না।
 - Little's Law-ই একমাত্র হিসাব যা তিনটি সংখ্যা জোড়া লাগায়: throughput (product চায়), latency (user টের পায়), instance count (finance দেখে)।
 - এটা ছাড়া autoscaling rule নিছক অনুমান। দল CPU-তে scale করে, তারপর CPU অর্ধেক থাকা অবস্থায় page খায়।
-- Stack-এর প্রতিটি pool — thread, DB connection, HTTP client, worker slot — একটা concurrency limit। required concurrency হিসাব না করতে পারলে কোনোটাই size করা যায় না।
-- "আমরা কত traffic নিতে পারব?" — এই প্রশ্নের উত্তর incident-এর আগে পাওয়া যায়, retro-তে নয়।
+- Stack-এর প্রতিটি pool - thread, DB connection, HTTP client, worker slot - একটা concurrency limit। required concurrency হিসাব না করতে পারলে কোনোটাই size করা যায় না।
+- "আমরা কত traffic নিতে পারব?" - এই প্রশ্নের উত্তর incident-এর আগে পাওয়া যায়, retro-তে নয়।
 
 ## Symptoms
 
@@ -29,7 +29,7 @@ Checkout API-কে এর মধ্য দিয়ে চালান। স�
 
 L = 1,200 × 0.040 = **48 concurrent request**
 
-Service চলে 8 pod-এ, প্রতিটিতে 16-slot worker pool: মোট 128 slot। 128-এর মধ্যে 48 ব্যবহৃত — 37% occupancy। সব ঠিক, আর 55% CPU-ও তাই বলছে।
+Service চলে 8 pod-এ, প্রতিটিতে 16-slot worker pool: মোট 128 slot। 128-এর মধ্যে 48 ব্যবহৃত - 37% occupancy। সব ঠিক, আর 55% CPU-ও তাই বলছে।
 
 এখন λ হল 2,000 req/s। latency অপরিবর্তিত থাকলে required concurrency হবে:
 
@@ -37,7 +37,7 @@ L = 2,000 × 0.040 = **80 concurrent request**
 
 এখনও 128-এর নিচে। তাহলে 504 কেন? কারণ W অপরিবর্তিত থাকে না। Utilisation ρ = λ / capacity। প্রতি pod-এর capacity = slot / service time = 16 / 0.040 = 400 req/s, তাই 8 pod *তাত্ত্বিক* saturation-এ 3,200 req/s। 2,000 req/s-এ ρ = 2,000 / 3,200 = 0.625। M/M/c-জাতীয় system-এ queueing delay মোটামুটি 1/(1 − ρ) হিসেবে বাড়ে। ρ = 0.375 থেকে 0.625-এ গেলে queueing component গুণ হয় (1 − 0.375)/(1 − 0.625) = 0.625/0.375 = **1.67×**।
 
-শুধু এটুকু সহনীয়। মারে feedback loop: W বাড়ে, তাই L = λW বাড়ে, তাই বেশি slot আটকে থাকে, তাই ρ আরও বাড়ে। একটি downstream dependency 30 ms যোগ করলেই W = 0.070 s এবং L = 2,000 × 0.070 = **140 concurrent request** — 128 slot-এর উপরে। Pool শেষ, নতুন arrival pool-এর বাইরে queue করে, client-এর 1 s timeout fire করে, client retry করে, আর λ আবার বাড়ে।
+শুধু এটুকু সহনীয়। মারে feedback loop: W বাড়ে, তাই L = λW বাড়ে, তাই বেশি slot আটকে থাকে, তাই ρ আরও বাড়ে। একটি downstream dependency 30 ms যোগ করলেই W = 0.070 s এবং L = 2,000 × 0.070 = **140 concurrent request** - 128 slot-এর উপরে। Pool শেষ, নতুন arrival pool-এর বাইরে queue করে, client-এর 1 s timeout fire করে, client retry করে, আর λ আবার বাড়ে।
 
 ```mermaid
 flowchart TD
@@ -109,14 +109,14 @@ avg_over_time(http_requests_in_flight[5m])
 * rate(http_request_seconds_sum[5m]) / rate(http_request_seconds_count[5m])
 ```
 
-~10%-এর বেশি ফারাক মানে instrumented span-এর বাইরে কাজ হচ্ছে — সাধারণত accept backlog-এ queueing।
+~10%-এর বেশি ফারাক মানে instrumented span-এর বাইরে কাজ হচ্ছে - সাধারণত accept backlog-এ queueing।
 
 ### 2. আসলে যত slot দরকার তা হিসাব করুন
 
-হিসাবটা স্পষ্টভাবে করুন, target utilisation ধরে — 100%-এ নয়।
+হিসাবটা স্পষ্টভাবে করুন, target utilisation ধরে - 100%-এ নয়।
 
 ```python
-# capacity.py — pool size বাছার আগে এটা চালান
+# capacity.py - pool size বাছার আগে এটা চালান
 def required_slots(rps: float, latency_s: float, target_rho: float = 0.6) -> float:
     """L = lambda * W, যে utilisation-এ চালাতে রাজি তা দিয়ে ভাগ।"""
     return (rps * latency_s) / target_rho
@@ -137,7 +137,7 @@ print(f"pods at 16    = {slots / 16:.1f}")                             # 14.6 ->
 Unbounded queueing throughput সমস্যাকে পুরো outage বানায়। Limit স্পষ্ট করুন।
 
 ```nginx
-# nginx.conf — app-এর সামনে bounded admission
+# nginx.conf - app-এর সামনে bounded admission
 limit_conn_zone $server_name zone=appconn:10m;
 
 upstream checkout {
@@ -156,7 +156,7 @@ server {
 }
 ```
 
-241তম request-কে 2 ms-এ reject করা তাকে গ্রহণ করে 1,000 ms-এ timeout করার চেয়ে স্পষ্টতই ভালো — client দ্রুত জানে এবং কোনো slot ধরে রাখে না।
+241তম request-কে 2 ms-এ reject করা তাকে গ্রহণ করে 1,000 ms-এ timeout করার চেয়ে স্পষ্টতই ভালো - client দ্রুত জানে এবং কোনো slot ধরে রাখে না।
 
 ### 4. CPU নয়, concurrency-তে scale করুন
 
@@ -224,7 +224,7 @@ flowchart LR
 
 - Timeout "সারাতে" worker pool বাড়ানো, যা W বাড়ায় আর tail আরও খারাপ করে।
 - p95 mean-এর 2-3× হলেও mean latency দিয়ে capacity plan করা।
-- Socket backlog-কে free buffering ভাবা — ওটা visibility-হীন unbounded queue delay।
+- Socket backlog-কে free buffering ভাবা - ওটা visibility-হীন unbounded queue delay।
 - Retry budget ছাড়া retry যোগ করা, ফলে λ ঠিক তখনই দ্রুত বাড়ে যখন তা কমা দরকার।
 - যে service কখনো CPU-bound ছিল না, তার headroom "CPU তো মাত্র 55%" বলে জানানো।
 - Autoscaler-কে 90% concurrency target-এ চালানো, ফলে scale-up delay-র জন্য জায়গা থাকে না।

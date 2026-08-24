@@ -1,11 +1,11 @@
-> **Scenario** — `/api/orders?per_page=100` উত্তর দিতে ২.৮ সেকেন্ড নেয়। Slow log দেখায় ওই একটি request-এ ৪০৩টি query: order list-এ একটি, প্রতিটি customer লোডে ১০০টি, প্রতিটি order-এর shipment-এ ১০০টি, আর loop-এর ভেতরে tenant setting lazily আনা currency formatter থেকে আরও ২০০টি।
+> **Scenario** - `/api/orders?per_page=100` উত্তর দিতে ২.৮ সেকেন্ড নেয়। Slow log দেখায় ওই একটি request-এ ৪০৩টি query: order list-এ একটি, প্রতিটি customer লোডে ১০০টি, প্রতিটি order-এর shipment-এ ১০০টি, আর loop-এর ভেতরে tenant setting lazily আনা currency formatter থেকে আরও ২০০টি।
 
 ## কেন গুরুত্বপূর্ণ
 
-- প্রতিটি query-র নির্দিষ্ট overhead আছে — round trip, parse, plan, result marshalling — তাই ৪০০ × ৩ ms মানে ১.২ সেকেন্ড latency, যা কোনো index সরাতে পারবে না।
+- প্রতিটি query-র নির্দিষ্ট overhead আছে - round trip, parse, plan, result marshalling - তাই ৪০০ × ৩ ms মানে ১.২ সেকেন্ড latency, যা কোনো index সরাতে পারবে না।
 - ওই প্রতিটি query request-এর পুরো সময় pool connection ধরে রাখে। Little's Law অনুযায়ী প্রতি request-এ ৪০০ query × ৩ ms মানে এক request ১.২ সেকেন্ড একটি connection দখল করে; ৪০টি concurrent request-এর জন্য ৪০টি connection লাগে *কেবল অপেক্ষা করার জন্য*।
 - N+1 traffic-এর সাথে নয়, data-র সাথে বাড়ে: ৩ row-এর fixture-এ review ও CI পাশ করে, তারপর কোনো customer-এর ৫,০০০ line item থাকলে ফেটে যায়।
-- "database ধীর" রিপোর্টের সবচেয়ে সাধারণ কারণ এটাই — যেখানে database ৮% CPU-তে।
+- "database ধীর" রিপোর্টের সবচেয়ে সাধারণ কারণ এটাই - যেখানে database ৮% CPU-তে।
 - সমাধান সাধারণত দুই লাইনের, তাই ২ সেকেন্ডের regression পুরোপুরি নিজের গোল।
 
 ## লক্ষণ
@@ -21,7 +21,7 @@
 
 ## কীভাবে ভাঙে
 
-Lazy loading হলো ORM-এর feature যা relation-এর query পিছিয়ে দেয় যতক্ষণ attribute ছোঁয়া না হয়। Loop-এর ভেতরে — বা template, serialiser, accessor-এর ভেতরে — "ছোঁয়া" হয় প্রতি row-তে একবার। Parent query N row দেয়, code আরও N query চালায়, তাই ১ + N।
+Lazy loading হলো ORM-এর feature যা relation-এর query পিছিয়ে দেয় যতক্ষণ attribute ছোঁয়া না হয়। Loop-এর ভেতরে - বা template, serialiser, accessor-এর ভেতরে - "ছোঁয়া" হয় প্রতি row-তে একবার। Parent query N row দেয়, code আরও N query চালায়, তাই ১ + N।
 
 আসল সমস্যা হলো ORM খরচটা call site-এ লুকিয়ে রাখে। `$order->customer->name` দেখতে property access, network round trip নয়। Serialiser আর Blade/Vue template সবচেয়ে বড় অপরাধী, কারণ যে code field যোগ করেছে সেখানে loop-টা দেখা যায় না।
 
@@ -46,7 +46,7 @@ sequenceDiagram
 
 1. Loop, template বা serialiser-এর ভেতরে lazy relation access।
 2. Accessor ও computed attribute যা read-এ query করে (`getFormattedTotalAttribute()` tenant setting আনছে)।
-3. Eager loading ঘোষিত ছিল কিন্তু পরের refactor-এ ভেঙেছে — API resource-এ নতুন field unloaded relation টানে।
+3. Eager loading ঘোষিত ছিল কিন্তু পরের refactor-এ ভেঙেছে - API resource-এ নতুন field unloaded relation টানে।
 4. Polymorphic relation, যা অনেক ORM সাহায্য ছাড়া এক query-তে eager-load করতে পারে না।
 5. GraphQL resolver per-field লেখা, কোনো batching layer ছাড়া।
 6. Pagination limit বাড়ানো (`per_page=500`), query count আবার পরীক্ষা না করে।
@@ -75,7 +75,7 @@ public function test_order_index_stays_within_query_budget(): void
 }
 ```
 
-Budget assertion সমস্যাটি যেই মুহূর্তে ঢোকে সেই মুহূর্তেই CI-তে ধরে — এটাই একমাত্র নির্ভরযোগ্য জায়গা।
+Budget assertion সমস্যাটি যেই মুহূর্তে ঢোকে সেই মুহূর্তেই CI-তে ধরে - এটাই একমাত্র নির্ভরযোগ্য জায়গা।
 
 ### ২. যে graph serialise করবেন পুরোটা eager-load করুন
 
@@ -100,13 +100,13 @@ $orders = Order::query()
 SELECT id, order_id, sku, qty FROM items WHERE order_id IN (1,2,3, /* ...১০০ id */);
 ```
 
-Column list খেয়াল করুন। চওড়া table-এ `SELECT *` দিয়ে eager load করলে ১০০ round trip-এর বদলে একটাই বিশাল result set হয় — এটাও regression।
+Column list খেয়াল করুন। চওড়া table-এ `SELECT *` দিয়ে eager load করলে ১০০ round trip-এর বদলে একটাই বিশাল result set হয় - এটাও regression।
 
 ### ৩. lazy loading গঠনগতভাবে বন্ধ করুন
 
 ```php
 <?php
-// AppServiceProvider::boot() — dev/CI-তে throw, production-এ log
+// AppServiceProvider::boot() - dev/CI-তে throw, production-এ log
 Model::preventLazyLoading(! app()->isProduction());
 
 Model::handleLazyLoadingViolationUsing(function ($model, $relation) {
@@ -211,7 +211,7 @@ flowchart LR
 - [ ] Eager load explicit column বাছে; চওড়া relation-এ `SELECT *` নেই।
 - [ ] `per_page`-এর server-side কঠিন সর্বোচ্চ সীমা আছে ও পরীক্ষিত।
 - [ ] DataLoader instance per-request; cross-user cache মেশে না তা test-এ নিশ্চিত।
-- [ ] Fix-এর পর connection-pool wait time মাপা — latency-র সাথে কমা উচিত।
+- [ ] Fix-এর পর connection-pool wait time মাপা - latency-র সাথে কমা উচিত।
 
 ## Anti-pattern
 

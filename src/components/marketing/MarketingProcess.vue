@@ -7,8 +7,8 @@ const steps = [
   {
     title: { en: 'Audit & goals', bn: 'Audit ও লক্ষ্য' },
     body: {
-      en: 'We clarify where you are today — traffic, conversions, and brand — and set realistic growth targets.',
-      bn: 'আজ কোথায় আছেন — traffic, conversion, brand — স্পষ্ট করে realistic growth target ঠিক করি।',
+      en: 'We clarify where you are today - traffic, conversions, and brand - and set realistic growth targets.',
+      bn: 'আজ কোথায় আছেন - traffic, conversion, brand - স্পষ্ট করে realistic growth target ঠিক করি।',
     },
   },
   {
@@ -35,8 +35,8 @@ const steps = [
   {
     title: { en: 'Analytics & ROI', bn: 'Analytics ও ROI' },
     body: {
-      en: 'Dashboards and weekly reviews tie activity to leads, sales, and cost — not vanity metrics alone.',
-      bn: 'dashboard ও weekly review activity-কে lead, sale ও cost-এর সাথে bind করে — শুধু vanity metric নয়।',
+      en: 'Dashboards and weekly reviews tie activity to leads, sales, and cost - not vanity metrics alone.',
+      bn: 'dashboard ও weekly review activity-কে lead, sale ও cost-এর সাথে bind করে - শুধু vanity metric নয়।',
     },
   },
   {
@@ -58,7 +58,7 @@ const steps = [
       {{
         pick({
           en: 'A straightforward process for business owners who want clarity, not jargon.',
-          bn: 'business owner-দের জন্য সোজা process — jargon নয়, clarity।',
+          bn: 'business owner-দের জন্য সোজা process - jargon নয়, clarity।',
         })
       }}
     </p>

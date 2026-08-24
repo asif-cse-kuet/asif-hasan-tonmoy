@@ -1,12 +1,12 @@
-> **Scenario** — একটি collaborative editor localhost-এ নিখুঁত চলে। production-এ প্রতিটি client ৬০ সেকেন্ড ছন্দে disconnect ও reconnect করে, অনন্তকাল। ৪,০০০ user-এর জন্য backend মিনিটে ৪,০০০ WebSocket handshake দেখে, session setup-এ CPU আটকে যায়, আর "presence" feature সবার জন্য জ্বলে-নেভে।
+> **Scenario** - একটি collaborative editor localhost-এ নিখুঁত চলে। production-এ প্রতিটি client ৬০ সেকেন্ড ছন্দে disconnect ও reconnect করে, অনন্তকাল। ৪,০০০ user-এর জন্য backend মিনিটে ৪,০০০ WebSocket handshake দেখে, session setup-এ CPU আটকে যায়, আর "presence" feature সবার জন্য জ্বলে-নেভে।
 
 ## Why it matters
 
-- প্রতি ৬০ সেকেন্ডে reconnect মানে প্রতিটি client আবার authenticate, subscribe ও state sync করে — chat feature একটি load generator হয়ে ওঠে।
+- প্রতি ৬০ সেকেন্ডে reconnect মানে প্রতিটি client আবার authenticate, subscribe ও state sync করে - chat feature একটি load generator হয়ে ওঠে।
 - reconnect storm নিজেই নিজেকে বাড়ায়: deploy-এর পর সবাই একই সেকেন্ডে connect করেছিল, তাই সবাই একই সেকেন্ডে disconnect করে।
 - এখানে proxy misconfiguration application code-এ অদৃশ্য; app সঠিক, তবু শুধু production-এ fail করে।
 - buffering ছোট frame গিলে ফেলে, তাই "message দেরিতে গুচ্ছ আকারে আসে" ভুল করে broker বা application সমস্যা হিসেবে ধরা হয়।
-- WebSocket connection একবারই balance হয়, connect time-এ — খারাপ distribution connection-এর সারা জীবন থাকে।
+- WebSocket connection একবারই balance হয়, connect time-এ - খারাপ distribution connection-এর সারা জীবন থাকে।
 
 ## Symptoms
 
@@ -22,9 +22,9 @@
 
 ## How it breaks
 
-WebSocket জীবন শুরু করে `Connection: Upgrade` ও `Upgrade: websocket` বহনকারী একটি HTTP/1.1 request হিসেবে। nginx default-এ upstream-এর সাথে HTTP/1.0 বলে এবং hop-by-hop header ছেঁটে দেয়, তাই স্পষ্ট করে `proxy_http_version 1.1` না দিলে ও `Upgrade`/`Connection` header forward না করলে backend কখনো upgrade request দেখে না — সাধারণ 400 বা 200 ফেরত দেয়।
+WebSocket জীবন শুরু করে `Connection: Upgrade` ও `Upgrade: websocket` বহনকারী একটি HTTP/1.1 request হিসেবে। nginx default-এ upstream-এর সাথে HTTP/1.0 বলে এবং hop-by-hop header ছেঁটে দেয়, তাই স্পষ্ট করে `proxy_http_version 1.1` না দিলে ও `Upgrade`/`Connection` header forward না করলে backend কখনো upgrade request দেখে না - সাধারণ 400 বা 200 ফেরত দেয়।
 
-upgrade সফল হলেও connection নিছক একটি দীর্ঘজীবী proxied stream — অর্থাৎ `proxy_read_timeout` তখনও প্রযোজ্য। এর default ৬০s, মাপা হয় পরপর read-এর ফাঁক হিসেবে। ৬১ সেকেন্ড চুপচাপ থাকা chat আর ঝুলে যাওয়া upstream nginx-এর কাছে অভিন্ন, তাই সে বন্ধ করে দেয়। client reconnect করে, আর যেহেতু সে সবার সাথে একই deploy window-এ connect করেছিল, বাকি সবাইও করে।
+upgrade সফল হলেও connection নিছক একটি দীর্ঘজীবী proxied stream - অর্থাৎ `proxy_read_timeout` তখনও প্রযোজ্য। এর default ৬০s, মাপা হয় পরপর read-এর ফাঁক হিসেবে। ৬১ সেকেন্ড চুপচাপ থাকা chat আর ঝুলে যাওয়া upstream nginx-এর কাছে অভিন্ন, তাই সে বন্ধ করে দেয়। client reconnect করে, আর যেহেতু সে সবার সাথে একই deploy window-এ connect করেছিল, বাকি সবাইও করে।
 
 ```mermaid
 stateDiagram-v2
@@ -178,11 +178,11 @@ flowchart LR
 ## Anti-patterns
 
 - সাধারণ HTTP-ও পরিবেশন করে এমন location-এ `proxy_set_header Connection "upgrade"` hardcode করা।
-- heartbeat যোগ না করে `proxy_read_timeout 86400s` দেওয়া — তখন মৃত socket সারা দিন জমে।
+- heartbeat যোগ না করে `proxy_read_timeout 86400s` দেওয়া - তখন মৃত socket সারা দিন জমে।
 - backoff ছাড়া সাথে সাথে reconnect, যা একটি blip-কে নিজের তৈরি DDoS বানায়।
 - WebSocket pod-দের মধ্যে shared state (Redis pub/sub) না থাকার দুর্বলতা sticky session দিয়ে ঢাকা।
 - ধরে নেওয়া cloud load balancer default-এ WebSocket পাস করে; অনেকেরই স্পষ্ট protocol বা idle-timeout config লাগে।
-- close code 1006 application code-এ খোঁজা — 1006 মানে close frame ছাড়াই connection মরেছে, যা প্রায় সবসময় infrastructure।
+- close code 1006 application code-এ খোঁজা - 1006 মানে close frame ছাড়াই connection মরেছে, যা প্রায় সবসময় infrastructure।
 
 ## Related
 

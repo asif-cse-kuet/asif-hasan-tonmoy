@@ -1,9 +1,9 @@
-> **Scenario** — A support assistant answers policy questions well but cannot find ticket `INC-48213` or the SKU `BX-9920-BD`. Retrieval is pure dense vector search over 1.2M chunks, and exact identifiers embed into nothing distinctive.
+> **Scenario** - A support assistant answers policy questions well but cannot find ticket `INC-48213` or the SKU `BX-9920-BD`. Retrieval is pure dense vector search over 1.2M chunks, and exact identifiers embed into nothing distinctive.
 
 ## Why it matters
 
 - Dense-only retrieval misses exact tokens: order IDs, error codes, config keys, product SKUs. Those are the queries with the highest intent and the lowest tolerance for a wrong answer.
-- Every retrieval miss becomes a generation failure. The model has no grounding, so it either refuses or invents — and invention costs you trust.
+- Every retrieval miss becomes a generation failure. The model has no grounding, so it either refuses or invents - and invention costs you trust.
 - Recall failures are invisible in production logs. The pipeline returns ten chunks with confident cosine scores of 0.71; nothing signals that the right chunk ranked 340th.
 - Retrieval is the cheapest place to spend latency. Adding 60ms of reranking to save a 4-second wrong generation is a trade you almost always want.
 - Multilingual corpora make it worse. A Bengali query against English documentation lands in a different region of embedding space unless the model was trained cross-lingually.
@@ -45,7 +45,7 @@ flowchart LR
 
 ### 1. Run BM25 and dense retrieval in parallel
 
-Fetch a wide candidate set from each — `k=50` per retriever is a common starting point. Cost is dominated by the ANN scan, and going from k=10 to k=50 typically adds under 5ms on an HNSW index.
+Fetch a wide candidate set from each - `k=50` per retriever is a common starting point. Cost is dominated by the ANN scan, and going from k=10 to k=50 typically adds under 5ms on an HNSW index.
 
 ```python
 lexical = opensearch.search(index="chunks", body={
@@ -63,7 +63,7 @@ RRF ignores raw scores and uses ranks only, which sidesteps the scale-mismatch p
 RRF(d) = Σ over retrievers r of  1 / (k + rank_r(d))
 ```
 
-with `k = 60` as the standard smoothing constant. A document at rank 1 in BM25 and rank 25 in dense scores `1/61 + 1/85 = 0.0281`; a document at rank 8 in both scores `1/68 + 1/68 = 0.0294` and wins — which is the behaviour you want.
+with `k = 60` as the standard smoothing constant. A document at rank 1 in BM25 and rank 25 in dense scores `1/61 + 1/85 = 0.0281`; a document at rank 8 in both scores `1/68 + 1/68 = 0.0294` and wins - which is the behaviour you want.
 
 ```python
 def rrf(rankings: list[list[str]], k: int = 60) -> dict[str, float]:
@@ -143,9 +143,9 @@ flowchart TD
 
 ## Anti-patterns
 
-- Averaging cosine similarity and BM25 scores directly — the scales are unrelated, and BM25 is unbounded.
+- Averaging cosine similarity and BM25 scores directly - the scales are unrelated, and BM25 is unbounded.
 - Raising top-k into the prompt instead of reranking; you pay tokens for noise and dilute attention.
-- Using the reranker as the only retriever — cross-encoders cannot scan 1.2M chunks.
+- Using the reranker as the only retriever - cross-encoders cannot scan 1.2M chunks.
 - Judging retrieval quality by reading generated answers instead of measuring rank positions.
 - Reindexing the lexical store on a different schedule than the vector store, so the two silently diverge.
 

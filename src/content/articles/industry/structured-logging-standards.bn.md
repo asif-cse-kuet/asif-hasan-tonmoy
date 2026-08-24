@@ -1,9 +1,9 @@
-> **Scenario** — রাত 02:40, আপনার দরকার tenant 4471-এর শেষ বিশ মিনিটের প্রতিটি failed payment। Log সব free text: তিনটি service লেখে `Payment failed for user`, একটি লেখে `ERR pay`, আর PHP worker কোনো request identifier ছাড়াই 90 লাইনের stack trace মিশিয়ে দেয়। Incident চলতে থাকে, আপনি দুই pod-এ raw file grep করছেন।
+> **Scenario** - রাত 02:40, আপনার দরকার tenant 4471-এর শেষ বিশ মিনিটের প্রতিটি failed payment। Log সব free text: তিনটি service লেখে `Payment failed for user`, একটি লেখে `ERR pay`, আর PHP worker কোনো request identifier ছাড়াই 90 লাইনের stack trace মিশিয়ে দেয়। Incident চলতে থাকে, আপনি দুই pod-এ raw file grep করছেন।
 
 ## Why it matters
 
 - Unstructured log filter করা যায় না, তাই triage time log volume-এর সাথে বাড়ে, স্থির থাকে না।
-- Structure ছাড়া multi-line stack trace collector-এ ভাঙে — একটি event 90টি অসম্পর্কিত entry হয়ে cost বাড়ায়।
+- Structure ছাড়া multi-line stack trace collector-এ ভাঙে - একটি event 90টি অসম্পর্কিত entry হয়ে cost বাড়ায়।
 - Level অসংগত হলে `ERROR`-এ একসাথে থাকে "customer টাকা হারিয়েছে" আর "retryable DNS blip", ফলে `ERROR`-এ alert করা অসম্ভব।
 - Log-ই একমাত্র signal যা arbitrary context বহন করে; `tenant_id` field না হয়ে বাক্যের ভেতরে থাকলে per-tenant blast-radius প্রশ্নের উত্তর নেই।
 - যেকোনো API-র চেয়ে log দিয়ে secret বেশি leak হয়। Redaction reviewer-এর মাথায় নয়, encoder-এ থাকা উচিত।
@@ -21,7 +21,7 @@
 
 ## How it breaks
 
-প্রতিটি service নিজের logger default বেছে নেয়। একটি `logfmt`, একটি camelCase JSON, একটি `printf`। Log pipeline (Fluent Bit, Vector বা Promtail) যা পারে parse করে, বাকিটা একটি `message` blob-এ ফেলে। Shared schema না থাকায় index-এ শত শত sparsely populated field জমে — label-based storage engine ধীর হয়, per-GB engine দামি হয়। এরপর একজন developer "শুধু debug-এর জন্য" পুরো request object log করে, object-এ থাকে `Authorization` header, আর সেই secret তিন region-এ 30 দিন retained থাকে।
+প্রতিটি service নিজের logger default বেছে নেয়। একটি `logfmt`, একটি camelCase JSON, একটি `printf`। Log pipeline (Fluent Bit, Vector বা Promtail) যা পারে parse করে, বাকিটা একটি `message` blob-এ ফেলে। Shared schema না থাকায় index-এ শত শত sparsely populated field জমে - label-based storage engine ধীর হয়, per-GB engine দামি হয়। এরপর একজন developer "শুধু debug-এর জন্য" পুরো request object log করে, object-এ থাকে `Authorization` header, আর সেই secret তিন region-এ 30 দিন retained থাকে।
 
 ```mermaid
 flowchart TD
@@ -206,7 +206,7 @@ flowchart LR
 ## Anti-patterns
 
 - `message`-এ value interpolate করা, যা message ধরে aggregation নষ্ট করে।
-- প্রতিটি layer-এ caught exception ও rethrow দুটোই log করা — এক failure-এ পাঁচ event।
+- প্রতিটি layer-এ caught exception ও rethrow দুটোই log করা - এক failure-এ পাঁচ event।
 - Log-কে metric হিসেবে ব্যবহার: counter export না করে `ERROR` লাইন গোনা।
 - Production-এ "অস্থায়ীভাবে" `LOG_LEVEL=debug` দিয়ে retention budget উড়িয়ে দেওয়া।
 - Call site-এ application code-এ redaction করা, যা প্রথমবার ভুলে গেলেই fail।

@@ -1,9 +1,9 @@
-> **Scenario** — ৪০ সেকেন্ডের network blip একটি availability zone বিচ্ছিন্ন করে দেয়। ফিরে আসার পর Postgres cluster-এ দুটি node primary হিসেবে write নিয়েছে, আর `orders.id` sequence দুবার একই মান দিয়েছে। দুজন customer এখন order `88214`-এর মালিক।
+> **Scenario** - ৪০ সেকেন্ডের network blip একটি availability zone বিচ্ছিন্ন করে দেয়। ফিরে আসার পর Postgres cluster-এ দুটি node primary হিসেবে write নিয়েছে, আর `orders.id` sequence দুবার একই মান দিয়েছে। দুজন customer এখন order `88214`-এর মালিক।
 
 ## Why it matters
 
 - Split brain-এ outage-টাই সবচেয়ে খারাপ অংশ নয়। Cluster কয়েক মিনিটে ফিরে আসে, কিন্তু diverge হওয়া write reconcile করতে দিনের পর দিন manual কাজ লাগে এবং প্রায়ই data হারায়।
-- দুই দিকই locally healthy দেখায়। প্রতিটি node বলে "আমি primary, আমার replica unreachable" — তাই automated remediation আত্মবিশ্বাসের সাথে অবস্থা আরও খারাপ করে।
+- দুই দিকই locally healthy দেখায়। প্রতিটি node বলে "আমি primary, আমার replica unreachable" - তাই automated remediation আত্মবিশ্বাসের সাথে অবস্থা আরও খারাপ করে।
 - Stale connection ধরে থাকা client হেরে যাওয়া দিকেই write করতে থাকে। 30s TCP keepalive ও 60s DNS TTL হলে নতুন primary নির্বাচিত হওয়ার পরেও পুরো এক মিনিট doomed primary-তে write যায়।
 - Recovery মানে প্রায় সবসময় এক দিকের data ফেলে দেওয়া। Audit trail না থাকলে customer-কে বলতেও পারবেন না কোন order হারিয়েছে।
 
@@ -21,9 +21,9 @@
 
 ## How it breaks
 
-মেকানিজম সবসময় একই আকারের: node "আমার peer মারা গেছে" আর "আমি peer-এ পৌঁছাতে পারছি না" — এই দুটোর পার্থক্য করতে পারে না। Majority-quorum system টিকে যায় কারণ শুধু এক দিকই `⌊N/2⌋ + 1` vote পেতে পারে। কিন্তু voter সংখ্যা জোড় হলে, বা failover controller vote-এর বদলে timeout দেখে promote করলে, সেই guarantee থাকে না।
+মেকানিজম সবসময় একই আকারের: node "আমার peer মারা গেছে" আর "আমি peer-এ পৌঁছাতে পারছি না" - এই দুটোর পার্থক্য করতে পারে না। Majority-quorum system টিকে যায় কারণ শুধু এক দিকই `⌊N/2⌋ + 1` vote পেতে পারে। কিন্তু voter সংখ্যা জোড় হলে, বা failover controller vote-এর বদলে timeout দেখে promote করলে, সেই guarantee থাকে না।
 
-বিপজ্জনক window partition নিজে নয় — বিপদ হলো *পুরোনো primary-র quorum হারানো* আর *পুরোনো primary-র সেটা টের পাওয়া*-র মধ্যবর্তী সময়। 15s lease renewal ও 5s heartbeat interval-এর node নতুন primary নির্বাচিত হওয়ার পরেও ২০s পর্যন্ত write নিতে থাকে। Wall-clock time-এ ভরসা করলে এটা আরও খারাপ: paused VM বা 2-সেকেন্ডের GC stop থেকে ফিরে node ভাবে তার lease এখনও valid।
+বিপজ্জনক window partition নিজে নয় - বিপদ হলো *পুরোনো primary-র quorum হারানো* আর *পুরোনো primary-র সেটা টের পাওয়া*-র মধ্যবর্তী সময়। 15s lease renewal ও 5s heartbeat interval-এর node নতুন primary নির্বাচিত হওয়ার পরেও ২০s পর্যন্ত write নিতে থাকে। Wall-clock time-এ ভরসা করলে এটা আরও খারাপ: paused VM বা 2-সেকেন্ডের GC stop থেকে ফিরে node ভাবে তার lease এখনও valid।
 
 ```mermaid
 sequenceDiagram
@@ -54,7 +54,7 @@ sequenceDiagram
 
 ### 1. Cluster-কে বিজোড় সংখ্যক voter দিন
 
-তিনটি failure domain-এ তিনটি voting member ন্যূনতম। মাত্র দুটি data centre থাকলে তৃতীয় জায়গায় একটি হালকা witness (arbiter বা $5 instance-এ etcd member) যোগ করুন — vote দেয়, data রাখে না।
+তিনটি failure domain-এ তিনটি voting member ন্যূনতম। মাত্র দুটি data centre থাকলে তৃতীয় জায়গায় একটি হালকা witness (arbiter বা $5 instance-এ etcd member) যোগ করুন - vote দেয়, data রাখে না।
 
 ```yaml
 # Patroni: never promote without a real majority.
@@ -63,7 +63,7 @@ bootstrap:
     ttl: 30
     loop_wait: 10
     retry_timeout: 10
-    maximum_lag_on_failover: 1048576   # 1 MiB — refuse to promote a stale replica
+    maximum_lag_on_failover: 1048576   # 1 MiB - refuse to promote a stale replica
     synchronous_mode: true
     synchronous_mode_strict: true      # refuse writes rather than drop to async
 ```
@@ -165,13 +165,13 @@ flowchart TD
 - [ ] Lease expiry monotonic clock ব্যবহার করে; safety margin p99.9 GC pause-এর চেয়ে বড়।
 - [ ] Failover-এর পর divergence checksum স্বয়ংক্রিয়ভাবে চলে ও তার output-এ alert আছে।
 - [ ] Connection pool error-এ primary re-resolve করে, process lifetime ধরে IP pin করে না।
-- [ ] Runbook-এ লেখা আছে কোন timeline জিতবে সেটা কে ঠিক করবে — incident-এর আগেই।
+- [ ] Runbook-এ লেখা আছে কোন timeline জিতবে সেটা কে ঠিক করবে - incident-এর আগেই।
 
 ## Anti-patterns
 
 - "Redundancy-র জন্য" চতুর্থ node যোগ করা, যা 3-node majority-কে 2/2 tie-তে পরিণত করে।
 - Consensus store না দেখে health-check failure-এ promote করা, কারণ "৩০ সেকেন্ড ধরে check fail করছিল"।
-- Divergent WAL-এর diff নেওয়ার আগেই `pg_rewind` দিয়ে পুরোনো primary reattach করা — repair-ই প্রমাণ মুছে দেয়।
+- Divergent WAL-এর diff নেওয়ার আগেই `pg_rewind` দিয়ে পুরোনো primary reattach করা - repair-ই প্রমাণ মুছে দেয়।
 - Event order করতে যেকোনো node-এর `NOW()`-এ ভরসা করা; 200ms clock skew স্বাভাবিক আর 2s বিরল নয়।
 - "দুই দিক merge করে দাও" জাতীয় automatic job বানানো। Business rule ছাড়া divergent write merge করলে বিশ্বাসযোগ্য কিন্তু ভুল data তৈরি হয়।
 

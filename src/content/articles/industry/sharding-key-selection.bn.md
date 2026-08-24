@@ -1,4 +1,4 @@
-> **Scenario** — একটি B2B analytics product সমান distribution-এর জন্য `events` table `event_id` hash দিয়ে shard করেছিল। আঠারো মাস পরে প্রতিটি customer-facing query `tenant_id` ও date দিয়ে filter করে, ফলে প্রতিটি dashboard load ১৬টি shard-এ fan out করে, আর p99 = সবচেয়ে ধীর shard + network। এখন `tenant_id` দিয়ে reshard করা দুই quarter-এর প্রকল্প।
+> **Scenario** - একটি B2B analytics product সমান distribution-এর জন্য `events` table `event_id` hash দিয়ে shard করেছিল। আঠারো মাস পরে প্রতিটি customer-facing query `tenant_id` ও date দিয়ে filter করে, ফলে প্রতিটি dashboard load ১৬টি shard-এ fan out করে, আর p99 = সবচেয়ে ধীর shard + network। এখন `tenant_id` দিয়ে reshard করা দুই quarter-এর প্রকল্প।
 
 ## কেন গুরুত্বপূর্ণ
 
@@ -21,9 +21,9 @@
 
 ## কীভাবে ভাঙে
 
-একটি সিদ্ধান্ত থেকে দুই ধরনের ব্যর্থতা আসে। Key যদি query predicate-এর সাথে সম্পর্কহীন হয়, প্রতিটি read scatter-gather হয়: coordinator সব shard-এ query করে, সবচেয়ে ধীরটির জন্য অপেক্ষা করে, তারপর application memory-তে merge করে। Tail latency জমা হয় — ১৬টি shard-এর প্রতিটির যদি ২০০ ms hiccup-এর সম্ভাবনা ১%, তবে প্রায় ১৫% request অন্তত একটি slow shard পায়।
+একটি সিদ্ধান্ত থেকে দুই ধরনের ব্যর্থতা আসে। Key যদি query predicate-এর সাথে সম্পর্কহীন হয়, প্রতিটি read scatter-gather হয়: coordinator সব shard-এ query করে, সবচেয়ে ধীরটির জন্য অপেক্ষা করে, তারপর application memory-তে merge করে। Tail latency জমা হয় - ১৬টি shard-এর প্রতিটির যদি ২০০ ms hiccup-এর সম্ভাবনা ১%, তবে প্রায় ১৫% request অন্তত একটি slow shard পায়।
 
-Key যদি load-এর সাথে অতিরিক্ত correlate করে — যেমন `tenant_id` যেখানে এক tenant-ই ৪০% traffic, বা timestamp যেখানে সব write "আজ"-এ যায় — উল্টো সমস্যা: এক shard saturate, বাকিরা idle, আর shard যোগ করে capacity বাড়ানো যায় না।
+Key যদি load-এর সাথে অতিরিক্ত correlate করে - যেমন `tenant_id` যেখানে এক tenant-ই ৪০% traffic, বা timestamp যেখানে সব write "আজ"-এ যায় - উল্টো সমস্যা: এক shard saturate, বাকিরা idle, আর shard যোগ করে capacity বাড়ানো যায় না।
 
 ```mermaid
 flowchart TD
@@ -45,7 +45,7 @@ flowchart TD
 1. শুধু *সমান distribution* দেখে key বাছা, প্রধান query predicate উপেক্ষা করে।
 2. Monotonic key (auto-increment id, `created_at`) বাছা, ফলে সব write সর্বশেষ shard-এ যায়।
 3. কম cardinality-র key (`country`, `status`, `plan`) যা হাতেগোনা কয়েকটি মানের বাইরে ছড়াতে পারে না।
-4. Mutable key — এমন value দিয়ে shard করা যা পরে user বদলাতে পারে, ফলে cross-shard row move।
+4. Mutable key - এমন value দিয়ে shard করা যা পরে user বদলাতে পারে, ফলে cross-shard row move।
 5. Launch-এর আগে per-tenant size analysis নেই, তাই whale tenant কখনও model করা হয়নি।
 6. Modulo-ভিত্তিক routing (`hash % 16`), যেখানে shard count বদলালেই পুরো rebalance লাগে।
 
@@ -67,17 +67,17 @@ ORDER BY total_exec_time DESC
 LIMIT 20;
 ```
 
-মোট সময়ের ৮৫% যদি `tenant_id` filter-করা query-তে যায়, key হলো `tenant_id` — এমনকি যদি তার মানে হয় অসম shard, যা আলাদাভাবে সামলাতে হবে।
+মোট সময়ের ৮৫% যদি `tenant_id` filter-করা query-তে যায়, key হলো `tenant_id` - এমনকি যদি তার মানে হয় অসম shard, যা আলাদাভাবে সামলাতে হবে।
 
 ### ২. Composite key ভালো: locality + spread
 
-Tenant দিয়ে shard করুন, তারপর tenant-এর *ভেতরে* range বা hash — যাতে single-tenant query এক shard-এ থাকে আর whale tenant তবুও ভাগ করা যায়।
+Tenant দিয়ে shard করুন, তারপর tenant-এর *ভেতরে* range বা hash - যাতে single-tenant query এক shard-এ থাকে আর whale tenant তবুও ভাগ করা যায়।
 
 ```sql
 -- প্রতিটি row-এ routing value, insert-এ একবার হিসাব
 ALTER TABLE events ADD COLUMN shard_key text;
 
--- tenant:bucket — ছোট tenant এক bucket, whale বহু bucket
+-- tenant:bucket - ছোট tenant এক bucket, whale বহু bucket
 UPDATE events
 SET shard_key = tenant_id || ':' ||
                 (abs(hashtext(event_id::text)) % CASE
@@ -138,7 +138,7 @@ WHERE shard_key >= 'tenant_0088:0' AND shard_key < 'tenant_0089:0';
 
 ### ৫. অল্প কিছু global table রাখুন
 
-Reference data (plan, feature flag, currency rate) shard-এর মধ্যে join না করে প্রতিটি shard-এ replicate করুন। যা সত্যিই global — tenant directory, auth — আলাদা unsharded store-এ থাকুক, নিজের scaling গল্প নিয়ে।
+Reference data (plan, feature flag, currency rate) shard-এর মধ্যে join না করে প্রতিটি shard-এ replicate করুন। যা সত্যিই global - tenant directory, auth - আলাদা unsharded store-এ থাকুক, নিজের scaling গল্প নিয়ে।
 
 ### ৬. Whale-দের প্রতিবেশীর ক্ষতি করার আগেই আলাদা করুন
 
@@ -165,7 +165,7 @@ flowchart LR
 | Tenant id-তে hash | Single-shard tenant query | Whale tenant hot shard বানায় | B2B SaaS, per-tenant workload |
 | Time-এ range | সস্তা retention (পুরনো partition drop) | সব write নতুন partition-এ | Time-bounded read সহ append-only telemetry |
 | Composite `tenant:bucket` | Locality + whale split | Routing logic ও directory maintain | মিশ্র tenant size |
-| এখনই shard নয় — partition | Reversible, এক operational surface | এক machine-এর write capacity-তে সীমিত | ~২ TB বা ~২০ হাজার write/s-এর নিচে |
+| এখনই shard নয় - partition | Reversible, এক operational surface | এক machine-এর write capacity-তে সীমিত | ~২ TB বা ~২০ হাজার write/s-এর নিচে |
 
 ## যাচাই checklist
 

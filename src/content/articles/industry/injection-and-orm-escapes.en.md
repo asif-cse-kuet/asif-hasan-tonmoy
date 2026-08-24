@@ -1,4 +1,4 @@
-> **Scenario** — A reporting screen lets users sort by any column and filter with a saved query. It uses the ORM everywhere, so the team marked injection as "not applicable" in the threat model. The sort parameter is concatenated into `orderByRaw()`, and a scanner finds it in eleven minutes.
+> **Scenario** - A reporting screen lets users sort by any column and filter with a saved query. It uses the ORM everywhere, so the team marked injection as "not applicable" in the threat model. The sort parameter is concatenated into `orderByRaw()`, and a scanner finds it in eleven minutes.
 
 ## Why it matters
 
@@ -20,7 +20,7 @@
 
 ## How it breaks
 
-Prepared statements separate code from data — the placeholder is bound, so the driver never parses user input as SQL. Every raw helper reverses that: the string is compiled as SQL first, then placeholders bind. Identifiers make it worse, because `ORDER BY ?` is not valid SQL, so a developer concatenates. Once a fragment is concatenated, the parser accepts subqueries, unions, and comments in a position where the ORM offers no protection.
+Prepared statements separate code from data - the placeholder is bound, so the driver never parses user input as SQL. Every raw helper reverses that: the string is compiled as SQL first, then placeholders bind. Identifiers make it worse, because `ORDER BY ?` is not valid SQL, so a developer concatenates. Once a fragment is concatenated, the parser accepts subqueries, unions, and comments in a position where the ORM offers no protection.
 
 ```mermaid
 flowchart TD
@@ -56,7 +56,7 @@ $rows = DB::select('SELECT id FROM users WHERE email = ?', [$request->email]);
 Invoice::whereRaw('amount_cents > :floor', ['floor' => $request->integer('floor')])->get();
 ```
 
-### 2. Allowlist identifiers — never bind them
+### 2. Allowlist identifiers - never bind them
 
 ```php
 final class ReportSort
@@ -123,7 +123,7 @@ Least privilege turns "read every table" into "read three tables". Combined with
 'debug' => (bool) env('APP_DEBUG', false),
 ```
 
-Log the SQLSTATE and statement to your log pipeline, return a generic 500 to the client, and alert on the exception type — a spike in SQL syntax errors is an active probe.
+Log the SQLSTATE and statement to your log pipeline, return a generic 500 to the client, and alert on the exception type - a spike in SQL syntax errors is an active probe.
 
 ## Target design
 

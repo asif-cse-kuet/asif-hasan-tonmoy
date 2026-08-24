@@ -1,10 +1,10 @@
-> **Scenario** — ৪০ field-এর একটা onboarding form client-এ হাতে লেখা `if` দিয়ে আর server-এ Laravel rule দিয়ে validate করে। এক release শুধু server-side-এ `vat_number` বাধ্যতামূলক করে। Client submit করতে দেয়, API এমন একটা field নিয়ে 422 ফেরায় যা form render-ই করে না, আর submit button চিরকাল ঘুরতে থাকে। কেউ দুই ঘটনা মেলানোর আগেই ওই step-এ conversion ১৮% পড়ে যায়।
+> **Scenario** - ৪০ field-এর একটা onboarding form client-এ হাতে লেখা `if` দিয়ে আর server-এ Laravel rule দিয়ে validate করে। এক release শুধু server-side-এ `vat_number` বাধ্যতামূলক করে। Client submit করতে দেয়, API এমন একটা field নিয়ে 422 ফেরায় যা form render-ই করে না, আর submit button চিরকাল ঘুরতে থাকে। কেউ দুই ঘটনা মেলানোর আগেই ওই step-এ conversion ১৮% পড়ে যায়।
 
 ## Why it matters
 
 - Duplicate validation logic drift করে। দুইবার লেখা প্রতিটি rule একদিন অমিল হবেই, আর সেই অমিল সবসময় user-এর জন্য dead-end হয়ে দেখা দেয়।
 - Unmapped server error অদৃশ্য। 422 body যদি এমন field-এর নাম বলে যা form দেখাতে পারে না, user কিছুই করার মতো পায় না এবং ছেড়ে দেয়।
-- `aria-describedby` দিয়ে input-এর সাথে যুক্ত না করা validation message screen reader user-এর নাগালের বাইরে — এটা WCAG 3.3.1 ব্যর্থতা, আর সরকারি সেবায় আইনি ঝুঁকিও।
+- `aria-describedby` দিয়ে input-এর সাথে যুক্ত না করা validation message screen reader user-এর নাগালের বাইরে - এটা WCAG 3.3.1 ব্যর্থতা, আর সরকারি সেবায় আইনি ঝুঁকিও।
 - Async rule (uniqueness check) race করে। দ্রুত টাইপ করলে শেষে আসা stale response একটা বৈধ email-কে "taken" চিহ্নিত করে রাখতে পারে।
 
 ## Symptoms
@@ -20,7 +20,7 @@
 
 ## How it breaks
 
-দুইটা স্বাধীন rule set মানে দুইটা সত্যের উৎস। Server চূড়ান্ত কিন্তু কেবল submit-এর সময় কথা বলে; client দ্রুত কিন্তু ভুল হতে পারে। Shared schema ছাড়া client-এর কাজ নীরবে "invalid submit ঠেকানো" থেকে "server কী চায় অনুমান করা"-তে নেমে আসে। Failure mode crash নয় — এমন একটা form যা পূরণই করা যায় না।
+দুইটা স্বাধীন rule set মানে দুইটা সত্যের উৎস। Server চূড়ান্ত কিন্তু কেবল submit-এর সময় কথা বলে; client দ্রুত কিন্তু ভুল হতে পারে। Shared schema ছাড়া client-এর কাজ নীরবে "invalid submit ঠেকানো" থেকে "server কী চায় অনুমান করা"-তে নেমে আসে। Failure mode crash নয় - এমন একটা form যা পূরণই করা যায় না।
 
 ```mermaid
 flowchart TD
@@ -38,7 +38,7 @@ flowchart TD
 1. দুই ভাষায় দুইবার লেখা rule, মাঝখানে কোনো generated contract নেই।
 2. 422 response body-কে form field-এ map করার generic handler নেই।
 3. Error input-এর পাশে আলগা text হিসেবে render হয়, `aria-describedby` দিয়ে যুক্ত নয়।
-4. Async validator প্রতি keystroke-এ চলে — debounce, cancellation বা sequencing ছাড়া।
+4. Async validator প্রতি keystroke-এ চলে - debounce, cancellation বা sequencing ছাড়া।
 5. প্রতিটি input-এ পুরো form validate হয়, তাই বড় form-এ প্রতি অক্ষরে ৪০টা field re-validate।
 6. প্রথম invalid field-এ focus সরানো হয় না, তাই নিচের error চোখেই পড়ে না।
 

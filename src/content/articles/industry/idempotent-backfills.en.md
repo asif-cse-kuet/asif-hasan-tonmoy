@@ -1,4 +1,4 @@
-> **Scenario** — A currency conversion bug corrupted 90 days of the `daily_revenue` table. The backfill DAG is triggered for all 90 partitions, three tasks fail on a warehouse timeout, someone clears and re-runs them, and now 11 days show revenue roughly double the truth because the task appended instead of replacing.
+> **Scenario** - A currency conversion bug corrupted 90 days of the `daily_revenue` table. The backfill DAG is triggered for all 90 partitions, three tasks fail on a warehouse timeout, someone clears and re-runs them, and now 11 days show revenue roughly double the truth because the task appended instead of replacing.
 
 ## Why it matters
 
@@ -41,7 +41,7 @@ flowchart TD
 
 1. Write path uses `INSERT` with no natural key, no primary key, and no delete-before-insert.
 2. Partition boundaries in the delete predicate differ from the boundaries the read query uses, so a retry deletes less than it rewrites.
-3. Task retries assumed to be safe because "the transaction will roll back" — but the job commits in chunks.
+3. Task retries assumed to be safe because "the transaction will roll back" - but the job commits in chunks.
 4. Non-deterministic transformation: the task uses `NOW()`, `RANDOM()`, or an unpinned dimension table, so re-running produces different values.
 5. Concurrency without partition isolation: several tasks writing the same target rows.
 6. No completion marker, so the system cannot distinguish "partition never ran" from "partition ran and failed after committing".
@@ -180,7 +180,7 @@ CREATE TABLE IF NOT EXISTS meta.partition_runs (
 );
 ```
 
-The ledger answers "which partitions have been rebuilt with the fixed code?" without inspecting the data, and gives you a row-count history per attempt — the fastest way to spot a doubling.
+The ledger answers "which partitions have been rebuilt with the fixed code?" without inspecting the data, and gives you a row-count history per attempt - the fastest way to spot a doubling.
 
 ### 6. Throttle and stage the backfill
 
@@ -218,12 +218,12 @@ stateDiagram-v2
 - [ ] Run 8 partitions in parallel; confirm no task's rows were deleted by another.
 - [ ] Re-run a partition from 2024 today; confirm dimension values match the historical mapping, not the current one.
 - [ ] `SELECT partition_key, attempt, row_count FROM meta.partition_runs ORDER BY 1, 2` shows stable row counts across attempts.
-- [ ] Grep the transform for `NOW()`, `CURRENT_DATE`, `RANDOM()`, and unpinned `LIMIT` — each occurrence is justified or removed.
+- [ ] Grep the transform for `NOW()`, `CURRENT_DATE`, `RANDOM()`, and unpinned `LIMIT` - each occurrence is justified or removed.
 - [ ] Backfill of 90 partitions completes without pushing interactive query p95 above its SLO.
 
 ## Anti-patterns
 
-- `TRUNCATE` before backfill "to be safe" — it deletes partitions outside the repair window too.
+- `TRUNCATE` before backfill "to be safe" - it deletes partitions outside the repair window too.
 - Using `INSERT ... ON CONFLICT DO NOTHING` as the idempotency mechanism when the conflict target is a surrogate key that regenerates on every run.
 - Wrapping the whole 90-day backfill in one transaction; the first failure at hour six loses everything.
 - Setting `retries: 0` to avoid duplicates instead of making the task idempotent. Now transient warehouse errors need a human.

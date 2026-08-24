@@ -1,4 +1,4 @@
-> **Scenario** — রুটিন deploy-এর জন্য search service restart হলো। ১২,০০০ client connection refused পেল, সবাই ঠিক ১s, তারপর ২s, তারপর ৪s-এ retry করল। Service উঠতেই ১২,০০০ synchronised request এসে আবার ফেলে দিল, আর এই চক্র এগারো মিনিট চলল। Deploy লেগেছিল ২০ সেকেন্ড।
+> **Scenario** - রুটিন deploy-এর জন্য search service restart হলো। ১২,০০০ client connection refused পেল, সবাই ঠিক ১s, তারপর ২s, তারপর ৪s-এ retry করল। Service উঠতেই ১২,০০০ synchronised request এসে আবার ফেলে দিল, আর এই চক্র এগারো মিনিট চলল। Deploy লেগেছিল ২০ সেকেন্ড।
 
 ## Why it matters
 
@@ -16,13 +16,13 @@
 | Amplification | degradation-এ upstream RPS downstream RPS-এর ৩–৪ গুণ |
 | Slow recovery | আলাদাভাবে service সুস্থ, traffic ফেরানোমাত্র পড়ে যায় |
 | Duplicate side effect | একই order ID-তে দুটি confirmation email |
-| Retried 4xx | outage-এ `400`/`422` count বাড়ে — এগুলো কখনো retry হওয়া উচিত নয় |
+| Retried 4xx | outage-এ `400`/`422` count বাড়ে - এগুলো কখনো retry হওয়া উচিত নয় |
 
 ## How it breaks
 
-সরল loop হলো `sleep(2 ** attempt)`। ১২,০০০ client একই মুহূর্তে fail করলে সবাই একই মুহূর্তে জাগে। Backoff *সময়ে* load ছড়ায়, কিন্তু *client জুড়ে* নয় — তাই এক spike-এর বদলে আপনি চারটি তীক্ষ্ণ spike পান।
+সরল loop হলো `sleep(2 ** attempt)`। ১২,০০০ client একই মুহূর্তে fail করলে সবাই একই মুহূর্তে জাগে। Backoff *সময়ে* load ছড়ায়, কিন্তু *client জুড়ে* নয় - তাই এক spike-এর বদলে আপনি চারটি তীক্ষ্ণ spike পান।
 
-দ্বিতীয় failure হলো error classification। যে loop সব exception ধরে সে `422 Unprocessable Entity` অনন্তকাল retry করবে — payload অবৈধ, ৪৭তম attempt-এও অবৈধ থাকবে। অন্যদিকে `Retry-After: 30` সহ আসল `503 Service Unavailable` ১s পরেই retry হয়, কারণ header কেউ পড়েনি।
+দ্বিতীয় failure হলো error classification। যে loop সব exception ধরে সে `422 Unprocessable Entity` অনন্তকাল retry করবে - payload অবৈধ, ৪৭তম attempt-এও অবৈধ থাকবে। অন্যদিকে `Retry-After: 30` সহ আসল `503 Service Unavailable` ১s পরেই retry হয়, কারণ header কেউ পড়েনি।
 
 ```mermaid
 flowchart TD
@@ -40,7 +40,7 @@ flowchart TD
 1. Jitter ছাড়া backoff স্বাধীন client-দের sync করে ফেলে।
 2. স্থায়ী 4xx সহ সব error-কে retryable ধরা হয়।
 3. `429`/`503`-এর `Retry-After` উপেক্ষা করা হয়।
-4. Client, SDK, gateway ও mesh — একাধিক layer-এ retry হয় এবং গুণ হয়।
+4. Client, SDK, gateway ও mesh - একাধিক layer-এ retry হয় এবং গুণ হয়।
 5. Retry budget নেই, তাই retry অসীম capacity খেতে পারে।
 6. Idempotency key ছাড়াই non-idempotent write retry হয়।
 7. Retry attempt caller-এর timeout budget-এ গোনা হয় না।
@@ -134,7 +134,7 @@ export async function requestWithRetry(
 
 ### 4. শুধু count নয়, budget দিয়ে cap করুন
 
-Retry budget সফল request-এর *অনুপাত* হিসেবে retry সীমিত করে — সাধারণত ১০%। অনুপাত ছাড়িয়ে গেলে retry drop হয় যতক্ষণ না অনুপাত ফেরে। এটাই storm থামায়, কারণ count-based cap তখনো প্রতিটি client-কে তিনটি বাড়তি request দেয়।
+Retry budget সফল request-এর *অনুপাত* হিসেবে retry সীমিত করে - সাধারণত ১০%। অনুপাত ছাড়িয়ে গেলে retry drop হয় যতক্ষণ না অনুপাত ফেরে। এটাই storm থামায়, কারণ count-based cap তখনো প্রতিটি client-কে তিনটি বাড়তি request দেয়।
 
 ```php
 <?php
@@ -170,7 +170,7 @@ class RetryBudget
 
 ### 5. একটিমাত্র layer-এ retry করুন
 
-Caller-এর সবচেয়ে কাছের যে layer-এ যথেষ্ট context আছে সেটি বাছুন — সাধারণত service client। nginx (non-idempotent route-এ `proxy_next_upstream off`), mesh ও vendor SDK-তে retry বন্ধ করুন, নয়তো দ্বিতীয় layer কেন আছে তা স্পষ্ট লিখে রাখুন।
+Caller-এর সবচেয়ে কাছের যে layer-এ যথেষ্ট context আছে সেটি বাছুন - সাধারণত service client। nginx (non-idempotent route-এ `proxy_next_upstream off`), mesh ও vendor SDK-তে retry বন্ধ করুন, নয়তো দ্বিতীয় layer কেন আছে তা স্পষ্ট লিখে রাখুন।
 
 ## Target design
 
@@ -200,7 +200,7 @@ flowchart LR
 ## Verification checklist
 
 - [ ] ৫,০০০ rps load-এ upstream restart করে recovery curve ramp কিনা (দেয়াল নয়) দেখুন।
-- [ ] Integration test-এ `422` ঠিক একবার চেষ্টা হয় — assert করুন।
+- [ ] Integration test-এ `422` ঠিক একবার চেষ্টা হয় - assert করুন।
 - [ ] Stub থেকে `Retry-After: 30` সহ `429` ফেরত দিয়ে client ৩০s অপেক্ষা করে কিনা যাচাই করুন।
 - [ ] Chaos test-এ প্রতিটি layer-এর retry গুনুন; মোট এক layer-এর সমান হতে হবে।
 - [ ] সব attempt caller-এর timeout budget-এর ভেতরে থাকে কিনা নিশ্চিত করুন।
@@ -208,7 +208,7 @@ flowchart LR
 
 ## Anti-patterns
 
-- Background worker-এ `while (true) { try ... catch { sleep(1) } }` — ceiling ছাড়া অনন্ত storm।
+- Background worker-এ `while (true) { try ... catch { sleep(1) } }` - ceiling ছাড়া অনন্ত storm।
 - "মাঝে মাঝে দ্বিতীয়বার কাজ করে" ভেবে `400` retry করা (করে না; অন্য কিছু বদলেছিল)।
 - "resilient" হতে `maxAttempts` ১০ করা, যা মূলত ১০x amplification নিশ্চিত করে।
 - শুধু প্রথম sleep-এ jitter যোগ করা।

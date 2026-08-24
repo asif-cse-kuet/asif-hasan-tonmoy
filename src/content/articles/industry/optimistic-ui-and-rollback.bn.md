@@ -1,11 +1,11 @@
-> **Scenario** — একটা kanban board card move optimistically apply করে। User card 42 "Done"-এ টেনে নিয়ে সাথে সাথেই সেটার নাম বদলায়। Move request 409 দিয়ে fail করে, rollback move-এর আগের snapshot ফিরিয়ে আনে — দুই সেকেন্ড পরে সফল হওয়া rename মুছে যায়। User আবার টাইপ করে, আর support-এ লেখা হয় "app হঠাৎ edit হারায়"।
+> **Scenario** - একটা kanban board card move optimistically apply করে। User card 42 "Done"-এ টেনে নিয়ে সাথে সাথেই সেটার নাম বদলায়। Move request 409 দিয়ে fail করে, rollback move-এর আগের snapshot ফিরিয়ে আনে - দুই সেকেন্ড পরে সফল হওয়া rename মুছে যায়। User আবার টাইপ করে, আর support-এ লেখা হয় "app হঠাৎ edit হারায়"।
 
 ## Why it matters
 
 - Optimistic update প্রতি interaction-এ ২০০–৮০০ ms perceived latency সরায়। এক session-এ ডজনখানেক drag হলে এটাই পছন্দের tool আর সহ্য করা tool-এর পার্থক্য।
 - সরল rollback পুরো object-এর snapshot ফেরায়, ফলে মাঝখানে করা যেকোনো পরিবর্তন নীরবে ধ্বংস হয়। ধীর হওয়ার চেয়ে data loss খারাপ।
 - Idempotency key ছাড়া failed mutation retry করলে duplicate হতে পারে: প্রথম request আসলে সফল ছিল, response হারিয়েছে, এখন দুইটা order।
-- ভুলটা ধরা কঠিন। Alert করার মতো server error নেই — server ঠিকই আছে। শুধু user টের পায়।
+- ভুলটা ধরা কঠিন। Alert করার মতো server error নেই - server ঠিকই আছে। শুধু user টের পায়।
 
 ## Symptoms
 
@@ -47,7 +47,7 @@ sequenceDiagram
 3. Idempotency key ছাড়া retry, network flake-এ duplicate তৈরি করে।
 4. Server-version check নেই, তাই stale client নতুন server value overwrite করে।
 5. Pending state entity-র উপর রাখা, তাই clear করতে ভুলে যাওয়া failure path UI আটকে দেয়।
-6. সব error একরকম ধরা — 409 conflict-এ merge, 500-এ retry, 422-তে form error দরকার।
+6. সব error একরকম ধরা - 409 conflict-এ merge, 500-এ retry, 422-তে form error দরকার।
 
 ## How to solve it
 
@@ -168,7 +168,7 @@ stateDiagram-v2
 
 ## Verification checklist
 
-- [ ] Item সরান, rename করুন, তারপর move fail করান — rename টিকে থাকে।
+- [ ] Item সরান, rename করুন, তারপর move fail করান - rename টিকে থাকে।
 - [ ] Network throttle করে submit-এ double-click; ঠিক একটা record তৈরি হয়।
 - [ ] curl-এ একই `Idempotency-Key` replay করুন; server মূল response ফেরত দেয়।
 - [ ] 412 simulate করুন; UI conflict message দেখায় ও server value নেয়।

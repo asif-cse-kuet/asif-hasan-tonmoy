@@ -1,8 +1,8 @@
-> **Scenario** — একটি wallet service ১০০ balance পড়ে, ৮০ বিয়োগ করে, ২০ লেখে। দুটি concurrent withdrawal দুটোই ১০০ পড়ে, দুটোই ২০ লেখে — ফলে ১০০ টাকার account থেকে ১৬০ বেরিয়ে যায়। Code review-তে সঠিক ছিল, transaction ছিল, আর প্রতিটি single-threaded test পাশ করেছিল।
+> **Scenario** - একটি wallet service ১০০ balance পড়ে, ৮০ বিয়োগ করে, ২০ লেখে। দুটি concurrent withdrawal দুটোই ১০০ পড়ে, দুটোই ২০ লেখে - ফলে ১০০ টাকার account থেকে ১৬০ বেরিয়ে যায়। Code review-তে সঠিক ছিল, transaction ছিল, আর প্রতিটি single-threaded test পাশ করেছিল।
 
 ## কেন গুরুত্বপূর্ণ
 
-- Isolation bug নীরব ও স্থায়ী data corruption বানায় — কোনো error log হয় না, alert বাজে না, সপ্তাহ পরে reconciliation-এ ধরা পড়ে।
+- Isolation bug নীরব ও স্থায়ী data corruption বানায় - কোনো error log হয় না, alert বাজে না, সপ্তাহ পরে reconciliation-এ ধরা পড়ে।
 - এগুলো probabilistic: reproduce করতে একই কয়েক মিলিসেকেন্ডে দুটি request দরকার, তাই code review, CI ও staging পার হয়ে যায়।
 - Default isolation level engine-ভেদে আলাদা (MySQL/InnoDB: `REPEATABLE READ`; PostgreSQL: `READ COMMITTED`), তাই একই code ভিন্ন environment-এ ভিন্ন আচরণ করে।
 - "transaction-এ মুড়ে দাও" সবচেয়ে সাধারণ ভুল বোঝাবুঝি: transaction atomicity দেয়, কিন্তু concurrent reader কী দেখবে সেটা ঠিক করে isolation level।
@@ -49,7 +49,7 @@ sequenceDiagram
 2. Default level-এ কেবল atomicity নিশ্চিত হলেও isolation-এর জন্য `BEGIN`/`COMMIT`-এর উপর ভরসা।
 3. Database constraint নয়, `SELECT` check দিয়ে uniqueness enforce করা।
 4. একাধিক row জুড়ে constraint (aggregate, "অন্তত একটি", quota) read দিয়ে যাচাই করা, যা কোনো row lock রক্ষা করে না।
-5. MySQL ও PostgreSQL-এর `REPEATABLE READ` একই ধরে নেওয়া — Postgres সংঘাত ধরে abort করে, MySQL এই pattern-এ করে না।
+5. MySQL ও PostgreSQL-এর `REPEATABLE READ` একই ধরে নেওয়া - Postgres সংঘাত ধরে abort করে, MySQL এই pattern-এ করে না।
 6. Serialisation failure-এর পর non-idempotent transaction আবার চালানো retry logic।
 7. User-এর ভাবার সময় জুড়ে দীর্ঘ transaction, যা প্রতিটি race window বড় করে।
 
@@ -94,7 +94,7 @@ COMMIT;
 
 যে engine পার্থক্য গুরুত্বপূর্ণ:
 
-- `FOR UPDATE NOWAIT` queue না করে সাথে সাথে fail করে (দুই engine-এ) — user-facing path-এ ভালো।
+- `FOR UPDATE NOWAIT` queue না করে সাথে সাথে fail করে (দুই engine-এ) - user-facing path-এ ভালো।
 - `FOR UPDATE SKIP LOCKED` locked row এড়িয়ে যায়, এভাবেই queue table বানানো হয়।
 - Non-indexed predicate-এ MySQL-এর `FOR UPDATE` gap lock দিয়ে অনেক row lock করে ফেলে; PostgreSQL কেবল মিলে যাওয়া tuple lock করে।
 - Deadlock এড়াতে সব সময় একই ক্রমে (ascending primary key) row lock করুন।
@@ -113,7 +113,7 @@ RETURNING id;
 
 Unique-violation error ধরে 409-এ অনুবাদ করুন। Constraint-ই একমাত্র check যাকে race করা যায় না।
 
-### ৪. multi-row invariant-এ SERIALIZABLE — retry সহ
+### ৪. multi-row invariant-এ SERIALIZABLE - retry সহ
 
 Write skew row lock দিয়ে ঠিক হয় না, কারণ সংঘাতপূর্ণ row আলাদা। Postgres `SERIALIZABLE` (SSI) সংঘাত ধরে একটি transaction SQLSTATE `40001` দিয়ে abort করে।
 
@@ -132,11 +132,11 @@ async function withSerializableRetry<T>(fn: (tx: Tx) => Promise<T>): Promise<T> 
 }
 ```
 
-দুটি শর্ত: transaction body আবার চালানো নিরাপদ হতে হবে (database-এর বাইরে side effect নেই), আর app-এর প্রতিটি `SERIALIZABLE` transaction-এ এই wrapper লাগবে। MySQL-এর `SERIALIZABLE` ভিন্নভাবে কাজ করে — সাধারণ `SELECT`-কে `SELECT ... LOCK IN SHARE MODE` বানায়, যা abort নয় block করে, আর hot path-এর জন্য সাধারণত অতি স্থূল।
+দুটি শর্ত: transaction body আবার চালানো নিরাপদ হতে হবে (database-এর বাইরে side effect নেই), আর app-এর প্রতিটি `SERIALIZABLE` transaction-এ এই wrapper লাগবে। MySQL-এর `SERIALIZABLE` ভিন্নভাবে কাজ করে - সাধারণ `SELECT`-কে `SELECT ... LOCK IN SHARE MODE` বানায়, যা abort নয় block করে, আর hot path-এর জন্য সাধারণত অতি স্থূল।
 
 ### ৫. invariant-কে data বানান যাতে constraint পাহারা দিতে পারে
 
-"অন্তত একজন engineer shift-এ" — এর বদলে counter row রাখুন ও `CHECK` দিন:
+"অন্তত একজন engineer shift-এ" - এর বদলে counter row রাখুন ও `CHECK` দিন:
 
 ```sql
 ALTER TABLE shift_summary ADD CONSTRAINT shift_min_staff CHECK (on_call_count >= 1);

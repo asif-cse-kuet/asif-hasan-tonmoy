@@ -1,11 +1,11 @@
-> **Scenario** — একটি scraper `/api/products/{id}` ধরে 1 থেকে 5,000,000 পর্যন্ত হাঁটে। এর প্রায় 4.6 মিলিয়ন ID-র অস্তিত্ব নেই। প্রত্যেকটি cache miss করে — কারণ "not found" কখনো cache হয়নি — এবং Postgres-এ যায়। ছয় ঘণ্টা database CPU 95%, অথচ cache hit ratio dashboard নির্লিপ্তভাবে 98% দেখায়।
+> **Scenario** - একটি scraper `/api/products/{id}` ধরে 1 থেকে 5,000,000 পর্যন্ত হাঁটে। এর প্রায় 4.6 মিলিয়ন ID-র অস্তিত্ব নেই। প্রত্যেকটি cache miss করে - কারণ "not found" কখনো cache হয়নি - এবং Postgres-এ যায়। ছয় ঘণ্টা database CPU 95%, অথচ cache hit ratio dashboard নির্লিপ্তভাবে 98% দেখায়।
 
 ## Why it matters
 
 - যে miss কখনো cache হয় না, তা ইন্টারনেট থেকে সরাসরি database-এ একটি uncapped channel। আক্রমণকারী ঠিক যে traffic pattern বাছবে, cache তার জন্য শূন্য সুরক্ষা দেয়।
 - Hit-ratio dashboard এটা লুকায়। শুধু বিদ্যমান entity-র lookup গোনা হয়, তাই metric সুস্থ দেখায় আর origin পুড়তে থাকে।
 - বৈধ traffic-ও এটা ঘটায়: search engine-এ এখনো link থাকা মুছে ফেলা product, expired share link, user দেখতে পায় না এমন resource-এর permission check।
-- Not-found lookup প্রায়ই *সবচেয়ে* ব্যয়বহুল query — index shortcut নেই, পুরো predicate evaluate হয়, কখনো scan-এর পরেও join শূন্য ফেরায়।
+- Not-found lookup প্রায়ই *সবচেয়ে* ব্যয়বহুল query - index shortcut নেই, পুরো predicate evaluate হয়, কখনো scan-এর পরেও join শূন্য ফেরায়।
 - আর negative cache করার পর TTL বেশি হলে নতুন তৈরি record ওই পুরো window অদৃশ্য থাকে, যা user-এর কাছে "save button কাজ করছে না"।
 
 ## Symptoms
@@ -15,13 +15,13 @@
 | Cache hit ratio | দেখতে ঠিক (95%+), অথচ database QPS আলাদাভাবে বাড়ছে |
 | Query log | শূন্য row ফেরানো query-র বিপুল পরিমাণ |
 | ID distribution | বাস্তব range-এর অনেক বাইরে sequential বা random ID |
-| Redis key count | সমতল, অথচ origin load বাড়ছে — কিছুই লেখা হচ্ছে না |
+| Redis key count | সমতল, অথচ origin load বাড়ছে - কিছুই লেখা হচ্ছে না |
 | Response codes | app tier-এ 404-এর বড় অংশ |
 | Latency | 404 response 200 response-এর চেয়ে ধীর |
 
 ## How it breaks
 
-সাধারণ `remember`-ধাঁচের helper কেবল তখনই cache-এ লেখে যখন loader একটি value ফেরায়। `null`, `false`, খালি array এবং ছোড়া `ModelNotFoundException` — সবই write এড়িয়ে যায়। কোড দেখতে সঠিক (error cache করা তো উচিত নয়), কিন্তু ফল হলো পুরো not-found space স্থায়ীভাবে uncacheable।
+সাধারণ `remember`-ধাঁচের helper কেবল তখনই cache-এ লেখে যখন loader একটি value ফেরায়। `null`, `false`, খালি array এবং ছোড়া `ModelNotFoundException` - সবই write এড়িয়ে যায়। কোড দেখতে সঠিক (error cache করা তো উচিত নয়), কিন্তু ফল হলো পুরো not-found space স্থায়ীভাবে uncacheable।
 
 আক্রমণকারীর আপনার ID space জানার দরকার নেই। যেকোনো enumeration বেশিরভাগ miss তৈরি করে, আর miss-ই ব্যয়বহুল path। tenant-scoped lookup-এও একই আকার: অন্য tenant-এর বৈধ ID এই tenant-এর কাছে "not found" এবং সমানভাবে uncacheable।
 
@@ -39,7 +39,7 @@ flowchart LR
 
 1. cache-population branch truthy result-এর উপর শর্তাধীন।
 2. control flow-এ exception (`findOrFail`) ব্যবহার করায় cache write পুরোপুরি বাদ পড়ে।
-3. cache-এ "আমরা দেখিনি" আর "দেখেছি, নেই" — এ দুইয়ের কোনো পার্থক্য নেই।
+3. cache-এ "আমরা দেখিনি" আর "দেখেছি, নেই" - এ দুইয়ের কোনো পার্থক্য নেই।
 4. ব্যয়বহুল lookup-এর সামনে কোনো সস্তা membership pre-filter নেই।
 5. 404 path-এ rate limiting নেই, তাই caller-এর জন্য enumeration বিনামূল্যে।
 6. একবার নতুন record এক ঘণ্টা অদৃশ্য থাকার incident-এর পর negative cache করতে ভয়।
@@ -161,7 +161,7 @@ flowchart TD
 
 | Option | Pros | Cons | Choose when |
 |--------|------|------|-------------|
-| Sentinel value with short TTL | সহজ, নির্ভুল, যেকোনো store-এ চলে | probe করা প্রতিটি ID-তে একটি key — আক্রমণের সাথে memory বাড়ে | মাঝারি বা সীমিত ID space-এ default |
+| Sentinel value with short TTL | সহজ, নির্ভুল, যেকোনো store-এ চলে | probe করা প্রতিটি ID-তে একটি key - আক্রমণের সাথে memory বাড়ে | মাঝারি বা সীমিত ID space-এ default |
 | Bloom filter pre-check | probe যত বেশিই হোক memory স্থির | false positive; data বদলালে rebuild লাগে | কোটি কোটি ID, উচ্চ enumeration ঝুঁকি |
 | Edge caching of 404s | origin পুনরাবৃত্ত probe দেখেই না | শুধু অভিন্ন URL-এ কাজ করে; cache-key hygiene লাগে | public, unauthenticated read endpoint |
 | Rate limiting only | নতুন cache semantics ভাবতে হয় না | বৈধ burst throttle হয়; নাছোড় scraper ধীরে হলেও চালিয়ে যায় | এখনই read path বদলানো সম্ভব নয় |

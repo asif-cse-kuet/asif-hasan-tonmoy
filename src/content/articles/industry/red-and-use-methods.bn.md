@@ -1,4 +1,4 @@
-> **Scenario** — API 502 দিচ্ছে। Incident-এর বিশ মিনিট পর তিন engineer তর্ক করছে Postgres CPU 61% "high" কি না। কেউ দেখেনি connection pool saturate কি না — সেটি 100/100-এ, median wait 4 সেকেন্ড — কারণ dashboard-এ pool-এর কোনো saturation panel নেই।
+> **Scenario** - API 502 দিচ্ছে। Incident-এর বিশ মিনিট পর তিন engineer তর্ক করছে Postgres CPU 61% "high" কি না। কেউ দেখেনি connection pool saturate কি না - সেটি 100/100-এ, median wait 4 সেকেন্ড - কারণ dashboard-এ pool-এর কোনো saturation panel নেই।
 
 ## Why it matters
 
@@ -21,7 +21,7 @@
 
 ## How it breaks
 
-RED (Rate, Errors, Duration) হলো *demand-side* দৃশ্য: কত কাজ আসছে ও কতটা ভালোভাবে পরিবেশিত হচ্ছে। USE (Utilisation, Saturation, Errors) হলো প্রতিটি resource-এর *supply-side* দৃশ্য। শুধু utilisation মাপলে চিরচেনা failure অদৃশ্য থাকে: bounded resource যত দিতে পারে তার চেয়ে দ্রুত request আসে, তাই তারা queue-তে অপেক্ষা করে। Wait time-ই latency, কিন্তু resource দেখতে সুস্থ — 60% CPU, প্রচুর memory। এদিকে queue বাড়ে, timeout budget কাজ করার বদলে অপেক্ষায় খরচ হয়, edge 502 দিতে শুরু করে আর application কোনো error-ই দেখে না।
+RED (Rate, Errors, Duration) হলো *demand-side* দৃশ্য: কত কাজ আসছে ও কতটা ভালোভাবে পরিবেশিত হচ্ছে। USE (Utilisation, Saturation, Errors) হলো প্রতিটি resource-এর *supply-side* দৃশ্য। শুধু utilisation মাপলে চিরচেনা failure অদৃশ্য থাকে: bounded resource যত দিতে পারে তার চেয়ে দ্রুত request আসে, তাই তারা queue-তে অপেক্ষা করে। Wait time-ই latency, কিন্তু resource দেখতে সুস্থ - 60% CPU, প্রচুর memory। এদিকে queue বাড়ে, timeout budget কাজ করার বদলে অপেক্ষায় খরচ হয়, edge 502 দিতে শুরু করে আর application কোনো error-ই দেখে না।
 
 ```mermaid
 flowchart TD
@@ -81,7 +81,7 @@ export const poolSize = new Gauge({
 })
 export const poolWait = new Histogram({
   name: 'db_pool_wait_seconds',
-  help: 'Time spent waiting for a connection — this is saturation',
+  help: 'Time spent waiting for a connection - this is saturation',
   labelNames: ['pool'] as const,
   buckets: [0.001, 0.005, 0.01, 0.05, 0.1, 0.5, 1, 3, 10],
 })
@@ -122,11 +122,11 @@ groups:
         expr: sum by (queue) (worker_queue_depth)
 ```
 
-`node_load1 / cpu_count` 1-এর উপরে মানে process CPU-র জন্য অপেক্ষা করছে — সেটাই saturation, utilisation থেকে আলাদা।
+`node_load1 / cpu_count` 1-এর উপরে মানে process CPU-র জন্য অপেক্ষা করছে - সেটাই saturation, utilisation থেকে আলাদা।
 
 ### 4. Pool size ঠিক করতে Little's Law প্রয়োগ করুন
 
-Little's Law: `L = λ × W` — concurrency = arrival rate × service time। 900 rps-এ 40 ms query হলে শুধু তাল মেলাতে দরকার `900 × 0.04 = 36` connection, headroom ছাড়াই। 100-এর pool যথেষ্ট — অর্থাৎ আসল সমস্যা pool size নয়, service time drift।
+Little's Law: `L = λ × W` - concurrency = arrival rate × service time। 900 rps-এ 40 ms query হলে শুধু তাল মেলাতে দরকার `900 × 0.04 = 36` connection, headroom ছাড়াই। 100-এর pool যথেষ্ট - অর্থাৎ আসল সমস্যা pool size নয়, service time drift।
 
 ```promql
 # Required concurrency, measured

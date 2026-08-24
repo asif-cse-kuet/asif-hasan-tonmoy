@@ -1,11 +1,11 @@
-> **Scenario** — A refactor swaps the shared `<AppModal>` internals from a `<dialog>` element to a teleported `<div>` for styling control. Nothing looks different. Two weeks later a procurement audit finds that keyboard users can tab out of every modal in nine products, and screen readers announce the page behind it. One component, 200 screens.
+> **Scenario** - A refactor swaps the shared `<AppModal>` internals from a `<dialog>` element to a teleported `<div>` for styling control. Nothing looks different. Two weeks later a procurement audit finds that keyboard users can tab out of every modal in nine products, and screen readers announce the page behind it. One component, 200 screens.
 
 ## Why it matters
 
 - A shared component multiplies both fixes and regressions. One bad focus change ships to every product that consumes the library on their next upgrade.
 - Keyboard and screen reader failures are invisible in visual regression tests and to mouse-using reviewers, so they survive review and reach production intact.
 - Public-sector and enterprise contracts increasingly require a VPAT or EN 301 549 conformance statement. A component-level regression can block a deal already in legal review.
-- The affordances that help assistive tech — visible focus, labelled controls, predictable escape — help everyone on a laptop trackpad at 1am too.
+- The affordances that help assistive tech - visible focus, labelled controls, predictable escape - help everyone on a laptop trackpad at 1am too.
 
 ## Symptoms
 
@@ -20,7 +20,7 @@
 
 ## How it breaks
 
-Accessibility lives in details that are easy to delete during refactors: a `role`, an `aria-modal`, an `inert` on the background, a focus restore in `onUnmounted`. Because none of it changes a pixel, a screenshot suite passes and code review sees "same markup, nicer classes". The contract that the component silently promised — trap focus, restore focus, close on Escape, announce itself — is gone with no failing test.
+Accessibility lives in details that are easy to delete during refactors: a `role`, an `aria-modal`, an `inert` on the background, a focus restore in `onUnmounted`. Because none of it changes a pixel, a screenshot suite passes and code review sees "same markup, nicer classes". The contract that the component silently promised - trap focus, restore focus, close on Escape, announce itself - is gone with no failing test.
 
 ```mermaid
 flowchart TD
@@ -46,7 +46,7 @@ flowchart TD
 
 ### 1. Make the ARIA pattern part of the public contract
 
-Write it down per component: dialog implements the APG modal dialog pattern — `role="dialog"`, `aria-modal="true"`, labelled by its title, focus trapped, Escape closes, focus restored, background `inert`. That list becomes the test plan.
+Write it down per component: dialog implements the APG modal dialog pattern - `role="dialog"`, `aria-modal="true"`, labelled by its title, focus trapped, Escape closes, focus restored, background `inert`. That list becomes the test plan.
 
 ### 2. Implement the pattern once, in a composable
 

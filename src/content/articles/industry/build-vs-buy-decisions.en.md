@@ -1,4 +1,4 @@
-> **Scenario** — A team declines a $2,400/month search vendor and builds on Elasticsearch instead, budgeting six weeks. Fourteen months later two engineers spend roughly 20% of their time on cluster upgrades, relevance tuning, and a recurring 3am disk-watermark page. The direct infrastructure cost is $900/month. The fully loaded cost is closer to $9,000.
+> **Scenario** - A team declines a $2,400/month search vendor and builds on Elasticsearch instead, budgeting six weeks. Fourteen months later two engineers spend roughly 20% of their time on cluster upgrades, relevance tuning, and a recurring 3am disk-watermark page. The direct infrastructure cost is $900/month. The fully loaded cost is closer to $9,000.
 
 ## Why it matters
 
@@ -52,7 +52,7 @@ flowchart TD
 ### 1. Write the three-year cost model down, in code
 
 ```python
-# tco.py — run it, argue with the inputs, not with intuition.
+# tco.py - run it, argue with the inputs, not with intuition.
 LOADED_HOURLY = 95  # salary + benefits + overhead, per engineer-hour
 
 def build_cost(
@@ -169,7 +169,7 @@ flowchart LR
 ## Anti-patterns
 
 - Comparing the vendor invoice against zero because engineers are already paid.
-- Building commodity infrastructure — queues, flags, auth, search — because it is more interesting than the product work.
+- Building commodity infrastructure - queues, flags, auth, search - because it is more interesting than the product work.
 - Buying a vendor that owns your core differentiator, capping the product at the vendor's roadmap.
 - Letting the SDK's types spread across the codebase, so the exit cost quietly grows every sprint.
 - Treating a six-week estimate as the cost when the maintenance decade is the cost.

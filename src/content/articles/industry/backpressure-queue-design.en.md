@@ -1,4 +1,4 @@
-> **Scenario** — A marketing send enqueues 2.4 million notification jobs in ninety seconds. Consumers drain at 4,000/s. The queue is healthy, nothing errors, and password-reset emails — sharing the same queue — start arriving ten minutes late. By hour two the broker's disk is at 91%.
+> **Scenario** - A marketing send enqueues 2.4 million notification jobs in ninety seconds. Consumers drain at 4,000/s. The queue is healthy, nothing errors, and password-reset emails - sharing the same queue - start arriving ten minutes late. By hour two the broker's disk is at 91%.
 
 ## Why it matters
 
@@ -14,16 +14,16 @@
 | Queue depth | Monotonically increasing across a whole shift, never draining to zero |
 | Consumer CPU | Pinned at 100%, or suspiciously idle while depth grows |
 | Message age | Oldest-message-age climbs linearly; this is the metric that matters, not depth |
-| Latency | Producer p99 unchanged — the pain is entirely on the consumer side |
+| Latency | Producer p99 unchanged - the pain is entirely on the consumer side |
 | Broker disk | Steady climb; RabbitMQ raises a memory/disk alarm and blocks publishers |
 | Mixed traffic | Low-volume, high-urgency jobs delayed by a bulk backlog on the same queue |
 | Redeliveries | Visibility timeouts expire mid-processing, so slow messages are reprocessed forever |
 
 ## How it breaks
 
-A queue is a buffer, and a buffer only absorbs *bursts*. If the mean arrival rate λ exceeds the mean service rate μ for any sustained period, the backlog grows without bound — no queue size fixes that. The queue's job is to absorb variance, not deficit.
+A queue is a buffer, and a buffer only absorbs *bursts*. If the mean arrival rate λ exceeds the mean service rate μ for any sustained period, the backlog grows without bound - no queue size fixes that. The queue's job is to absorb variance, not deficit.
 
-The delay is the part teams get wrong. Little's Law gives it directly: `W = L / λ`. With 900,000 messages queued and a drain rate of 4,000/s, the wait is 225 seconds. When utilisation ρ = λ/μ approaches 1, queueing delay grows as `1/(1-ρ)` — at 90% utilisation you wait 10x the service time; at 99% you wait 100x. Adding consumers helps only until they contend on a shared downstream, at which point μ stops rising and you have moved the queue into the database's connection pool.
+The delay is the part teams get wrong. Little's Law gives it directly: `W = L / λ`. With 900,000 messages queued and a drain rate of 4,000/s, the wait is 225 seconds. When utilisation ρ = λ/μ approaches 1, queueing delay grows as `1/(1-ρ)` - at 90% utilisation you wait 10x the service time; at 99% you wait 100x. Adding consumers helps only until they contend on a shared downstream, at which point μ stops rising and you have moved the queue into the database's connection pool.
 
 ```mermaid
 flowchart LR
@@ -59,17 +59,17 @@ The single highest-leverage change. Three queues, three consumer pools, three in
 ```yaml
 # Sizing follows the SLO, not the message volume.
 queues:
-  interactive:          # password reset, OTP — SLO: p99 under 5s
+  interactive:          # password reset, OTP - SLO: p99 under 5s
     max_length: 50_000
     overflow: reject-publish     # fail fast; the caller retries or degrades
     consumers: 40
     prefetch: 1
-  standard:             # order confirmations — SLO: p99 under 60s
+  standard:             # order confirmations - SLO: p99 under 60s
     max_length: 500_000
     overflow: reject-publish
     consumers: 20
     prefetch: 10
-  bulk:                 # marketing sends — SLO: complete within 6h
+  bulk:                 # marketing sends - SLO: complete within 6h
     max_length: 5_000_000
     overflow: drop-head          # oldest marketing message is the least valuable
     consumers: 10
@@ -177,7 +177,7 @@ flowchart TD
 
 ## Anti-patterns
 
-- Scaling consumers to drain a backlog and taking the database down instead — you moved the queue, you did not shrink it.
+- Scaling consumers to drain a backlog and taking the database down instead - you moved the queue, you did not shrink it.
 - Alerting on queue depth with a fixed threshold; 100k messages is fine for one queue and catastrophic for another.
 - Using one queue "for simplicity" and adding a `priority` field the broker mostly ignores.
 - Raising the visibility timeout to stop redeliveries without checking whether the handler is idempotent.

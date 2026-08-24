@@ -8,7 +8,7 @@ const topics: IndustryTopic[] = [
     domain: 'distributed-systems',
     titles: {
       en: 'PACELC: the latency price of consistency',
-      bn: 'PACELC — consistency-র latency মূল্য',
+      bn: 'PACELC - consistency-র latency মূল্য',
     },
     summary: {
       en: 'CAP only describes the partition case; PACELC names the choice you make on every normal request. Else-Latency versus Else-Consistency is the knob that decides your p99.',
@@ -26,7 +26,7 @@ const topics: IndustryTopic[] = [
     domain: 'distributed-systems',
     titles: {
       en: 'Raft in practice: what the paper leaves out',
-      bn: 'বাস্তবে Raft — paper যা বলে না',
+      bn: 'বাস্তবে Raft - paper যা বলে না',
     },
     summary: {
       en: 'Log replication is the easy half; snapshots, membership changes, and disk fsync latency are what page you at 2am. Raft is safe by design and slow by configuration.',
@@ -83,8 +83,8 @@ const topics: IndustryTopic[] = [
       bn: 'Consistent hashing ও নিরাপদ rebalance',
     },
     summary: {
-      en: 'Naive modulo hashing moves every key when one node joins; consistent hashing moves 1/N — but only if your virtual node count and rebalance rate are tuned. Hot keys ignore the ring entirely.',
-      bn: 'Naive modulo hashing এক node যোগ হলেই সব key সরায়; consistent hashing সরায় 1/N — যদি virtual node আর rebalance rate ঠিক থাকে। Hot key ring-কে পুরো উপেক্ষা করে।',
+      en: 'Naive modulo hashing moves every key when one node joins; consistent hashing moves 1/N - but only if your virtual node count and rebalance rate are tuned. Hot keys ignore the ring entirely.',
+      bn: 'Naive modulo hashing এক node যোগ হলেই সব key সরায়; consistent hashing সরায় 1/N - যদি virtual node আর rebalance rate ঠিক থাকে। Hot key ring-কে পুরো উপেক্ষা করে।',
     },
     tags: ['consistent-hashing', 'sharding', 'rebalance', 'hot-keys'],
     difficulty: 'intermediate',

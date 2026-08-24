@@ -1,11 +1,11 @@
-> **Scenario** — শুক্রবারে নতুন "export attachments" endpoint ship হলো। এটা primary key দিয়ে record load করে stream করে। সোমবারে এক customer নিজের dashboard থেকে download করা একটা PDF email করল — যেটা তার প্রতিযোগীর। SQL ঠিকই ছিল — শুধু tenant predicate ছিল না।
+> **Scenario** - শুক্রবারে নতুন "export attachments" endpoint ship হলো। এটা primary key দিয়ে record load করে stream করে। সোমবারে এক customer নিজের dashboard থেকে download করা একটা PDF email করল - যেটা তার প্রতিযোগীর। SQL ঠিকই ছিল - শুধু tenant predicate ছিল না।
 
 ## Why it matters
 
 - Shared-infrastructure SaaS-এ cross-tenant exposure সবচেয়ে উচ্চ-severity application bug। সাধারণত customer notification লাগে, প্রায়ই contractual penalty।
 - Monitoring-এ এটা অদৃশ্য: 5xx নেই, slow query নেই, error rate বদলায় না। System ঠিক যা লেখা আছে তাই করে।
 - ত্রুটি একটা query-তে একটা অনুপস্থিত clause, তাই review ধরতে পারে কেবল যদি scoping manual না হয়ে structural হয়।
-- প্রতিটি নতুন surface — report, export, webhook, admin tooling, background job — boundary enforce না করলে ঝুঁকি ফিরিয়ে আনে।
+- প্রতিটি নতুন surface - report, export, webhook, admin tooling, background job - boundary enforce না করলে ঝুঁকি ফিরিয়ে আনে।
 
 ## Symptoms
 
@@ -20,7 +20,7 @@
 
 ## How it breaks
 
-Tenancy সাধারণত একটা *convention* হিসেবে বাস্তবায়িত হয় — "সবসময় `tenant_id` দিয়ে filter করো" — আর convention ক্ষয়ে যায়। দ্বাদশ report লেখা developer `Model::find($id)` ধরে, কারণ ওটাই সবচেয়ে ছোট পথ। Route model binding record globally resolve করে, policy ownership নয় role check করে, response চলে যায়। একই gap raw SQL-এ, cache key-তে, আর queued job-এ থাকে যেখানে scope করার মতো authenticated user নেই।
+Tenancy সাধারণত একটা *convention* হিসেবে বাস্তবায়িত হয় - "সবসময় `tenant_id` দিয়ে filter করো" - আর convention ক্ষয়ে যায়। দ্বাদশ report লেখা developer `Model::find($id)` ধরে, কারণ ওটাই সবচেয়ে ছোট পথ। Route model binding record globally resolve করে, policy ownership নয় role check করে, response চলে যায়। একই gap raw SQL-এ, cache key-তে, আর queued job-এ থাকে যেখানে scope করার মতো authenticated user নেই।
 
 ```mermaid
 flowchart TD
@@ -80,7 +80,7 @@ Route::get('/attachments/{attachment}', [AttachmentController::class, 'show'])
     ->scopeBindings();
 ```
 
-Global scope-এর সাথে মিলে `{attachment}` কেবল বর্তমান tenant-এর ভেতরেই resolve হয় — বাইরের id দিলে 404, যা record-এর অস্তিত্বও নিশ্চিত করে না।
+Global scope-এর সাথে মিলে `{attachment}` কেবল বর্তমান tenant-এর ভেতরেই resolve হয় - বাইরের id দিলে 404, যা record-এর অস্তিত্বও নিশ্চিত করে না।
 
 ### 3. Policy-তেও tenancy মেলান
 
@@ -131,7 +131,7 @@ class ExportAttachments implements ShouldQueue
 
 ### 6. প্রতিটি derived artefact namespace করুন
 
-Cache key, search index name, object storage prefix, export filename — সবেতে tenant থাকবে:
+Cache key, search index name, object storage prefix, export filename - সবেতে tenant থাকবে:
 
 ```php
 Cache::tags(["tenant:{$tenantId}"])->remember("report:monthly:{$tenantId}", 900, $callback);
@@ -191,7 +191,7 @@ flowchart LR
 
 ## Anti-patterns
 
-- Frontend সবসময় সঠিক `tenant_id` পাঠাবে — এই ভরসা করা।
+- Frontend সবসময় সঠিক `tenant_id` পাঠাবে - এই ভরসা করা।
 - "support impersonation" mode যা context switch না করে scope globally বন্ধ করে।
 - খালি ফল "ঠিক করতে" report-এ `withoutGlobalScopes()` ছড়ানো।
 - URL-এ sequential integer id, সাথে per-query manual check।

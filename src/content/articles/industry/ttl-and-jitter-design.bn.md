@@ -1,4 +1,4 @@
-> **Scenario** — রাত 03:00-এর deploy `SETEX product:{id} 3600` দিয়ে 120,000 product key warm করে। এরপর প্রতি ঘণ্টায় ঠিক :00-এ database-এ 90 সেকেন্ডের CPU spike দেখা যায়, কারণ 120,000 key একই সেকেন্ডে expire করে। তিন সপ্তাহ কেউ এই ঘণ্টাভিত্তিক spike-কে deploy-এর সাথে মেলাতে পারে না।
+> **Scenario** - রাত 03:00-এর deploy `SETEX product:{id} 3600` দিয়ে 120,000 product key warm করে। এরপর প্রতি ঘণ্টায় ঠিক :00-এ database-এ 90 সেকেন্ডের CPU spike দেখা যায়, কারণ 120,000 key একই সেকেন্ডে expire করে। তিন সপ্তাহ কেউ এই ঘণ্টাভিত্তিক spike-কে deploy-এর সাথে মেলাতে পারে না।
 
 ## Why it matters
 
@@ -73,7 +73,7 @@ export function jitteredTtl(baseSeconds: number): number {
 await redis.set(key, payload, 'EX', jitteredTtl(TTL_SECONDS['product:detail']))
 ```
 
-Laravel-এ একই জিনিস, এক জায়গায় — যাতে কোনো call site ভুলতে না পারে:
+Laravel-এ একই জিনিস, এক জায়গায় - যাতে কোনো call site ভুলতে না পারে:
 
 ```php
 final class JitteredCache
@@ -86,7 +86,7 @@ final class JitteredCache
 }
 ```
 
-3,600 s base-এ ±15% দিলে expiry 1,080 সেকেন্ডের window-এ ছড়ায়। 120,000-key spike হয়ে যায় সেকেন্ডে ~111 miss — সাধারণ traffic।
+3,600 s base-এ ±15% দিলে expiry 1,080 সেকেন্ডের window-এ ছড়ায়। 120,000-key spike হয়ে যায় সেকেন্ডে ~111 miss - সাধারণ traffic।
 
 ### 3. Separate logical freshness from physical TTL
 
@@ -122,7 +122,7 @@ location /api/products/ {
 }
 ```
 
-application থেকে jittered `max-age` পাঠানোই ভালো — object-প্রতি tolerance কেবল সেই জায়গাই জানে।
+application থেকে jittered `max-age` পাঠানোই ভালো - object-প্রতি tolerance কেবল সেই জায়গাই জানে।
 
 ### 5. Jitter the refresh schedule too
 
@@ -146,7 +146,7 @@ flowchart LR
 | Option | Pros | Cons | Choose when |
 |--------|------|------|-------------|
 | Fixed TTL, no jitter | সহজে অনুমেয়; staleness ভাবা সোজা | যেকোনো bulk write-এর পর synchronized expiry storm | ছোট keyspace, একসাথে miss হলেও ক্ষতি নেই |
-| Proportional jitter | মসৃণ miss rate; এক লাইনের পরিবর্তন | staleness bound সংখ্যা নয়, range হয়ে যায় | প্রায় সবসময় — এটাই default |
+| Proportional jitter | মসৃণ miss rate; এক লাইনের পরিবর্তন | staleness bound সংখ্যা নয়, range হয়ে যায় | প্রায় সবসময় - এটাই default |
 | Long physical TTL + logical freshness | key কখনো অনুপস্থিত নয়; stale serving সম্ভব | দুটি timestamp সামলাতে হয়; বেশি memory | recomputation ব্যয়বহুল ও staleness সহনীয় |
 | Very short TTL | invalidation plumbing ছাড়াই freshness | ক্রমাগত origin load; cache প্রায় অকেজো | সস্তা origin query বা দ্রুত বদলানো data |
 | No TTL, event-driven only | নিখুঁত hit ratio, expiry spike নেই | একটি missed event মানে স্থায়ীভাবে ভুল data | প্রতিটি writer আপনার ও change stream নির্ভরযোগ্য |
@@ -164,7 +164,7 @@ flowchart LR
 
 - একটি `CACHE_TTL=3600` environment variable পুরো codebase-এর প্রতিটি keyspace ব্যবহার করছে।
 - jitter শুধু application layer-এ, অথচ warm script এখনো raw base TTL ব্যবহার করছে।
-- 24 ঘণ্টার TTL-এ ±30 সেকেন্ডের additive jitter — এই স্কেলে spread অর্থহীন।
+- 24 ঘণ্টার TTL-এ ±30 সেকেন্ডের additive jitter - এই স্কেলে spread অর্থহীন।
 - stampede-এর পর TTL বাড়ানো, যা পরেরটিকে পিছিয়ে দেয় ও বড় করে।
 - একটি cron-এ `0 * * * *`-এ সব key refresh করা।
 - `stale-while-revalidate`-কে jitter-এর বিকল্প ভাবা; latency-তে সাহায্য করে, কিন্তু origin এখনো synchronized revalidation wave দেখে।

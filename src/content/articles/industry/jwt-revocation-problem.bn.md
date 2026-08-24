@@ -1,11 +1,11 @@
-> **Scenario** — ০৯:১২-এ একজন employee offboard হলো। IT account disable করল, কিন্তু তার laptop ০৯:৫৭ পর্যন্ত সফলভাবে API call করতে থাকল, কারণ access token ৬০ মিনিট TTL দিয়ে sign করা আর কেউ user table check করে না।
+> **Scenario** - ০৯:১২-এ একজন employee offboard হলো। IT account disable করল, কিন্তু তার laptop ০৯:৫৭ পর্যন্ত সফলভাবে API call করতে থাকল, কারণ access token ৬০ মিনিট TTL দিয়ে sign করা আর কেউ user table check করে না।
 
 ## Why it matters
 
 - "সব জায়গা থেকে logout" ও "access revoke" compliance requirement, শখ নয়। Account-এর চেয়ে বেশি বাঁচা stateless token একটা audit finding।
 - Incident response-এ কয়েক সেকেন্ডে credential invalidate করা লাগে। একমাত্র lever যদি TTL ফুরানোর অপেক্ষা হয়, তবে containment time = TTL।
 - Leak হওয়া token একটা bearer credential: যে ধরে রাখে সে-ই *user*, যেকোনো IP থেকে, expire হওয়া পর্যন্ত।
-- Team over-correct করে প্রতি request-এ database check বসায়, ফলে JWT যে coupling এড়াতে নেওয়া হয়েছিল সেটাই ফিরে আসে — এবার denylist-এ cache stampede সহ।
+- Team over-correct করে প্রতি request-এ database check বসায়, ফলে JWT যে coupling এড়াতে নেওয়া হয়েছিল সেটাই ফিরে আসে - এবার denylist-এ cache stampede সহ।
 
 ## Symptoms
 
@@ -19,7 +19,7 @@
 
 ## How it breaks
 
-JWT হলো claim-এর একটা signed snapshot। Verification local: parse, signature check, `exp` check। কেউ source of truth-এ যায় না — এটাই team-এর চাওয়া performance property, আর এটাই ভুলে যাওয়া correctness property। Server-এ যেকোনো state change (disable, demote, password reset, tenant removal) ইতিমধ্যে issue হওয়া token-এর কাছে অদৃশ্য।
+JWT হলো claim-এর একটা signed snapshot। Verification local: parse, signature check, `exp` check। কেউ source of truth-এ যায় না - এটাই team-এর চাওয়া performance property, আর এটাই ভুলে যাওয়া correctness property। Server-এ যেকোনো state change (disable, demote, password reset, tenant removal) ইতিমধ্যে issue হওয়া token-এর কাছে অদৃশ্য।
 
 ```mermaid
 sequenceDiagram
@@ -122,7 +122,7 @@ Set-Cookie: refresh_token=…; HttpOnly; Secure; SameSite=Strict; Path=/auth/ref
 
 ### 6. Auth endpoint rate-limit ও monitor করুন
 
-Refresh আর login — এই দুটোতেই attacker হামলা করবে। per-IP ও per-subject limit দিন, আর refresh-reuse detection-এ alert দিন; ওই signal high fidelity।
+Refresh আর login - এই দুটোতেই attacker হামলা করবে। per-IP ও per-subject limit দিন, আর refresh-reuse detection-এ alert দিন; ওই signal high fidelity।
 
 ## Target design
 

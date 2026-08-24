@@ -1,4 +1,4 @@
-> **Scenario** — A team builds order processing on RabbitMQ because it was already running. Eighteen months later, analytics needs to rebuild a derived table from the last 90 days of order events. The messages were acked and deleted the moment they were processed. The only recovery path is a database backfill script that takes four days to write and does not reproduce the event stream faithfully.
+> **Scenario** - A team builds order processing on RabbitMQ because it was already running. Eighteen months later, analytics needs to rebuild a derived table from the last 90 days of order events. The messages were acked and deleted the moment they were processed. The only recovery path is a database backfill script that takes four days to write and does not reproduce the event stream faithfully.
 
 ## Why it matters
 
@@ -21,7 +21,7 @@
 
 ## How it breaks
 
-A work queue destroys the message on ack. That is not a bug — it is what makes queues efficient, and it is why depth is a meaningful metric. But it means the message is the only copy, so a consumer bug that acks incorrectly loses data permanently. A stream keeps records for a retention window and tracks position per consumer group, so a bug is fixable by rewinding.
+A work queue destroys the message on ack. That is not a bug - it is what makes queues efficient, and it is why depth is a meaningful metric. But it means the message is the only copy, so a consumer bug that acks incorrectly loses data permanently. A stream keeps records for a retention window and tracks position per consumer group, so a bug is fixable by rewinding.
 
 The mirrored failure: teams pick Kafka for a job queue, then discover they need per-job retry, per-job delay, and per-job DLQ routing. Kafka has none of these natively, because a partition is a sequential log, not a set of independently retryable items. Retrying one record while continuing means either committing past a failure (data loss) or blocking the partition (stall).
 
@@ -42,7 +42,7 @@ sequenceDiagram
 ## Root causes
 
 1. Choosing based on what is already deployed rather than on retention and replay requirements.
-2. Conflating "asynchronous" with "queue" — async is a property of the call, not of the transport.
+2. Conflating "asynchronous" with "queue" - async is a property of the call, not of the transport.
 3. No stated requirement for how long events must remain replayable.
 4. Assuming future consumers will be known at design time.
 5. Using partition count as a concurrency dial, which couples throughput to storage layout.
@@ -52,7 +52,7 @@ sequenceDiagram
 
 ### 1. Decide with three questions
 
-- **Does anyone need to read this again?** If yes — even hypothetically, even for analytics — you need a stream or an outbox with durable history.
+- **Does anyone need to read this again?** If yes - even hypothetically, even for analytics - you need a stream or an outbox with durable history.
 - **Is this a command or an event?** `SendWelcomeEmail` is a command: exactly one handler, retryable, deletable. `UserSignedUp` is an event: many readers, retained.
 - **Is per-item retry required?** Per-item retry with independent progress is a queue capability. In a log, position is shared.
 
@@ -115,7 +115,7 @@ min.cleanable.dirty.ratio: 0.1
 
 ### 5. Size partitions for consumers, not for throughput alone
 
-Partition count sets your maximum consumer parallelism and cannot be reduced. Pick `max_expected_consumers × 1.5`, not 200 "just in case" — every partition costs file handles, replication traffic, and rebalance time.
+Partition count sets your maximum consumer parallelism and cannot be reduced. Pick `max_expected_consumers × 1.5`, not 200 "just in case" - every partition costs file handles, replication traffic, and rebalance time.
 
 ### 6. If you already chose wrong, add an outbox
 

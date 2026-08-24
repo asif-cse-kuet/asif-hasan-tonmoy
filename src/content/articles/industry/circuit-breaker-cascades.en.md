@@ -1,4 +1,4 @@
-> **Scenario** — The address-validation vendor starts returning 503 for 8% of calls. Checkout's circuit breaker opens after 5 consecutive failures and short-circuits *everything* — including the 92% that would have succeeded. Within four minutes the cart service's breaker opens too, then the storefront's. A partial vendor degradation has become a full site outage.
+> **Scenario** - The address-validation vendor starts returning 503 for 8% of calls. Checkout's circuit breaker opens after 5 consecutive failures and short-circuits *everything* - including the 92% that would have succeeded. Within four minutes the cart service's breaker opens too, then the storefront's. A partial vendor degradation has become a full site outage.
 
 ## Why it matters
 
@@ -12,7 +12,7 @@
 | Signal | What you observe |
 |---|---|
 | Error rate | Jumps from 8% to 100% for a feature, in one step, at the moment the breaker opens |
-| Dependency metrics | Outbound request rate to the vendor drops to near zero — it looks recovered |
+| Dependency metrics | Outbound request rate to the vendor drops to near zero - it looks recovered |
 | Latency | Falls sharply; short-circuited calls return in under 1ms |
 | Cascade timing | Successive services' breakers open 30-120s apart, tracing an upstream path |
 | Recovery | Error rate oscillates: open, half-open, one success, closed, immediately open again |
@@ -60,7 +60,7 @@ sequenceDiagram
 type Criticality = 'required' | 'degradable'
 
 type BreakerConfig = {
-  key: string                    // "vendor:address:POST /v2/validate" — not just the host
+  key: string                    // "vendor:address:POST /v2/validate" - not just the host
   criticality: Criticality
   errorRateThreshold: number     // fraction, not consecutive failures
   minimumRequests: number        // never open on 3 requests out of 3
@@ -71,7 +71,7 @@ type BreakerConfig = {
 const ADDRESS_VALIDATE: BreakerConfig = {
   key: 'vendor:address:POST /v2/validate',
   criticality: 'degradable',     // checkout can proceed with an unvalidated address
-  errorRateThreshold: 0.5,       // NOT 0.05 — 8% failing is not a reason to stop trying
+  errorRateThreshold: 0.5,       // NOT 0.05 - 8% failing is not a reason to stop trying
   minimumRequests: 20,
   windowMs: 10_000,
   halfOpenPermits: 5,
@@ -99,7 +99,7 @@ final class AddressValidationClient
 }
 ```
 
-Downstream, `unverified` must be a real state the order pipeline handles: flag the order for asynchronous re-validation, do not block the purchase. If you cannot name the fallback, the dependency is `required` and it does not get a breaker — it gets a timeout and an honest error.
+Downstream, `unverified` must be a real state the order pipeline handles: flag the order for asynchronous re-validation, do not block the purchase. If you cannot name the fallback, the dependency is `required` and it does not get a breaker - it gets a timeout and an honest error.
 
 ### 3. Count the right failures
 
@@ -134,7 +134,7 @@ class RampingBreaker {
   }
 
   onProbeResult(ok: boolean) {
-    // Multiplicative decrease, additive increase — slow to trust, fast to give up.
+    // Multiplicative decrease, additive increase - slow to trust, fast to give up.
     this.admitFraction = ok
       ? Math.min(1, this.admitFraction + 0.05)
       : Math.max(0, this.admitFraction / 2)
@@ -202,7 +202,7 @@ flowchart TD
 ## Anti-patterns
 
 - One breaker per hostname, so an unrelated endpoint's degradation takes down a healthy one.
-- Opening at a 5% error rate — you have built a system that gives up faster than the dependency fails.
+- Opening at a 5% error rate - you have built a system that gives up faster than the dependency fails.
 - Throwing `CircuitOpenError` up the stack, which is exactly how a local degradation becomes a global outage.
 - Closing the breaker fully on the first successful probe, sending 100% of held-back traffic at a half-recovered vendor.
 - Retrying *through* an open breaker in an outer wrapper, which reintroduces the load the breaker was supposed to remove.

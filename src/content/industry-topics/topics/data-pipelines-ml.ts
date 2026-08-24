@@ -10,8 +10,8 @@ const topics: IndustryTopic[] = [
       bn: 'ETL vs ELT: transformation কোথায় থাকবে',
     },
     summary: {
-      en: 'Transforming before load hides raw evidence; transforming after load buys warehouse compute — the tradeoff decides how fast you can fix a bad column.',
-      bn: 'load-এর আগে transform করলে raw evidence হারায়; পরে করলে warehouse compute কেনা লাগে — এই tradeoff-ই ঠিক করে bad column কত দ্রুত ঠিক হবে।',
+      en: 'Transforming before load hides raw evidence; transforming after load buys warehouse compute - the tradeoff decides how fast you can fix a bad column.',
+      bn: 'load-এর আগে transform করলে raw evidence হারায়; পরে করলে warehouse compute কেনা লাগে - এই tradeoff-ই ঠিক করে bad column কত দ্রুত ঠিক হবে।',
     },
     tags: ['etl', 'elt', 'warehouse', 'dbt', 'modeling'],
     difficulty: 'intermediate',
@@ -82,8 +82,8 @@ const topics: IndustryTopic[] = [
       bn: 'Model-এ পৌঁছার আগে schema drift শনাক্ত',
     },
     summary: {
-      en: 'An upstream rename ships on Tuesday, your dashboard is empty on Friday — registries, compatibility modes, and quarantine paths.',
-      bn: 'মঙ্গলবারে upstream rename, শুক্রবারে dashboard খালি — registry, compatibility mode, quarantine path।',
+      en: 'An upstream rename ships on Tuesday, your dashboard is empty on Friday - registries, compatibility modes, and quarantine paths.',
+      bn: 'মঙ্গলবারে upstream rename, শুক্রবারে dashboard খালি - registry, compatibility mode, quarantine path।',
     },
     tags: ['schema', 'drift', 'avro', 'registry', 'validation'],
     difficulty: 'intermediate',
@@ -118,8 +118,8 @@ const topics: IndustryTopic[] = [
       bn: 'Batch vs streaming: সস্তা correctness বেছে নেওয়া',
     },
     summary: {
-      en: 'Freshness requirements, not fashion, decide the engine — and most teams need one streaming path plus a batch reconciler.',
-      bn: 'fashion নয়, freshness requirement engine ঠিক করে — বেশিরভাগ team-এর একটি streaming path ও একটি batch reconciler লাগে।',
+      en: 'Freshness requirements, not fashion, decide the engine - and most teams need one streaming path plus a batch reconciler.',
+      bn: 'fashion নয়, freshness requirement engine ঠিক করে - বেশিরভাগ team-এর একটি streaming path ও একটি batch reconciler লাগে।',
     },
     tags: ['batch', 'streaming', 'kafka', 'freshness', 'architecture'],
     difficulty: 'intermediate',
@@ -136,8 +136,8 @@ const topics: IndustryTopic[] = [
       bn: 'চাপের মধ্যে model versioning ও rollback',
     },
     summary: {
-      en: 'A checkpoint file is not a version — you need the code, the feature spec, the label snapshot, and a one-command way back.',
-      bn: 'checkpoint file মানেই version নয় — code, feature spec, label snapshot, আর এক command-এ ফেরার পথ লাগে।',
+      en: 'A checkpoint file is not a version - you need the code, the feature spec, the label snapshot, and a one-command way back.',
+      bn: 'checkpoint file মানেই version নয় - code, feature spec, label snapshot, আর এক command-এ ফেরার পথ লাগে।',
     },
     tags: ['mlops', 'versioning', 'rollback', 'registry', 'shadow-deploy'],
     difficulty: 'advanced',
@@ -155,7 +155,7 @@ const topics: IndustryTopic[] = [
     },
     summary: {
       en: 'Class weights, focal loss, resampling, and threshold tuning on a 27k-sample multi-class text set where accuracy lies by 30 points.',
-      bn: '২৭k sample-এর multi-class text set-এ class weight, focal loss, resampling ও threshold tuning — যেখানে accuracy ৩০ point মিথ্যা বলে।',
+      bn: '২৭k sample-এর multi-class text set-এ class weight, focal loss, resampling ও threshold tuning - যেখানে accuracy ৩০ point মিথ্যা বলে।',
     },
     tags: ['classification', 'imbalance', 'focal-loss', 'f1', 'pytorch'],
     difficulty: 'advanced',

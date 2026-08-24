@@ -1,11 +1,11 @@
-> **Scenario** — Flash sale শুরু হলো। প্রতিটি purchase চালায় `UPDATE inventory SET remaining = remaining - 1 WHERE sku_id = 4471`। Throughput ৩,০০০ থেকে ১৯০ write/সেকেন্ডে নেমে আসে, `SHOW ENGINE INNODB STATUS` এক row lock-এ ৪০০ thread queued দেখায়, আর বাকি ১৫টি shard ৪% CPU-তে বসে থাকে।
+> **Scenario** - Flash sale শুরু হলো। প্রতিটি purchase চালায় `UPDATE inventory SET remaining = remaining - 1 WHERE sku_id = 4471`। Throughput ৩,০০০ থেকে ১৯০ write/সেকেন্ডে নেমে আসে, `SHOW ENGINE INNODB STATUS` এক row lock-এ ৪০০ thread queued দেখায়, আর বাকি ১৫টি shard ৪% CPU-তে বসে থাকে।
 
 ## কেন গুরুত্বপূর্ণ
 
-- Hot partition পুরো system-এর throughput আটকে দেয় *একটি* node বা *একটি* row যত পারে ততটুকুতে — যত capacity কিনুন না কেন।
+- Hot partition পুরো system-এর throughput আটকে দেয় *একটি* node বা *একটি* row যত পারে ততটুকুতে - যত capacity কিনুন না কেন।
 - Aggregate dashboard-এ এই ব্যর্থতা অদৃশ্য: average CPU ঠিক দেখায়, অথচ এক shard জ্বলছে।
 - Row-level contention pool exhaustion-এ পরিণত হয়, তারপর hot key-র সাথে সম্পর্কহীন endpoint-ও error দেয়।
-- সাধারণত সফলতাই এটা ট্রিগার করে — viral product, whale tenant onboarding, ঠিক সকাল ৯টার marketing email।
+- সাধারণত সফলতাই এটা ট্রিগার করে - viral product, whale tenant onboarding, ঠিক সকাল ৯টার marketing email।
 - Incident-এর সময় scale out আরও খারাপ: rebalance একই IO-র জন্য প্রতিযোগিতা করে।
 
 ## লক্ষণ
@@ -25,7 +25,7 @@
 
 **Skewed key distribution.** Partition function key সমানভাবে ছড়ায়, কিন্তু *traffic* key-দের মধ্যে সমান নয়। এক `tenant_id`, এক `sku_id` বা এক `celebrity_user_id` অসামঞ্জস্যপূর্ণ ভাগ পায়, তাই সেটি ধরে থাকা node আগে saturate হয়।
 
-**একই row-এ serialised write.** Capacity বাকি থাকলেও একটি row হলো serialisation point। প্রতিটি `UPDATE` নিজের transaction-এর পুরো সময় exclusive row lock ধরে, তাই ওই row-এর সর্বোচ্চ throughput `1 / transaction_hold_time`। ৫ ms hold time মানে ছাদ ২০০ write/সেকেন্ড — আর প্রতিটি অতিরিক্ত concurrent request কেবল lock queue লম্বা করে ও একটি connection পোড়ায়।
+**একই row-এ serialised write.** Capacity বাকি থাকলেও একটি row হলো serialisation point। প্রতিটি `UPDATE` নিজের transaction-এর পুরো সময় exclusive row lock ধরে, তাই ওই row-এর সর্বোচ্চ throughput `1 / transaction_hold_time`। ৫ ms hold time মানে ছাদ ২০০ write/সেকেন্ড - আর প্রতিটি অতিরিক্ত concurrent request কেবল lock queue লম্বা করে ও একটি connection পোড়ায়।
 
 Monotonic key স্পষ্ট কোনো "hot" entity ছাড়াই একই আকার তৈরি করে: auto-increment primary key-তে প্রতিটি insert সবচেয়ে ডানের B-tree leaf page-এ যায়, তাই সব insert এক page latch-এ contend করে।
 
@@ -44,7 +44,7 @@ flowchart TD
 ## মূল কারণ
 
 1. Partition key-দের মধ্যে traffic skew (whale tenant, viral item, এক বড় customer)।
-2. প্রতিটি request-এ update হওয়া একটিমাত্র counter row — inventory, balance, `views_count`।
+2. প্রতিটি request-এ update হওয়া একটিমাত্র counter row - inventory, balance, `views_count`।
 3. Monotonically বাড়া key যা শেষ page বা নতুন partition-এ insert জমা করে।
 4. Network call জুড়ে hot row-এর lock ধরে রাখা দীর্ঘ transaction (transaction-এর ভেতরে payment gateway)।
 5. Time-bucketed partition যেখানে চলতি bucket ১০০% write নেয়।
@@ -133,14 +133,14 @@ DB::table('reservations')->where('id', $reservationId)->update(['state' => 'paid
 Append-heavy table-এ partition key-র আগে bucket যোগ করুন যাতে insert page ও partition-এ ছড়ায়।
 
 ```sql
--- PRIMARY KEY (created_at, id)-এর বদলে — নাহলে সব insert নতুন page-এ
+-- PRIMARY KEY (created_at, id)-এর বদলে - নাহলে সব insert নতুন page-এ
 ALTER TABLE events ADD COLUMN bucket smallint
   GENERATED ALWAYS AS (abs(hashtext(session_id)) % 16) STORED;
 
 CREATE INDEX CONCURRENTLY idx_events_bucket_time ON events (bucket, created_at DESC);
 ```
 
-Range query এখন ১৬ bucket-এ fan out করবে — write spread-এর জন্য read fan-out-এর সচেতন বিনিময়। Primary key-তে UUIDv4-এর চেয়ে UUIDv7/ULID ভালো: time-ordered কিন্তু single-page contention ছাড়া, আর B-tree locality রাখে।
+Range query এখন ১৬ bucket-এ fan out করবে - write spread-এর জন্য read fan-out-এর সচেতন বিনিময়। Primary key-তে UUIDv4-এর চেয়ে UUIDv7/ULID ভালো: time-ordered কিন্তু single-page contention ছাড়া, আর B-tree locality রাখে।
 
 ### ৫. per-key admission control যোগ করুন
 
@@ -193,7 +193,7 @@ flowchart LR
 - [ ] Per-shard/per-key dashboard আছে; median write rate-এর ৩× হলে skew alert।
 - [ ] Hot path-এর transaction hold time (p99 ms-এ) মাপা, ভেতরে কোনো network call নেই।
 - [ ] `Innodb_row_lock_time_avg` বা Postgres `wait_event` counter graph ও alert-এ আছে।
-- [ ] Reservation sweeper worker মাঝপথে kill করে পরীক্ষা করা — expiry window-এর মধ্যে stock ফেরে।
+- [ ] Reservation sweeper worker মাঝপথে kill করে পরীক্ষা করা - expiry window-এর মধ্যে stock ফেরে।
 - [ ] বাছা shard count-এ sharded-counter read path benchmark করা।
 - [ ] Admission control pool শেষ না করে `Retry-After` সহ 429 দেয়।
 

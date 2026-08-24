@@ -1,9 +1,9 @@
-> **Scenario** — দুই বছর পর নতুন এক staff engineer জিজ্ঞেস করেন, মিনিটে ৪০টা message-এর workload-এ platform কেন Kafka ব্যবহার করে। সিদ্ধান্ত নেওয়া কেউ আর কোম্পানিতে নেই। Wiki-তে "Event Architecture (DRAFT)" নামের একটি পাতা ১৯ মাস আগে edit করা, আর বেঁচে থাকা একমাত্র প্রমাণ একটা Slack thread যা retention policy কেটে দিয়েছে।
+> **Scenario** - দুই বছর পর নতুন এক staff engineer জিজ্ঞেস করেন, মিনিটে ৪০টা message-এর workload-এ platform কেন Kafka ব্যবহার করে। সিদ্ধান্ত নেওয়া কেউ আর কোম্পানিতে নেই। Wiki-তে "Event Architecture (DRAFT)" নামের একটি পাতা ১৯ মাস আগে edit করা, আর বেঁচে থাকা একমাত্র প্রমাণ একটা Slack thread যা retention policy কেটে দিয়েছে।
 
 ## Why it matters
 
 - অলিখিত সিদ্ধান্ত দল বদলালেই আবার নতুন করে তর্কে ওঠে। এটা senior-engineer সপ্তাহে মাপা এক পুনরাবৃত্ত খরচ, চিরকাল দিতে হয়।
-- Rejected alternative না থাকলে ভবিষ্যতের দল বুঝতে পারে না যে সিদ্ধান্তের পেছনের constraint এখনো আছে কি না। ফলে হয় cargo-cult, নয় অন্ধভাবে উপড়ে ফেলা — দুটোই ব্যয়বহুল।
+- Rejected alternative না থাকলে ভবিষ্যতের দল বুঝতে পারে না যে সিদ্ধান্তের পেছনের constraint এখনো আছে কি না। ফলে হয় cargo-cult, নয় অন্ধভাবে উপড়ে ফেলা - দুটোই ব্যয়বহুল।
 - Onboarding সময়ের বেশিরভাগ যায় "কেন এমন" বুঝতে, "এটা কী করে" নয়। কোড দ্বিতীয়টার উত্তর দেয়; প্রথমটার উত্তর repository-তে কোথাও নেই।
 - Founder-দের জন্য: acquirer-এর technical due diligence ঠিক এই প্রশ্নগুলোই করে। ৪০টি ছোট decision record একজন director-এর স্মৃতির চেয়ে অনেক ভালো উত্তর।
 - লিখিত trail ছাড়া meeting-এ নেওয়া সিদ্ধান্ত সাধারণত যে শেষে কথা বলেছে তার হয়, যার কাছে constraint ছিল তার নয়।
@@ -17,13 +17,13 @@
 | Onboarding প্রশ্ন | নতুনরা প্রথম মাসে "কীভাবে"-র চেয়ে "কেন" অনেক বেশি জিজ্ঞেস করে |
 | Reversal churn | সিদ্ধান্ত উল্টে যায়, আবার ফিরে আসে, কারণ মূল constraint লেখা ছিল না |
 | ADR count | প্রথম মাসে ১২টি, পরের আট মাসে শূন্য |
-| Record-এর গঠন | শুধু কী বাছা হয়েছে লেখা; কী বাদ গেছে বা খরচ কী — নেই |
+| Record-এর গঠন | শুধু কী বাছা হয়েছে লেখা; কী বাদ গেছে বা খরচ কী - নেই |
 
 ## How it breaks
 
-ADR প্রোগ্রাম অনুমানযোগ্য ভাবেই ব্যর্থ হয়। কেউ এ নিয়ে পড়ে, `docs/adr/` বানায়, "Stakeholder Sign-off" ও "Risk Matrix" সহ এগারো section-এর template লেখে, ছয়টি record file করে। সপ্তম সিদ্ধান্তটা আসে deadline-এর চাপে sprint-এর মাঝখানে। Record লিখতে নব্বই মিনিট লাগবে, তাই লেখা হয় না। অষ্টমটাও না। ছয় মাস পর directory হয়ে যায় দল যেসব সিদ্ধান্ত পেরিয়ে এসেছে তার জাদুঘর — যা সক্রিয়ভাবে বিভ্রান্তিকর, কিছু না থাকার চেয়েও খারাপ, কারণ মানুষ বিশ্বাস করে আর ভুল করে।
+ADR প্রোগ্রাম অনুমানযোগ্য ভাবেই ব্যর্থ হয়। কেউ এ নিয়ে পড়ে, `docs/adr/` বানায়, "Stakeholder Sign-off" ও "Risk Matrix" সহ এগারো section-এর template লেখে, ছয়টি record file করে। সপ্তম সিদ্ধান্তটা আসে deadline-এর চাপে sprint-এর মাঝখানে। Record লিখতে নব্বই মিনিট লাগবে, তাই লেখা হয় না। অষ্টমটাও না। ছয় মাস পর directory হয়ে যায় দল যেসব সিদ্ধান্ত পেরিয়ে এসেছে তার জাদুঘর - যা সক্রিয়ভাবে বিভ্রান্তিকর, কিছু না থাকার চেয়েও খারাপ, কারণ মানুষ বিশ্বাস করে আর ভুল করে।
 
-আরেক failure হলো অবস্থান। আলাদা wiki, Notion বা Google Drive-এ থাকা record code review-র সময় অদৃশ্য — অথচ ঠিক তখনই কেউ সেটার বিপরীতে যেতে চলেছে। Repository-র record diff-এ দেখা যায়, change-এর সাথেই review হয়, আর কোডের মতো একই tool দিয়ে খোঁজা যায়।
+আরেক failure হলো অবস্থান। আলাদা wiki, Notion বা Google Drive-এ থাকা record code review-র সময় অদৃশ্য - অথচ ঠিক তখনই কেউ সেটার বিপরীতে যেতে চলেছে। Repository-র record diff-এ দেখা যায়, change-এর সাথেই review হয়, আর কোডের মতো একই tool দিয়ে খোঁজা যায়।
 
 ```mermaid
 stateDiagram-v2
@@ -40,10 +40,10 @@ stateDiagram-v2
 
 ## Root causes
 
-1. Template এত ভারী যে সিদ্ধান্তের সময় লেখা যায় না, পরে লিখতে হয় — মানে কখনোই না।
+1. Template এত ভারী যে সিদ্ধান্তের সময় লেখা যায় না, পরে লিখতে হয় - মানে কখনোই না।
 2. Record repository-র বাইরে থাকে, তাই development workflow-এ কিছুই সেটা সামনে আনে না।
 3. Status lifecycle নেই, তাই superseded record আর চালু record দেখতে একই রকম।
-4. শুধু সফল সিদ্ধান্ত লেখা হয়; rejected option — আসল কাজের অংশ — বাদ পড়ে।
+4. শুধু সফল সিদ্ধান্ত লেখা হয়; rejected option - আসল কাজের অংশ - বাদ পড়ে।
 5. Trigger rule নেই, তাই প্রতিটি সিদ্ধান্ত record "পাওয়ার যোগ্য" কি না তা নিয়েই তর্ক চলে।
 6. কোড থেকে record-এ link নেই, তাই একটা file সরালেই সম্পর্ক হারিয়ে যায়।
 
@@ -57,8 +57,8 @@ stateDiagram-v2
 - Status: Accepted
 - Date: 2026-03-11
 - Deciders: platform team (A. Rahman, S. Chen)
-- Supersedes: —
-- Superseded by: —
+- Supersedes: -
+- Superseded by: -
 
 ## Context
 
@@ -91,7 +91,7 @@ Sustained throughput exceeds 500 messages/minute, or a consumer needs replay
 older than 7 days.
 ```
 
-"Revisit when" অংশটাই সবচেয়ে দামি লাইন। এটা সিদ্ধান্তকে স্থায়ী রায় থেকে স্পষ্ট trigger সহ একটা বাজিতে বদলায় — সেজন্যই এখন সহজ option বেছে নেওয়া নিরাপদ।
+"Revisit when" অংশটাই সবচেয়ে দামি লাইন। এটা সিদ্ধান্তকে স্থায়ী রায় থেকে স্পষ্ট trigger সহ একটা বাজিতে বদলায় - সেজন্যই এখন সহজ option বেছে নেওয়া নিরাপদ।
 
 ### 2. Repository-তে রাখুন, numbered ও immutable
 
@@ -111,7 +111,7 @@ Record লিখুন যখন সিদ্ধান্ত **ফেরান�
 
 ```ts
 // Dispatch runs through the outbox rather than a broker.
-// See docs/adr/0023-postgres-notify-job-dispatch.md — revisit above 500 msg/min.
+// See docs/adr/0023-postgres-notify-job-dispatch.md - revisit above 500 msg/min.
 export async function dispatch(event: DomainEvent, tx: Transaction) {
   await tx.insert('outbox', { payload: event, created_at: new Date() })
 }
@@ -123,7 +123,7 @@ export async function dispatch(event: DomainEvent, tx: Transaction) {
 
 ```bash
 #!/usr/bin/env bash
-# scripts/check-adr.sh — every ADR must declare a status; superseded links must resolve.
+# scripts/check-adr.sh - every ADR must declare a status; superseded links must resolve.
 set -euo pipefail
 fail=0
 for f in docs/adr/[0-9]*.md; do
@@ -177,7 +177,7 @@ flowchart LR
 
 ## Anti-patterns
 
-- Risk matrix ও sign-off table সহ template — এই আনুষ্ঠানিকতাই নিশ্চিত করে অষ্টম record কেউ লিখবে না।
+- Risk matrix ও sign-off table সহ template - এই আনুষ্ঠানিকতাই নিশ্চিত করে অষ্টম record কেউ লিখবে না।
 - সিদ্ধান্ত বদলালে accepted record জায়গায় edit করা, যাতে তখনকার সঠিক যুক্তি মুছে যায়।
 - শুধু সফল সিদ্ধান্তের record লেখা, যা directory-কে marketing artefact বানায়।
 - Code review-র সময় কেউ খোলে না এমন wiki-তে ADR রাখা।

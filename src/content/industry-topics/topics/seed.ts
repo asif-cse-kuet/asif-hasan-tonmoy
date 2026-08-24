@@ -65,8 +65,8 @@ const SEED_TOPICS: IndustryTopic[] = [
       bn: 'deploy টিকে cache invalidation strategy',
     },
     summary: {
-      en: 'TTL vs event-driven purge vs versioned keys — pick wrong and users see ghosts.',
-      bn: 'TTL vs event-driven purge vs versioned key — ভুল pick করলে user ghost দেখে।',
+      en: 'TTL vs event-driven purge vs versioned keys - pick wrong and users see ghosts.',
+      bn: 'TTL vs event-driven purge vs versioned key - ভুল pick করলে user ghost দেখে।',
     },
     tags: ['cache', 'invalidation', 'cdn'],
     difficulty: 'intermediate',
@@ -83,8 +83,8 @@ const SEED_TOPICS: IndustryTopic[] = [
       bn: 'exactly-once delivery-এর illusion',
     },
     summary: {
-      en: 'At-least-once plus idempotent consumers is the practical ceiling — and why brokers lie gently.',
-      bn: 'at-least-once + idempotent consumer practical ceiling — broker কেন gently lie করে।',
+      en: 'At-least-once plus idempotent consumers is the practical ceiling - and why brokers lie gently.',
+      bn: 'at-least-once + idempotent consumer practical ceiling - broker কেন gently lie করে।',
     },
     tags: ['messaging', 'exactly-once', 'idempotency'],
     difficulty: 'advanced',
@@ -227,8 +227,8 @@ const SEED_TOPICS: IndustryTopic[] = [
       bn: 'SLO error budget burn rate',
     },
     summary: {
-      en: 'Multi-window burn alerts that page humans for a reason — not every blip.',
-      bn: 'multi-window burn alert যা কারণসহ human-কে page করে — প্রতি blip নয়।',
+      en: 'Multi-window burn alerts that page humans for a reason - not every blip.',
+      bn: 'multi-window burn alert যা কারণসহ human-কে page করে - প্রতি blip নয়।',
     },
     tags: ['slo', 'sli', 'error-budget', 'alerting'],
     difficulty: 'intermediate',

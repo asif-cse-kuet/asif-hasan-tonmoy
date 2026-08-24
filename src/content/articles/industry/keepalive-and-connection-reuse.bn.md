@@ -1,11 +1,11 @@
-> **Scenario** — এক app server থেকে nginx tier + ছয়টি pod-এ যাওয়ার পর p50 latency ১৮ms থেকে ৩১ms-এ উঠল, আর proxy node-এ ২৮,০০০ socket `TIME_WAIT`-এ জমে গেল। মিনিটে ৬০ হাজার request-এ box `502` বার্স্ট দিতে শুরু করল, error log-এ `connect() failed (99: Cannot assign requested address)`।
+> **Scenario** - এক app server থেকে nginx tier + ছয়টি pod-এ যাওয়ার পর p50 latency ১৮ms থেকে ৩১ms-এ উঠল, আর proxy node-এ ২৮,০০০ socket `TIME_WAIT`-এ জমে গেল। মিনিটে ৬০ হাজার request-এ box `502` বার্স্ট দিতে শুরু করল, error log-এ `connect() failed (99: Cannot assign requested address)`।
 
 ## Why it matters
 
 - প্রতিটি নতুন upstream connection-এ একটি TCP handshake (১ RTT), আর TLS upstream হলে পুরো TLS handshake (১–২ RTT ও বাস্তব CPU) লাগে। ১,০০০ rps-এ সেটি প্রতি সেকেন্ডে ১,০০০ অপ্রয়োজনীয় handshake।
 - `TIME_WAIT` socket ephemeral port খায়। এক source IP-তে ব্যবহারযোগ্য port প্রায় ২৮,০০০; ছাড়ালে connection ধীরে নয়, সরাসরি fail করে।
-- failure bimodal: ৪০k rpm-এ ঠিক, ৬৫k rpm-এ বিপর্যয় — কারণ port exhaustion একটি cliff।
-- connection churn backend-এর আসল capacity লুকিয়ে দেয় — handshake overhead পোষাতে আপনি pod scale করেন।
+- failure bimodal: ৪০k rpm-এ ঠিক, ৬৫k rpm-এ বিপর্যয় - কারণ port exhaustion একটি cliff।
+- connection churn backend-এর আসল capacity লুকিয়ে দেয় - handshake overhead পোষাতে আপনি pod scale করেন।
 - সমাধান তিন লাইনের config, আর সে কারণেই এই bug বছরের পর বছর বাঁচে: কেউ বিশ্বাস করে না এটাই কারণ।
 
 ## Symptoms
@@ -22,9 +22,9 @@
 
 ## How it breaks
 
-nginx upstream-এর দিকে default-এ HTTP/1.0 বলে ও `Connection: close` পাঠায়। ফলে প্রতিটি proxied request নতুন TCP connection খোলে, একবার ব্যবহার করে, বন্ধ করে। যে দিক বন্ধ করে সেটি `2 × MSL` (Linux-এ ৬০s) সময় `TIME_WAIT`-এ থাকে বিপথগামী segment শোষণের জন্য। ১,০০০ rps-এ সেটি ৬০,০০০ socket, যারা `net.ipv4.ip_local_port_range`-এর সীমিত পরিসরের জন্য লড়ে — destination tuple-প্রতি সাধারণত ~২৮,০০০।
+nginx upstream-এর দিকে default-এ HTTP/1.0 বলে ও `Connection: close` পাঠায়। ফলে প্রতিটি proxied request নতুন TCP connection খোলে, একবার ব্যবহার করে, বন্ধ করে। যে দিক বন্ধ করে সেটি `2 × MSL` (Linux-এ ৬০s) সময় `TIME_WAIT`-এ থাকে বিপথগামী segment শোষণের জন্য। ১,০০০ rps-এ সেটি ৬০,০০০ socket, যারা `net.ipv4.ip_local_port_range`-এর সীমিত পরিসরের জন্য লড়ে - destination tuple-প্রতি সাধারণত ~২৮,০০০।
 
-শুধু `upstream` block-এ `keepalive` directive যোগ করাই যথেষ্ট নয় — `proxy_http_version 1.1` ও `Connection` header খালি না করলে nginx তখনও backend-কে প্রতিটি response-এর পর বন্ধ করতে বলে, আর keepalive cache খালি থেকে যায়।
+শুধু `upstream` block-এ `keepalive` directive যোগ করাই যথেষ্ট নয় - `proxy_http_version 1.1` ও `Connection` header খালি না করলে nginx তখনও backend-কে প্রতিটি response-এর পর বন্ধ করতে বলে, আর keepalive cache খালি থেকে যায়।
 
 ```mermaid
 sequenceDiagram
@@ -47,13 +47,13 @@ sequenceDiagram
 2. `proxy_set_header Connection ""` নেই, তাই client-এর `Connection` header (বা nginx-এর `close`) forward হয়।
 3. `upstream` block-এ `keepalive` directive নেই, অর্থাৎ idle connection cache-ই নেই।
 4. worker সংখ্যা ও request rate-এর তুলনায় `keepalive` অনেক কম (যেমন ৮)।
-5. backend-এর `keepalive_timeout` proxy-র idle সময়ের চেয়ে ছোট, তাই nginx যেটিকে জীবিত ভাবে backend তা বন্ধ করে — মাঝেমধ্যে 502।
+5. backend-এর `keepalive_timeout` proxy-র idle সময়ের চেয়ে ছোট, তাই nginx যেটিকে জীবিত ভাবে backend তা বন্ধ করে - মাঝেমধ্যে 502।
 6. `keepalive_requests` পুরনো default ১০০-তে, তাই প্রতি শততম request-এ reconnect।
-7. application HTTP client (Guzzle, requests, axios) প্রতি call-এ নতুন client বানায় — এক স্তর উপরে একই সমস্যা।
+7. application HTTP client (Guzzle, requests, axios) প্রতি call-এ নতুন client বানায় - এক স্তর উপরে একই সমস্যা।
 
 ## How to solve it
 
-### 1. upstream keepalive ঠিকভাবে চালু করুন — তিনটি অংশই
+### 1. upstream keepalive ঠিকভাবে চালু করুন - তিনটি অংশই
 
 ```nginx
 upstream app_upstream {
@@ -79,7 +79,7 @@ server {
 
 ### 2. backend যেন proxy-র idle window-এর চেয়ে বেশি বাঁচে
 
-backend ৫s-এ বন্ধ করলে আর nginx ৬০s cache করলে nginx মাঝেমধ্যে এমন socket-এ লিখবে যা backend সবে বন্ধ করেছে — ফল 502। backend-এর idle timeout *বড়* রাখুন:
+backend ৫s-এ বন্ধ করলে আর nginx ৬০s cache করলে nginx মাঝেমধ্যে এমন socket-এ লিখবে যা backend সবে বন্ধ করেছে - ফল 502। backend-এর idle timeout *বড়* রাখুন:
 
 ```
 nginx keepalive_timeout (upstream) : 60s
@@ -170,7 +170,7 @@ flowchart LR
 
 ## Anti-patterns
 
-- upstream block-এ `keepalive 64` যোগ করে থেমে যাওয়া — `proxy_http_version 1.1` ছাড়া এটি কিছুই করে না।
+- upstream block-এ `keepalive 64` যোগ করে থেমে যাওয়া - `proxy_http_version 1.1` ছাড়া এটি কিছুই করে না।
 - পুরনো blog-এর পরামর্শে `tcp_tw_recycle` চালু করা; এটি NAT-এর পিছনের client ভাঙে ও বর্তমান kernel-এ নেই।
 - backend idle timeout proxy-রটির চেয়ে ছোট রেখে "random 502" খোঁজা।
 - handshake সরানোর বদলে handshake-এর CPU শোষণ করতে backend pod scale করা।

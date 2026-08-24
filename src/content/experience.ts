@@ -23,8 +23,8 @@ export const EXPERIENCE: ExperienceEntry[] = [
     location: { en: 'Dhaka, Bangladesh', bn: 'ঢাকা, বাংলাদেশ' },
     highlights: [
       {
-        en: 'Vue 3 / Quasar / Pinia / Laravel production features: realtime chat, RBAC dashboards, ticketing.',
-        bn: 'Vue 3 / Quasar / Pinia / Laravel প্রোডাকশন ফিচার: রিয়েলটাইম চ্যাট, RBAC ড্যাশবোর্ড, টিকেটিং।',
+        en: 'Production features on the stack the job needed: typed UI, APIs, RBAC dashboards, realtime chat, ticketing.',
+        bn: 'যে স্ট্যাক দরকার সেটাতে প্রোডাকশন ফিচার: টাইপড UI, API, RBAC ড্যাশবোর্ড, রিয়েলটাইম চ্যাট, টিকেটিং।',
       },
       {
         en: 'Micro-packaging R&D: decoupled frontend modules for low-code extensibility.',
@@ -34,8 +34,12 @@ export const EXPERIENCE: ExperienceEntry[] = [
         en: 'Delivered ~10× API latency improvements and realtime chat for 200+ concurrent users.',
         bn: '~১০× API লেটেন্সি উন্নতি এবং ২০০+ একযোগী রিয়েলটাইম চ্যাট ব্যবহারকারী।',
       },
+      {
+        en: 'Instrumented production pitfalls with metrics and traces; designed CI/CD so releases were a habit. Trained engineering teams to ship on that path - quieter deploys, faster deliverables.',
+        bn: 'মেট্রিক্স ও ট্রেস দিয়ে প্রোডাকশন ফাঁদ ইনস্ট্রুমেন্ট; CI/CD এমনভাবে ডিজাইন যে রিলিজ অভ্যাস হয়ে যায়। ইঞ্জিনিয়ারিং টিমকে সেই পথে ট্রেইন - শান্ত ডিপ্লয়, দ্রুত ডেলিভারেবল।',
+      },
     ],
-    tags: ['vue', 'laravel', 'realtime', 'rbac', 'micro-packaging'],
+    tags: ['typescript', 'react', 'vue', 'node', 'laravel', 'realtime', 'rbac'],
     current: true,
   },
   {
@@ -48,8 +52,8 @@ export const EXPERIENCE: ExperienceEntry[] = [
     period: 'Aug 2023 – Nov 2024',
     highlights: [
       {
-        en: 'Taught JavaScript, Python, and C++ to students — bridging algorithms to practical engineering.',
-        bn: 'JavaScript, Python ও C++ শেখানো — অ্যালগরিদম থেকে ব্যবহারিক ইঞ্জিনিয়ারিংয়ে সেতু।',
+        en: 'Taught JavaScript, Python, and C++ to students - bridging algorithms to practical engineering.',
+        bn: 'JavaScript, Python ও C++ শেখানো - অ্যালগরিদম থেকে ব্যবহারিক ইঞ্জিনিয়ারিংয়ে সেতু।',
       },
       {
         en: 'Mentored debugging habits, code structure, and problem-solving communication.',
@@ -62,8 +66,8 @@ export const EXPERIENCE: ExperienceEntry[] = [
     id: 'upwork',
     organization: 'Upwork (Independent Consultant)',
     role: {
-      en: 'Top Rated Freelancer — Software & Marketing',
-      bn: 'টপ রেটেড ফ্রিল্যান্সার — সফটওয়্যার ও মার্কেটিং',
+      en: 'Top Rated Freelancer - Software & Marketing',
+      bn: 'টপ রেটেড ফ্রিল্যান্সার - সফটওয়্যার ও মার্কেটিং',
     },
     period: '2019 – 2024',
     highlights: [
@@ -152,15 +156,15 @@ export const EXPERIENCE: ExperienceEntry[] = [
     period: '2017 – 2018',
     highlights: [
       {
-        en: 'Led physics curriculum delivery — foundation for teaching complex systems simply.',
-        bn: 'ফিজিক্স কারিকুলাম ডেলিভারি — জটিল সিস্টেম সহজে ব্যাখ্যার ভিত্তি।',
+        en: 'Led physics curriculum delivery - foundation for teaching complex systems simply.',
+        bn: 'ফিজিক্স কারিকুলাম ডেলিভারি - জটিল সিস্টেম সহজে ব্যাখ্যার ভিত্তি।',
       },
     ],
     tags: ['teaching', 'physics', 'communication'],
   },
   {
     id: 'kuet',
-    organization: 'KUET — Computer Science & Engineering',
+    organization: 'KUET - Computer Science & Engineering',
     role: {
       en: 'B.Sc. in CSE',
       bn: 'CSE-তে B.Sc.',
@@ -173,8 +177,8 @@ export const EXPERIENCE: ExperienceEntry[] = [
         bn: 'থিসিস: ডিপ লার্নিং দিয়ে বাংলা মানসিক স্বাস্থ্য চিহ্ন শনাক্তকরণ (TransMentalNet-6)।',
       },
       {
-        en: 'ICCIT 2025 publication — imbalanced classification on 27k+ samples, 12 classes.',
-        bn: 'ICCIT 2025 প্রকাশনা — ২৭k+ নমুনায় imbalanced classification, ১২ ক্লাস।',
+        en: 'ICCIT 2025 publication - imbalanced classification on 27k+ samples, 12 classes.',
+        bn: 'ICCIT 2025 প্রকাশনা - ২৭k+ নমুনায় imbalanced classification, ১২ ক্লাস।',
       },
     ],
     tags: ['kuet', 'research', 'nlp', 'thesis'],

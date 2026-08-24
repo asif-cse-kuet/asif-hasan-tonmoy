@@ -1,10 +1,10 @@
-> **Scenario** — "ঢাকার ডেলিভারির refund window কত?" প্রশ্নে একটি policy assistant উত্তর দেয় "২১ দিন, section 4.2 অনুযায়ী" এবং একটি আসল document-এর link দেয়। Document-এ লেখা ১৪ দিন, আর section 4.2 বলে কিছু নেই। Citation যথেষ্ট বিশ্বাসযোগ্য দেখাচ্ছিল বলে support agent-রা তিন সপ্তাহ ধরে ভুল সংখ্যাটাই বলে গেছে।
+> **Scenario** - "ঢাকার ডেলিভারির refund window কত?" প্রশ্নে একটি policy assistant উত্তর দেয় "২১ দিন, section 4.2 অনুযায়ী" এবং একটি আসল document-এর link দেয়। Document-এ লেখা ১৪ দিন, আর section 4.2 বলে কিছু নেই। Citation যথেষ্ট বিশ্বাসযোগ্য দেখাচ্ছিল বলে support agent-রা তিন সপ্তাহ ধরে ভুল সংখ্যাটাই বলে গেছে।
 
 ## Why it matters
 
 - যে citation কেউ যাচাই করে না, তা citation না থাকার চেয়েও খারাপ: এটি পাঠকের কাছে মিথ্যা আত্মবিশ্বাস হস্তান্তর করে।
 - Grounding failure বিরল edge case নয়। Retrieval ঠিক থাকলেও generation দুটি chunk মিশিয়ে ফেলতে পারে, ভুল row থেকে সংখ্যা তুলতে পারে, বা নিয়ম extrapolate করতে পারে।
-- ভুল policy উত্তরের খরচ বাইরের — ভুলভাবে দেওয়া refund, compliance ঝুঁকি, support escalation।
+- ভুল policy উত্তরের খরচ বাইরের - ভুলভাবে দেওয়া refund, compliance ঝুঁকি, support escalation।
 - Refusal একটি feature। যে সিস্টেম বলে "policy document-এ এটি পাইনি", সে সবসময় উত্তর দেওয়া সিস্টেমের চেয়ে বেশি মূল্যবান।
 - English source-এর উপর ভিত্তি করা Bengali উত্তরে অন্তর্নিহিত translation ধাপে সংখ্যা ও entity সরে যাওয়ার ঝুঁকি বিশেষভাবে বেশি।
 
@@ -20,7 +20,7 @@
 
 ## How it breaks
 
-Generation extraction নয়। Model prompt দেখে সবচেয়ে সম্ভাব্য continuation তৈরি করে, আর বিশ্বাসযোগ্য দেখতে section reference অত্যন্ত সম্ভাব্য text — evidence-এ সেটি থাকুক বা না থাকুক। Pipeline যদি citation চায় অথচ কখনো যাচাই না করে, তবে citation একটি formatting রীতি মাত্র, verification ধাপ নয়।
+Generation extraction নয়। Model prompt দেখে সবচেয়ে সম্ভাব্য continuation তৈরি করে, আর বিশ্বাসযোগ্য দেখতে section reference অত্যন্ত সম্ভাব্য text - evidence-এ সেটি থাকুক বা না থাকুক। Pipeline যদি citation চায় অথচ কখনো যাচাই না করে, তবে citation একটি formatting রীতি মাত্র, verification ধাপ নয়।
 
 ```mermaid
 flowchart TD
@@ -106,7 +106,7 @@ Bengali output-এর জন্য তুলনার আগে বাংলা 
 
 ### 5. Refusal-কে স্পষ্ট ও পুরস্কৃত পথ বানান
 
-System prompt-এ লিখুন আর eval set-এ refusal কেস রাখুন: "evidence-এ উত্তর না থাকলে ঠিক এইটুকু লিখুন: `NOT_IN_SOURCES`, তারপর কী দরকার ছিল তা বলুন।" তারপর refusal precision মাপুন — যে প্রশ্নগুলোতে refusal সঠিক ছিল, তার কতগুলোতে সিস্টেম refuse করেছে?
+System prompt-এ লিখুন আর eval set-এ refusal কেস রাখুন: "evidence-এ উত্তর না থাকলে ঠিক এইটুকু লিখুন: `NOT_IN_SOURCES`, তারপর কী দরকার ছিল তা বলুন।" তারপর refusal precision মাপুন - যে প্রশ্নগুলোতে refusal সঠিক ছিল, তার কতগুলোতে সিস্টেম refuse করেছে?
 
 ### 6. Citation ক্লিকযোগ্য, যাচাইযোগ্য span হিসেবে দেখান
 
@@ -132,7 +132,7 @@ flowchart LR
 | Option | Pros | Cons | Choose when |
 |---|---|---|---|
 | শুধু prompt-এ citation | বিনামূল্যে, এক লাইন instruction | citation সাজসজ্জা, অযাচাইকৃত | internal prototype |
-| ID validation | বানানো source ধরে, খরচ প্রায় শূন্য | আসল chunk cite করা ভুল claim ধরে না | সবসময় — সবচেয়ে সস্তা লাভ |
+| ID validation | বানানো source ধরে, খরচ প্রায় শূন্য | আসল chunk cite করা ভুল claim ধরে না | সবসময় - সবচেয়ে সস্তা লাভ |
 | Number verification | সবচেয়ে ক্ষতিকর ভুল ধরে | Bengali-তে digit normalisation লাগে | সংখ্যা আছে এমন যেকোনো উত্তর |
 | NLI entailment | semantic drift ধরে | +৩০–৮০ms ও একটি model host করতে হয় | নিয়ন্ত্রিত বা high-stakes ক্ষেত্র |
 | LLM-as-judge | সূক্ষ্ম, paraphrase সামলায় | প্রতি উত্তরে খরচ, judge-এরও পক্ষপাত আছে | hot path নয়, offline eval |

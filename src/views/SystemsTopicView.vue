@@ -112,7 +112,7 @@ watch(currentLocale, (locale) => {
           </button>
         </div>
         <span v-if="missingLocale && markdown" class="text-xs text-accent-soft">
-          {{ pick({ en: 'Showing English — Bengali coming soon.', bn: 'ইংরেজি দেখানো হচ্ছে — বাংলা শীঘ্রই।' }) }}
+          {{ pick({ en: 'Showing English - Bengali coming soon.', bn: 'ইংরেজি দেখানো হচ্ছে - বাংলা শীঘ্রই।' }) }}
         </span>
       </div>
 

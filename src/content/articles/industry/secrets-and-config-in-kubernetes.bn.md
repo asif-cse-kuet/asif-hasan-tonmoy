@@ -1,9 +1,9 @@
-> **পরিস্থিতি** — Audit finding-এর পর security টিম database password rotate করল। Secret আপডেট হলো, ticket বন্ধ হলো, আর তিন দিন পর একটা pod restart হয়ে নতুন মান নিয়ে fail করল — কারণ অর্ধেক fleet কখনো restart হয়নি এবং পুরনো connection pool দিব্যি কাজ করছিল।
+> **পরিস্থিতি** - Audit finding-এর পর security টিম database password rotate করল। Secret আপডেট হলো, ticket বন্ধ হলো, আর তিন দিন পর একটা pod restart হয়ে নতুন মান নিয়ে fail করল - কারণ অর্ধেক fleet কখনো restart হয়নি এবং পুরনো connection pool দিব্যি কাজ করছিল।
 
 ## কেন গুরুত্বপূর্ণ
 
 - Environment variable হিসেবে নেওয়া secret container start-এ জমে যায়। Rollout না হলে Secret rotate করে কিছুই বদলায় না, তাই "rotated" আর "in use" নীরবে আলাদা হয়ে যায়।
-- `kubectl get secret -o yaml` base64 দেয়, যা encoding — encryption নয়। Namespace-এ read RBAC থাকা যে কেউ plaintext পায়।
+- `kubectl get secret -o yaml` base64 দেয়, যা encoding - encryption নয়। Namespace-এ read RBAC থাকা যে কেউ plaintext পায়।
 - পরিবেশভেদে config drift "staging-এ কাজ করে" ধরনের incident-এর বড় কারণ: unset variable প্রায়ই error না দিয়ে empty string হয়ে যায়।
 - Git history-তে ঢোকা secret কার্যত স্থায়ী, commit revert করলেও।
 
@@ -21,7 +21,7 @@
 
 দুটি ভিন্ন প্রক্রিয়া, দুই রকম failure।
 
-Environment variable exec-এর সময় process-এ copy হয়। Secret বদলেছে বলে Kubernetes pod restart করবে না, কারণ Deployment-এর pod template hash অপরিবর্তিত — roll করার কিছু নেই। Mounted volume অবশ্য আপডেট হয় (kubelet সাধারণত এক মিনিটের মধ্যে refresh করে), কিন্তু তখনই কাজে লাগে যখন application file আবার পড়ে — বেশিরভাগ কেবল boot-এ একবার পড়ে।
+Environment variable exec-এর সময় process-এ copy হয়। Secret বদলেছে বলে Kubernetes pod restart করবে না, কারণ Deployment-এর pod template hash অপরিবর্তিত - roll করার কিছু নেই। Mounted volume অবশ্য আপডেট হয় (kubelet সাধারণত এক মিনিটের মধ্যে refresh করে), কিন্তু তখনই কাজে লাগে যখন application file আবার পড়ে - বেশিরভাগ কেবল boot-এ একবার পড়ে।
 
 অন্যদিকে validation ছাড়া config-এ key-নামের একটা typo `undefined` দেয়, যা `""` হয়, আর তা শেষে `localhost`-এ connection হয়ে দাঁড়ায়।
 

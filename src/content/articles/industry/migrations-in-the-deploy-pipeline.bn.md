@@ -1,10 +1,10 @@
-> **পরিস্থিতি** — একটা release এক migration-এ `users.name`-কে `users.full_name` করল। Rolling update চলাকালীন পুরনো pod এখনো `SELECT name` করে এবং 500 দিতে শুরু করে। Deployment rollback করেও লাভ হয় না, কারণ column ইতিমধ্যেই নেই।
+> **পরিস্থিতি** - একটা release এক migration-এ `users.name`-কে `users.full_name` করল। Rolling update চলাকালীন পুরনো pod এখনো `SELECT name` করে এবং 500 দিতে শুরু করে। Deployment rollback করেও লাভ হয় না, কারণ column ইতিমধ্যেই নেই।
 
 ## কেন গুরুত্বপূর্ণ
 
 - Rolling update নিশ্চিত করে এমন একটা সময় থাকবে যখন পুরনো ও নতুন কোড একই schema-তে চলে। backwards compatible নয় এমন যেকোনো migration সেই সময়টাকে outage বানায়।
 - Destructive DDL আপনার rollback-এর সুযোগ কেড়ে নেয়। Column drop হয়ে গেলে `kubectl rollout undo` এমন কোড ফেরায় যা চলতে পারে না।
-- Table-level lock নেওয়া migration পুরো সময় write আটকায় — লোডে থাকা বড় table-এ এটা সম্পূর্ণ থেমে যাওয়া।
+- Table-level lock নেওয়া migration পুরো সময় write আটকায় - লোডে থাকা বড় table-এ এটা সম্পূর্ণ থেমে যাওয়া।
 - প্রতিটি replica থেকে একসাথে migration চালালে duplicate execution, lock contention বা নষ্ট migration ledger হয়।
 
 ## লক্ষণ
@@ -19,7 +19,7 @@
 
 ## কীভাবে ভাঙে
 
-"কোড আর schema একসাথে deploy করি" — এই মানসিক মডেল তখনই খাটে যখন একসময়ে ঠিক একটি version চলে। Rolling update-এ Kubernetes তা কখনো দেয় না, canary-ও দেয় না।
+"কোড আর schema একসাথে deploy করি" - এই মানসিক মডেল তখনই খাটে যখন একসময়ে ঠিক একটি version চলে। Rolling update-এ Kubernetes তা কখনো দেয় না, canary-ও দেয় না।
 
 Column rename আসলে দুটি অসঙ্গত schema, এক ধাপ হিসেবে উপস্থাপিত। Migration commit হওয়ামাত্র প্রতিটি পুরনো pod ভাঙা; আর rollout শেষ না হওয়া পর্যন্ত un-migrated replica-তে চলা প্রতিটি নতুন pod-ও ভাঙা।
 

@@ -1,10 +1,10 @@
-> **Scenario** — Vue router-এর প্রতিটি route `() => import(...)`, তবু initial bundle ১.৪ MB gzipped আর mid-tier Android-এ 4G-তে LCP ৪.১ সেকেন্ড। Report route-এর charting library entry chunk-এ ঢুকে গেছে, কারণ একটা shared `formatters.ts` সেটা re-export করে।
+> **Scenario** - Vue router-এর প্রতিটি route `() => import(...)`, তবু initial bundle ১.৪ MB gzipped আর mid-tier Android-এ 4G-তে LCP ৪.১ সেকেন্ড। Report route-এর charting library entry chunk-এ ঢুকে গেছে, কারণ একটা shared `formatters.ts` সেটা re-export করে।
 
 ## Why it matters
 
 - Lazy route বিনামূল্যে নয়: entry ও lazy route দুই জায়গা থেকে import হওয়া shared module common chunk-এ উঠে আসে এবং সাথে সাথেই load হয়। Split কেবল কাগজে থাকে।
-- Request waterfall byte-এর চেয়েও দামি। Entry chunk, তারপর route chunk, তারপর ভিতরের dynamic component — তিনটা serial round trip মানে mobile-এ প্রায় ৩০০–৬০০ ms খাঁটি latency।
-- LCP ২.৫ সেকেন্ডের নিচে ও INP ২০০ ms-এর নিচে — এগুলোই field threshold যা user ও search ranking দেখে। Mid-tier ফোনে ১.৪ MB entry chunk শুধু parse ও compile-এই ৫০০–৯০০ ms খায়।
+- Request waterfall byte-এর চেয়েও দামি। Entry chunk, তারপর route chunk, তারপর ভিতরের dynamic component - তিনটা serial round trip মানে mobile-এ প্রায় ৩০০–৬০০ ms খাঁটি latency।
+- LCP ২.৫ সেকেন্ডের নিচে ও INP ২০০ ms-এর নিচে - এগুলোই field threshold যা user ও search ranking দেখে। Mid-tier ফোনে ১.৪ MB entry chunk শুধু parse ও compile-এই ৫০০–৯০০ ms খায়।
 - Over-splitting উল্টো failure: ৩ KB করে ২০০টা chunk HTTP overhead বাড়ায় আর compression নষ্ট করে।
 
 ## Symptoms
@@ -36,7 +36,7 @@ flowchart TD
 ## Root causes
 
 1. Barrel file অসম্পর্কিত ভারী module-কে entry graph-এ টানে।
-2. শুধু route-level split — editor, chart বা map-এর মতো ভারী leaf component split হয় না।
+2. শুধু route-level split - editor, chart বা map-এর মতো ভারী leaf component split হয় না।
 3. App যত ভাষা সাপোর্ট করে সব locale data ও polyfill eagerly import হয়।
 4. `manualChunks` strategy নেই, তাই vendor code হয় এক বিশাল chunk নয়তো ছড়ানো duplicate।
 5. Lazy component জায়গা সংরক্ষণ ছাড়াই render হয়, তাই আসার সময় CLS spike।
@@ -58,7 +58,7 @@ Gzipped size দিয়ে sort করে দেখুন entry chunk-এ এ�
 Leaf module সরাসরি import করুন:
 
 ```ts
-// before — pulls the whole barrel graph
+// before - pulls the whole barrel graph
 import { formatCurrency } from '@/utils'
 // after
 import { formatCurrency } from '@/utils/currency'

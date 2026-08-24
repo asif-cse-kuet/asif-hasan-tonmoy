@@ -1,11 +1,11 @@
-> **Scenario** — ২০:০০-এ একটা marketing push এমন API-তে সেকেন্ডে ১২,০০০ request পাঠায় যেটা আরামে ৪,০০০ serve করে। কিছুই crash করে না। প্রতিটি request accept হয়, queue-এ বসে, ১৪ সেকেন্ড পরে উত্তর পায় — ততক্ষণে client ৫s-এ timeout করে retry করে ফেলেছে। কার্যকর goodput: প্রায় শূন্য।
+> **Scenario** - ২০:০০-এ একটা marketing push এমন API-তে সেকেন্ডে ১২,০০০ request পাঠায় যেটা আরামে ৪,০০০ serve করে। কিছুই crash করে না। প্রতিটি request accept হয়, queue-এ বসে, ১৪ সেকেন্ড পরে উত্তর পায় - ততক্ষণে client ৫s-এ timeout করে retry করে ফেলেছে। কার্যকর goodput: প্রায় শূন্য।
 
 ## Why it matters
 
 - Overload-এ সব accept করা সিস্টেমের throughput বাড়তি reject করা সিস্টেমের চেয়ে *কম*। যে কাজের জন্য কেউ অপেক্ষা করছে না, সেটা queue-এ রাখা নিছক অপচয়।
 - Little's Law ছাড় দেয় না: ৪,০০০ req/s capacity-তে ১২,০০০ এলে queue depth সেকেন্ডে ৮,০০০ বাড়ে। ১০ সেকেন্ড পরে নতুন request ২০ সেকেন্ড পিছিয়ে।
 - Timeout-এ client retry arrival rate বাড়ায়, তাই overload নিজেই নিজেকে খাওয়ায়।
-- Queue depth-এর সাথে memory বাড়ে। শেষটা সাধারণত OOM kill, যা *সব* in-flight কাজ ফেলে দেয় — যেগুলো সফল হতো সেগুলোসহ।
+- Queue depth-এর সাথে memory বাড়ে। শেষটা সাধারণত OOM kill, যা *সব* in-flight কাজ ফেলে দেয় - যেগুলো সফল হতো সেগুলোসহ।
 - দ্রুত 429 দিয়ে ৮,০০০ req/s reject করলে ৪,০০০ req/s SLO-র ভেতর থাকে। শূন্যের তুলনায় সেটা ভালো দিন।
 
 ## Symptoms
@@ -17,11 +17,11 @@
 | Goodput | *Client timeout-এর আগে সম্পন্ন* req/s ধসে যায়, অথচ accepted req/s উঁচু থাকে |
 | Retries | Inbound RPS আসল user rate-এর ২-৩ গুণ; একই idempotency key বারবার |
 | Memory | Queue depth-এর সমানুপাতে RSS বাড়ে, তারপর `dmesg`-এ `Killed process` |
-| CPU | Saturated নয় — bottleneck pool বা lock, CPU ৫৫%-এ "ঠিকই" দেখায় |
+| CPU | Saturated নয় - bottleneck pool বা lock, CPU ৫৫%-এ "ঠিকই" দেখায় |
 
 ## How it breaks
 
-Serve করার চেয়ে দ্রুত আসা কাজ কোথাও যেতে হয়। Unbounded queue overload সমস্যাকে latency সমস্যা, তারপর memory সমস্যা বানায়। মূল ব্যাপার হলো queued request বুড়ো হতে থাকে: worker যখন #৪০,০০০ request তোলে, তখন যে client পাঠিয়েছিল সে ৯ সেকেন্ড আগেই হাল ছেড়ে দুটো নতুন পাঠিয়েছে। Server এখন ১০০% capacity খরচ করছে এমন response বানাতে যা ফেলে দেওয়া হবে, আর তার তৈরি retry arrival rate আরও বাড়াচ্ছে। এটাই metastable failure — marketing traffic থামার পরেও retry backlog overload ধরে রাখায় সিস্টেম down থাকে।
+Serve করার চেয়ে দ্রুত আসা কাজ কোথাও যেতে হয়। Unbounded queue overload সমস্যাকে latency সমস্যা, তারপর memory সমস্যা বানায়। মূল ব্যাপার হলো queued request বুড়ো হতে থাকে: worker যখন #৪০,০০০ request তোলে, তখন যে client পাঠিয়েছিল সে ৯ সেকেন্ড আগেই হাল ছেড়ে দুটো নতুন পাঠিয়েছে। Server এখন ১০০% capacity খরচ করছে এমন response বানাতে যা ফেলে দেওয়া হবে, আর তার তৈরি retry arrival rate আরও বাড়াচ্ছে। এটাই metastable failure - marketing traffic থামার পরেও retry backlog overload ধরে রাখায় সিস্টেম down থাকে।
 
 ```mermaid
 flowchart LR
@@ -41,7 +41,7 @@ flowchart LR
 3. Budget ছাড়া client retry, ফলে failure load কমায় না, বাড়ায়।
 4. Admission সিদ্ধান্ত দামি কাজের (auth, DB lookup) পরে, আগে নয়।
 5. সব traffic সমান ধরা: health check, batch backfill ও checkout একই queue-তে।
-6. একমাত্র প্রতিরক্ষা autoscaling — ১০ সেকেন্ডের spike-এর বিরুদ্ধে ৩ মিনিটের scale-out।
+6. একমাত্র প্রতিরক্ষা autoscaling - ১০ সেকেন্ডের spike-এর বিরুদ্ধে ৩ মিনিটের scale-out।
 
 ## How to solve it
 
@@ -68,7 +68,7 @@ export function admit(res: Response): boolean {
 
 ### 2. অতি পুরনো request ফেলে দিন (LIFO + deadline)
 
-Overload-এ FIFO সবচেয়ে *পুরনো* — অর্থাৎ সবচেয়ে বেশি সম্ভাবনায় পরিত্যক্ত — request আগে serve করে। Deadline check-সহ LIFO সেগুলো serve করে যেগুলো এখনো কাজে আসবে।
+Overload-এ FIFO সবচেয়ে *পুরনো* - অর্থাৎ সবচেয়ে বেশি সম্ভাবনায় পরিত্যক্ত - request আগে serve করে। Deadline check-সহ LIFO সেগুলো serve করে যেগুলো এখনো কাজে আসবে।
 
 ```python
 import time
@@ -125,7 +125,7 @@ class RetryBudget {
 
 ### 6. Autoscaling রাখুন, তবে ধীর স্তর হিসেবে
 
-Shedding প্রথম ৬০ সেকেন্ড সামলায়; autoscaling পরের ১০ মিনিট। CPU নয়, queue depth বা concurrency-তে scale করুন — bottleneck খুব কমই CPU।
+Shedding প্রথম ৬০ সেকেন্ড সামলায়; autoscaling পরের ১০ মিনিট। CPU নয়, queue depth বা concurrency-তে scale করুন - bottleneck খুব কমই CPU।
 
 ## Target design
 
@@ -159,13 +159,13 @@ flowchart TD
 - [ ] Shed response p99-এ ১০ms-এর নিচে (সফল response থেকে আলাদা করে measure করুন)।
 - [ ] `queue_depth`, `shed_total{reason}` ও `goodput` এক dashboard-এ।
 - [ ] Path-এর প্রতিটি queue-র documented maximum আছে: listen backlog, app queue, DB pool, HTTP client pool।
-- [ ] Client `Retry-After` মানে — shedding শুরুর পর inbound RPS *কমতে* দেখে যাচাই করুন।
+- [ ] Client `Retry-After` মানে - shedding শুরুর পর inbound RPS *কমতে* দেখে যাচাই করুন।
 - [ ] ৩ গুণ load-এ ১৫ মিনিট soak test শেষে service চালু এবং RSS সমান।
 - [ ] Health-check endpoint কখনো shed হয় না, এবং user quota-তে গোনা হয় না।
 
 ## Anti-patterns
 
-- "Spike সামলাতে" queue size বা thread count বাড়ানো — এতে latency ও memory বাড়ে, capacity নয়।
+- "Spike সামলাতে" queue size বা thread count বাড়ানো - এতে latency ও memory বাড়ে, capacity নয়।
 - Authentication ও database lookup-এর *পরে* shed করা, ফলে প্রতিটি rejected request-ও ৪০ms খায়।
 - 503-এর বদলে 500 দেওয়া, যা client-কে আগ্রাসী retry করায় ও error SLO নষ্ট করে।
 - Shed হওয়া request jitter ছাড়া সাথে সাথে retry করা, আবার herd তৈরি।

@@ -1,9 +1,9 @@
-> **Scenario** — Redis has a 30-second hiccup. Every pod's `/health` endpoint checks Redis, every liveness probe fails, and Kubernetes restarts the entire fleet at once. A 30-second dependency blip becomes a 6-minute full outage.
+> **Scenario** - Redis has a 30-second hiccup. Every pod's `/health` endpoint checks Redis, every liveness probe fails, and Kubernetes restarts the entire fleet at once. A 30-second dependency blip becomes a 6-minute full outage.
 
 ## Why it matters
 
 - Liveness probes are the only thing in your cluster authorised to kill a running process. A wrong one is an automated outage generator.
-- Readiness controls Endpoints membership, so a lying readiness probe routes traffic to pods that cannot serve it — 502s the load balancer will happily report as your fault.
+- Readiness controls Endpoints membership, so a lying readiness probe routes traffic to pods that cannot serve it - 502s the load balancer will happily report as your fault.
 - Slow-starting apps (JVM warmup, migrations, cache priming) get killed in a restart loop without a startup probe, and `CrashLoopBackOff` hides the real cause.
 - Probe design decides whether a rolling update is invisible or a five-minute error spike.
 
@@ -19,7 +19,7 @@
 
 ## How it breaks
 
-The core mistake is pointing liveness and readiness at the same handler, and making that handler check downstream dependencies. Liveness should answer "is this process wedged?" — a question only about the process itself. Readiness answers "should I get traffic right now?" — that one may consider dependencies.
+The core mistake is pointing liveness and readiness at the same handler, and making that handler check downstream dependencies. Liveness should answer "is this process wedged?" - a question only about the process itself. Readiness answers "should I get traffic right now?" - that one may consider dependencies.
 
 When both check Redis, a dependency blip flips every pod unready (correct, if degraded operation is impossible) *and* kills every pod (never correct). Restarting does not fix Redis; it just throws away warm caches and connection pools and forces a stampede of reconnects.
 
@@ -50,7 +50,7 @@ sequenceDiagram
 ### 1. Separate the three endpoints
 
 ```ts
-// Express / Node example — no dependency calls in /livez
+// Express / Node example - no dependency calls in /livez
 app.get('/livez', (_req, res) => res.status(200).send('ok'))
 
 app.get('/readyz', async (_req, res) => {
@@ -84,7 +84,7 @@ readinessProbe:
   successThreshold: 1
 ```
 
-While a startup probe is running, liveness and readiness are suspended — that is exactly what you want for slow boots.
+While a startup probe is running, liveness and readiness are suspended - that is exactly what you want for slow boots.
 
 ### 3. Drain before you die
 
@@ -139,7 +139,7 @@ flowchart LR
 
 ## Anti-patterns
 
-- Fixing restart loops by raising `failureThreshold` to 30 — that just disables liveness with extra steps.
+- Fixing restart loops by raising `failureThreshold` to 30 - that just disables liveness with extra steps.
 - Checking every downstream service in readiness, so one flaky third-party API can empty your Endpoints list.
 - Running expensive queries (`SELECT count(*)`) in a probe that fires every 5 seconds across 200 pods.
 - Using TCP probes for HTTP services: the socket accepts long before the app can route a request.

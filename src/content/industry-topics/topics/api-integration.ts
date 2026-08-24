@@ -46,8 +46,8 @@ const topics: IndustryTopic[] = [
       bn: 'Jitter, budget ও সৎ error class সহ retry',
     },
     summary: {
-      en: 'Exponential backoff alone still synchronises clients — jitter, retry budgets, and which status codes are safe to repeat.',
-      bn: 'শুধু exponential backoff client sync করেই ফেলে — jitter, retry budget, আর কোন status code repeat করা নিরাপদ।',
+      en: 'Exponential backoff alone still synchronises clients - jitter, retry budgets, and which status codes are safe to repeat.',
+      bn: 'শুধু exponential backoff client sync করেই ফেলে - jitter, retry budget, আর কোন status code repeat করা নিরাপদ।',
     },
     tags: ['retries', 'backoff', 'jitter', 'resilience'],
     difficulty: 'intermediate',
@@ -64,8 +64,8 @@ const topics: IndustryTopic[] = [
       bn: 'Rate limiting algorithm ও fair quota',
     },
     summary: {
-      en: 'Fixed window, sliding log, token bucket, leaky bucket — and the headers clients need to behave.',
-      bn: 'fixed window, sliding log, token bucket, leaky bucket — আর client-কে ভদ্র রাখার header।',
+      en: 'Fixed window, sliding log, token bucket, leaky bucket - and the headers clients need to behave.',
+      bn: 'fixed window, sliding log, token bucket, leaky bucket - আর client-কে ভদ্র রাখার header।',
     },
     tags: ['rate-limiting', 'token-bucket', 'leaky-bucket', 'quotas', 'redis'],
     difficulty: 'intermediate',
@@ -136,8 +136,8 @@ const topics: IndustryTopic[] = [
       bn: 'Bulk endpoint ও partial failure semantics',
     },
     summary: {
-      en: 'One request, 500 items, 7 failures — what status code do you return and what does the client retry?',
-      bn: 'এক request, ৫০০ item, ৭টি failure — কোন status code ফেরাবেন আর client কী retry করবে?',
+      en: 'One request, 500 items, 7 failures - what status code do you return and what does the client retry?',
+      bn: 'এক request, ৫০০ item, ৭টি failure - কোন status code ফেরাবেন আর client কী retry করবে?',
     },
     tags: ['bulk-api', 'partial-failure', 'idempotency', 'http', 'batching'],
     difficulty: 'advanced',
@@ -172,8 +172,8 @@ const topics: IndustryTopic[] = [
       bn: 'GraphQL query depth ও N+1 tax',
     },
     summary: {
-      en: 'A 12-line query can issue 4,000 SQL statements — depth limits, cost analysis, and batched loaders.',
-      bn: '১২ লাইনের query ৪,০০০ SQL চালাতে পারে — depth limit, cost analysis ও batched loader।',
+      en: 'A 12-line query can issue 4,000 SQL statements - depth limits, cost analysis, and batched loaders.',
+      bn: '১২ লাইনের query ৪,০০০ SQL চালাতে পারে - depth limit, cost analysis ও batched loader।',
     },
     tags: ['graphql', 'n-plus-one', 'dataloader', 'query-cost'],
     difficulty: 'advanced',

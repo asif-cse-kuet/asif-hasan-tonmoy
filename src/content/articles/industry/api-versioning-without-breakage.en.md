@@ -1,4 +1,4 @@
-> **Scenario** — A cleanup PR renames the JSON field `customer_name` to `customerName` for consistency. It ships on a Thursday afternoon. Two mobile app versions still in the wild parse `customer_name` with a non-nullable decoder and crash on launch. The API team's tests all pass, because the API team's tests were updated in the same PR.
+> **Scenario** - A cleanup PR renames the JSON field `customer_name` to `customerName` for consistency. It ships on a Thursday afternoon. Two mobile app versions still in the wild parse `customer_name` with a non-nullable decoder and crash on launch. The API team's tests all pass, because the API team's tests were updated in the same PR.
 
 ## Why it matters
 
@@ -84,7 +84,7 @@ class OrderResource extends JsonResource
 }
 ```
 
-The v2 resource is a separate class. The controller and the domain model are shared; only the boundary is duplicated. That duplication is the point — it is what lets you change the model freely.
+The v2 resource is a separate class. The controller and the domain model are shared; only the boundary is duplicated. That duplication is the point - it is what lets you change the model freely.
 
 ### 3. Resolve the version from a header with a URL fallback
 
@@ -155,7 +155,7 @@ GROUP BY api_version, tenant_id
 ORDER BY calls DESC;
 ```
 
-Only after this query returns a short list — and each of those tenants has been emailed — do you schedule the removal.
+Only after this query returns a short list - and each of those tenants has been emailed - do you schedule the removal.
 
 ### 6. Make the client forgiving too
 
@@ -165,7 +165,7 @@ const OrderSchema = z.object({
   customer_name: z.string().nullish(),
   customerName: z.string().nullish(),
   total: z.string(),
-  status: z.string(), // not z.enum — unknown values must not throw
+  status: z.string(), // not z.enum - unknown values must not throw
 }).passthrough()
 
 export function normalizeOrder(raw: unknown) {

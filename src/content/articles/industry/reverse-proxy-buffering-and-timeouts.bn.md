@@ -1,4 +1,4 @@
-> **Scenario** — যে report export আগে ৪০ সেকেন্ডে শেষ হতো, সেটি এখন ঠিক ৬০ সেকেন্ডে `504 Gateway Time-out` ফেরত দিচ্ছে। application log বলছে একই request ৭১ সেকেন্ডে সফলভাবে শেষ হয়েছে। কোনো application deploy হয়নি; শুধু service-টিকে নতুন একটি nginx tier-এর পিছনে সরানো হয়েছে।
+> **Scenario** - যে report export আগে ৪০ সেকেন্ডে শেষ হতো, সেটি এখন ঠিক ৬০ সেকেন্ডে `504 Gateway Time-out` ফেরত দিচ্ছে। application log বলছে একই request ৭১ সেকেন্ডে সফলভাবে শেষ হয়েছে। কোনো application deploy হয়নি; শুধু service-টিকে নতুন একটি nginx tier-এর পিছনে সরানো হয়েছে।
 
 ## Why it matters
 
@@ -12,7 +12,7 @@
 
 | Signal | What you observe |
 | --- | --- |
-| Latency histogram | ঠিক 60.0s বা 30.0s-এ শক্ত দেয়াল — tail নয়, cliff |
+| Latency histogram | ঠিক 60.0s বা 30.0s-এ শক্ত দেয়াল - tail নয়, cliff |
 | nginx `error.log` | `upstream timed out (110: Connection timed out) while reading response header from upstream` |
 | `$upstream_response_time` | `$request_time`-এর চেয়ে বড়, বা connection কাটলে `-` |
 | Backend access log | user যেটাকে fail দেখেছে, সেটির জন্য ৭১s-এ `200 OK` |
@@ -22,7 +22,7 @@
 
 ## How it breaks
 
-nginx একটি proxied request-এ চারটি আলাদা timer চালায়: `proxy_connect_timeout` (upstream-এ TCP handshake, default 60s), `proxy_send_timeout` (upstream-এ পরপর write-এর ফাঁক), `proxy_read_timeout` (upstream থেকে পরপর **read**-এর ফাঁক, default 60s) এবং `send_timeout` (client-এ write-এর ফাঁক)। কামড় দেয় `proxy_read_timeout`, আর ফাঁদটা হলো — এটি total-request budget নয়, idle-gap budget। প্রতি ১০s-এ একটি keepalive byte পাঠানো backend এক ঘণ্টা চলতে পারে; ৬১s নীরবে ভেবে তারপর উত্তর দেওয়া backend মারা পড়ে।
+nginx একটি proxied request-এ চারটি আলাদা timer চালায়: `proxy_connect_timeout` (upstream-এ TCP handshake, default 60s), `proxy_send_timeout` (upstream-এ পরপর write-এর ফাঁক), `proxy_read_timeout` (upstream থেকে পরপর **read**-এর ফাঁক, default 60s) এবং `send_timeout` (client-এ write-এর ফাঁক)। কামড় দেয় `proxy_read_timeout`, আর ফাঁদটা হলো - এটি total-request budget নয়, idle-gap budget। প্রতি ১০s-এ একটি keepalive byte পাঠানো backend এক ঘণ্টা চলতে পারে; ৬১s নীরবে ভেবে তারপর উত্তর দেওয়া backend মারা পড়ে।
 
 buffering সমস্যাটা বাড়ায়। `proxy_buffering on` (default) থাকলে nginx পুরো response `proxy_buffers`-এ পড়ে, তার বেশি হলে temp file-এ spill করে, তারপর client-কে লেখে। এতে slow client থেকে backend বাঁচে ঠিকই, কিন্তু streaming ধ্বংস হয় এবং disk request path-এ ঢুকে যায়।
 
@@ -44,7 +44,7 @@ sequenceDiagram
 ## Root causes
 
 1. backend-এর work budget ১২০s, অথচ `proxy_read_timeout` default ৬০s-এই পড়ে আছে।
-2. budget nested নয় — client 30s, edge 60s, app 120s — তাই কে আগে হাল ছাড়বে তা নিয়ে layer-গুলো একমত নয়।
+2. budget nested নয় - client 30s, edge 60s, app 120s - তাই কে আগে হাল ছাড়বে তা নিয়ে layer-গুলো একমত নয়।
 3. যে endpoint-এ stream করা দরকার সেখানেও `proxy_buffering on`, ফলে TTFB = total time।
 4. `proxy_buffers` p95 response-এর চেয়ে ছোট, তাই প্রতিটি বড় response disk-এর `proxy_temp` দিয়ে যায়।
 5. বড় upload-এ `proxy_request_buffering on`, ফলে পুরো upload proxy disk-এ নামার পরই backend body দেখে।
@@ -99,7 +99,7 @@ location /api/events {
 }
 ```
 
-application per-response `X-Accel-Buffering: no` পাঠাতে পারে — shared location-এ ঢালাও `proxy_buffering off`-এর চেয়ে সেটি নিরাপদ।
+application per-response `X-Accel-Buffering: no` পাঠাতে পারে - shared location-এ ঢালাও `proxy_buffering off`-এর চেয়ে সেটি নিরাপদ।
 
 ### 4. buffer এমন size দিন যাতে সাধারণ response disk ছোঁয় না
 
@@ -135,7 +135,7 @@ log_format upstreamlog '$remote_addr $status rt=$request_time '
 access_log /var/log/nginx/access.log upstreamlog;
 ```
 
-`$upstream_header_time` "backend ভাবছে" আর "backend ধীরে stream করছে" আলাদা করে — এই শ্রেণির incident-এ সবচেয়ে কাজের পার্থক্য।
+`$upstream_header_time` "backend ভাবছে" আর "backend ধীরে stream করছে" আলাদা করে - এই শ্রেণির incident-এ সবচেয়ে কাজের পার্থক্য।
 
 ### 7. সত্যিকারের লম্বা কাজ request path থেকে সরান
 
@@ -176,7 +176,7 @@ flowchart LR
 
 ## Anti-patterns
 
-- global `proxy_read_timeout 3600s` দিয়ে "কিছুই timeout হবে না" বানানো — তখন মৃত upstream এক ঘণ্টা connection ধরে রাখে।
+- global `proxy_read_timeout 3600s` দিয়ে "কিছুই timeout হবে না" বানানো - তখন মৃত upstream এক ঘণ্টা connection ধরে রাখে।
 - client timeout না বাড়িয়ে শুধু proxy timeout বাড়ানো, ফলে user abort করে already-loaded backend-এ retry করে।
 - একটি SSE endpoint ঠিক করতে গোটা server-এ `proxy_buffering off` দেওয়া।
 - proxy-তে timeout হওয়া non-idempotent POST-এ client retry যোগ করা।

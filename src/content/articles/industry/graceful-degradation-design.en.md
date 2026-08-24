@@ -1,4 +1,4 @@
-> **Scenario** — The recommendation service starts returning 504s at 18:40. The product page calls it synchronously to render a "You may also like" strip, so every product page now takes 30 seconds and then throws. Checkout conversion drops 71% because of a strip nobody buys from.
+> **Scenario** - The recommendation service starts returning 504s at 18:40. The product page calls it synchronously to render a "You may also like" strip, so every product page now takes 30 seconds and then throws. Checkout conversion drops 71% because of a strip nobody buys from.
 
 ## Why it matters
 
@@ -20,7 +20,7 @@
 
 ## How it breaks
 
-The failure is not the recommender being down — that is expected. The failure is that a synchronous call with a 30-second timeout, no fallback, and no circuit breaker converts an optional feature into a hard dependency. Worse, the slow calls hold web workers. With 200 workers and a 30s hang, the page can serve at most ~6.6 requests/second regardless of how healthy everything else is. The optional dependency has become the capacity limit for the whole site.
+The failure is not the recommender being down - that is expected. The failure is that a synchronous call with a 30-second timeout, no fallback, and no circuit breaker converts an optional feature into a hard dependency. Worse, the slow calls hold web workers. With 200 workers and a 30s hang, the page can serve at most ~6.6 requests/second regardless of how healthy everything else is. The optional dependency has become the capacity limit for the whole site.
 
 ```mermaid
 flowchart LR
@@ -77,7 +77,7 @@ const recommendations = await callDep(
 )
 ```
 
-A 150ms timeout for an optional strip is not stingy — it is the whole point. If the recommender cannot answer inside the page's budget, its answer is worthless.
+A 150ms timeout for an optional strip is not stingy - it is the whole point. If the recommender cannot answer inside the page's budget, its answer is worthless.
 
 ### 2. Derive timeouts from a per-request budget, not per-call defaults
 
@@ -167,7 +167,7 @@ flowchart TD
 
 ## Anti-patterns
 
-- Wrapping the call in `try/catch` that logs and rethrows — that is a hard dependency with extra steps.
+- Wrapping the call in `try/catch` that logs and rethrows - that is a hard dependency with extra steps.
 - Retrying a timeout on the critical path, turning one 30s wait into three.
 - Setting the fallback to a synchronous database query that is itself under load.
 - Commenting out the call during the incident and forgetting to restore it for six weeks.

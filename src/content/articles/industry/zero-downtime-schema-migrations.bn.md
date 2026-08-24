@@ -1,11 +1,11 @@
-> **Scenario** — শুক্রবারের deploy ৪২ মিলিয়ন row-এর MySQL 8.0 table-এ `ALTER TABLE orders ADD COLUMN fulfilment_state VARCHAR(32) NOT NULL DEFAULT 'pending'` চালায়। DDL নিজে ৯০ সেকেন্ডে শেষ, কিন্তু একটা দীর্ঘ report-এর metadata lock-এর পেছনে `orders`-এর সব query queue হয়ে checkout ১১ মিনিট 500 দেয়।
+> **Scenario** - শুক্রবারের deploy ৪২ মিলিয়ন row-এর MySQL 8.0 table-এ `ALTER TABLE orders ADD COLUMN fulfilment_state VARCHAR(32) NOT NULL DEFAULT 'pending'` চালায়। DDL নিজে ৯০ সেকেন্ডে শেষ, কিন্তু একটা দীর্ঘ report-এর metadata lock-এর পেছনে `orders`-এর সব query queue হয়ে checkout ১১ মিনিট 500 দেয়।
 
 ## কেন গুরুত্বপূর্ণ
 
 - Blocking DDL background maintenance-কে সবচেয়ে busy table-এ পূর্ণ write outage-এ পরিণত করে।
 - Lock pileup migration-এর সমান নয়: ৯০ সেকেন্ডের `ALTER` ১১ মিনিট error দিতে পারে, কারণ app ইতিমধ্যে saturated pool-এ retry করে।
-- Rollback roll-forward-এর চেয়ে খারাপ। fleet-এর অর্ধেক যে column পড়ছে অন্য অর্ধেক লিখছে না — "just revert" data corrupt করে।
-- Migration একমাত্র deploy step যেটা per-request canary করা যায় না — schema হলো global state, প্রতিটি replica ও app version share করে।
+- Rollback roll-forward-এর চেয়ে খারাপ। fleet-এর অর্ধেক যে column পড়ছে অন্য অর্ধেক লিখছে না - "just revert" data corrupt করে।
+- Migration একমাত্র deploy step যেটা per-request canary করা যায় না - schema হলো global state, প্রতিটি replica ও app version share করে।
 - On-call cost asymmetric: রাত ২টায় page হওয়া engineer বুঝতেই পারে না migration ১০% না ৯০% হয়েছে।
 
 ## লক্ষণ
@@ -21,7 +21,7 @@
 
 ## কীভাবে ভাঙে
 
-ব্যর্থতা তিন ধাপের convoy। একটা দীর্ঘ analytics `SELECT` shared metadata lock ধরে আছে। `ALTER` exclusive lock চায় এবং *অপেক্ষা* করে — এতটুকু ক্ষতিকর নয়। ক্ষতি আসে queueing discipline থেকে: MySQL-এ DDL একবার waiting হলে ওই table-এর পরবর্তী প্রতিটি query-ও অপেক্ষা করে, এমনকি সাধারণ `SELECT id FROM orders WHERE id = ?`-ও। তাই একটা slow reader + একটা DDL মিলে পুরো table-এর traffic block করে।
+ব্যর্থতা তিন ধাপের convoy। একটা দীর্ঘ analytics `SELECT` shared metadata lock ধরে আছে। `ALTER` exclusive lock চায় এবং *অপেক্ষা* করে - এতটুকু ক্ষতিকর নয়। ক্ষতি আসে queueing discipline থেকে: MySQL-এ DDL একবার waiting হলে ওই table-এর পরবর্তী প্রতিটি query-ও অপেক্ষা করে, এমনকি সাধারণ `SELECT id FROM orders WHERE id = ?`-ও। তাই একটা slow reader + একটা DDL মিলে পুরো table-এর traffic block করে।
 
 এরপর app এটাকে বড় করে। প্রতিটি blocked request পুরো `lock_wait_timeout` (InnoDB-তে default ৫০ সেকেন্ড) ধরে pool connection ধরে রাখে, pool খালি হয়, এবং যে request `orders` ছোঁয় না সেগুলোও fail করতে শুরু করে।
 
@@ -39,16 +39,16 @@ flowchart TD
 
 1. DDL deploy-এর সাথে inline চলে, `lock_timeout` guard ছাড়া, তাই fast fail না করে অনির্দিষ্টকাল অপেক্ষা করে।
 2. দীর্ঘ reader (report, `pg_dump`, idle-in-transaction session) যে lock ধরে আছে DDL-কে তার জন্য অপেক্ষা করতে হয়।
-3. Single-step migration যা schema বদলায় এবং নতুন app code দরকার করে — পুরনো ও নতুন code দুটোই valid থাকে এমন কোনো version নেই।
+3. Single-step migration যা schema বদলায় এবং নতুন app code দরকার করে - পুরনো ও নতুন code দুটোই valid থাকে এমন কোনো version নেই।
 4. Backfill পুরো table-এ একটাই `UPDATE` হিসেবে লেখা, ফলে multi-GB undo/WAL burst।
 5. Column rename ও type narrowing সরাসরি ship করা, যা মূলগতভাবে backwards-incompatible।
-6. "`ADD COLUMN` তো instant" ধরে নেওয়া — Postgres 11+ constant default ও MySQL 8.0 `ALGORITHM=INSTANT`-এ সত্য, কিন্তু type change, পুরনো row-এ `NOT NULL` বা table rebuild লাগলে মিথ্যা।
+6. "`ADD COLUMN` তো instant" ধরে নেওয়া - Postgres 11+ constant default ও MySQL 8.0 `ALGORITHM=INSTANT`-এ সত্য, কিন্তু type change, পুরনো row-এ `NOT NULL` বা table rebuild লাগলে মিথ্যা।
 
 ## কীভাবে সমাধান করবেন
 
 ### ১. অপেক্ষা নয়, fast fail
 
-DDL-কে কখনও অপেক্ষা করতে দেবেন না। ছোট lock timeout দিন — migration সাথে সাথে lock পাবে, নাহলে abort হবে, traffic অক্ষত থাকবে।
+DDL-কে কখনও অপেক্ষা করতে দেবেন না। ছোট lock timeout দিন - migration সাথে সাথে lock পাবে, নাহলে abort হবে, traffic অক্ষত থাকবে।
 
 ```sql
 -- PostgreSQL: মিনিটের জন্য table block না করে abort করুক
@@ -83,7 +83,7 @@ ALTER TABLE orders
 
 ```php
 <?php
-// Laravel: idempotent, resumable backfill — queued job বা artisan command থেকে
+// Laravel: idempotent, resumable backfill - queued job বা artisan command থেকে
 $lastId = 0;
 $batch = 5000;
 
@@ -119,7 +119,7 @@ CREATE INDEX CONCURRENTLY idx_orders_fulfilment
 DROP INDEX CONCURRENTLY IF EXISTS idx_orders_fulfilment;
 ```
 
-MySQL 8.0 secondary index online তৈরি করে (`ALGORITHM=INPLACE, LOCK=NONE`), তবু শুরু ও শেষে সংক্ষিপ্ত exclusive metadata lock লাগে — তাই ধাপ ১ জরুরি।
+MySQL 8.0 secondary index online তৈরি করে (`ALGORITHM=INPLACE, LOCK=NONE`), তবু শুরু ও শেষে সংক্ষিপ্ত exclusive metadata lock লাগে - তাই ধাপ ১ জরুরি।
 
 ### ৫. constraint দুই ধাপে যোগ করুন
 
@@ -188,12 +188,12 @@ stateDiagram-v2
 
 ## Anti-pattern
 
-- Blocked `ALTER` loop-এ retry করা — প্রতিটি চেষ্টা পুরো table আবার queue করে।
+- Blocked `ALTER` loop-এ retry করা - প্রতিটি চেষ্টা পুরো table আবার queue করে।
 - `CREATE INDEX CONCURRENTLY` transaction-এ মোড়া (Postgres reject করে) বা এমন framework migration-এ রাখা যা implicit transaction খোলে।
 - একই release-এ column rename ও app change ship করা।
 - ৪ কোটি row-এর table-এ `WHERE` ছাড়া `UPDATE table SET col = ...`, তারপর disk ভরে যাওয়ায় বিস্ময়।
 - চলমান `gh-ost` cut-over kill করে `_orders_gho` ফেলে রাখা।
-- MySQL 5.7-এ `ADD COLUMN ... NOT NULL DEFAULT` free ধরে নেওয়া — এটা table rebuild করে।
+- MySQL 5.7-এ `ADD COLUMN ... NOT NULL DEFAULT` free ধরে নেওয়া - এটা table rebuild করে।
 - "migration succeeded" মানে "migration safe" ভাবা: lock-এর ক্ষতি success-এর আগেই হয়ে যায়।
 
 ## সম্পর্কিত

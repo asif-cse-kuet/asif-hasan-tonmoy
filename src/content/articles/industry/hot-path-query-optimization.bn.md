@@ -1,11 +1,11 @@
-> **Scenario** — Order list endpoint জানুয়ারিতে ছিল 40 ms, সেপ্টেম্বরে 410 ms। কোনো code বদলায়নি। `orders` table 800 k row থেকে 14 M হয়েছে, আর যে query ছোট sequential scan করত তা এখন বড়টা করছে — সাথে request-প্রতি বাড়তি 50টি round-trip যা কেউ গোনেনি।
+> **Scenario** - Order list endpoint জানুয়ারিতে ছিল 40 ms, সেপ্টেম্বরে 410 ms। কোনো code বদলায়নি। `orders` table 800 k row থেকে 14 M হয়েছে, আর যে query ছোট sequential scan করত তা এখন বড়টা করছে - সাথে request-প্রতি বাড়তি 50টি round-trip যা কেউ গোনেনি।
 
 ## Why it matters
 
 - Query খরচ বাড়ে data-র সাথে, deploy-এর সাথে নয়। একটি commit ছাড়াই endpoint ব্যর্থতায় নামতে পারে।
 - Database ভাগ করা। একটি index-হীন hot query buffer cache saturate করে প্রতিটি অন্য endpoint ধীর করে।
 - N+1 fan-out round-trip latency-কে result-set size দিয়ে গুণ করে, তাই product সফল হওয়ার সাথেই খারাপ হয়।
-- একটি ভালোভাবে বাছা index নিয়মিতভাবে endpoint-কে শত মিলিসেকেন্ড থেকে নিচের দিকের দশে নামায় — stack-এ সেরা latency-per-ঘণ্টা-পরিশ্রম।
+- একটি ভালোভাবে বাছা index নিয়মিতভাবে endpoint-কে শত মিলিসেকেন্ড থেকে নিচের দিকের দশে নামায় - stack-এ সেরা latency-per-ঘণ্টা-পরিশ্রম।
 - ধীর query চলাকালে ধরে রাখা connection অন্য request পায় না, তাই ধীর query throughput limit হয়ে যায়।
 
 ## Symptoms
@@ -24,7 +24,7 @@
 
 দুটো স্বাধীন সমস্যা মিলে যায়। দুটোই মাপুন।
 
-**সমস্যা ১ — অনুপস্থিত index.** List query:
+**সমস্যা ১ - অনুপস্থিত index.** List query:
 
 ```sql
 SELECT * FROM orders
@@ -35,9 +35,9 @@ SELECT * FROM orders
 
 14 M row আর উপযুক্ত index না থাকলে Postgres প্রতিটি row পড়ে। page-প্রতি 8 KB আর মোটামুটি page-প্রতি 40 row ধরলে তা 14,000,000 / 40 = **350,000 page** = 2.8 GB। Warm cache-এ ~2 GB/s effective হলে ~1.4 s; দৃশ্যমান 410 ms মানে বেশিরভাগ cached ছিল আর parallel worker সাহায্য করেছে। যেভাবেই হোক কাজটা O(table), আর table দ্বিগুণ হলে দ্বিগুণ হয়।
 
-`(tenant_id, status, created_at DESC)`-এ composite index থাকলে planner index ধরে হাঁটে আর 25টি মিল পাওয়ার পরে থামে। খরচ হয় O(log n + 25) — মোটামুটি 4টি index page + 25টি heap fetch, প্রায় **29 page read**, 350,000 নয়। ছোঁয়া page-এ **12,000×** হ্রাস।
+`(tenant_id, status, created_at DESC)`-এ composite index থাকলে planner index ধরে হাঁটে আর 25টি মিল পাওয়ার পরে থামে। খরচ হয় O(log n + 25) - মোটামুটি 4টি index page + 25টি heap fetch, প্রায় **29 page read**, 350,000 নয়। ছোঁয়া page-এ **12,000×** হ্রাস।
 
-**সমস্যা ২ — N+1 fan-out.** 25টি order-এর প্রত্যেকটির জন্য ORM lazily customer load করে:
+**সমস্যা ২ - N+1 fan-out.** 25টি order-এর প্রত্যেকটির জন্য ORM lazily customer load করে:
 
 - order-এর 1টি query + customer-এর 25টি = **26 round-trip**
 - প্রতিটি round-trip-এ ~1.2 ms network ও protocol overhead
@@ -86,10 +86,10 @@ SELECT * FROM orders
 Output এই ক্রমে পড়ুন:
 
 1. **নিচ থেকে উপরে।** ভিতরের node আগে চলে; খরচের উৎপত্তি ওখানেই।
-2. **`actual rows` বনাম `rows`।** 100× ফারাক মানে খারাপ statistics — অন্য কিছুর আগে `ANALYZE orders` চালান।
+2. **`actual rows` বনাম `rows`।** 100× ফারাক মানে খারাপ statistics - অন্য কিছুর আগে `ANALYZE orders` চালান।
 3. **`Rows Removed by Filter`।** বড় মান মানে index খোঁজ সংকীর্ণ করেনি; filter করেছে।
 4. **`Buffers: shared read=N`।** `read` মানে disk, `hit` মানে cache। OLTP query-তে উঁচু `read` = অনুপস্থিত index।
-5. **`Sort Method: external merge Disk: 88MB`।** Sort spill করেছে — হয় order দেওয়া index যোগ করুন, নয় ওই session-এ `work_mem` বাড়ান।
+5. **`Sort Method: external merge Disk: 88MB`।** Sort spill করেছে - হয় order দেওয়া index যোগ করুন, নয় ওই session-এ `work_mem` বাড়ান।
 6. **উপরের node-এর total time**-ই আপনার query latency। endpoint budget-এর সাথে মেলান।
 
 ### 2. আগে filter, তারপর sort মেলানো index দিন
@@ -112,7 +112,7 @@ SELECT * FROM orders WHERE tenant_id = 42 AND status = 'pending'
  ORDER BY created_at DESC LIMIT 25;
 ```
 
-`CONCURRENTLY` exclusive lock এড়ায়, বিনিময়ে build দীর্ঘ হয় আর fail করলে `INVALID` index থাকতে পারে — পরে `pg_index.indisvalid` দেখুন।
+`CONCURRENTLY` exclusive lock এড়ায়, বিনিময়ে build দীর্ঘ হয় আর fail করলে `INVALID` index থাকতে পারে - পরে `pg_index.indisvalid` দেখুন।
 
 ### 3. Fan-out-কে batched query-তে গুটিয়ে ফেলুন
 

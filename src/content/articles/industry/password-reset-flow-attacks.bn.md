@@ -1,4 +1,4 @@
-> **Scenario** — Support জানাল রাতের মধ্যে তিনটি account takeover হয়েছে। তিনজনই আপনার domain থেকে দেখতে বৈধ reset email পেয়েছে। Link গিয়েছিল `https://attacker.example/reset?token=…`-এ, কারণ mailer আসা `Host` header থেকে URL বানিয়েছিল।
+> **Scenario** - Support জানাল রাতের মধ্যে তিনটি account takeover হয়েছে। তিনজনই আপনার domain থেকে দেখতে বৈধ reset email পেয়েছে। Link গিয়েছিল `https://attacker.example/reset?token=…`-এ, কারণ mailer আসা `Host` header থেকে URL বানিয়েছিল।
 
 ## Why it matters
 

@@ -1,9 +1,9 @@
-> **Scenario** — একটা Kafka consumer `subscription.renewed` process করে, card charge করে, offset commit করে। ১২ সেকেন্ডের GC pause `max.poll.interval.ms` ছাড়িয়ে যায়, broker member-কে সরিয়ে দেয়, rebalance partition অন্যকে দেয়, নতুন owner শেষ committed offset থেকে replay করে। ৩,৯০০ customer দুবার charge হয়। Broker ঠিক যা প্রতিশ্রুতি দিয়েছিল তাই করেছে; consumer exactly-once ধরে নিয়েছিল।
+> **Scenario** - একটা Kafka consumer `subscription.renewed` process করে, card charge করে, offset commit করে। ১২ সেকেন্ডের GC pause `max.poll.interval.ms` ছাড়িয়ে যায়, broker member-কে সরিয়ে দেয়, rebalance partition অন্যকে দেয়, নতুন owner শেষ committed offset থেকে replay করে। ৩,৯০০ customer দুবার charge হয়। Broker ঠিক যা প্রতিশ্রুতি দিয়েছিল তাই করেছে; consumer exactly-once ধরে নিয়েছিল।
 
 ## Why it matters
 
 - বাস্তবে প্রতিটি মূলধারার broker at-least-once দেয়। Duplicate edge case নয়, ওটাই contract।
-- টাকা, inventory বা notification-এ duplicate processing customer-দৃশ্যমান ক্ষতি করে — refund, chargeback ও আস্থার দাম দিতে হয়।
+- টাকা, inventory বা notification-এ duplicate processing customer-দৃশ্যমান ক্ষতি করে - refund, chargeback ও আস্থার দাম দিতে হয়।
 - Duplicate গুচ্ছ আকারে আসে: এক rebalance বা redeploy একসাথে হাজার হাজার message replay করে, তাই blast radius বড় ও আকস্মিক।
 - পরে idempotency যোগ করতে গেলে in-flight কাজের dedup state backfill করতে হয়, যা শুরুতেই design করার চেয়ে অনেক কঠিন।
 - Dedup ছাড়া topic নিরাপদে replay করা যায় না, ফলে সবচেয়ে ভালো recovery tool-টাই হাতছাড়া হয়।
@@ -21,7 +21,7 @@
 
 ## How it breaks
 
-At-least-once delivery মানে broker তখনই redeliver করে যখন সে প্রমাণ পায় না consumer কাজ শেষ করেছে। সেই প্রমাণ হলো offset commit (Kafka) বা ack (RabbitMQ), আর সেটা ঘটে কাজের *পরে*। "side effect apply হয়েছে" আর "acknowledgement লেখা হয়েছে"-র মাঝের window-তেই প্রতিটি duplicate জন্মায়। crash, GC pause, rebalance, deploy-এর সময় `SIGTERM`, network timeout — সব ওই window-তে পড়ে।
+At-least-once delivery মানে broker তখনই redeliver করে যখন সে প্রমাণ পায় না consumer কাজ শেষ করেছে। সেই প্রমাণ হলো offset commit (Kafka) বা ack (RabbitMQ), আর সেটা ঘটে কাজের *পরে*। "side effect apply হয়েছে" আর "acknowledgement লেখা হয়েছে"-র মাঝের window-তেই প্রতিটি duplicate জন্মায়। crash, GC pause, rebalance, deploy-এর সময় `SIGTERM`, network timeout - সব ওই window-তে পড়ে।
 
 ```mermaid
 sequenceDiagram
@@ -115,7 +115,7 @@ Stripe ২৪ ঘণ্টার মধ্যে একই key-তে মূল 
 
 কিছু effect-এ dedup table লাগেই না:
 
-- `UPDATE accounts SET status = 'active' WHERE id = ?` — মান বসানো idempotent; increment নয়।
+- `UPDATE accounts SET status = 'active' WHERE id = ?` - মান বসানো idempotent; increment নয়।
 - natural key সহ `INSERT ... ON CONFLICT DO NOTHING`।
 - current state দিয়ে পাহারা দেওয়া state machine: `WHERE status = 'pending'`।
 
@@ -166,7 +166,7 @@ flowchart TD
 - dedup check-এ `SELECT` তারপর `INSERT`, যা ভিন্ন partition-এর দুই worker-এর মধ্যে race করে।
 - payload-এর hash-এ dedup করা, যখন payload-এ timestamp বা producer-generated UUID আছে।
 - dedup key শুধু memory-তে রাখা, ফলে প্রতিটি deploy প্রতিরক্ষা রিসেট করে।
-- "duplicate এড়াতে" কাজের আগেই offset commit করা — এতে duplicate নীরব data loss-এ বদলায়।
+- "duplicate এড়াতে" কাজের আগেই offset commit করা - এতে duplicate নীরব data loss-এ বদলায়।
 - producer-এ Kafka-র `enable.idempotence` থাকলে consumer idempotent হয়ে যায় ভাবা; হয় না।
 - ৫ মিনিটের dedup TTL রাখা, যখন DLQ replay এক সপ্তাহ পরেও হতে পারে।
 

@@ -1,10 +1,10 @@
-> **Scenario** — A policy assistant answers "what is the refund window for Dhaka deliveries?" with "21 days, per section 4.2" and links a real document. The document says 14 days and has no section 4.2. The citation looked legitimate enough that support agents repeated the wrong number for three weeks.
+> **Scenario** - A policy assistant answers "what is the refund window for Dhaka deliveries?" with "21 days, per section 4.2" and links a real document. The document says 14 days and has no section 4.2. The citation looked legitimate enough that support agents repeated the wrong number for three weeks.
 
 ## Why it matters
 
 - A citation that nobody verifies is worse than no citation: it transfers false confidence to the reader.
 - Grounding failures are not rare edge cases. Even with correct retrieval, generation can blend two chunks, carry a number from the wrong row, or extrapolate a rule.
-- The cost of a wrong policy answer is external — refunds honoured incorrectly, compliance exposure, support escalations.
+- The cost of a wrong policy answer is external - refunds honoured incorrectly, compliance exposure, support escalations.
 - Refusal is a feature. A system that says "I could not find this in the policy documents" is more valuable than one that always answers.
 - Bengali answers grounded on English sources are especially prone to number and entity drift during the implicit translation step.
 
@@ -106,7 +106,7 @@ For Bengali output, normalise Bengali digits (`০১২৩৪৫৬৭৮৯`) 
 
 ### 5. Make refusal an explicit, rewarded path
 
-State it in the system prompt and include refusal cases in your eval set: "If the evidence does not contain the answer, reply exactly: `NOT_IN_SOURCES` followed by what you would need." Then measure refusal precision — of the questions where refusal was correct, how many did the system refuse?
+State it in the system prompt and include refusal cases in your eval set: "If the evidence does not contain the answer, reply exactly: `NOT_IN_SOURCES` followed by what you would need." Then measure refusal precision - of the questions where refusal was correct, how many did the system refuse?
 
 ### 6. Render citations as clickable, checkable spans
 
@@ -132,7 +132,7 @@ flowchart LR
 | Option | Pros | Cons | Choose when |
 |---|---|---|---|
 | Prompt-only citations | Free, one line of instruction | Citations are decorative and unverified | Internal prototypes |
-| ID validation | Catches invented sources, near-zero cost | Does not catch a wrong claim citing a real chunk | Always — it is the cheapest win |
+| ID validation | Catches invented sources, near-zero cost | Does not catch a wrong claim citing a real chunk | Always - it is the cheapest win |
 | Number verification | Catches the highest-damage errors | Needs digit normalisation for Bengali | Any answer containing figures |
 | NLI entailment | Catches semantic drift | +30–80ms and a model to host | Regulated or high-stakes domains |
 | LLM-as-judge | Nuanced, handles paraphrase | Cost per answer, judge has its own biases | Offline evals rather than the hot path |

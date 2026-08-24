@@ -1,9 +1,9 @@
-> **Scenario** — A payments consumer on RabbitMQ stops making progress at 02:14. The queue depth is flat at 41,000, CPU on all six workers is pinned, and the logs show the same `order.settled` message being parsed and rejected 900 times per second. One producer shipped a payload with a `null` currency code and the consumer has been redelivering it since the deploy.
+> **Scenario** - A payments consumer on RabbitMQ stops making progress at 02:14. The queue depth is flat at 41,000, CPU on all six workers is pinned, and the logs show the same `order.settled` message being parsed and rejected 900 times per second. One producer shipped a payload with a `null` currency code and the consumer has been redelivering it since the deploy.
 
 ## Why it matters
 
 - A single malformed message can consume 100% of consumer capacity while the queue behind it grows unbounded, turning one bad record into a full outage.
-- Unbounded redelivery loops generate log volume and metric cardinality that can cost more than the incident itself — a 900/s error loop writes roughly 78M log lines a day.
+- Unbounded redelivery loops generate log volume and metric cardinality that can cost more than the incident itself - a 900/s error loop writes roughly 78M log lines a day.
 - Downstream SLAs break silently: the queue is "up", the consumers are "healthy", and nothing pages until customer support escalates.
 - Without a dead-letter queue you have no artifact to inspect. The bad message is invisible except in log noise, so the postmortem has nothing to replay.
 - On-call spends the first 30 minutes proving the broker is fine before anyone suspects a payload.
@@ -21,7 +21,7 @@
 
 ## How it breaks
 
-The consumer pulls the message, deserialisation or a domain invariant throws, and the framework's error handler issues `basic.nack` with `requeue=true`. RabbitMQ puts the message back at the head of the queue and immediately redelivers it. There is no attempt counter in the default path, so the loop runs forever at the speed of your CPU. In Kafka the shape differs but the outcome matches: the consumer throws before committing the offset, the partition rewinds to the last committed offset on the next poll, and the same record replays — with the added detail that everything behind that offset in the partition is now blocked too.
+The consumer pulls the message, deserialisation or a domain invariant throws, and the framework's error handler issues `basic.nack` with `requeue=true`. RabbitMQ puts the message back at the head of the queue and immediately redelivers it. There is no attempt counter in the default path, so the loop runs forever at the speed of your CPU. In Kafka the shape differs but the outcome matches: the consumer throws before committing the offset, the partition rewinds to the last committed offset on the next poll, and the same record replays - with the added detail that everything behind that offset in the partition is now blocked too.
 
 ```mermaid
 sequenceDiagram
@@ -166,7 +166,7 @@ flowchart LR
 
 - Catching every exception and acking, which converts a bug into permanent silent data loss.
 - Setting `tries = 0` (unlimited) "so nothing is ever lost".
-- Retrying schema violations with exponential backoff — the payload will not become valid in 600 seconds.
+- Retrying schema violations with exponential backoff - the payload will not become valid in 600 seconds.
 - Using the DLQ as a queue you drain manually once a quarter.
 - Alerting on DLQ *rate* only; a single stuck message never trips a rate threshold.
 - Writing the failed payload to logs instead of storage, so replay requires grepping.

@@ -1,12 +1,12 @@
-> **Scenario** — The team upgrades from a 768-dimension English embedding model to a 1024-dimension multilingual one to support Bengali documents. They swap the model in the query path first because "the index will catch up during the nightly backfill." Retrieval quality falls off a cliff within minutes.
+> **Scenario** - The team upgrades from a 768-dimension English embedding model to a 1024-dimension multilingual one to support Bengali documents. They swap the model in the query path first because "the index will catch up during the nightly backfill." Retrieval quality falls off a cliff within minutes.
 
 ## Why it matters
 
 - Vectors from two different models live in unrelated coordinate systems. A cosine score between them is arithmetic on noise, not similarity.
-- Backfilling 8M chunks is not instant. At 400 chunks/second through a hosted embedding API, a full re-embed takes about 5.5 hours and costs real money — 8M chunks at 350 tokens each is 2.8B tokens.
+- Backfilling 8M chunks is not instant. At 400 chunks/second through a hosted embedding API, a full re-embed takes about 5.5 hours and costs real money - 8M chunks at 350 tokens each is 2.8B tokens.
 - Dimension changes break the index schema outright, so you cannot even write the new vectors into the old collection.
 - Half-migrated corpora produce the worst possible failure: retrieval still returns results, ranked meaninglessly.
-- For Bengali and other non-Latin scripts, the migration is usually the whole point — but the win only appears after the corpus is fully re-embedded, so a bad rollout looks like the new model is worse.
+- For Bengali and other non-Latin scripts, the migration is usually the whole point - but the win only appears after the corpus is fully re-embedded, so a bad rollout looks like the new model is worse.
 
 ## Symptoms
 
@@ -61,7 +61,7 @@ for name, encoder in (("v1-768", old_encoder), ("v2-1024", new_encoder)):
         print(f"{name} {bucket}: recall@10={r:.3f} nDCG@10={n:.3f}")
 ```
 
-If the new model does not win on the buckets you care about, stop here — you have saved 2.8B tokens.
+If the new model does not win on the buckets you care about, stop here - you have saved 2.8B tokens.
 
 ### 2. Write to a new namespace, never in place
 
@@ -91,7 +91,7 @@ def backfill(batch_size: int = 256) -> None:
         metrics.gauge("backfill.progress", repo.progress_ratio(cursor))
 ```
 
-Cost arithmetic before you start: 8M chunks × 350 tokens = 2.8B tokens. At $0.02 per million input tokens that is $56 — cheap. At $0.13 per million it is $364, which is worth a budget approval rather than a surprise invoice.
+Cost arithmetic before you start: 8M chunks × 350 tokens = 2.8B tokens. At $0.02 per million input tokens that is $56 - cheap. At $0.13 per million it is $364, which is worth a budget approval rather than a surprise invoice.
 
 ### 4. Shadow-read until parity
 

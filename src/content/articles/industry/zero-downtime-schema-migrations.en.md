@@ -1,11 +1,11 @@
-> **Scenario** — A Friday deploy runs `ALTER TABLE orders ADD COLUMN fulfilment_state VARCHAR(32) NOT NULL DEFAULT 'pending'` against a 42 M-row MySQL 8.0 table. The DDL itself finishes in 90 seconds, but checkout returns 500s for eleven minutes because every query on `orders` queued behind a metadata lock held by one long-running report.
+> **Scenario** - A Friday deploy runs `ALTER TABLE orders ADD COLUMN fulfilment_state VARCHAR(32) NOT NULL DEFAULT 'pending'` against a 42 M-row MySQL 8.0 table. The DDL itself finishes in 90 seconds, but checkout returns 500s for eleven minutes because every query on `orders` queued behind a metadata lock held by one long-running report.
 
 ## Why it matters
 
 - A blocking DDL converts a *background* maintenance task into a full write outage on your busiest table.
 - The lock pileup is not proportional to the migration: a 90-second `ALTER` can produce 11 minutes of errors because the app retries into an already-saturated connection pool.
 - Rollback is worse than roll-forward. Once half your fleet reads a column the other half does not write, "just revert" corrupts data.
-- Migrations are the one deploy step you cannot canary per-request — the schema is global state shared by every replica and every app version.
+- Migrations are the one deploy step you cannot canary per-request - the schema is global state shared by every replica and every app version.
 - On-call cost is asymmetric: the engineer paged at 02:00 usually cannot tell whether the migration is 10% or 90% done.
 
 ## Symptoms
@@ -21,7 +21,7 @@
 
 ## How it breaks
 
-The failure is a three-stage convoy. A long analytics `SELECT` holds a shared metadata lock. The `ALTER` requests an exclusive lock and *waits* — harmless so far. The damage comes from the queueing discipline: in MySQL, once a DDL is waiting, every subsequent query on that table also waits, even simple `SELECT id FROM orders WHERE id = ?`. A single slow reader plus a DDL therefore blocks all traffic on the table.
+The failure is a three-stage convoy. A long analytics `SELECT` holds a shared metadata lock. The `ALTER` requests an exclusive lock and *waits* - harmless so far. The damage comes from the queueing discipline: in MySQL, once a DDL is waiting, every subsequent query on that table also waits, even simple `SELECT id FROM orders WHERE id = ?`. A single slow reader plus a DDL therefore blocks all traffic on the table.
 
 The app then amplifies it. Each blocked request holds a pool connection for the full `lock_wait_timeout` (default 50 s in InnoDB), the pool drains, and requests that never touch `orders` start failing too.
 
@@ -39,10 +39,10 @@ flowchart TD
 
 1. DDL executed inline with the deploy, with no `lock_timeout` guard, so it waits indefinitely instead of failing fast.
 2. Long-running readers (reports, `pg_dump`, idle-in-transaction sessions) holding locks the DDL must wait for.
-3. Single-step migrations that both change the schema and require new application code — no version where old and new code are both valid.
+3. Single-step migrations that both change the schema and require new application code - no version where old and new code are both valid.
 4. Backfills written as one `UPDATE` over the whole table, generating a multi-GB undo/WAL burst.
 5. Column renames and type narrowing shipped directly, which are inherently non-backwards-compatible.
-6. Assuming "`ADD COLUMN` is instant" — true for Postgres 11+ with a constant default and MySQL 8.0 `ALGORITHM=INSTANT`, false for type changes, `NOT NULL` on existing rows, or anything requiring a table rebuild.
+6. Assuming "`ADD COLUMN` is instant" - true for Postgres 11+ with a constant default and MySQL 8.0 `ALGORITHM=INSTANT`, false for type changes, `NOT NULL` on existing rows, or anything requiring a table rebuild.
 
 ## How to solve it
 
@@ -119,7 +119,7 @@ CREATE INDEX CONCURRENTLY idx_orders_fulfilment
 DROP INDEX CONCURRENTLY IF EXISTS idx_orders_fulfilment;
 ```
 
-MySQL 8.0 builds secondary indexes online (`ALGORITHM=INPLACE, LOCK=NONE`) but still needs a brief exclusive metadata lock at start and end — which is exactly why step 1 matters.
+MySQL 8.0 builds secondary indexes online (`ALGORITHM=INPLACE, LOCK=NONE`) but still needs a brief exclusive metadata lock at start and end - which is exactly why step 1 matters.
 
 ### 5. Add constraints in two phases
 
@@ -188,12 +188,12 @@ stateDiagram-v2
 
 ## Anti-patterns
 
-- Retrying a blocked `ALTER` in a loop — each attempt re-queues the whole table.
+- Retrying a blocked `ALTER` in a loop - each attempt re-queues the whole table.
 - Wrapping `CREATE INDEX CONCURRENTLY` in a transaction (Postgres rejects it) or in a framework migration that opens one implicitly.
 - Renaming a column and shipping the app change in the same release.
 - `UPDATE table SET col = ...` with no `WHERE` on a 40 M-row table, then wondering why disk filled up.
 - Killing a running `gh-ost` cut-over and leaving `_orders_gho` behind.
-- Trusting `ADD COLUMN ... NOT NULL DEFAULT` to be free on MySQL 5.7 — it rebuilds the table.
+- Trusting `ADD COLUMN ... NOT NULL DEFAULT` to be free on MySQL 5.7 - it rebuilds the table.
 - Treating "migration succeeded" as "migration is safe": the lock damage happens before success.
 
 ## Related

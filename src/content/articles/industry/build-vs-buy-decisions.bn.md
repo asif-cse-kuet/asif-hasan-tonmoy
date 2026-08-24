@@ -1,4 +1,4 @@
-> **Scenario** — একটি দল মাসে $2,400-এর search vendor বাদ দিয়ে Elasticsearch-এ নিজেরা বানানোর সিদ্ধান্ত নেয়, বাজেট ছয় সপ্তাহ। চৌদ্দ মাস পর দুই engineer-এর প্রায় ২০% সময় যায় cluster upgrade, relevance tuning আর বারবার আসা রাত ৩টার disk-watermark page-এ। সরাসরি infrastructure খরচ মাসে $900। পুরোপুরি হিসাব করলে খরচ প্রায় $9,000।
+> **Scenario** - একটি দল মাসে $2,400-এর search vendor বাদ দিয়ে Elasticsearch-এ নিজেরা বানানোর সিদ্ধান্ত নেয়, বাজেট ছয় সপ্তাহ। চৌদ্দ মাস পর দুই engineer-এর প্রায় ২০% সময় যায় cluster upgrade, relevance tuning আর বারবার আসা রাত ৩টার disk-watermark page-এ। সরাসরি infrastructure খরচ মাসে $900। পুরোপুরি হিসাব করলে খরচ প্রায় $9,000।
 
 ## Why it matters
 
@@ -17,13 +17,13 @@
 | Pager attribution | বারবার আসা page এমন infrastructure-এর যা দল নিজে owning বেছেছে |
 | Vendor sprawl | নয়টি SaaS tool, তিনটি overlapping, কারোরই নামসহ owner নেই |
 | Lock-in চমক | সরে যেতে ৪০টি file ছুঁতে হয়, কারণ vendor-এর type সর্বত্র ছড়িয়েছে |
-| Decision amnesia | কেন সিদ্ধান্ত হয়েছিল বা কী বদলালে বদলাবে — কেউ বলতে পারে না |
+| Decision amnesia | কেন সিদ্ধান্ত হয়েছিল বা কী বদলালে বদলাবে - কেউ বলতে পারে না |
 
 ## How it breaks
 
 Build-বনাম-buy আসলে total-cost-of-ownership-এর প্রশ্ন, কিন্তু উত্তর দেওয়া হয় sticker-price-এর প্রশ্ন হিসেবে। Build দিক নিয়মিতভাবে বাদ দেয় maintenance, on-call, upgrade, security patching, bus-factor-এর জন্য দ্বিতীয় engineer, আর যে feature ship হলো না তার opportunity cost। Buy দিক বাদ দেয় integration কাজ, data egress, vendor দাম বদলালে migration খরচ, আর vendor অধিগৃহীত হওয়ার ঝুঁকি।
 
-আরেকটি কাঠামোগত ভুল হলো একবার সিদ্ধান্ত নিয়ে আর কখনো না দেখা। ২০ customer-এ সঠিক build ২,০০০-এ ভুল হতে পারে, আর ৫০GB-তে সস্তা vendor ৫TB-তে বাজেট line। লিখিত trigger ছাড়া সিদ্ধান্ত কেবল সংকটের সময় পুনর্বিবেচনা হয় — migration চালানোর সবচেয়ে খারাপ সময়।
+আরেকটি কাঠামোগত ভুল হলো একবার সিদ্ধান্ত নিয়ে আর কখনো না দেখা। ২০ customer-এ সঠিক build ২,০০০-এ ভুল হতে পারে, আর ৫০GB-তে সস্তা vendor ৫TB-তে বাজেট line। লিখিত trigger ছাড়া সিদ্ধান্ত কেবল সংকটের সময় পুনর্বিবেচনা হয় - migration চালানোর সবচেয়ে খারাপ সময়।
 
 ```mermaid
 flowchart TD
@@ -52,7 +52,7 @@ flowchart TD
 ### 1. তিন বছরের cost model কোডে লিখে ফেলুন
 
 ```python
-# tco.py — run it, argue with the inputs, not with intuition.
+# tco.py - run it, argue with the inputs, not with intuition.
 LOADED_HOURLY = 95  # salary + benefits + overhead, per engineer-hour
 
 def build_cost(
@@ -81,7 +81,7 @@ print(build_cost(dev_weeks=20, engineers=2, ops_hours_per_month=64, infra_per_mo
 print(buy_cost(license_per_month=2400, integration_weeks=2, ops_hours_per_month=4))
 ```
 
-`ops_hours_per_month` নিজের ইতিহাস থেকে বের করুন: আপনি ইতিমধ্যে চালান এমন component-এর page, upgrade window ও tuning ticket গুনুন, তারপর সেই সংখ্যাটাই ব্যবহার করুন — আশাবাদী অনুমান নয়।
+`ops_hours_per_month` নিজের ইতিহাস থেকে বের করুন: আপনি ইতিমধ্যে চালান এমন component-এর page, upgrade window ও tuning ticket গুনুন, তারপর সেই সংখ্যাটাই ব্যবহার করুন - আশাবাদী অনুমান নয়।
 
 ### 2. তুলনার আগে component-এর শ্রেণি ঠিক করুন
 
@@ -169,7 +169,7 @@ flowchart LR
 ## Anti-patterns
 
 - Engineer-দের বেতন তো দেওয়াই আছে বলে vendor invoice-কে শূন্যের সাথে তুলনা করা।
-- Commodity infrastructure — queue, flag, auth, search — বানানো কারণ সেটা product-এর কাজের চেয়ে মজার।
+- Commodity infrastructure - queue, flag, auth, search - বানানো কারণ সেটা product-এর কাজের চেয়ে মজার।
 - Core differentiator-এর মালিক এমন vendor কেনা, যাতে product-এর সীমা vendor-এর roadmap হয়ে যায়।
 - SDK-র type কোডবেসজুড়ে ছড়াতে দেওয়া, ফলে প্রতি sprint-এ exit cost নীরবে বাড়ে।
 - ছয় সপ্তাহের estimate-কে খরচ ধরা, যখন আসল খরচ রক্ষণাবেক্ষণের দশক।

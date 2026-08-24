@@ -1,9 +1,9 @@
-> **Scenario** — ১৮:৪০-এ recommendation service 504 দিতে শুরু করে। Product page "You may also like" strip render করতে সেটাকে synchronously ডাকে, ফলে প্রতিটি product page ৩০ সেকেন্ড নিয়ে throw করে। যে strip থেকে কেউ কেনে না, তার কারণেই checkout conversion ৭১% পড়ে যায়।
+> **Scenario** - ১৮:৪০-এ recommendation service 504 দিতে শুরু করে। Product page "You may also like" strip render করতে সেটাকে synchronously ডাকে, ফলে প্রতিটি product page ৩০ সেকেন্ড নিয়ে throw করে। যে strip থেকে কেউ কেনে না, তার কারণেই checkout conversion ৭১% পড়ে যায়।
 
 ## Why it matters
 
 - একটা non-critical dependency critical path নামিয়ে দিল। এই revenue loss পুরোপুরি নিজেদের তৈরি।
-- Availability multiplicative: ৯টা service-এর উপর hard-depend করা page, প্রতিটি ৯৯.৯% হলে, মোট ৯৯.১% — বছরে ৭৯ ঘণ্টা downtime।
+- Availability multiplicative: ৯টা service-এর উপর hard-depend করা page, প্রতিটি ৯৯.৯% হলে, মোট ৯৯.১% - বছরে ৭৯ ঘণ্টা downtime।
 - On-call page পায় product page-এর জন্য, recommender-এর জন্য নয়; তাই প্রথম ২০ মিনিট ভুল team-এ যায়।
 - Incident চলাকালীন নেওয়া degradation সিদ্ধান্ত খারাপ হয়। কেউ ১৯:১৫-তে call comment out করে untested কোড ship করবে।
 - User missing strip সহ্য করে। কখনো শেষ না হওয়া spinner সহ্য করে না।
@@ -12,7 +12,7 @@
 
 | Signal | What you observe |
 |---|---|
-| p99 latency | Product page p99 ২৪০ms থেকে ৩০s — ঠিক client timeout-এর সমান |
+| p99 latency | Product page p99 ২৪০ms থেকে ৩০s - ঠিক client timeout-এর সমান |
 | Error attribution | `product-page`-এ 5xx spike, `recommender` "মাত্র" ৪০% error দেখায় |
 | Thread pools | Web worker pool saturated; `active_threads` max-এ আটকে, queue depth বাড়ছে |
 | Traces | Span time-এর ৯২% একটা optional widget-এর child span-এ |
@@ -20,7 +20,7 @@
 
 ## How it breaks
 
-আসল failure recommender down থাকা নয় — সেটা প্রত্যাশিত। আসল failure হলো: ৩০ সেকেন্ড timeout, fallback নেই, circuit breaker নেই — এমন synchronous call একটা optional feature-কে hard dependency বানিয়ে ফেলে। আরও খারাপ, slow call web worker ধরে রাখে। ২০০ worker আর ৩০s hang হলে page সর্বোচ্চ ~৬.৬ request/second serve করতে পারে, বাকি সব যত healthy-ই হোক। Optional dependency-ই পুরো site-এর capacity limit হয়ে গেছে।
+আসল failure recommender down থাকা নয় - সেটা প্রত্যাশিত। আসল failure হলো: ৩০ সেকেন্ড timeout, fallback নেই, circuit breaker নেই - এমন synchronous call একটা optional feature-কে hard dependency বানিয়ে ফেলে। আরও খারাপ, slow call web worker ধরে রাখে। ২০০ worker আর ৩০s hang হলে page সর্বোচ্চ ~৬.৬ request/second serve করতে পারে, বাকি সব যত healthy-ই হোক। Optional dependency-ই পুরো site-এর capacity limit হয়ে গেছে।
 
 ```mermaid
 flowchart LR
@@ -77,7 +77,7 @@ const recommendations = await callDep(
 )
 ```
 
-Optional strip-এর জন্য ১৫০ms timeout কম নয় — এটাই মূল কথা। Page-এর budget-এর ভেতর recommender উত্তর দিতে না পারলে সে উত্তরের কোনো দাম নেই।
+Optional strip-এর জন্য ১৫০ms timeout কম নয় - এটাই মূল কথা। Page-এর budget-এর ভেতর recommender উত্তর দিতে না পারলে সে উত্তরের কোনো দাম নেই।
 
 ### 2. Timeout per-call default থেকে নয়, per-request budget থেকে নিন
 
@@ -160,14 +160,14 @@ flowchart TD
 - [ ] Request path-এর প্রতিটি outbound call-এ explicit timeout আছে, কোনোটিই request budget ছাড়ায় না।
 - [ ] Default-timeout client `grep` করে দেখুন কতটা user path-এ আছে।
 - [ ] Recommender blackhole করে (`iptables -A OUTPUT -d <ip> -j DROP`) load test-এ product-page p99 ৫০০ms-এর নিচে থাকে।
-- [ ] Staging-এ প্রতিটি optional dependency মেরে দিলে 500 নয়, render হওয়া page আসে — screenshot diff দিয়ে যাচাই।
+- [ ] Staging-এ প্রতিটি optional dependency মেরে দিলে 500 নয়, render হওয়া page আসে - screenshot diff দিয়ে যাচাই।
 - [ ] Breaker metric (`dep.degraded`, `breaker.state`) dashboard-এ আছে এবং runbook-এ উল্লেখ আছে।
 - [ ] গত quarter-এ অন্তত একবার production-এ `mode=reduced` চালানো হয়েছে।
 - [ ] Game day-তে journey SLI alert HTTP SLI alert-এর আগে fire করে।
 
 ## Anti-patterns
 
-- `try/catch` দিয়ে wrap করে log করে আবার rethrow — এটা বাড়তি ধাপসহ hard dependency।
+- `try/catch` দিয়ে wrap করে log করে আবার rethrow - এটা বাড়তি ধাপসহ hard dependency।
 - Critical path-এ timeout retry করা, এক ৩০s অপেক্ষাকে তিনটা বানানো।
 - Fallback হিসেবে এমন synchronous database query, যা নিজেই load-এ আছে।
 - Incident-এ call comment out করে ছয় সপ্তাহ ফেরত না আনা।

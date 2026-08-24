@@ -1,10 +1,10 @@
-> **পরিস্থিতি** — একটা Vue component-এ এক অক্ষরের fix ১৪ মিনিটের CI build চালায়। Image ১.২ GB, প্রতি push-এ `npm ci` চলে, আর registry-র বিল traffic-এর চেয়ে দ্রুত বাড়ছে।
+> **পরিস্থিতি** - একটা Vue component-এ এক অক্ষরের fix ১৪ মিনিটের CI build চালায়। Image ১.২ GB, প্রতি push-এ `npm ci` চলে, আর registry-র বিল traffic-এর চেয়ে দ্রুত বাড়ছে।
 
 ## কেন গুরুত্বপূর্ণ
 
 - Build time প্রতিটি hotfix-এর critical path-এ থাকে। ১৪ মিনিটের image build ২ মিনিটের rollback-কে ১৬ মিনিটের outage বানায়।
 - বড় image প্রতিটি scale-up ধীর করে: cache ছাড়া node-কে পুরো compressed image pull করতে হয় pod start করার আগে।
-- অপ্রয়োজনীয় layer build tooling, compiler ও package manager cache production-এ নিয়ে যায় — বেশি CVE, বেশি attack surface।
+- অপ্রয়োজনীয় layer build tooling, compiler ও package manager cache production-এ নিয়ে যায় - বেশি CVE, বেশি attack surface।
 - Registry storage ও egress প্রতি GB হিসেবে bill হয়। দিনে ৫০ বার ১.২ GB push মানে আসল টাকা।
 
 ## লক্ষণ
@@ -19,7 +19,7 @@
 
 ## কীভাবে ভাঙে
 
-Docker প্রতি instruction-এ একটা layer বানায় এবং cached layer তখনই reuse করে যখন সেই instruction *এবং তার আগের প্রতিটি layer* অপরিবর্তিত থাকে। dependency install-এর আগে বসানো `COPY . .` যেকোনো file পরিবর্তনে — এমনকি `README.md`-তেও — cache invalid করে। এরপরের সব কিছু (install, compile, prune) আবার চলে।
+Docker প্রতি instruction-এ একটা layer বানায় এবং cached layer তখনই reuse করে যখন সেই instruction *এবং তার আগের প্রতিটি layer* অপরিবর্তিত থাকে। dependency install-এর আগে বসানো `COPY . .` যেকোনো file পরিবর্তনে - এমনকি `README.md`-তেও - cache invalid করে। এরপরের সব কিছু (install, compile, prune) আবার চলে।
 
 দ্বিতীয় সমস্যা: single-stage build builder-কেই ship করে। Compiler, dev dependency ও package cache final image-এ থাকে, কারণ সবই একই filesystem layer-এ তৈরি হয়েছে।
 
@@ -139,7 +139,7 @@ flowchart LR
 
 ## Anti-pattern
 
-- "layer কমাতে" সব command এক বিশাল `RUN`-এ জোড়া — এতে প্রতিটি cache boundary-ও মুছে যায়।
+- "layer কমাতে" সব command এক বিশাল `RUN`-এ জোড়া - এতে প্রতিটি cache boundary-ও মুছে যায়।
 - install-এর পরে `RUN npm cache clean`, যা ওই layer ছোট করে কিন্তু আগের cached layer নয়।
 - পরের layer-এ file মুছে image ছোট হবে ভাবা; আগের layer এখনো bytes বহন করে।
 - প্রতিটি build `:latest` tag করা, তারপর production-এ কোন commit চলছে তা নিয়ে বিভ্রান্তি।

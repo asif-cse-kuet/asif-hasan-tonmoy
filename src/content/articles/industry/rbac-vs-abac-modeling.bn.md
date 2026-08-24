@@ -1,10 +1,10 @@
-> **Scenario** — একটি B2B SaaS ship করল "regional manager নিজের branch-এর $5,000-এর কম invoice approve করতে পারবে"। দুই sprint পরে `roles` table-এ ৬৩টি row, `role_permission`-এ ১,৪০০টি, আর কেউ বলতে পারে না support agent অন্য tenant-এর invoice পড়তে পারে কিনা।
+> **Scenario** - একটি B2B SaaS ship করল "regional manager নিজের branch-এর $5,000-এর কম invoice approve করতে পারবে"। দুই sprint পরে `roles` table-এ ৬৩টি row, `role_permission`-এ ১,৪০০টি, আর কেউ বলতে পারে না support agent অন্য tenant-এর invoice পড়তে পারে কিনা।
 
 ## Why it matters
 
-- Authorization bug penetration test-এর সবচেয়ে সাধারণ critical finding, আর এটা error হিসেবে ধরা পড়ে না — request `200 OK` দেয়, শুধু অন্যের data নিয়ে।
+- Authorization bug penetration test-এর সবচেয়ে সাধারণ critical finding, আর এটা error হিসেবে ধরা পড়ে না - request `200 OK` দেয়, শুধু অন্যের data নিয়ে।
 - Role explosion-এ প্রতিটি product request একটা migration হয়ে যায়। নতুন একটা dimension (branch, amount, contract type) attribute যোগ না করে role সংখ্যা গুণ করে দেয়।
-- On-call load "service down" থেকে "customer X, customer Y-এর data দেখছে"-তে সরে যায় — এটা legal reporting deadline সহ incident, শুধু rollback নয়।
+- On-call load "service down" থেকে "customer X, customer Y-এর data দেখছে"-তে সরে যায় - এটা legal reporting deadline সহ incident, শুধু rollback নয়।
 - Permission model UI, API, background job ও report-এ ছড়িয়ে পড়ে। প্রতিটি copy drift করে, তাই উত্তর নির্ভর করে কোন surface-এ জিজ্ঞেস করছেন।
 
 ## Symptoms
@@ -19,7 +19,7 @@
 
 ## How it breaks
 
-সমস্যা প্রায় কখনোই ভাঙা check নয় — সমস্যা *অনুপস্থিত* check। RBAC উত্তর দেয় "এই subject-এর কি এই role আছে?" কিন্তু আসল প্রশ্ন হলো "এই subject কি এই নির্দিষ্ট resource-এ এখন এই action করতে পারে?" resource dimension না থাকলে check ওই type-এর প্রতিটি record-এর জন্য pass করে। এরপর team প্রতিটি endpoint আলাদা patch করে, ফলে policy কয়েক ডজন জায়গায় থাকে এবং সবচেয়ে নতুন endpoint সবসময় অরক্ষিত থাকে।
+সমস্যা প্রায় কখনোই ভাঙা check নয় - সমস্যা *অনুপস্থিত* check। RBAC উত্তর দেয় "এই subject-এর কি এই role আছে?" কিন্তু আসল প্রশ্ন হলো "এই subject কি এই নির্দিষ্ট resource-এ এখন এই action করতে পারে?" resource dimension না থাকলে check ওই type-এর প্রতিটি record-এর জন্য pass করে। এরপর team প্রতিটি endpoint আলাদা patch করে, ফলে policy কয়েক ডজন জায়গায় থাকে এবং সবচেয়ে নতুন endpoint সবসময় অরক্ষিত থাকে।
 
 ```mermaid
 flowchart TD
@@ -34,7 +34,7 @@ flowchart TD
 
 1. Role check coarse: এটা encode করে *user কে*, কখনো *কোন resource touch হচ্ছে* তা নয়।
 2. Contextual rule (amount limit, ownership, time window) attribute-এ না গিয়ে role-এর নামে ঢুকে যায়।
-3. Authorization controller-এ enforce হয়, তাই console command, queue worker, GraphQL resolver — অন্য যেকোনো entry point bypass করে।
+3. Authorization controller-এ enforce হয়, তাই console command, queue worker, GraphQL resolver - অন্য যেকোনো entry point bypass করে।
 4. Client-side guard-কে UX hint নয়, enforcement ধরা হয়।
 5. Effective policy একজায়গায় পড়ার উপায় নেই, তাই review বাদ পড়া check ধরতে পারে না।
 
@@ -99,7 +99,7 @@ protected $policies = [
     \App\Models\Invoice::class => \App\Policies\InvoicePolicy::class,
 ];
 
-// routes/web.php — authorizeResource wires index/show/update/destroy
+// routes/web.php - authorizeResource wires index/show/update/destroy
 Route::resource('invoices', InvoiceController::class);
 
 // app/Http/Controllers/InvoiceController.php
@@ -109,7 +109,7 @@ public function __construct()
 }
 ```
 
-Queue job ও console command-এ actor স্পষ্টভাবে resolve করে একই policy ডাকুন — কখনো duplicate condition নয়:
+Queue job ও console command-এ actor স্পষ্টভাবে resolve করে একই policy ডাকুন - কখনো duplicate condition নয়:
 
 ```php
 Gate::forUser($job->actor)->authorize('approve', $invoice);
@@ -137,7 +137,7 @@ public function test_manager_cannot_approve_above_limit(): void
 }
 ```
 
-আগে negative case লিখুন। বিপজ্জনক test হলো সেটাই যেখানে *অন্য একজন authenticated user* 403 পায় — anonymous user নয়।
+আগে negative case লিখুন। বিপজ্জনক test হলো সেটাই যেখানে *অন্য একজন authenticated user* 403 পায় - anonymous user নয়।
 
 ## Target design
 

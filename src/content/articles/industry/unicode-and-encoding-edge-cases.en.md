@@ -1,8 +1,8 @@
-> **Scenario** — A signup form truncates display names to 20 characters using `substr($name, 0, 20)`. A user registers as `বাংলাদেশ প্রকৌশল বিশ্ববিদ্যালয়`. The stored value ends mid-sequence, the JSON API returns invalid UTF-8, and the mobile app crashes on `JSONDecodeError` for every screen that shows that user.
+> **Scenario** - A signup form truncates display names to 20 characters using `substr($name, 0, 20)`. A user registers as `বাংলাদেশ প্রকৌশল বিশ্ববিদ্যালয়`. The stored value ends mid-sequence, the JSON API returns invalid UTF-8, and the mobile app crashes on `JSONDecodeError` for every screen that shows that user.
 
 ## Why it matters
 
-- `substr` counts bytes, `strlen` counts bytes, and users count what they see. `বাংলাদেশ` is 24 bytes, 8 code points, and 4 grapheme clusters — three different "lengths", all defensible, none interchangeable.
+- `substr` counts bytes, `strlen` counts bytes, and users count what they see. `বাংলাদেশ` is 24 bytes, 8 code points, and 4 grapheme clusters - three different "lengths", all defensible, none interchangeable.
 - Invalid UTF-8 propagates. One truncated row breaks every downstream JSON encoder, search indexer, and CSV export that touches it.
 - MySQL's `utf8` charset is actually `utf8mb3` and cannot store a 4-byte character. A single emoji in a support ticket produces `Incorrect string value: '\xF0\x9F\x98\x80'` and a failed insert.
 - Two usernames can be visually identical and byte-different (`admin` with Latin `a` versus Cyrillic `а`, U+0430). That is an account-takeover vector, not a cosmetic issue.
@@ -23,7 +23,7 @@
 
 ## How it breaks
 
-Three distinct concepts get conflated: bytes, code points, and grapheme clusters. `বাংলাদেশ` is ব U+09AC, া U+09BE, ং U+0982, ল U+09B2, া U+09BE, দ U+09A6, ে U+09C7, শ U+09B6 — 8 code points, each 3 bytes in UTF-8, so 24 bytes. To a reader it is 4 units: বাং, লা, দে, শ. Truncating at 20 bytes cuts inside the 7th code point (U+09C7), leaving a lone continuation byte. Nothing throws at the truncation site; the error surfaces later, in a different service, as a decode failure.
+Three distinct concepts get conflated: bytes, code points, and grapheme clusters. `বাংলাদেশ` is ব U+09AC, া U+09BE, ং U+0982, ল U+09B2, া U+09BE, দ U+09A6, ে U+09C7, শ U+09B6 - 8 code points, each 3 bytes in UTF-8, so 24 bytes. To a reader it is 4 units: বাং, লা, দে, শ. Truncating at 20 bytes cuts inside the 7th code point (U+09C7), leaving a lone continuation byte. Nothing throws at the truncation site; the error surfaces later, in a different service, as a decode failure.
 
 ```mermaid
 flowchart LR
@@ -63,7 +63,7 @@ function truncateGraphemes(input: string, max: number): string {
 const name = 'বাংলাদেশ'
 console.log(new TextEncoder().encode(name).length)  // 24 bytes
 console.log([...name].length)                        // 8 code points
-console.log(truncateGraphemes(name, 3))              // 'বাংলা' — 3 clusters, valid
+console.log(truncateGraphemes(name, 3))              // 'বাংলা' - 3 clusters, valid
 
 const family = '👨‍👩‍👧‍👦'
 console.log(family.length)                           // 11 UTF-16 units
@@ -71,7 +71,7 @@ console.log([...family].length)                      // 7 code points
 console.log(truncateGraphemes(family, 1))            // whole family, not half of it
 ```
 
-Slicing a ZWJ sequence at code-point 4 produces `👨‍👩` — a different family. Grapheme boundaries are the only safe cut points for display text.
+Slicing a ZWJ sequence at code-point 4 produces `👨‍👩` - a different family. Grapheme boundaries are the only safe cut points for display text.
 
 ### 2. Make the whole path utf8mb4
 

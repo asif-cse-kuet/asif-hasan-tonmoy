@@ -1,4 +1,4 @@
-> **Scenario** — The on-call handover doc says "ignore DiskWillFillIn4Days, it always fires". Last night the pager went off 38 times: 31 were the same node restarting, 4 were CPU above 80% on a batch box, 3 were real. The real ones were acknowledged at 04:12, nineteen minutes after the first customer complaint.
+> **Scenario** - The on-call handover doc says "ignore DiskWillFillIn4Days, it always fires". Last night the pager went off 38 times: 31 were the same node restarting, 4 were CPU above 80% on a batch box, 3 were real. The real ones were acknowledged at 04:12, nineteen minutes after the first customer complaint.
 
 ## Why it matters
 
@@ -21,7 +21,7 @@
 
 ## How it breaks
 
-Alerts accumulate. Somebody adds a CPU threshold after an incident, somebody else adds a memory threshold, then a queue-depth threshold, each on a different window. None of them are wired to whether users are affected, so they fire during batch jobs, deploys, and autoscaling events. Because there is no inhibition, a single node failure lights up node, pod, endpoint, and probe alerts simultaneously. Meanwhile the one thing that reliably tracks harm — the SLI — is not alerted on at all, so real slow-burn degradation stays invisible until a customer notices.
+Alerts accumulate. Somebody adds a CPU threshold after an incident, somebody else adds a memory threshold, then a queue-depth threshold, each on a different window. None of them are wired to whether users are affected, so they fire during batch jobs, deploys, and autoscaling events. Because there is no inhibition, a single node failure lights up node, pod, endpoint, and probe alerts simultaneously. Meanwhile the one thing that reliably tracks harm - the SLI - is not alerted on at all, so real slow-burn degradation stays invisible until a customer notices.
 
 ```mermaid
 flowchart TD
@@ -160,7 +160,7 @@ annotations:
 ### 5. Review alerts with data, not opinion
 
 ```promql
-# Pages per week by alertname — the noise leaderboard
+# Pages per week by alertname - the noise leaderboard
 sort_desc(
   sum by (alertname) (
     increase(alertmanager_notifications_total{integration="pagerduty"}[7d])

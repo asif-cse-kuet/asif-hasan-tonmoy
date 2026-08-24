@@ -1,4 +1,4 @@
-> **Scenario** — A support engineer runs a data-fix query for tenant `acme` against the shared `orders` table, forgets the `tenant_id` predicate, and updates 41,000 rows across 380 customers. The audit log shows one statement. The incident review asks why a single missing `WHERE` clause could reach every tenant at once.
+> **Scenario** - A support engineer runs a data-fix query for tenant `acme` against the shared `orders` table, forgets the `tenant_id` predicate, and updates 41,000 rows across 380 customers. The audit log shows one statement. The incident review asks why a single missing `WHERE` clause could reach every tenant at once.
 
 ## Why it matters
 
@@ -13,7 +13,7 @@
 | Signal | What you observe |
 |---|---|
 | Cross-tenant reads | A support query or a cached response returns rows with a `tenant_id` the session does not own |
-| p99 by tenant | Bimodal — a handful of large tenants dominate the slow tail while median tenants are fine |
+| p99 by tenant | Bimodal - a handful of large tenants dominate the slow tail while median tenants are fine |
 | Migration duration | Schema changes take hours and lock a table every tenant reads |
 | Deletion requests | GDPR erasure requires a hand-written script instead of dropping a schema |
 | Backup restore | Restoring one tenant means restoring the whole cluster to a scratch instance first |
@@ -59,7 +59,7 @@ You do not need one model for everything. A common shape: shared tables for high
 
 ### 2. Move enforcement into the database with row-level security
 
-Application-level scoping is a convention. Postgres RLS is a constraint — it applies to raw SQL, to the psql console, and to the analytics job someone wrote last year.
+Application-level scoping is a convention. Postgres RLS is a constraint - it applies to raw SQL, to the psql console, and to the analytics job someone wrote last year.
 
 ```sql
 ALTER TABLE orders ENABLE ROW LEVEL SECURITY;
@@ -168,7 +168,7 @@ flowchart LR
 
 ## Anti-patterns
 
-- Relying on a global ORM scope as the only enforcement — one raw query or one console session bypasses it.
+- Relying on a global ORM scope as the only enforcement - one raw query or one console session bypasses it.
 - Using the table-owner role at runtime, which silently ignores row-level security unless `FORCE` is enabled.
 - Setting the tenant with a session-level `SET` behind a transaction pooler, so the value leaks into the next request.
 - Splitting to a database per tenant for isolation while keeping one shared Redis with unprefixed keys.

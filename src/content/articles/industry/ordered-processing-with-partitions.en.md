@@ -1,4 +1,4 @@
-> **Scenario** — An account service emits `balance.debited` then `balance.credited` for the same account within 4ms. Kafka is configured with 24 partitions and the producer uses a random key. Downstream the ledger applies the credit before the debit, the intermediate balance goes negative, and an automated fraud rule freezes the account. The events were "in order" when produced and out of order when consumed.
+> **Scenario** - An account service emits `balance.debited` then `balance.credited` for the same account within 4ms. Kafka is configured with 24 partitions and the producer uses a random key. Downstream the ledger applies the credit before the debit, the intermediate balance goes negative, and an automated fraud rule freezes the account. The events were "in order" when produced and out of order when consumed.
 
 ## Why it matters
 
@@ -148,7 +148,7 @@ flowchart LR
 - [ ] Verify `enable.idempotence=true` is actually set in the running producer config, not just the repo.
 - [ ] Trigger a rebalance during load and count stale-sequence rejections; they should be duplicates, not gaps.
 - [ ] Measure per-partition throughput skew; no partition should exceed 2× the median.
-- [ ] Assert the consumer does not hand records to an unordered worker pool — read the code path, not the docs.
+- [ ] Assert the consumer does not hand records to an unordered worker pool - read the code path, not the docs.
 
 ## Anti-patterns
 

@@ -1,11 +1,11 @@
-> **Scenario** — A queue worker fleet sits at 20% CPU while 400,000 messages pile up. The HPA targets 70% CPU, so it never scales. The workers are blocked on a slow third-party API, and the backlog clears six hours after the traffic spike ended.
+> **Scenario** - A queue worker fleet sits at 20% CPU while 400,000 messages pile up. The HPA targets 70% CPU, so it never scales. The workers are blocked on a slow third-party API, and the backlog clears six hours after the traffic spike ended.
 
 ## Why it matters
 
 - Autoscaling on the wrong signal is worse than no autoscaling: it produces confident inaction while the queue grows.
 - I/O-bound workloads spend most of their time waiting, so CPU never reflects the actual demand.
 - Scaling too late means users have already felt it; scaling too eagerly means flapping, cold caches, and a bigger bill.
-- Pod-level scaling is bounded by node capacity — without a cluster autoscaler, the HPA just creates `Pending` pods.
+- Pod-level scaling is bounded by node capacity - without a cluster autoscaler, the HPA just creates `Pending` pods.
 
 ## Symptoms
 
@@ -13,13 +13,13 @@
 |---|---|
 | HPA status | `TARGET: 21%/70%`, `REPLICAS: 4` while the backlog climbs |
 | Queue | Consumer lag growing linearly with no matching replica change |
-| Latency | Queue wait time dominates, service time flat — a Little's Law signature |
+| Latency | Queue wait time dominates, service time flat - a Little's Law signature |
 | Replica graph | Sawtooth: 4 to 20 to 4 within ten minutes |
 | Scheduler | New pods stuck `Pending` with `Insufficient cpu` |
 
 ## How it breaks
 
-CPU utilisation is a *resource* metric, not a *demand* metric. For a worker whose critical resource is concurrency against an external API, CPU stays low no matter how deep the backlog gets. The HPA sees a healthy number and does the correct thing given its inputs — the inputs are wrong.
+CPU utilisation is a *resource* metric, not a *demand* metric. For a worker whose critical resource is concurrency against an external API, CPU stays low no matter how deep the backlog gets. The HPA sees a healthy number and does the correct thing given its inputs - the inputs are wrong.
 
 The mirror-image failure is flapping. With a short stabilisation window and a tight target, one scrape above target adds pods, the extra capacity drops utilisation below target, and the controller removes them again. Each cycle discards warm connection pools and JIT state, which raises latency, which triggers more scaling.
 
@@ -152,7 +152,7 @@ flowchart LR
 - Scaling on average latency, which lags the incident and can fall as fast requests fail early.
 - Setting `minReplicas: 1` for a service with a 90-second cold start.
 - Using CPU limits and CPU-based HPA together, so throttled pods report artificially capped utilisation.
-- Autoscaling a service whose real bottleneck is a single database — you just add more connections to a saturated server.
+- Autoscaling a service whose real bottleneck is a single database - you just add more connections to a saturated server.
 
 ## Related
 

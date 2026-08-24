@@ -14,8 +14,8 @@ const { pick } = useLocaleText()
     :title="pick({ en: 'Reach me today', bn: 'আজই যোগাযোগ করুন' })"
     :lead="
       pick({
-        en: 'Call, email, or Upwork. I answer like an owner — with a next step, not a brochure.',
-        bn: 'কল, ইমেইল বা Upwork। পরবর্তী ধাপ দিয়ে উত্তর — ব্রোশার নয়।',
+        en: 'Call, email, or Upwork. I answer like an owner - with a next step, not a brochure.',
+        bn: 'কল, ইমেইল বা Upwork। পরবর্তী ধাপ দিয়ে উত্তর - ব্রোশার নয়।',
       })
     "
   >

@@ -1,8 +1,8 @@
-> **Scenario** — একটা signup form `substr($name, 0, 20)` দিয়ে display name ২০ character-এ কাটে। এক user `বাংলাদেশ প্রকৌশল বিশ্ববিদ্যালয়` নামে register করে। জমা হওয়া মান sequence-এর মাঝে শেষ হয়, JSON API invalid UTF-8 দেয়, আর যে screen-এ ওই user দেখানো হয় সেখানে mobile app `JSONDecodeError`-এ crash করে।
+> **Scenario** - একটা signup form `substr($name, 0, 20)` দিয়ে display name ২০ character-এ কাটে। এক user `বাংলাদেশ প্রকৌশল বিশ্ববিদ্যালয়` নামে register করে। জমা হওয়া মান sequence-এর মাঝে শেষ হয়, JSON API invalid UTF-8 দেয়, আর যে screen-এ ওই user দেখানো হয় সেখানে mobile app `JSONDecodeError`-এ crash করে।
 
 ## Why it matters
 
-- `substr` byte গোনে, `strlen` byte গোনে, আর user গোনে যা দেখে। `বাংলাদেশ` = ২৪ byte, ৮ code point, ৪ grapheme cluster — তিনটা আলাদা "length", তিনটাই যুক্তিসঙ্গত, কোনোটাই বিনিময়যোগ্য নয়।
+- `substr` byte গোনে, `strlen` byte গোনে, আর user গোনে যা দেখে। `বাংলাদেশ` = ২৪ byte, ৮ code point, ৪ grapheme cluster - তিনটা আলাদা "length", তিনটাই যুক্তিসঙ্গত, কোনোটাই বিনিময়যোগ্য নয়।
 - Invalid UTF-8 ছড়ায়। একটা truncated row তাকে ছোঁয়া প্রতিটি downstream JSON encoder, search indexer ও CSV export ভাঙে।
 - MySQL-এর `utf8` charset আসলে `utf8mb3`, ৪ byte-এর character রাখতে পারে না। Support ticket-এ একটা emoji `Incorrect string value: '\xF0\x9F\x98\x80'` আর failed insert দেয়।
 - দুইটা username দেখতে হুবহু এক কিন্তু byte আলাদা হতে পারে (Latin `a` বনাম Cyrillic `а`, U+0430)। এটা account-takeover vector, সৌন্দর্যের প্রশ্ন নয়।
@@ -23,7 +23,7 @@
 
 ## How it breaks
 
-তিনটা আলাদা ধারণা মিলে যায়: byte, code point, grapheme cluster। `বাংলাদেশ` = ব U+09AC, া U+09BE, ং U+0982, ল U+09B2, া U+09BE, দ U+09A6, ে U+09C7, শ U+09B6 — ৮ code point, UTF-8-এ প্রতিটি ৩ byte, মোট ২৪ byte। পাঠকের কাছে এটা ৪ একক: বাং, লা, দে, শ। ২০ byte-এ কাটলে ৭ম code point (U+09C7)-এর ভেতরে কাটা পড়ে, একটা একলা continuation byte থাকে। Truncation-এর জায়গায় কিছুই throw করে না; error পরে, অন্য service-এ, decode failure হিসেবে দেখা দেয়।
+তিনটা আলাদা ধারণা মিলে যায়: byte, code point, grapheme cluster। `বাংলাদেশ` = ব U+09AC, া U+09BE, ং U+0982, ল U+09B2, া U+09BE, দ U+09A6, ে U+09C7, শ U+09B6 - ৮ code point, UTF-8-এ প্রতিটি ৩ byte, মোট ২৪ byte। পাঠকের কাছে এটা ৪ একক: বাং, লা, দে, শ। ২০ byte-এ কাটলে ৭ম code point (U+09C7)-এর ভেতরে কাটা পড়ে, একটা একলা continuation byte থাকে। Truncation-এর জায়গায় কিছুই throw করে না; error পরে, অন্য service-এ, decode failure হিসেবে দেখা দেয়।
 
 ```mermaid
 flowchart LR
@@ -63,7 +63,7 @@ function truncateGraphemes(input: string, max: number): string {
 const name = 'বাংলাদেশ'
 console.log(new TextEncoder().encode(name).length)  // 24 byte
 console.log([...name].length)                        // 8 code point
-console.log(truncateGraphemes(name, 3))              // 'বাংলা' — ৩ cluster, বৈধ
+console.log(truncateGraphemes(name, 3))              // 'বাংলা' - ৩ cluster, বৈধ
 
 const family = '👨‍👩‍👧‍👦'
 console.log(family.length)                           // 11 UTF-16 unit
@@ -71,7 +71,7 @@ console.log([...family].length)                      // 7 code point
 console.log(truncateGraphemes(family, 1))            // পুরো পরিবার, অর্ধেক নয়
 ```
 
-ZWJ sequence code-point ৪-এ কাটলে `👨‍👩` আসে — ভিন্ন একটা পরিবার। Display text-এর জন্য grapheme boundary-ই একমাত্র নিরাপদ কাটার জায়গা।
+ZWJ sequence code-point ৪-এ কাটলে `👨‍👩` আসে - ভিন্ন একটা পরিবার। Display text-এর জন্য grapheme boundary-ই একমাত্র নিরাপদ কাটার জায়গা।
 
 ### 2. পুরো path utf8mb4 করুন
 

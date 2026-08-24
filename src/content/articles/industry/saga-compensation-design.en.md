@@ -1,10 +1,10 @@
-> **Scenario** — A travel booking saga reserves a seat, charges a card, then books a hotel. The hotel provider returns 503 for eleven minutes. The saga fires compensations: refund the card, release the seat. The refund succeeds, but the seat release message is consumed twice and the seat is released for a *different* booking that had reused the same seat ID. Support gets two angry customers and the saga log shows `COMPLETED`.
+> **Scenario** - A travel booking saga reserves a seat, charges a card, then books a hotel. The hotel provider returns 503 for eleven minutes. The saga fires compensations: refund the card, release the seat. The refund succeeds, but the seat release message is consumed twice and the seat is released for a *different* booking that had reused the same seat ID. Support gets two angry customers and the saga log shows `COMPLETED`.
 
 ## Why it matters
 
 - Compensation is not rollback. There is no undo log; every reversal is a new business operation with its own failure modes and its own money movement.
 - Half-compensated sagas leave the system in a state no single service can describe, so incident response has to reconstruct intent from logs across four services.
-- Stuck sagas hold real resources — inventory, seats, credit holds — and silently reduce sellable capacity.
+- Stuck sagas hold real resources - inventory, seats, credit holds - and silently reduce sellable capacity.
 - Compensation actions are often the least-tested code path in the system, executed only during incidents.
 - Financial reversals have regulatory timing requirements; a compensation that runs 6 hours late is a compliance issue, not just a bug.
 
@@ -47,7 +47,7 @@ sequenceDiagram
 2. No idempotency key scoped to the saga instance, so redelivery repeats the reversal.
 3. Missing per-step timeouts, so a silent upstream leaves the saga pending indefinitely.
 4. Resource identifiers reused across bookings, making "release seat 14C" ambiguous.
-5. No persisted saga state machine — state lives in in-memory coordinator objects that vanish on restart.
+5. No persisted saga state machine - state lives in in-memory coordinator objects that vanish on restart.
 6. Compensation ordering assumed to be strict reverse when some steps are independent and some are not.
 
 ## How to solve it
@@ -125,7 +125,7 @@ A sweeper job scans `saga_instances WHERE deadline_at < now() AND state NOT IN (
 
 ### 4. Compensate in reverse, but only what actually succeeded
 
-Only steps with `status = 'succeeded'` need reversal. A step that timed out is *ambiguous* — it may have applied. Ambiguous steps must be compensated too, which is why compensations must tolerate "nothing to undo".
+Only steps with `status = 'succeeded'` need reversal. A step that timed out is *ambiguous* - it may have applied. Ambiguous steps must be compensated too, which is why compensations must tolerate "nothing to undo".
 
 ### 5. Choose orchestration over choreography for money
 

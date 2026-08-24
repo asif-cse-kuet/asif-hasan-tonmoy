@@ -1,4 +1,4 @@
-> **Scenario** — A nightly settlement job is scheduled at `02:30` local time in `America/New_York`. On 2024-03-10 that clock time does not exist — 01:59:59 EST is followed by 03:00:00 EDT. The job silently does not run. Eight months later, on 2024-11-03, `01:30` happens twice and the job runs twice, double-posting 12,400 ledger entries.
+> **Scenario** - A nightly settlement job is scheduled at `02:30` local time in `America/New_York`. On 2024-03-10 that clock time does not exist - 01:59:59 EST is followed by 03:00:00 EDT. The job silently does not run. Eight months later, on 2024-11-03, `01:30` happens twice and the job runs twice, double-posting 12,400 ledger entries.
 
 ## Why it matters
 
@@ -132,8 +132,8 @@ const start = DateTime.fromISO('2024-11-02T09:00', { zone: 'America/New_York' })
 const naive = start.toUTC().plus({ seconds: 86_400 }).setZone('America/New_York')
 const correct = start.plus({ days: 1 })
 
-console.log(naive.toFormat('HH:mm'))   // 08:00 — wrong
-console.log(correct.toFormat('HH:mm')) // 09:00 — right
+console.log(naive.toFormat('HH:mm'))   // 08:00 - wrong
+console.log(correct.toFormat('HH:mm')) // 09:00 - right
 ```
 
 ### 5. Keep tzdata fresh and pin its version
@@ -200,7 +200,7 @@ sequenceDiagram
 
 - `SET time zone 'UTC'` on the connection and calling it a fix, while the application still builds local strings.
 - Using `date_default_timezone_set('Asia/Dhaka')` globally in PHP and then storing `date('Y-m-d H:i:s')` in a `DATETIME` column.
-- "We only operate in one country, so offsets are fine" — until the government changes the offset, or you hire abroad.
+- "We only operate in one country, so offsets are fine" - until the government changes the offset, or you hire abroad.
 - Retrying a skipped job by re-running the cron manually without checking whether the second attempt is idempotent.
 - Comparing timestamps as strings after formatting them in different zones.
 - Treating `getTimezoneOffset()` as the user's timezone.

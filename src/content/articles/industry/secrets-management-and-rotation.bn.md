@@ -1,10 +1,10 @@
-> **Scenario** — একজন contractor-এর laptop চুরি হলো। Team ঠিক করল database password, payment provider key ও JWT signing key rotate করবে। ৩১টা service-এর কোনটা কোনটা পড়ে কেউ জানে না, আর মার্চে শেষ rotation-এ ৪০ মিনিটের outage হয়েছিল। Rotation "release-এর পরে" পিছিয়ে দেওয়া হলো।
+> **Scenario** - একজন contractor-এর laptop চুরি হলো। Team ঠিক করল database password, payment provider key ও JWT signing key rotate করবে। ৩১টা service-এর কোনটা কোনটা পড়ে কেউ জানে না, আর মার্চে শেষ rotation-এ ৪০ মিনিটের outage হয়েছিল। Rotation "release-এর পরে" পিছিয়ে দেওয়া হলো।
 
 ## Why it matters
 
 - Rotation করার সক্ষমতাই আপনার incident containment। Key rotate করতে maintenance window লাগলে exposed key দিনের পর দিন valid থাকে।
 - Secret সাদামাটা পথে leak হয়: CI log, শুরুর দিকের commit-এ `.env`, error page, Docker image layer, Slack paste।
-- Service জুড়ে একটাই shared credential মানে এক compromise-এ সবকিছুর access revoke — fix নিজেই outage।
+- Service জুড়ে একটাই shared credential মানে এক compromise-এ সবকিছুর access revoke - fix নিজেই outage।
 - Compliance framework rotation-এর প্রমাণ চায়, ইচ্ছা নয়। tested runbook ছাড়া "আমরা rotate করতে পারি" audit-এ fail।
 
 ## Symptoms
@@ -20,7 +20,7 @@
 
 ## How it breaks
 
-Rotation fail করে যখন একটা secret-এর একসাথে কেবল একটাই valid value থাকে। তখন বদলানো মানে প্রতিটি consumer-এ atomic cut — যা অসম্ভব যখন consumer স্বাধীনভাবে deploy করে, configuration cache করে, বা দীর্ঘায়ু connection ধরে রাখে। Team শেখে rotation কষ্ট দেয়, তাই বন্ধ করে দেয়, আর key-এর বয়স বাড়ে যতক্ষণ exposure ওই কষ্টের পথেই ঠেলে দেয়।
+Rotation fail করে যখন একটা secret-এর একসাথে কেবল একটাই valid value থাকে। তখন বদলানো মানে প্রতিটি consumer-এ atomic cut - যা অসম্ভব যখন consumer স্বাধীনভাবে deploy করে, configuration cache করে, বা দীর্ঘায়ু connection ধরে রাখে। Team শেখে rotation কষ্ট দেয়, তাই বন্ধ করে দেয়, আর key-এর বয়স বাড়ে যতক্ষণ exposure ওই কষ্টের পথেই ঠেলে দেয়।
 
 ```mermaid
 sequenceDiagram
@@ -39,7 +39,7 @@ sequenceDiagram
 ## Root causes
 
 1. Single-valued secret, overlap window নেই, তাই atomic cutover বাধ্যতামূলক।
-2. কোন secret কে ব্যবহার করে ও কার মালিকানা — এমন inventory নেই।
+2. কোন secret কে ব্যবহার করে ও কার মালিকানা - এমন inventory নেই।
 3. Secret runtime-এ inject না হয়ে image বা committed file-এ bake করা।
 4. একটা credential অনেক service share করে, তাই blast radius = পুরো platform।
 5. Config শুধু boot-এ পড়া হয়, reload path নেই।
@@ -180,7 +180,7 @@ stateDiagram-v2
 ## Verification checklist
 
 - [ ] প্রতিটি secret-এর owner, consumer list ও rotation procedure documented।
-- [ ] দুটো value valid রেখে rotation শেষ করা যায় — staging-এ যাচাই করা।
+- [ ] দুটো value valid রেখে rotation শেষ করা যায় - staging-এ যাচাই করা।
 - [ ] `git log -p` ও image layer-এ কাজ করা কোনো credential নেই।
 - [ ] Debug চালু করে job re-run করলেও CI log-এ কোনো secret আসে না।
 - [ ] প্রতিটি service নিজের identity ও least-privilege grant দিয়ে authenticate করে।

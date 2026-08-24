@@ -1,11 +1,11 @@
-> **Scenario** — ১৪:০২-এ primary region পড়ে গেল। DNS provider-এর health check ১৪:০৩-এ `api.example.com`-কে standby region-এ ফ্লিপ করল, record-এর TTL ৬০ সেকেন্ড। ১৪:৪০-এ এসেও ৮% traffic — মূলত এক বড় enterprise customer আর একদল mobile client — মৃত IP-তে হাতুড়ি পিটছে।
+> **Scenario** - ১৪:০২-এ primary region পড়ে গেল। DNS provider-এর health check ১৪:০৩-এ `api.example.com`-কে standby region-এ ফ্লিপ করল, record-এর TTL ৬০ সেকেন্ড। ১৪:৪০-এ এসেও ৮% traffic - মূলত এক বড় enterprise customer আর একদল mobile client - মৃত IP-তে হাতুড়ি পিটছে।
 
 ## Why it matters
 
 - DNS হলো সেই failover যন্ত্র যার উপর বেশিরভাগ team নির্ভর করে, অথচ যেটির নিয়ন্ত্রণ তাদের হাতে সবচেয়ে কম। আপনি TTL publish করেন; resolver, stub library আর app runtime ঠিক করে কতটা মানবে।
 - "৬০ সেকেন্ড RTO" আসলে ৪০ মিনিট হলে একটি regional outage কয়েক ঘণ্টার SLA breach হয়ে যায়।
-- মৃত IP-তে pinned client সুন্দরভাবে fail করে না — connection pool ভরায়, retry শেষ করে, আর dashboard "recovered" বলার অনেক পরেও support ticket তৈরি করে।
-- negative caching (SOA minimum) মানে একটি ভুল — মুছে যাওয়া record, একটি typo — positive TTL-এর অনেক পরেও টিকে থাকে।
+- মৃত IP-তে pinned client সুন্দরভাবে fail করে না - connection pool ভরায়, retry শেষ করে, আর dashboard "recovered" বলার অনেক পরেও support ticket তৈরি করে।
+- negative caching (SOA minimum) মানে একটি ভুল - মুছে যাওয়া record, একটি typo - positive TTL-এর অনেক পরেও টিকে থাকে।
 - কম TTL বিনামূল্যে নয়: query volume গুণ হয় আর প্রতিটি cold connection-এ DNS provider কঠিন dependency হয়ে দাঁড়ায়।
 
 ## Symptoms
@@ -66,7 +66,7 @@ dig +noall +answer api.example.com @8.8.8.8
 
 কয়েকটি public resolver ও একটি client network থেকে query করুন। সবচেয়ে বড় দেখা TTL-ই আপনার আসল RTO floor।
 
-### 2. positive ও negative — দুই TTL-ই সচেতনভাবে দিন
+### 2. positive ও negative - দুই TTL-ই সচেতনভাবে দিন
 
 ```
 ; zone file
@@ -94,7 +94,7 @@ location /api/ {
 }
 ```
 
-`proxy_pass`-এ variable ব্যবহার করলে nginx config load-এ IP pin না করে `resolver valid=` সূচি অনুযায়ী re-resolve করে। client দিকে max connection lifetime দিন — যেমন Go transport-এ ৬০s, বা Node-এ `keepAliveTimeout` সহ pool recycle।
+`proxy_pass`-এ variable ব্যবহার করলে nginx config load-এ IP pin না করে `resolver valid=` সূচি অনুযায়ী re-resolve করে। client দিকে max connection lifetime দিন - যেমন Go transport-এ ৬০s, বা Node-এ `keepAliveTimeout` সহ pool recycle।
 
 ### 4. runtime cache স্পষ্টভাবে ঠিক করুন
 
@@ -118,7 +118,7 @@ failover time = `detect + publish + propagate`। ৩০s interval ও ৩-failu
 
 ### 6. শুধু DNS-এর উপর ভরসা করবেন না
 
-সামনে একটি স্থির anycast address বা load balancer রাখুন, আর DNS-কে শুধু ধীর, মোটা দাগের সরানোর কাজ দিন। তখন failover মানে routing পরিবর্তন — সেকেন্ডে মাপা, cache expiry নয়।
+সামনে একটি স্থির anycast address বা load balancer রাখুন, আর DNS-কে শুধু ধীর, মোটা দাগের সরানোর কাজ দিন। তখন failover মানে routing পরিবর্তন - সেকেন্ডে মাপা, cache expiry নয়।
 
 ## Target design
 

@@ -1,11 +1,11 @@
-> **Scenario** — নয় জন engineer-এর একটি দল তাদের Laravel application এগারোটি service-এ ভাগ করে। ছয় মাস পর checkout flow-তে একটা field যোগ করতে চারটি repository-তে সমন্বিত deploy লাগে, local development-এ ১৪GB RAM দরকার, আর "orders" service database transaction-এর ভেতরেই "inventory" service-কে synchronously ডাকে। Feature lead time তিন দিন থেকে তিন সপ্তাহ হয়েছে।
+> **Scenario** - নয় জন engineer-এর একটি দল তাদের Laravel application এগারোটি service-এ ভাগ করে। ছয় মাস পর checkout flow-তে একটা field যোগ করতে চারটি repository-তে সমন্বিত deploy লাগে, local development-এ ১৪GB RAM দরকার, আর "orders" service database transaction-এর ভেতরেই "inventory" service-কে synchronously ডাকে। Feature lead time তিন দিন থেকে তিন সপ্তাহ হয়েছে।
 
 ## Why it matters
 
 - দুই module-এর মাঝে network call function call-এর চেয়ে ১,০০০ গুণ দামি, আর এমনভাবে fail করতে পারে যা function call পারে না। আপনি compile-time error-কে runtime incident-এ বদলাচ্ছেন।
 - Service boundary মানে versioned contract। ভাগের পর boundary সরাতে সমন্বিত migration লাগে; monolith-এর ভেতরে সেটা IDE-তে একটা rename।
 - Team topology আর service topology একে অপরের দিকে ঝোঁকে। নয় engineer-এর এগারো service মানে কারও কিছুতে মালিকানা নেই, আর pager যায় যে জেগে আছে তার কাছে।
-- Founder-দের জন্য: microservice-এর কর দেওয়া হয় feature lead time-এ, যেটা investor আর customer সত্যিই টের পান। স্বাধীন দলের স্বাধীন deploy কিনলে তা মূল্যবান — তার আগে নয়।
+- Founder-দের জন্য: microservice-এর কর দেওয়া হয় feature lead time-এ, যেটা investor আর customer সত্যিই টের পান। স্বাধীন দলের স্বাধীন deploy কিনলে তা মূল্যবান - তার আগে নয়।
 - উল্টো migration ভাগ করার চেয়ে অনেক বেশি দামি, তাই default হওয়া উচিত সেই option যা সিদ্ধান্তকে সস্তা রাখে।
 
 ## Symptoms
@@ -21,9 +21,9 @@
 
 ## How it breaks
 
-ভাগ সাধারণত ভুল seam ধরে হয়। দল boundary আঁকে technical layer ঘিরে ("API service", "worker service") বা database টেবিল ঘিরে, একসাথে বদলায় এমন business capability ঘিরে নয়। Boundary যখন transaction কেটে যায়, তখন ভাগ ACID write-কে compensating action সহ saga বানিয়ে দেয় — আর বেশিরভাগ দল এটা জানে ভাগের পর, production-এ, যখন partial failure-এ order paid কিন্তু fulfil হয়নি অবস্থায় আটকে থাকে।
+ভাগ সাধারণত ভুল seam ধরে হয়। দল boundary আঁকে technical layer ঘিরে ("API service", "worker service") বা database টেবিল ঘিরে, একসাথে বদলায় এমন business capability ঘিরে নয়। Boundary যখন transaction কেটে যায়, তখন ভাগ ACID write-কে compensating action সহ saga বানিয়ে দেয় - আর বেশিরভাগ দল এটা জানে ভাগের পর, production-এ, যখন partial failure-এ order paid কিন্তু fulfil হয়নি অবস্থায় আটকে থাকে।
 
-দ্বিতীয় failure shared database। দল কোড ভাগ করে কিন্তু data নয়, কারণ data ভাগ করা সত্যিই কঠিন। ফল দুই দিকের সবচেয়ে খারাপ: monolith-এর coupling (এক schema change দুই deploy ভাঙে) আর distribution-এর operational খরচ (network call, আলাদা pipeline, আলাদা on-call)। এই আকৃতির নাম আছে — distributed monolith — আর এটা যে monolith-কে সরিয়েছে তার চেয়েও খারাপ।
+দ্বিতীয় failure shared database। দল কোড ভাগ করে কিন্তু data নয়, কারণ data ভাগ করা সত্যিই কঠিন। ফল দুই দিকের সবচেয়ে খারাপ: monolith-এর coupling (এক schema change দুই deploy ভাঙে) আর distribution-এর operational খরচ (network call, আলাদা pipeline, আলাদা on-call)। এই আকৃতির নাম আছে - distributed monolith - আর এটা যে monolith-কে সরিয়েছে তার চেয়েও খারাপ।
 
 ```mermaid
 flowchart TD
@@ -50,10 +50,10 @@ flowchart TD
 
 ### 1. আগে monolith-এর ভেতরেই module boundary enforce করুন
 
-Diagram দেখে সঠিক service boundary পাওয়া যায় না। Internal boundary enforce করে দেখুন কোথায় violation জমে — সেখানেই উত্তর।
+Diagram দেখে সঠিক service boundary পাওয়া যায় না। Internal boundary enforce করে দেখুন কোথায় violation জমে - সেখানেই উত্তর।
 
 ```json
-// .eslintrc.json — modules may only import each other's public entry point.
+// .eslintrc.json - modules may only import each other's public entry point.
 {
   "rules": {
     "no-restricted-imports": ["error", {
@@ -71,7 +71,7 @@ Diagram দেখে সঠিক service boundary পাওয়া যায�
 PHP-তে Deptrac দিয়ে একই শৃঙ্খলা:
 
 ```yaml
-# deptrac.yaml — a dependency violation fails CI, exactly like a type error.
+# deptrac.yaml - a dependency violation fails CI, exactly like a type error.
 deptrac:
   layers:
     - name: Orders
@@ -134,7 +134,7 @@ histogram_quantile(0.95,
 )
 ```
 
-প্রতিটি service-এর change lead time-ও মাপুন। কোনো "microservice" অন্যটি ছাড়া deploy না হলে সেটা স্বাধীন নয় — সুবিধা ছাড়াই খরচ দিচ্ছেন।
+প্রতিটি service-এর change lead time-ও মাপুন। কোনো "microservice" অন্যটি ছাড়া deploy না হলে সেটা স্বাধীন নয় - সুবিধা ছাড়াই খরচ দিচ্ছেন।
 
 ## Target design
 
@@ -171,7 +171,7 @@ flowchart LR
 
 ## Anti-patterns
 
-- এক shared database রেখে service-এ ভাগ করা — সব খরচ, কোনো সুবিধা নেই এমন distributed monolith।
+- এক shared database রেখে service-এ ভাগ করা - সব খরচ, কোনো সুবিধা নেই এমন distributed monolith।
 - Conference talk-এর পরামর্শে service extract করা, মাপা scaling বা সাংগঠনিক কারণ ছাড়া।
 - দলের চেয়ে বেশি service বানানো, ফলে ownership নামমাত্র।
 - Function call-কে synchronous HTTP call বানিয়ে সেটাকে decoupling বলা; boundary নয়, একটা failure mode যোগ করেছেন।

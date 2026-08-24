@@ -37,7 +37,7 @@ export const DOMAINS: IndustryDomain[] = [
     },
     summary: {
       en: 'CAP, PACELC, consensus, clocks, split brain, and the failure modes that appear once a service spans more than one machine.',
-      bn: 'ক্যাপ, প্যাসেলসি, ঐকমত্য, ঘড়ি, স্প্লিট ব্রেইন—একাধিক মেশিনে ছড়িয়ে পড়লে যে ব্যর্থতার ধরনগুলো দেখা যায়।',
+      bn: 'ক্যাপ, প্যাসেলসি, ঐকমত্য, ঘড়ি, স্প্লিট ব্রেইন-একাধিক মেশিনে ছড়িয়ে পড়লে যে ব্যর্থতার ধরনগুলো দেখা যায়।',
     },
   },
   {
@@ -49,7 +49,7 @@ export const DOMAINS: IndustryDomain[] = [
     },
     summary: {
       en: 'Sharding, locks, migrations, replication lag, and the storage choices that decide correctness under load.',
-      bn: 'শার্ডিং, লক, মাইগ্রেশন, রিপ্লিকেশন ল্যাগ—লোডে সঠিকতা নির্ধারণ করে এমন স্টোরেজ সিদ্ধান্ত।',
+      bn: 'শার্ডিং, লক, মাইগ্রেশন, রিপ্লিকেশন ল্যাগ-লোডে সঠিকতা নির্ধারণ করে এমন স্টোরেজ সিদ্ধান্ত।',
     },
   },
   {
@@ -61,7 +61,7 @@ export const DOMAINS: IndustryDomain[] = [
     },
     summary: {
       en: 'Cache aside, stampedes, invalidation, edge TTL, and why “just cache it” creates new failure modes.',
-      bn: 'ক্যাশ অ্যাসাইড, স্ট্যাম্পিড, ইনভ্যালিডেশন, এজ টিটিএল—শুধু ক্যাশ করলেই নতুন ব্যর্থতা তৈরি হয় কেন।',
+      bn: 'ক্যাশ অ্যাসাইড, স্ট্যাম্পিড, ইনভ্যালিডেশন, এজ টিটিএল-শুধু ক্যাশ করলেই নতুন ব্যর্থতা তৈরি হয় কেন।',
     },
   },
   {
@@ -73,7 +73,7 @@ export const DOMAINS: IndustryDomain[] = [
     },
     summary: {
       en: 'Queues, backpressure, poison pills, sagas, outbox, and the delivery guarantees teams think they have.',
-      bn: 'কিউ, ব্যাকপ্রেশার, পয়জন পিল, সাগা, আউটবক্স—দল যে ডেলিভারি গ্যারান্টি আছে বলে মনে করে।',
+      bn: 'কিউ, ব্যাকপ্রেশার, পয়জন পিল, সাগা, আউটবক্স-দল যে ডেলিভারি গ্যারান্টি আছে বলে মনে করে।',
     },
   },
   {
@@ -97,7 +97,7 @@ export const DOMAINS: IndustryDomain[] = [
     },
     summary: {
       en: 'RBAC, OAuth, tokens, CSRF, tenant isolation, and the identity mistakes that turn into incidents.',
-      bn: 'আরবিএসি, ওঅথ, টোকেন, সিএসআরএফ, টেন্যান্ট আইসোলেশন—পরিচয় সংক্রান্ত ভুল যেগুলো ইনসিডেন্টে পরিণত হয়।',
+      bn: 'আরবিএসি, ওঅথ, টোকেন, সিএসআরএফ, টেন্যান্ট আইসোলেশন-পরিচয় সংক্রান্ত ভুল যেগুলো ইনসিডেন্টে পরিণত হয়।',
     },
   },
   {
@@ -121,7 +121,7 @@ export const DOMAINS: IndustryDomain[] = [
     },
     summary: {
       en: 'Docker layers, rollouts, blue-green, canary, probes, OOM, and the deploy machinery that keeps production boring.',
-      bn: 'ডকার লেয়ার, রোলআউট, ব্লু-গ্রিন, ক্যানারি, প্রোব, ওওএম—প্রোডাকশনকে স্থির রাখে এমন ডিপ্লয় যন্ত্রপাতি।',
+      bn: 'ডকার লেয়ার, রোলআউট, ব্লু-গ্রিন, ক্যানারি, প্রোব, ওওএম-প্রোডাকশনকে স্থির রাখে এমন ডিপ্লয় যন্ত্রপাতি।',
     },
   },
   {
@@ -133,7 +133,7 @@ export const DOMAINS: IndustryDomain[] = [
     },
     summary: {
       en: 'Reverse proxies, TLS, HTTP/2–3, DNS failover, load balancing, and what actually happens at the edge.',
-      bn: 'রিভার্স প্রক্সি, টিএলএস, এইচটিটিপি/২–৩, ডিএনএস ফেইলওভার, লোড ব্যালেন্সিং—এজে আসলে কী ঘটে।',
+      bn: 'রিভার্স প্রক্সি, টিএলএস, এইচটিটিপি/২–৩, ডিএনএস ফেইলওভার, লোড ব্যালেন্সিং-এজে আসলে কী ঘটে।',
     },
   },
   {
@@ -145,7 +145,7 @@ export const DOMAINS: IndustryDomain[] = [
     },
     summary: {
       en: 'SLIs, error budgets, golden signals, tracing, cardinality, and alerts that page a human for a reason.',
-      bn: 'এসএলআই, এরর বাজেট, গোল্ডেন সিগন্যাল, ট্রেসিং, কার্ডিনালিটি—মানুষকে কারণসহ পেজ করে এমন অ্যালার্ট।',
+      bn: 'এসএলআই, এরর বাজেট, গোল্ডেন সিগন্যাল, ট্রেসিং, কার্ডিনালিটি-মানুষকে কারণসহ পেজ করে এমন অ্যালার্ট।',
     },
   },
   {
@@ -157,7 +157,7 @@ export const DOMAINS: IndustryDomain[] = [
     },
     summary: {
       en: 'Chaos, retry storms, partial failure, load shedding, and the ugly cases that only appear in production.',
-      bn: 'কাওস, রিট্রাই স্টর্ম, আংশিক ব্যর্থতা, লোড শেডিং—শুধু প্রোডাকশনে দেখা যায় এমন কঠিন কেস।',
+      bn: 'কাওস, রিট্রাই স্টর্ম, আংশিক ব্যর্থতা, লোড শেডিং-শুধু প্রোডাকশনে দেখা যায় এমন কঠিন কেস।',
     },
   },
   {
@@ -169,7 +169,7 @@ export const DOMAINS: IndustryDomain[] = [
     },
     summary: {
       en: 'Little’s Law, Amdahl, p99 tails, pools, GC, and planning throughput before the pager fires.',
-      bn: 'লিটলস ল, আডাল, পি৯৯ টেইল, পুল, জিসি—পেজার বাজার আগে থ্রুপুট পরিকল্পনা।',
+      bn: 'লিটলস ল, আডাল, পি৯৯ টেইল, পুল, জিসি-পেজার বাজার আগে থ্রুপুট পরিকল্পনা।',
     },
   },
   {
@@ -181,7 +181,7 @@ export const DOMAINS: IndustryDomain[] = [
     },
     summary: {
       en: 'RAG, agentic retrieval, vector stores, prompt injection, evals, and the production path for LLM products.',
-      bn: 'আরএজি, এজেন্টিক রিট্রিভাল, ভেক্টর স্টোর, প্রম্পট ইনজেকশন, ইভ্যাল—এলএলএম পণ্যের প্রোডাকশন পথ।',
+      bn: 'আরএজি, এজেন্টিক রিট্রিভাল, ভেক্টর স্টোর, প্রম্পট ইনজেকশন, ইভ্যাল-এলএলএম পণ্যের প্রোডাকশন পথ।',
     },
   },
   {
@@ -193,7 +193,7 @@ export const DOMAINS: IndustryDomain[] = [
     },
     summary: {
       en: 'ETL/ELT, feature stores, backfills, training-serving skew, and contracts that keep models honest.',
-      bn: 'ইটিএল/ইএলটি, ফিচার স্টোর, ব্যাকফিল, ট্রেনিং-সার্ভিং স্কিউ—মডেলকে সৎ রাখে এমন চুক্তি।',
+      bn: 'ইটিএল/ইএলটি, ফিচার স্টোর, ব্যাকফিল, ট্রেনিং-সার্ভিং স্কিউ-মডেলকে সৎ রাখে এমন চুক্তি।',
     },
   },
   {
@@ -205,7 +205,7 @@ export const DOMAINS: IndustryDomain[] = [
     },
     summary: {
       en: 'Multi-region, tenancy, public contracts, kill switches, ADRs, and platform choices that compound over years.',
-      bn: 'মাল্টি-রিজিয়ন, টেন্যান্সি, পাবলিক কন্ট্রাক্ট, কিল সুইচ, এডিআর—বছরজুড়ে জমা হয় এমন প্ল্যাটফর্ম সিদ্ধান্ত।',
+      bn: 'মাল্টি-রিজিয়ন, টেন্যান্সি, পাবলিক কন্ট্রাক্ট, কিল সুইচ, এডিআর-বছরজুড়ে জমা হয় এমন প্ল্যাটফর্ম সিদ্ধান্ত।',
     },
   },
 ]

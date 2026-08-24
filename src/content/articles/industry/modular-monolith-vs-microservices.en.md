@@ -1,11 +1,11 @@
-> **Scenario** — A nine-engineer team splits its Laravel application into eleven services. Six months later, adding a field to the checkout flow requires coordinated deploys across four repositories, local development needs 14GB of RAM, and the "orders" service calls the "inventory" service synchronously inside a database transaction. Feature lead time has gone from three days to three weeks.
+> **Scenario** - A nine-engineer team splits its Laravel application into eleven services. Six months later, adding a field to the checkout flow requires coordinated deploys across four repositories, local development needs 14GB of RAM, and the "orders" service calls the "inventory" service synchronously inside a database transaction. Feature lead time has gone from three days to three weeks.
 
 ## Why it matters
 
 - A network call between two modules costs 1,000x more than a function call and can fail in ways a function call cannot. You are trading compile-time errors for runtime incidents.
 - Service boundaries are versioned contracts. Moving a boundary after the split requires a coordinated migration; moving it inside a monolith is a rename in your IDE.
 - Team topology and service topology tend to converge. Eleven services owned by nine engineers means nobody owns anything, and the pager routes to whoever is awake.
-- For founders: the microservice tax is paid in feature lead time, which is the metric investors and customers actually feel. It is worth paying when it buys independent deploys for independent teams — and not before.
+- For founders: the microservice tax is paid in feature lead time, which is the metric investors and customers actually feel. It is worth paying when it buys independent deploys for independent teams - and not before.
 - The reverse migration is far more expensive than the split, so the default should be the option that keeps the decision cheap.
 
 ## Symptoms
@@ -21,9 +21,9 @@
 
 ## How it breaks
 
-The split usually happens along the wrong seams. Teams draw boundaries around technical layers ("the API service", "the worker service") or around database tables, rather than around business capabilities that change together. When a boundary cuts through a transaction, the split converts an ACID write into a saga with compensating actions — and most teams discover this after the split, in production, when a partial failure leaves an order paid but not fulfilled.
+The split usually happens along the wrong seams. Teams draw boundaries around technical layers ("the API service", "the worker service") or around database tables, rather than around business capabilities that change together. When a boundary cuts through a transaction, the split converts an ACID write into a saga with compensating actions - and most teams discover this after the split, in production, when a partial failure leaves an order paid but not fulfilled.
 
-The second failure is the shared database. Teams split the code but not the data because splitting data is genuinely hard. The result is the worst of both: the coupling of a monolith (one schema change breaks two deploys) plus the operational cost of distribution (network calls, separate pipelines, separate on-call). This shape is common enough to have a name — the distributed monolith — and it is strictly worse than the monolith it replaced.
+The second failure is the shared database. Teams split the code but not the data because splitting data is genuinely hard. The result is the worst of both: the coupling of a monolith (one schema change breaks two deploys) plus the operational cost of distribution (network calls, separate pipelines, separate on-call). This shape is common enough to have a name - the distributed monolith - and it is strictly worse than the monolith it replaced.
 
 ```mermaid
 flowchart TD
@@ -53,7 +53,7 @@ flowchart TD
 You cannot find the right service boundaries by reading a diagram. Find them by enforcing internal boundaries and observing where the violations pile up.
 
 ```json
-// .eslintrc.json — modules may only import each other's public entry point.
+// .eslintrc.json - modules may only import each other's public entry point.
 {
   "rules": {
     "no-restricted-imports": ["error", {
@@ -71,7 +71,7 @@ You cannot find the right service boundaries by reading a diagram. Find them by 
 For PHP, the same discipline with Deptrac:
 
 ```yaml
-# deptrac.yaml — a dependency violation fails CI, exactly like a type error.
+# deptrac.yaml - a dependency violation fails CI, exactly like a type error.
 deptrac:
   layers:
     - name: Orders
@@ -171,7 +171,7 @@ flowchart LR
 
 ## Anti-patterns
 
-- Splitting into services while keeping one shared database — a distributed monolith with all costs and no benefits.
+- Splitting into services while keeping one shared database - a distributed monolith with all costs and no benefits.
 - Extracting a service because a conference talk recommended it, without a measured scaling or organisational driver.
 - Creating more services than you have teams, so ownership is nominal.
 - Replacing a function call with a synchronous HTTP call and calling it decoupling; you added a failure mode, not a boundary.

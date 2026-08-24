@@ -1,4 +1,4 @@
-> **Scenario** — একটা field-inspection PWA technician-দের signal-হীন বেসমেন্টে কাজ করতে দেয়। এক technician তিন ঘণ্টা offline report edit করেন; supervisor একই report web থেকে edit করেন। Reconnect-এ outbox replay হয় আর last-write-wins supervisor-এর বারোটা সংশোধন মুছে দেয়। এক সপ্তাহ কেউ টেরই পায় না।
+> **Scenario** - একটা field-inspection PWA technician-দের signal-হীন বেসমেন্টে কাজ করতে দেয়। এক technician তিন ঘণ্টা offline report edit করেন; supervisor একই report web থেকে edit করেন। Reconnect-এ outbox replay হয় আর last-write-wins supervisor-এর বারোটা সংশোধন মুছে দেয়। এক সপ্তাহ কেউ টেরই পায় না।
 
 ## Why it matters
 
@@ -43,7 +43,7 @@ sequenceDiagram
 2. Server version বা logical clock নয়, device time-এর উপর last-write-wins।
 3. Idempotency key নেই, তাই retried create দ্বিতীয় record বানায়।
 4. Outbox সাথে সাথে ও একসাথে replay হয়, jitter বা concurrency cap নেই।
-5. একটা fail করা mutation queue-এর মাথা চিরকাল আটকে রাখে — dead-letter path নেই।
+5. একটা fail করা mutation queue-এর মাথা চিরকাল আটকে রাখে - dead-letter path নেই।
 6. IndexedDB prune হয় না, তাই storage quota ভরে গিয়ে write fail শুরু হয়।
 
 ## How to solve it
@@ -51,7 +51,7 @@ sequenceDiagram
 ### 1. Final state নয়, intent-সহ outbox persist করুন
 
 ```ts
-// db.ts — Dexie schema
+// db.ts - Dexie schema
 db.version(3).stores({
   outbox: '++seq, entityId, status, createdAt',
   entities: 'id, updatedAt',
@@ -162,7 +162,7 @@ flowchart LR
 
 ## Verification checklist
 
-- [ ] Offline edit করুন, অন্য user একই record edit করুক, reconnect করুন — কোনো field নীরবে হারায় না।
+- [ ] Offline edit করুন, অন্য user একই record edit করুক, reconnect করুন - কোনো field নীরবে হারায় না।
 - [ ] একই outbox item দুইবার replay করুন; server ঠিক একটা record বানায়।
 - [ ] ৫০টা simulated device reconnect করান; jitter-এর কারণে write p99 SLO-র মধ্যে থাকে।
 - [ ] একটা item-এ স্থায়ী 422 চাপান; queue-এর বাকিটা তবু drain হয়।

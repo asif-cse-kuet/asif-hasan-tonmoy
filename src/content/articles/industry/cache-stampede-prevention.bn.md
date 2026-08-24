@@ -1,11 +1,11 @@
-> **Scenario** — homepage feed একটি single key-তে Redis-এ cache করা, TTL 300 সেকেন্ড। promo night-এ রাত 21:00-এ key expire হয়, 8,000 concurrent request একসাথে miss করে, এবং প্রত্যেকটি একই 700 ms aggregation query primary database-এ চালায়। দুই সেকেন্ডের মধ্যে connection pool শেষ, চার মিনিট ধরে সাইট 502 দেয়।
+> **Scenario** - homepage feed একটি single key-তে Redis-এ cache করা, TTL 300 সেকেন্ড। promo night-এ রাত 21:00-এ key expire হয়, 8,000 concurrent request একসাথে miss করে, এবং প্রত্যেকটি একই 700 ms aggregation query primary database-এ চালায়। দুই সেকেন্ডের মধ্যে connection pool শেষ, চার মিনিট ধরে সাইট 502 দেয়।
 
 ## Why it matters
 
-- Stampede একটি *cache expiry*-কে — যা রুটিন ও প্রত্যাশিত ঘটনা — পুরো origin outage-এ পরিণত করে। কিছুই ভাঙেনি; শুধু একটি timer fire করেছে।
-- Blast radius popularity-র সাথে বাড়ে। key যত hot, collapse তত খারাপ — অর্থাৎ আপনার সবচেয়ে ভালো পারফর্ম করা page আগে fail করে।
+- Stampede একটি *cache expiry*-কে - যা রুটিন ও প্রত্যাশিত ঘটনা - পুরো origin outage-এ পরিণত করে। কিছুই ভাঙেনি; শুধু একটি timer fire করেছে।
+- Blast radius popularity-র সাথে বাড়ে। key যত hot, collapse তত খারাপ - অর্থাৎ আপনার সবচেয়ে ভালো পারফর্ম করা page আগে fail করে।
 - Recovery স্বয়ংক্রিয় নয়। database saturate হয়ে গেলে recomputation নিজেই timeout করে, cache repopulate হয় না, পরের wave-ও miss করে।
-- On-call "database CPU 100%" alert পেয়ে প্রথম দশ মিনিট query plan দেখে — cache TTL নয়।
+- On-call "database CPU 100%" alert পেয়ে প্রথম দশ মিনিট query plan দেখে - cache TTL নয়।
 - প্রতিটি duplicate recomputation টাকা: যেখানে একটি aggregation যথেষ্ট, সেখানে 8,000।
 
 ## Symptoms
@@ -16,7 +16,7 @@
 | Redis `keyspace_misses` | হঠাৎ step increase ও sustained, `keyspace_hits` পড়ে যায় |
 | DB active connections | spike-এর 1–3 সেকেন্ডের মধ্যে pool saturated |
 | p99 latency | কোনো deploy ছাড়াই 40 ms থেকে timeout ceiling (30 s) |
-| Error pattern | app tier থেকে 502/504, 500 নয় — request শেষই হয় না |
+| Error pattern | app tier থেকে 502/504, 500 নয় - request শেষই হয় না |
 | Periodicity | TTL-এর interval মিলিয়ে incident ফিরে আসে, প্রায়ই round clock boundary-তে |
 
 ## How it breaks
@@ -33,27 +33,27 @@ sequenceDiagram
     participant D as "Postgres"
     C->>A: "GET /feed"
     A->>R: "GET feed:home"
-    R-->>A: "(nil) — TTL expired"
+    R-->>A: "(nil) - TTL expired"
     A->>D: "8000x aggregation query"
     D-->>A: "Pool exhausted / timeout"
     A-->>C: "502"
-    Note over R: "Key still empty — next wave repeats"
+    Note over R: "Key still empty - next wave repeats"
 ```
 
 ## Root causes
 
-1. cache miss ও recomputation-এর মাঝে mutual exclusion নেই — miss path-এর concurrency unbounded।
+1. cache miss ও recomputation-এর মাঝে mutual exclusion নেই - miss path-এর concurrency unbounded।
 2. Hard expiry semantics: TTL-এ value এক মুহূর্তে পুরোপুরি usable থেকে পুরোপুরি অনুপস্থিত হয়ে যায়।
 3. সব replica একই মুহূর্তে seed হয়েছে (deploy, warm script বা bulk import), তাই TTL পুরোপুরি correlated।
 4. Recomputation cost যথেষ্ট বেশি (শত শত ms, microsecond নয়) যাতে duplicated work সত্যিই ক্ষতি করে।
-5. miss path-এ কোনো load shedding নেই — app আগেই reject না করে 8,000 database call queue করে।
+5. miss path-এ কোনো load shedding নেই - app আগেই reject না করে 8,000 database call queue করে।
 6. Timeout recomputation-এর চেয়ে লম্বা, তাই failing request connection ছাড়ে না, ধরে রাখে।
 
 ## How to solve it
 
 ### 1. Single-flight with a short lock
 
-শুধু একটি request recompute করার অনুমতি পায়; বাকিরা অল্প সময় wait করে বা stale serve করে। `SET NX PX` হলো primitive — holder crash করলে `PX` lock নিজে ছেড়ে দেয়।
+শুধু একটি request recompute করার অনুমতি পায়; বাকিরা অল্প সময় wait করে বা stale serve করে। `SET NX PX` হলো primitive - holder crash করলে `PX` lock নিজে ছেড়ে দেয়।
 
 ```bash
 # Acquire: succeeds for exactly one caller
@@ -173,17 +173,17 @@ flowchart TD
 - [ ] miss path load-test: 2,000 RPS-এ `redis-cli DEL feed:home` চালিয়ে দেখুন origin QPS প্রায় 1-এ থাকে।
 - [ ] `redis-cli --hotkeys` (বা sampled `MONITOR`) refresh cycle-প্রতি একটি `SET` দেখায়, হাজারটি নয়।
 - [ ] অনেক key-তে `TTL feed:home` ছড়ানো মান দেয়, একই সংখ্যা নয়।
-- [ ] origin restart-এর সময় `X-Cache-Status` `HIT`, `UPDATING` বা `STALE` দেখায় — volume-এ কখনো `MISS` নয়।
+- [ ] origin restart-এর সময় `X-Cache-Status` `HIT`, `UPDATING` বা `STALE` দেখায় - volume-এ কখনো `MISS` নয়।
 - [ ] Lock TTL p99 recomputation time-এর চেয়ে বড় এবং request timeout-এর চেয়ে ছোট।
 - [ ] refresh চলাকালীন lock-holder process kill করুন; `PX` window-এর মধ্যে পরের request recover করে কিনা দেখুন।
 - [ ] একটি dashboard panel origin QPS ও cache miss rate একই axis-এ plot করে।
 
 ## Anti-patterns
 
-- "miss কমাতে" TTL বাড়ানো — এতে stampede-এর frequency কমে, size বাড়ে।
+- "miss কমাতে" TTL বাড়ানো - এতে stampede-এর frequency কমে, size বাড়ে।
 - expiry ছাড়া `SETNX`: একটি worker crash করলেই key চিরকাল locked।
 - recomputation-এর চেয়ে ছোট TTL-এ lock করা, ফলে দুই worker "একই" lock ধরে দুজনেই write করে।
-- failure-এ miss path retry করা — retry storm আর stampede একসাথে বাড়ে।
+- failure-এ miss path retry করা - retry storm আর stampede একসাথে বাড়ে।
 - deploy-এর পর tight loop-এ প্রতিটি key warm করা, যা আবার perfectly correlated TTL তৈরি করে।
 - local in-process cache যোগ করে সমস্যা সমাধান ধরে নেওয়া; herd শুধু pod count দিয়ে ভাগ হয়, 200 pod-এ তা যথেষ্ট নয়।
 

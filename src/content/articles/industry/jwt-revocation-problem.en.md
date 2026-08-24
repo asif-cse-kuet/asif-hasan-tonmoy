@@ -1,11 +1,11 @@
-> **Scenario** — An employee is offboarded at 09:12. IT disables the account, but their laptop keeps calling the API successfully until 09:57 because the access token was signed with a 60-minute TTL and nothing checks the user table.
+> **Scenario** - An employee is offboarded at 09:12. IT disables the account, but their laptop keeps calling the API successfully until 09:57 because the access token was signed with a 60-minute TTL and nothing checks the user table.
 
 ## Why it matters
 
 - "Log out everywhere" and "revoke access" are compliance requirements, not nice-to-haves. A stateless token that outlives the account is an audit finding.
 - Incident response depends on being able to invalidate credentials in seconds. If your only lever is waiting out the TTL, your containment time is your TTL.
 - A leaked token is a bearer credential: whoever holds it *is* the user, from any IP, until it expires.
-- Teams over-correct by checking the database on every request, which reintroduces the coupling JWTs were adopted to avoid — now with a cache stampede on the denylist.
+- Teams over-correct by checking the database on every request, which reintroduces the coupling JWTs were adopted to avoid - now with a cache stampede on the denylist.
 
 ## Symptoms
 
@@ -19,7 +19,7 @@
 
 ## How it breaks
 
-A JWT is a signed snapshot of claims. Verification is local: parse, check signature, check `exp`. Nothing consults the source of truth, which is exactly the performance property teams want — and exactly the correctness property they forget. Any state change on the server (disable, demote, password reset, tenant removal) is invisible to already-issued tokens.
+A JWT is a signed snapshot of claims. Verification is local: parse, check signature, check `exp`. Nothing consults the source of truth, which is exactly the performance property teams want - and exactly the correctness property they forget. Any state change on the server (disable, demote, password reset, tenant removal) is invisible to already-issued tokens.
 
 ```mermaid
 sequenceDiagram
@@ -122,7 +122,7 @@ Put stable identity in claims (`sub`, `tenant`, `sid`). Resolve roles and limits
 
 ### 6. Rate-limit and monitor the auth endpoints
 
-Refresh and login are the two endpoints an attacker will hammer. Apply per-IP and per-subject limits, and alert on refresh-reuse detections — that signal is high fidelity.
+Refresh and login are the two endpoints an attacker will hammer. Apply per-IP and per-subject limits, and alert on refresh-reuse detections - that signal is high fidelity.
 
 ## Target design
 

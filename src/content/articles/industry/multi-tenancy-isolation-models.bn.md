@@ -1,11 +1,11 @@
-> **Scenario** — এক support engineer shared `orders` টেবিলে `acme` tenant-এর জন্য data-fix query চালান, `tenant_id` predicate দিতে ভুলে যান, আর ৩৮০ জন customer-এর ৪১,০০০ row update হয়ে যায়। Audit log-এ মাত্র একটি statement। Incident review জিজ্ঞেস করে — একটা missing `WHERE` কীভাবে একসাথে সব tenant-এ পৌঁছাল?
+> **Scenario** - এক support engineer shared `orders` টেবিলে `acme` tenant-এর জন্য data-fix query চালান, `tenant_id` predicate দিতে ভুলে যান, আর ৩৮০ জন customer-এর ৪১,০০০ row update হয়ে যায়। Audit log-এ মাত্র একটি statement। Incident review জিজ্ঞেস করে - একটা missing `WHERE` কীভাবে একসাথে সব tenant-এ পৌঁছাল?
 
 ## Why it matters
 
 - Cross-tenant leakage সেই একমাত্র bug class যা enterprise deal শেষ করে দেয়। অন্য কোম্পানির data-র একটা screenshot মানে bug ticket নয়, breach notification।
 - Isolation model চিরকালের জন্য migration cost ঠিক করে। এক ৯০০GB shared টেবিলে `ALTER TABLE` মানে একটা maintenance window; ৪,০০০ schema-তে একই change মানে failure rate সহ একটা job queue।
 - Noisy neighbour performance সমস্যার আগে isolation সমস্যা। এক tenant ১২M row import করলে বাকিদের p99 SLO ছাড়ানো উচিত নয়।
-- Enterprise procurement জিজ্ঞেস করে "আমাদের data কোথায় থাকে, আলাদা করে delete করা যায়?" — উত্তরটা আপনার schema design, আর sales cycle-এর মাঝে সেটা retrofit করা যায় না।
+- Enterprise procurement জিজ্ঞেস করে "আমাদের data কোথায় থাকে, আলাদা করে delete করা যায়?" - উত্তরটা আপনার schema design, আর sales cycle-এর মাঝে সেটা retrofit করা যায় না।
 - সম্পূর্ণ shared model-এ per-tenant cost দেখা প্রায় অসম্ভব, ফলে product-এর দাম ঠিকভাবে নির্ধারণ করা যায় না।
 
 ## Symptoms
@@ -13,7 +13,7 @@
 | Signal | What you observe |
 |---|---|
 | Cross-tenant read | Support query বা cached response এমন `tenant_id`-র row ফেরত দেয় যা session-এর নয় |
-| Tenant-ভিত্তিক p99 | Bimodal — গুটিকয় বড় tenant slow tail দখল করে, median tenant ঠিক আছে |
+| Tenant-ভিত্তিক p99 | Bimodal - গুটিকয় বড় tenant slow tail দখল করে, median tenant ঠিক আছে |
 | Migration duration | Schema change ঘণ্টার পর ঘণ্টা চলে আর সব tenant-এর পড়া টেবিল lock করে |
 | Deletion request | GDPR erasure-এ schema drop নয়, হাতে লেখা script লাগে |
 | Backup restore | এক tenant restore করতে গোটা cluster scratch instance-এ restore করতে হয় |
@@ -21,7 +21,7 @@
 
 ## How it breaks
 
-সমস্যা প্রায় কখনোই storage engine নয়। সমস্যা হলো tenant scoping application কোডে থাকে, আর application কোডে শত শত query site থাকে। প্রতিটি ORM call, প্রতিটি raw SQL report, প্রতিটি background job আর প্রতিটি ad-hoc console session predicate বাদ দেওয়ার আলাদা সুযোগ। এখানে ৯৯% coverage কোনো safety property নয় — একটাই uncovered path মানেই পুরো breach।
+সমস্যা প্রায় কখনোই storage engine নয়। সমস্যা হলো tenant scoping application কোডে থাকে, আর application কোডে শত শত query site থাকে। প্রতিটি ORM call, প্রতিটি raw SQL report, প্রতিটি background job আর প্রতিটি ad-hoc console session predicate বাদ দেওয়ার আলাদা সুযোগ। এখানে ৯৯% coverage কোনো safety property নয় - একটাই uncovered path মানেই পুরো breach।
 
 দ্বিতীয় failure mode হলো resource sharing। এক shared cluster-এ যে tenant full-table scan চালায় সে buffer pool, IOPS আর connection খেয়ে ফেলে যা বাকিদের দরকার। *Data*-র isolation আর *load*-এর isolation আলাদা সমস্যা, আর দল সাধারণত কোনোটাই সমাধান করে না কারণ ধরে নেয় প্রথমটা দ্বিতীয়টা দিয়ে দেয়।
 
@@ -59,7 +59,7 @@ flowchart TD
 
 ### 2. Row-level security দিয়ে enforcement database-এ নিন
 
-Application-level scoping একটা convention। Postgres RLS একটা constraint — raw SQL, psql console আর গত বছরের analytics job সবার উপর কাজ করে।
+Application-level scoping একটা convention। Postgres RLS একটা constraint - raw SQL, psql console আর গত বছরের analytics job সবার উপর কাজ করে।
 
 ```sql
 ALTER TABLE orders ENABLE ROW LEVEL SECURITY;
@@ -168,7 +168,7 @@ flowchart LR
 
 ## Anti-patterns
 
-- একমাত্র enforcement হিসেবে global ORM scope-এর উপর নির্ভর করা — একটা raw query বা console session-ই যথেষ্ট।
+- একমাত্র enforcement হিসেবে global ORM scope-এর উপর নির্ভর করা - একটা raw query বা console session-ই যথেষ্ট।
 - Runtime-এ table-owner role ব্যবহার করা, যা `FORCE` ছাড়া row-level security চুপচাপ উপেক্ষা করে।
 - Transaction pooler-এর পেছনে session-level `SET` দিয়ে tenant বসানো, যাতে মান পরের request-এ leak করে।
 - Isolation-এর জন্য database-per-tenant করে unprefixed key সহ এক shared Redis রেখে দেওয়া।

@@ -1,4 +1,4 @@
-> **Scenario** — এক merchant-এর endpoint ৮ms-এ `200 OK` ফেরায়, কারণ তাদের framework প্রসেসিংয়ের আগেই acknowledge করে। তাদের queue জমে যায়, ৪০,০০০ `order.paid` event তাদের দিকে হারায়, আর তিন দিন পরে তারা ticket খুলে বলে আপনার webhook "কখনো fire করেনি"। আপনার log-এ ৪০,০০০ সফল delivery। Event-এ sequence number নেই, replay endpoint নেই — কেউ কিছু প্রমাণ করতে পারে না।
+> **Scenario** - এক merchant-এর endpoint ৮ms-এ `200 OK` ফেরায়, কারণ তাদের framework প্রসেসিংয়ের আগেই acknowledge করে। তাদের queue জমে যায়, ৪০,০০০ `order.paid` event তাদের দিকে হারায়, আর তিন দিন পরে তারা ticket খুলে বলে আপনার webhook "কখনো fire করেনি"। আপনার log-এ ৪০,০০০ সফল delivery। Event-এ sequence number নেই, replay endpoint নেই - কেউ কিছু প্রমাণ করতে পারে না।
 
 ## Why it matters
 
@@ -23,7 +23,7 @@
 
 সরল বাস্তবায়ন order তৈরির একই transaction-এ webhook post করে। HTTP call ধীর হলে transaction সেকেন্ডের পর সেকেন্ড lock ধরে রাখে। Post সফল হওয়ার পর transaction rollback হলে এমন order-এর event পাঠানো হলো যা নেই। Post fail করলে হয় event হারায়, নয় বৈধ order rollback হয়।
 
-Delivery queue-তে সরালে transaction ঠিক হয়, কিন্তু dual-write সমস্যা আসে: order commit হয়, enqueue fail করে, event চিরতরে হারায়। Outbox pattern এটি সমাধান করে — business data-র *একই transaction-এ* event টেবিলে লেখা হয়।
+Delivery queue-তে সরালে transaction ঠিক হয়, কিন্তু dual-write সমস্যা আসে: order commit হয়, enqueue fail করে, event চিরতরে হারায়। Outbox pattern এটি সমাধান করে - business data-র *একই transaction-এ* event টেবিলে লেখা হয়।
 
 ```mermaid
 sequenceDiagram
@@ -46,7 +46,7 @@ sequenceDiagram
 2. Delivery worker অন্য job-এর সাথে ভাগাভাগি হয়, তাই এক ধীর endpoint সবকিছু অনাহারে রাখে।
 3. Signature নেই, তাই consumer origin যাচাই করতে পারে না, আপনিও authorship প্রমাণ করতে পারেন না।
 4. Event ID বা sequence নেই, তাই consumer dedupe বা gap শনাক্ত করতে পারে না।
-5. Retry হয় অসীম, নয় অনুপস্থিত — নির্ধারিত schedule কখনো নয়।
+5. Retry হয় অসীম, নয় অনুপস্থিত - নির্ধারিত schedule কখনো নয়।
 6. Consumer-এর কাছে request-এর ভেতরেই synchronous প্রসেসিং আশা করা হয়।
 7. Replay API নেই, তাই recovery-র জন্য database access সহ engineer লাগে।
 
@@ -178,7 +178,7 @@ export function verifyWebhook(
 
 ### 5. Replay endpoint ship করুন
 
-`POST /v1/webhook_endpoints/{id}/replay` — time range ও ঐচ্ছিক event type সহ। এটি তিন দিনের support thread-কে এক মিনিটের self-service কাজে বদলে দেয়।
+`POST /v1/webhook_endpoints/{id}/replay` - time range ও ঐচ্ছিক event type সহ। এটি তিন দিনের support thread-কে এক মিনিটের self-service কাজে বদলে দেয়।
 
 ## Target design
 
@@ -217,7 +217,7 @@ flowchart LR
 
 - Database transaction-এর ভেতরে webhook পাঠানো, যা third-party HTTP call-এর পুরো সময় row lock ধরে রাখে।
 - শুধু body sign করা, যাতে আক্রমণকারী ধরা request চিরকাল replay করতে পারে।
-- `410 Gone` ও `404` retry করা — endpoint আপনাকে থামতে বলছে।
+- `410 Gone` ও `404` retry করা - endpoint আপনাকে থামতে বলছে।
 - `2xx`-কে "processed" ধরা, যেখানে সাধারণত এর মানে "received"।
 - Payload-এ সংবেদনশীল data দেওয়া, ID দিয়ে authenticated API থেকে fetch করানোর বদলে।
 - যে ordering দিতে পারবেন না তার প্রতিশ্রুতি দেওয়া, তারপর parallel worker event reorder করছে আবিষ্কার করা।

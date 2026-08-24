@@ -1,4 +1,4 @@
-> **Scenario** — একটা দল RabbitMQ-তে order processing বানায়, কারণ সেটা আগে থেকেই চলছিল। আঠারো মাস পর analytics-এর দরকার হয় শেষ ৯০ দিনের order event থেকে একটা derived table পুনর্গঠন করা। Message গুলো process হওয়ার সঙ্গে সঙ্গেই ack হয়ে মুছে গেছে। একমাত্র উপায় একটা database backfill script, যা লিখতে চার দিন লাগে আর event stream বিশ্বস্তভাবে পুনরুৎপাদন করে না।
+> **Scenario** - একটা দল RabbitMQ-তে order processing বানায়, কারণ সেটা আগে থেকেই চলছিল। আঠারো মাস পর analytics-এর দরকার হয় শেষ ৯০ দিনের order event থেকে একটা derived table পুনর্গঠন করা। Message গুলো process হওয়ার সঙ্গে সঙ্গেই ack হয়ে মুছে গেছে। একমাত্র উপায় একটা database backfill script, যা লিখতে চার দিন লাগে আর event stream বিশ্বস্তভাবে পুনরুৎপাদন করে না।
 
 ## Why it matters
 
@@ -12,7 +12,7 @@
 
 | Signal | What you observe |
 |---|---|
-| Backfill requests | "গত মাসটা replay করা যাবে?" — উত্তর "না" |
+| Backfill requests | "গত মাসটা replay করা যাবে?" - উত্তর "না" |
 | Consumer additions | নতুন subscriber যোগ করতে producer বদলাতে হয় |
 | Partition pressure | ২০০ concurrent worker পেতে ২০০ partition-এর job queue |
 | Offset confusion | একটা খারাপ message আবার process করতে দল হাতে offset reset করছে |
@@ -21,7 +21,7 @@
 
 ## How it breaks
 
-Work queue ack-এ message ধ্বংস করে। এটা bug নয় — এটাই queue-কে দক্ষ করে, আর এজন্যই depth অর্থবহ metric। কিন্তু এর মানে message-ই একমাত্র copy, তাই ভুলভাবে ack করা consumer bug স্থায়ীভাবে data হারায়। Stream retention window পর্যন্ত record রাখে এবং প্রতি consumer group-এর position track করে, তাই bug rewind করে ঠিক করা যায়।
+Work queue ack-এ message ধ্বংস করে। এটা bug নয় - এটাই queue-কে দক্ষ করে, আর এজন্যই depth অর্থবহ metric। কিন্তু এর মানে message-ই একমাত্র copy, তাই ভুলভাবে ack করা consumer bug স্থায়ীভাবে data হারায়। Stream retention window পর্যন্ত record রাখে এবং প্রতি consumer group-এর position track করে, তাই bug rewind করে ঠিক করা যায়।
 
 উল্টো failure: দল job queue-এর জন্য Kafka নেয়, তারপর আবিষ্কার করে per-job retry, per-job delay ও per-job DLQ routing দরকার। Kafka-তে এর কোনোটাই native নেই, কারণ partition একটা sequential log, স্বাধীনভাবে retry করার মতো item-এর সেট নয়। এক record retry করে এগোনো মানে হয় failure পেরিয়ে commit (data loss), নয়তো partition block (stall)।
 
@@ -42,7 +42,7 @@ sequenceDiagram
 ## Root causes
 
 1. Retention ও replay প্রয়োজন নয়, বরং যা ইতিমধ্যে deployed তার ভিত্তিতে বাছাই।
-2. "asynchronous" আর "queue" গুলিয়ে ফেলা — async হলো call-এর বৈশিষ্ট্য, transport-এর নয়।
+2. "asynchronous" আর "queue" গুলিয়ে ফেলা - async হলো call-এর বৈশিষ্ট্য, transport-এর নয়।
 3. Event কতদিন replayable থাকতে হবে তার কোনো ঘোষিত প্রয়োজন নেই।
 4. ভবিষ্যতের consumer design time-এ জানা থাকবে ধরে নেওয়া।
 5. Partition count-কে concurrency dial হিসেবে ব্যবহার করা, যা throughput-কে storage layout-এর সঙ্গে বেঁধে ফেলে।
@@ -52,7 +52,7 @@ sequenceDiagram
 
 ### 1. Decide with three questions
 
-- **কেউ কি এটা আবার পড়বে?** হ্যাঁ হলে — এমনকি অনুমানভিত্তিকভাবে, এমনকি analytics-এর জন্য — আপনার stream বা durable history সহ outbox দরকার।
+- **কেউ কি এটা আবার পড়বে?** হ্যাঁ হলে - এমনকি অনুমানভিত্তিকভাবে, এমনকি analytics-এর জন্য - আপনার stream বা durable history সহ outbox দরকার।
 - **এটা command না event?** `SendWelcomeEmail` command: একটাই handler, retryable, মুছে ফেলার যোগ্য। `UserSignedUp` event: অনেক reader, retained।
 - **per-item retry লাগবে?** স্বাধীন অগ্রগতি সহ per-item retry queue-এর ক্ষমতা। log-এ position ভাগ করা।
 
@@ -115,7 +115,7 @@ min.cleanable.dirty.ratio: 0.1
 
 ### 5. Size partitions for consumers, not for throughput alone
 
-Partition count আপনার সর্বোচ্চ consumer parallelism ঠিক করে এবং কমানো যায় না। `max_expected_consumers × 1.5` নিন, "যদি লাগে" বলে ২০০ নয় — প্রতিটি partition file handle, replication traffic ও rebalance time খরচ করে।
+Partition count আপনার সর্বোচ্চ consumer parallelism ঠিক করে এবং কমানো যায় না। `max_expected_consumers × 1.5` নিন, "যদি লাগে" বলে ২০০ নয় - প্রতিটি partition file handle, replication traffic ও rebalance time খরচ করে।
 
 ### 6. If you already chose wrong, add an outbox
 

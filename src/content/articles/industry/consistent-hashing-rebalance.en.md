@@ -1,8 +1,8 @@
-> **Scenario** — A 12-node Redis cache uses `crc32(key) % 12` for routing. Traffic grows, an engineer adds four nodes, and the hit rate drops from 94% to 7% in one deploy. The database behind it takes 13x its normal read load and the site is down for 40 minutes.
+> **Scenario** - A 12-node Redis cache uses `crc32(key) % 12` for routing. Traffic grows, an engineer adds four nodes, and the hit rate drops from 94% to 7% in one deploy. The database behind it takes 13x its normal read load and the site is down for 40 minutes.
 
 ## Why it matters
 
-- With modulo hashing, adding one node to an `N`-node ring remaps roughly `(N-1)/N` of all keys — 92% at N=12. Every remapped key is a cache miss, and every miss is a database query you did not plan for.
+- With modulo hashing, adding one node to an `N`-node ring remaps roughly `(N-1)/N` of all keys - 92% at N=12. Every remapped key is a cache miss, and every miss is a database query you did not plan for.
 - Consistent hashing bounds that to about `1/N` of keys, but only if virtual nodes are configured; with one token per node, load imbalance of 40%+ is normal even at steady state.
 - Rebalancing is not free. Streaming a 400GB shard to a new node at 200MB/s takes ~33 minutes of extra disk and network load on a cluster that is already at the capacity limit that made you scale.
 - Hot keys ignore the ring completely: a single celebrity key hashes to one node regardless of how well the ring is balanced.
@@ -12,9 +12,9 @@
 | Signal | What you observe |
 |---|---|
 | Cache hit rate | Cliff from >90% to single digits immediately after a topology change |
-| Origin load | Database QPS jumps by `1/hit_rate` — a 94% hit rate becomes 16x load on a full miss |
+| Origin load | Database QPS jumps by `1/hit_rate` - a 94% hit rate becomes 16x load on a full miss |
 | Per-node keyspace | `redis-cli --cluster info` shows nodes with 3-5x the mean key count |
-| Per-node CPU | One node pinned at 95% while peers sit at 20% — a hot key or a bad token distribution |
+| Per-node CPU | One node pinned at 95% while peers sit at 20% - a hot key or a bad token distribution |
 | Rebalance duration | Hours; `MIGRATING`/`IMPORTING` slots stuck, `CLUSTER COUNTKEYSINSLOT` barely moving |
 | Client errors | `MOVED`/`ASK` redirect storms, or timeouts during the migration window |
 | Tail latency | p99 doubles during rebalance because migration competes with foreground traffic |
@@ -25,7 +25,7 @@ Two failures, and teams usually meet both in the same incident.
 
 **The modulo cliff.** `hash(key) % N` ties every key's placement to `N`. Change `N` and almost every key moves. There is no gradual degradation: the entire cache is logically cold the instant the config lands. The database sees the full working-set read rate with no warm-up, which is typically 10-20x what it is provisioned for.
 
-**Ring imbalance and hot keys.** Consistent hashing places nodes at points on a 32-bit or 64-bit ring and assigns each key to the next node clockwise. With one point per node, the gaps between points are exponentially distributed — the largest gap is commonly 3-4x the mean, so one node owns 3-4x the keys. Virtual nodes (100-256 tokens per physical node) reduce the standard deviation to a few percent. But even a perfect ring cannot help a single key receiving 40% of traffic; the ring distributes *keys*, not *requests*.
+**Ring imbalance and hot keys.** Consistent hashing places nodes at points on a 32-bit or 64-bit ring and assigns each key to the next node clockwise. With one point per node, the gaps between points are exponentially distributed - the largest gap is commonly 3-4x the mean, so one node owns 3-4x the keys. Virtual nodes (100-256 tokens per physical node) reduce the standard deviation to a few percent. But even a perfect ring cannot help a single key receiving 40% of traffic; the ring distributes *keys*, not *requests*.
 
 ```mermaid
 flowchart TD
@@ -122,7 +122,7 @@ for BATCH in $(seq 1 64); do
 done
 ```
 
-For Cassandra/ScyllaDB the equivalent knob is `nodetool setstreamthroughput 200` (MB/s) — cap it at 30-40% of NIC capacity so foreground reads keep their latency budget.
+For Cassandra/ScyllaDB the equivalent knob is `nodetool setstreamthroughput 200` (MB/s) - cap it at 30-40% of NIC capacity so foreground reads keep their latency budget.
 
 ### 3. Coalesce misses so a cold shard cannot stampede the origin
 
@@ -205,7 +205,7 @@ flowchart LR
 - [ ] Per-node key count and per-node CPU are within 15% of the mean at steady state.
 - [ ] `redis-cli --hotkeys` output reviewed; no single key exceeds 10% of its node's ops.
 - [ ] A rebalance rehearsal in staging shows foreground p99 rising by less than 20%.
-- [ ] Cache miss path is coalesced — a load test with 5,000 concurrent requests for one cold key produces one origin query.
+- [ ] Cache miss path is coalesced - a load test with 5,000 concurrent requests for one cold key produces one origin query.
 - [ ] TTLs are jittered; expiry histogram has no spikes at round intervals.
 - [ ] Origin has documented headroom for the worst realistic miss rate, not the steady-state one.
 

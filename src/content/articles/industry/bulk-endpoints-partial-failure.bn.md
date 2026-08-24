@@ -1,4 +1,4 @@
-> **Scenario** — এক partner `POST /v1/orders/bulk`-এ ৫০০টি order পাঠাল। সাতটি validation-এ fail, একটি duplicate SKU constraint-এ আটকাল, বাকিরা সফল। আপনার handler সব একটি transaction-এ মুড়ে রেখেছে, তাই ৫০০টিই rollback হলো আর আপনি একটিমাত্র error message সহ `422` ফেরালেন। Partner অভিন্ন batch চারবার retry করল, একই সাত row-তে আটকাল, শেষে support-কে জিজ্ঞেস করল তাদের ৪৯৩টি বৈধ order কোথায়।
+> **Scenario** - এক partner `POST /v1/orders/bulk`-এ ৫০০টি order পাঠাল। সাতটি validation-এ fail, একটি duplicate SKU constraint-এ আটকাল, বাকিরা সফল। আপনার handler সব একটি transaction-এ মুড়ে রেখেছে, তাই ৫০০টিই rollback হলো আর আপনি একটিমাত্র error message সহ `422` ফেরালেন। Partner অভিন্ন batch চারবার retry করল, একই সাত row-তে আটকাল, শেষে support-কে জিজ্ঞেস করল তাদের ৪৯৩টি বৈধ order কোথায়।
 
 ## Why it matters
 
@@ -43,7 +43,7 @@ sequenceDiagram
 ## Root causes
 
 1. Transaction boundary per item বা per chunk নয়, per request-এ বসানো।
-2. "কিছু কাজ করেছে" বোঝাতে HTTP-তে স্বাভাবিক code নেই, তাই দল `200` বা `422` বাছে — দুটোই বিভ্রান্তিকর।
+2. "কিছু কাজ করেছে" বোঝাতে HTTP-তে স্বাভাবিক code নেই, তাই দল `200` বা `422` বাছে - দুটোই বিভ্রান্তিকর।
 3. Item-এ client-প্রদত্ত reference নেই, তাই ফলাফল মিলিয়ে নেওয়া যায় না।
 4. Retry শুধু ব্যর্থ item নয়, পুরো batch পুনরায় পাঠায়।
 5. Batch size-এর সীমা নেই, তাই latency ও lock duration client যা পাঠায় তার সাথে বাড়ে।
@@ -58,7 +58,7 @@ sequenceDiagram
 | `atomic` | `201` বা `422` | সব item প্রযোজ্য, নয়তো কিছুই নয়। client ঠিক করে সব আবার পাঠায়। |
 | `partial` (default) | `207 Multi-Status` | প্রতিটি item-এর নিজস্ব status; client শুধু failure retry করে। |
 
-`207 Multi-Status` এসেছে WebDAV থেকে, কিন্তু ঠিক এই কাজেই ব্যাপকভাবে ব্যবহৃত। গুরুত্বপূর্ণ অংশ সংখ্যাটি নয় — গুরুত্বপূর্ণ হলো এটি `200` *নয়*, তাই শুধু `res.ok` দেখা client-কে ভালো করে তাকাতেই হয়।
+`207 Multi-Status` এসেছে WebDAV থেকে, কিন্তু ঠিক এই কাজেই ব্যাপকভাবে ব্যবহৃত। গুরুত্বপূর্ণ অংশ সংখ্যাটি নয় - গুরুত্বপূর্ণ হলো এটি `200` *নয়*, তাই শুধু `res.ok` দেখা client-কে ভালো করে তাকাতেই হয়।
 
 ### 2. প্রতি item-এ client reference বাধ্যতামূলক করুন
 
@@ -257,9 +257,9 @@ flowchart TD
 ## Verification checklist
 
 - [ ] ৭টি জানা-খারাপ সহ ৫০০ item পাঠিয়ে ৪৯৩ row ও `207` response নিশ্চিত করুন।
-- [ ] অভিন্ন batch আবার পাঠিয়ে duplicate নেই ও পুনরাবৃত্ত item `already_created` চিহ্নিত — যাচাই করুন।
+- [ ] অভিন্ন batch আবার পাঠিয়ে duplicate নেই ও পুনরাবৃত্ত item `already_created` চিহ্নিত - যাচাই করুন।
 - [ ] শুধু ব্যর্থ ref retry করে দেখুন batch idempotency key তখনো প্রযোজ্য।
-- [ ] `pg_stat_activity`-তে bulk path-এর কোনো transaction ২০০ms ছাড়ায় না — assert করুন।
+- [ ] `pg_stat_activity`-তে bulk path-এর কোনো transaction ২০০ms ছাড়ায় না - assert করুন।
 - [ ] `MAX_ITEMS + 1` পাঠিয়ে body-তে সীমা সহ `413` নিশ্চিত করুন।
 - [ ] Batch-এর মাঝপথে process kill করে দেখুন অর্ধলিখিত order নেই।
 

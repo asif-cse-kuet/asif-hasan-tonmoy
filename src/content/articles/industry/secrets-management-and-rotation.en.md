@@ -1,10 +1,10 @@
-> **Scenario** — A contractor's laptop is stolen. The team decides to rotate the database password, the payment provider key, and the JWT signing key. Nobody knows which of the 31 services read each one, and the last rotation attempt in March caused a 40-minute outage. The rotation is postponed "until after the release".
+> **Scenario** - A contractor's laptop is stolen. The team decides to rotate the database password, the payment provider key, and the JWT signing key. Nobody knows which of the 31 services read each one, and the last rotation attempt in March caused a 40-minute outage. The rotation is postponed "until after the release".
 
 ## Why it matters
 
 - Rotation capability *is* your incident containment. If rotating a key takes a maintenance window, an exposed key stays valid for days.
 - Secrets leak through boring paths: CI logs, `.env` committed in an early commit, error pages, Docker image layers, Slack pastes.
-- A single shared credential across services means one compromise revokes access for everything at once — the fix becomes an outage.
+- A single shared credential across services means one compromise revokes access for everything at once - the fix becomes an outage.
 - Compliance frameworks ask for rotation evidence, not intent. "We can rotate" without a tested runbook fails the audit.
 
 ## Symptoms
@@ -20,7 +20,7 @@
 
 ## How it breaks
 
-Rotation fails when a secret has exactly one valid value at a time. Replacing it is then an atomic cut across every consumer — impossible when consumers deploy independently, cache configuration, or hold long-lived connections. Teams learn that rotation hurts, so they stop, and key age grows until an exposure forces the painful path anyway.
+Rotation fails when a secret has exactly one valid value at a time. Replacing it is then an atomic cut across every consumer - impossible when consumers deploy independently, cache configuration, or hold long-lived connections. Teams learn that rotation hurts, so they stop, and key age grows until an exposure forces the painful path anyway.
 
 ```mermaid
 sequenceDiagram

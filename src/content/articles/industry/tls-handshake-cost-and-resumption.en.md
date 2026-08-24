@@ -1,10 +1,10 @@
-> **Scenario** — A marketing push sends 90,000 people to the site in four minutes. Backends are at 30% CPU, the database is bored, and yet the edge nodes are pinned at 100% with `ssl_handshake` dominating the profile. Median TTFB goes from 120ms to 2.1s. Nothing is "down" — the TLS layer is the whole outage.
+> **Scenario** - A marketing push sends 90,000 people to the site in four minutes. Backends are at 30% CPU, the database is bored, and yet the edge nodes are pinned at 100% with `ssl_handshake` dominating the profile. Median TTFB goes from 120ms to 2.1s. Nothing is "down" - the TLS layer is the whole outage.
 
 ## Why it matters
 
 - A full TLS 1.3 handshake costs one extra round trip and a signature operation; TLS 1.2 with ECDHE costs two round trips. At 300ms RTT that is 300–600ms before a single byte of your response.
 - Handshake CPU is asymmetric: an RSA-2048 private-key operation is roughly 10–40× the cost of the client side, so the attacker (or the flash crowd) always pays less than you.
-- OCSP stapling failures add a *client-side* fetch to a third-party responder in the critical path — an outage you do not control appearing as your slowness.
+- OCSP stapling failures add a *client-side* fetch to a third-party responder in the critical path - an outage you do not control appearing as your slowness.
 - Session resumption converts most handshakes into a 0–1 RTT resume with no private-key operation, which is usually a 5–10× capacity difference at the edge.
 - Cold traffic is exactly when handshakes matter: a flash crowd is, by definition, all new connections.
 
@@ -22,9 +22,9 @@
 
 ## How it breaks
 
-Each new TLS connection runs a key exchange and an authentication step. In TLS 1.3 the client sends `ClientHello` with a key share, the server replies with its certificate and a signature, and application data flows after 1 RTT. That signature is a private-key operation on your edge node. Multiply by 90,000 arriving connections in four minutes — about 375 handshakes per second — and a node that comfortably proxies 20,000 rps can be saturated by signing alone.
+Each new TLS connection runs a key exchange and an authentication step. In TLS 1.3 the client sends `ClientHello` with a key share, the server replies with its certificate and a signature, and application data flows after 1 RTT. That signature is a private-key operation on your edge node. Multiply by 90,000 arriving connections in four minutes - about 375 handshakes per second - and a node that comfortably proxies 20,000 rps can be saturated by signing alone.
 
-Resumption exists to avoid this. With session tickets, the server encrypts the session state and hands it to the client; on return the client presents the ticket and both sides skip the certificate and signature entirely. But nginx generates ticket keys **per worker process at startup by default**, so in a multi-node edge tier every node — and after a reload, every worker — rejects tickets issued elsewhere. Resumption rate silently drops to near zero and nobody notices until a spike.
+Resumption exists to avoid this. With session tickets, the server encrypts the session state and hands it to the client; on return the client presents the ticket and both sides skip the certificate and signature entirely. But nginx generates ticket keys **per worker process at startup by default**, so in a multi-node edge tier every node - and after a reload, every worker - rejects tickets issued elsewhere. Resumption rate silently drops to near zero and nobody notices until a spike.
 
 ```mermaid
 sequenceDiagram
@@ -49,7 +49,7 @@ sequenceDiagram
 4. RSA-2048 certificates where ECDSA P-256 would be several times cheaper to sign.
 5. OCSP stapling disabled, pushing revocation checks onto clients and into the critical path.
 6. TLS 1.2 still preferred, costing an extra round trip versus TLS 1.3.
-7. No keepalive, so each request pays a fresh handshake — the connection-reuse bug wearing a TLS costume.
+7. No keepalive, so each request pays a fresh handshake - the connection-reuse bug wearing a TLS costume.
 
 ## How to solve it
 
@@ -85,7 +85,7 @@ ssl_session_cache   shared:SSL:50m;   # ~200k sessions
 ssl_session_timeout 4h;
 ```
 
-Rotate daily: distribute the new key as `current`, demote the old to `previous`, and keep both listed so in-flight tickets still resume. Ticket keys are long-lived secrets — treat them like private keys, because possession of one breaks forward secrecy for its window.
+Rotate daily: distribute the new key as `current`, demote the old to `previous`, and keep both listed so in-flight tickets still resume. Ticket keys are long-lived secrets - treat them like private keys, because possession of one breaks forward secrecy for its window.
 
 ### 3. Prefer TLS 1.3 and cheaper signatures
 
@@ -120,7 +120,7 @@ echo | openssl s_client -connect app.example.com:443 -status 2>/dev/null \
 # Cert Status: good
 ```
 
-`no response sent` means stapling is configured but the fetch is failing — usually a missing `resolver`.
+`no response sent` means stapling is configured but the fetch is failing - usually a missing `resolver`.
 
 ### 5. Confirm resumption from a client
 
@@ -140,7 +140,7 @@ openssl s_client -connect app.example.com:443 -sess_in  /tmp/s.pem </dev/null | 
 
 ### 6. Decide about 0-RTT deliberately
 
-`ssl_early_data on` removes the last round trip for resumed connections, but 0-RTT data is replayable. Enable it only if the origin restricts early data to idempotent requests — nginx exposes `$ssl_early_data` so you can reject non-GET early requests at the edge.
+`ssl_early_data on` removes the last round trip for resumed connections, but 0-RTT data is replayable. Enable it only if the origin restricts early data to idempotent requests - nginx exposes `$ssl_early_data` so you can reject non-GET early requests at the edge.
 
 ## Target design
 

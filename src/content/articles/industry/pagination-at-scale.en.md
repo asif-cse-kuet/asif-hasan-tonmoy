@@ -1,10 +1,10 @@
-> **Scenario** — An analytics partner exports your `/v1/events` endpoint nightly, walking `?page=1` through `?page=8000` at 25 rows per page. Page 1 returns in 8ms. Page 8000 takes 4.2 seconds, holds a connection the whole time, and the export overlaps with peak traffic. Worse, rows inserted during the walk shift every subsequent page, so the partner both misses events and imports duplicates.
+> **Scenario** - An analytics partner exports your `/v1/events` endpoint nightly, walking `?page=1` through `?page=8000` at 25 rows per page. Page 1 returns in 8ms. Page 8000 takes 4.2 seconds, holds a connection the whole time, and the export overlaps with peak traffic. Worse, rows inserted during the walk shift every subsequent page, so the partner both misses events and imports duplicates.
 
 ## Why it matters
 
 - `LIMIT 25 OFFSET 200000` makes the database read and discard 200,000 rows. Cost grows linearly with page number.
 - A single deep-paging client can saturate your connection pool while looking like low request volume.
-- Offset pagination over a mutating table is *incorrect*, not just slow — items are skipped and repeated.
+- Offset pagination over a mutating table is *incorrect*, not just slow - items are skipped and repeated.
 - Exports that silently miss rows produce reconciliation problems that surface weeks later in someone's finance report.
 - Total counts on large tables are their own full scan, often more expensive than the page itself.
 
@@ -23,7 +23,7 @@
 
 `OFFSET` is not a seek; it is a discard. To return rows 200,001–200,025 the database must produce and throw away the first 200,000 rows in sorted order. Even with a perfect index, the work is proportional to the offset.
 
-Drift is the subtler bug. Sorting by `created_at DESC` while new rows arrive means every insert pushes the window down by one. A partner reading page 5, then page 6, sees the last row of page 5 again as the first row of page 6 — and rows near the boundary can be skipped entirely.
+Drift is the subtler bug. Sorting by `created_at DESC` while new rows arrive means every insert pushes the window down by one. A partner reading page 5, then page 6, sees the last row of page 5 again as the first row of page 6 - and rows near the boundary can be skipped entirely.
 
 ```mermaid
 flowchart TD
@@ -49,7 +49,7 @@ flowchart TD
 
 ### 1. Use keyset (cursor) pagination
 
-Instead of "skip 200,000", say "give me rows after this exact point". The sort key must be unique — pair a timestamp with the primary key as a tiebreaker.
+Instead of "skip 200,000", say "give me rows after this exact point". The sort key must be unique - pair a timestamp with the primary key as a tiebreaker.
 
 ```sql
 -- Composite index matching the exact sort order
@@ -220,7 +220,7 @@ flowchart LR
 
 ## Anti-patterns
 
-- Fixing slow deep pages by adding a read replica — you moved the full scan, you did not remove it.
+- Fixing slow deep pages by adding a read replica - you moved the full scan, you did not remove it.
 - Sorting by a non-unique column such as `created_at` alone, so ties reorder between requests.
 - Exposing raw `id` or `offset` as the cursor, which lets clients construct cursors you never intended.
 - Returning `total_count` on every page of a 40-million-row table.

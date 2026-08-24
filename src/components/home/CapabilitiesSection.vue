@@ -17,7 +17,7 @@ const activeId = ref(CAPABILITIES[0]?.id ?? '')
     :title="pick({ en: 'How I actually work a problem', bn: 'একটা সমস্যা আমি কীভাবে ভাঙি' })"
     :lead="
       pick({
-        en: 'Six rooms I sit in. Each chip is a craft mark, not a score — click a room, read the language I use there.',
+        en: 'Six rooms I sit in. Each chip is a craft mark, not a score. Click a room, read the language I use there.',
         bn: 'ছয়টি ঘর। প্রতিটি চিপ একটি ক্রাফট মার্ক, স্কোর নয়।',
       })
     "

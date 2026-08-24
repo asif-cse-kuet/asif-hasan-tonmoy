@@ -1,8 +1,8 @@
-> **Scenario** — `/api/orders?per_page=100` responds in 2.8 s. The slow log shows 403 queries for that one request: one to list orders, 100 to load each customer, 100 for each order's shipment, and 200 more from a currency formatter that lazily fetches the tenant's settings inside the loop.
+> **Scenario** - `/api/orders?per_page=100` responds in 2.8 s. The slow log shows 403 queries for that one request: one to list orders, 100 to load each customer, 100 for each order's shipment, and 200 more from a currency formatter that lazily fetches the tenant's settings inside the loop.
 
 ## Why it matters
 
-- Each query has fixed overhead — round trip, parse, plan, result marshalling — so 400 × 3 ms is 1.2 s of latency that no index will remove.
+- Each query has fixed overhead - round trip, parse, plan, result marshalling - so 400 × 3 ms is 1.2 s of latency that no index will remove.
 - Every one of those queries holds a pool connection for the duration of the request. By Little's Law, 400 queries per request at 3 ms means one request occupies a connection for 1.2 s; 40 concurrent requests need 40 connections *doing nothing but waiting*.
 - N+1 scales with data, not traffic: it passes review and CI on a 3-row fixture and detonates when a customer has 5 000 line items.
 - It is the most common cause of "the database is slow" reports where the database is at 8% CPU.
@@ -21,7 +21,7 @@
 
 ## How it breaks
 
-Lazy loading is an ORM feature that defers a relation's query until the attribute is touched. Inside a loop — or inside a template, or a serialiser, or an accessor — "touched" happens once per row. The parent query returns N rows and the code issues N more queries, hence 1 + N.
+Lazy loading is an ORM feature that defers a relation's query until the attribute is touched. Inside a loop - or inside a template, or a serialiser, or an accessor - "touched" happens once per row. The parent query returns N rows and the code issues N more queries, hence 1 + N.
 
 The pathology is that the ORM hides the cost at the call site. `$order->customer->name` looks like a property access, not a network round trip. Serialisers and Blade/Vue templates are the worst offenders because the loop is not visible in the code that added the field.
 
@@ -46,7 +46,7 @@ sequenceDiagram
 
 1. Lazy relations accessed inside a loop, template, or serialiser.
 2. Accessors and computed attributes that query on read (`getFormattedTotalAttribute()` fetching tenant settings).
-3. Eager loading declared but broken by a later refactor — a new field in the API resource pulls an unloaded relation.
+3. Eager loading declared but broken by a later refactor - a new field in the API resource pulls an unloaded relation.
 4. Polymorphic relations, which many ORMs cannot eager-load in one query without help.
 5. GraphQL resolvers implemented per-field with no batching layer.
 6. Pagination limits raised (`per_page=500`) without re-testing the query count.
@@ -100,13 +100,13 @@ Under the hood this becomes 1 + 4 queries using `WHERE order_id IN (...)`:
 SELECT id, order_id, sku, qty FROM items WHERE order_id IN (1,2,3, /* ...100 ids */);
 ```
 
-Note the column lists. Eager loading a relation with `SELECT *` on a wide table trades 100 round trips for one enormous result set — still a regression.
+Note the column lists. Eager loading a relation with `SELECT *` on a wide table trades 100 round trips for one enormous result set - still a regression.
 
 ### 3. Prevent lazy loading structurally
 
 ```php
 <?php
-// AppServiceProvider::boot() — throw in dev/CI, log in production
+// AppServiceProvider::boot() - throw in dev/CI, log in production
 Model::preventLazyLoading(! app()->isProduction());
 
 Model::handleLazyLoadingViolationUsing(function ($model, $relation) {
@@ -211,7 +211,7 @@ flowchart LR
 - [ ] Eager loads select explicit columns; no `SELECT *` on wide relations.
 - [ ] `per_page` has a hard server-side maximum, tested.
 - [ ] DataLoader instances are per-request; a test confirms no cross-user cache bleed.
-- [ ] After the fix, connection-pool wait time measured — it should drop with latency.
+- [ ] After the fix, connection-pool wait time measured - it should drop with latency.
 
 ## Anti-patterns
 

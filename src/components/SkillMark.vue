@@ -1,6 +1,6 @@
 <script setup lang="ts">
 /**
- * Unique geometric marks for engineering vocabulary — not brand logos,
+ * Unique geometric marks for engineering vocabulary - not brand logos,
  * so architecture ideas stay distinguishable from the tech-stack chips.
  */
 defineProps<{ label: string }>()
@@ -26,7 +26,7 @@ function family(label: string) {
   if (key.includes('rag') || key.includes('embed') || key.includes('agent') || key.includes('llm')) return 'brain'
   if (key.includes('circuit') || key.includes('retry') || key.includes('idempot')) return 'shield'
   if (key.includes('api') || key.includes('rest') || key.includes('graphql')) return 'nodes'
-  if (key.includes('realtime') || key.includes('socket')) return 'bolt'
+  if (key.includes('realtime') || key.includes('socket') || key.includes('poll') || key.includes('webhook') || key.includes('sse') || key.includes('grpc') || key.includes('mqtt')) return 'bolt'
   if (key.includes('migrat') || key.includes('schema')) return 'stairs'
   if (key.includes('test') || key.includes('eval')) return 'check'
   if (key.includes('design') || key.includes('figma') || key.includes('ui')) return 'frame'

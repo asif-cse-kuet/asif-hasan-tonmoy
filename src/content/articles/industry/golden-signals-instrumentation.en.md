@@ -1,12 +1,12 @@
-> **Scenario** — Checkout latency dashboards show a flat 180 ms average all evening. Support tickets say the payment page hangs. The average is real; it is also useless, because the p99 sits at 9.4 s and the 3% of requests that time out never emit a duration sample at all.
+> **Scenario** - Checkout latency dashboards show a flat 180 ms average all evening. Support tickets say the payment page hangs. The average is real; it is also useless, because the p99 sits at 9.4 s and the 3% of requests that time out never emit a duration sample at all.
 
 ## Why it matters
 
 - Averaged latency hides the tail where the revenue is: a 2% timeout rate on checkout is a full percentage point of conversion.
 - If errors are counted only when the handler returns 500, client disconnects (`499`), upstream timeouts, and panics never appear in the error SLI.
-- Saturation measured as CPU misses the real constraint — connection pools, worker slots, and queue depth saturate long before CPU does.
+- Saturation measured as CPU misses the real constraint - connection pools, worker slots, and queue depth saturate long before CPU does.
 - Without a traffic signal you cannot tell a fix from a traffic collapse: error *rate* drops when nobody can reach you.
-- Every downstream artifact — SLOs, burn-rate alerts, capacity models — inherits the instrumentation's bugs. Fix the signals first.
+- Every downstream artifact - SLOs, burn-rate alerts, capacity models - inherits the instrumentation's bugs. Fix the signals first.
 
 ## Symptoms
 
@@ -20,7 +20,7 @@
 
 ## How it breaks
 
-Three independent mistakes compound. First, latency is recorded as a gauge or a summary of the mean, so the distribution is destroyed at write time and cannot be recovered. Second, the metric is incremented *after* the handler returns, meaning any request killed by a timeout, an OOM, or a client disconnect is silently excluded — the population you measure is exactly the population that succeeded. Third, histogram buckets are inherited from a library default (`0.005 … 10`) that does not match the service's actual SLO boundary, so the one quantile you care about is interpolated across a bucket two orders of magnitude wide.
+Three independent mistakes compound. First, latency is recorded as a gauge or a summary of the mean, so the distribution is destroyed at write time and cannot be recovered. Second, the metric is incremented *after* the handler returns, meaning any request killed by a timeout, an OOM, or a client disconnect is silently excluded - the population you measure is exactly the population that succeeded. Third, histogram buckets are inherited from a library default (`0.005 … 10`) that does not match the service's actual SLO boundary, so the one quantile you care about is interpolated across a bucket two orders of magnitude wide.
 
 ```mermaid
 flowchart TD
@@ -185,13 +185,13 @@ flowchart LR
 - [ ] `curl -s localhost:9090/metrics | grep duration_seconds_bucket` shows samples in at least four buckets, not one.
 - [ ] Kill a request mid-flight (`curl --max-time 0.1`) and confirm `requests_total{outcome="aborted"}` increments.
 - [ ] `histogram_quantile(0.99, ...)` returns a number, not `NaN` or exactly the `+Inf` boundary.
-- [ ] `sum(rate(..._count[5m]))` equals `sum(rate(requests_total[5m]))` within 1% — otherwise one path is missing instrumentation.
+- [ ] `sum(rate(..._count[5m]))` equals `sum(rate(requests_total[5m]))` within 1% - otherwise one path is missing instrumentation.
 - [ ] Every dashboard panel and alert references a `sli:` recording rule, not an inline expression.
 - [ ] Load test to saturation and confirm the saturation signal moves *before* latency does.
 
 ## Anti-patterns
 
-- Alerting on p99 latency directly instead of on error-budget burn — every traffic spike becomes a page.
+- Alerting on p99 latency directly instead of on error-budget burn - every traffic spike becomes a page.
 - Adding `user_id` or `request_id` as a histogram label to "make debugging easier"; use exemplars instead.
 - Computing p99 as `avg(p99)` across pods, which is not a quantile of anything.
 - Treating a 200 response with an error body as success because the status code was fine.

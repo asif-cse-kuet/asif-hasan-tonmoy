@@ -1,4 +1,4 @@
-> **Scenario** — দুর্বল 3G-তে একজন গ্রাহক "Pay 4,500 BDT" চাপলেন। আপনার API ৯০০ms-এ card charge করল, কিন্তু response ফোনে পৌঁছাল না। Mobile client 5s timeout-এর পর `POST /v1/charges` retry করল। গ্রাহক দুইবার charge হলেন, আর dashboard-এর আগেই support queue সেটা জানল।
+> **Scenario** - দুর্বল 3G-তে একজন গ্রাহক "Pay 4,500 BDT" চাপলেন। আপনার API ৯০০ms-এ card charge করল, কিন্তু response ফোনে পৌঁছাল না। Mobile client 5s timeout-এর পর `POST /v1/charges` retry করল। গ্রাহক দুইবার charge হলেন, আর dashboard-এর আগেই support queue সেটা জানল।
 
 ## Why it matters
 
@@ -20,7 +20,7 @@
 
 ## How it breaks
 
-মূল সমস্যা server error নয় — সমস্যা হলো server *সফল* হয় কিন্তু client জানতে পারে না। Client-এর একমাত্র নিরাপদ ধারণা "unknown outcome", তাই সে retry করে। Handler যদি প্রতিটি `POST`-কে নতুন intent ধরে, retry দ্বিতীয় row ও processor-এ দ্বিতীয় capture তৈরি করে।
+মূল সমস্যা server error নয় - সমস্যা হলো server *সফল* হয় কিন্তু client জানতে পারে না। Client-এর একমাত্র নিরাপদ ধারণা "unknown outcome", তাই সে retry করে। Handler যদি প্রতিটি `POST`-কে নতুন intent ধরে, retry দ্বিতীয় row ও processor-এ দ্বিতীয় capture তৈরি করে।
 
 দ্বিতীয় failure আরও সূক্ষ্ম। দল "recent identical charge আছে কি" guard যোগ করে, কিন্তু ৪০ms ব্যবধানে আসা দুই retry-ই `INSERT`-এর আগে `SELECT` চালিয়ে ফেলে। Unique index ও transaction ছাড়া সেই guard কেবল সাজসজ্জা।
 
@@ -46,7 +46,7 @@ sequenceDiagram
 2. Uniqueness database constraint-এর বদলে application code-এ enforce করা হয়।
 3. Idempotency record side effect-এর *পরে* লেখা হয়, আগে নয়।
 4. Key per-intent নয়, per-attempt তৈরি হয়, তাই প্রতি retry নতুন key নিয়ে আসে।
-5. Key caller-scope নয়, global — cross-tenant collision বা probing সম্ভব।
+5. Key caller-scope নয়, global - cross-tenant collision বা probing সম্ভব।
 6. Concurrent replay সংজ্ঞায়িত "in progress" response-এর বদলে `500` পায়।
 7. Stored response-এর TTL নেই, টেবিল বাড়তে বাড়তে unique index আর memory-তে ধরে না।
 
@@ -233,12 +233,12 @@ flowchart TD
 
 ## Anti-patterns
 
-- শুধু request body hash থেকে key বানানো — ৩০ সেকেন্ড ব্যবধানে দুটি বৈধ একই payment চুপচাপ merge হয়ে যায়।
+- শুধু request body hash থেকে key বানানো - ৩০ সেকেন্ড ব্যবধানে দুটি বৈধ একই payment চুপচাপ merge হয়ে যায়।
 - Processor call-এর *পরে* idempotency row লেখা; মাঝখানে crash হলে dedup record-ই হারায়।
 - Replay-তে খালি body সহ `200` ফেরানো, ফলে client charge ID পায় না।
-- Trace ID বা request ID-কে key বানানো — প্রতি attempt-এ সেগুলো বদলায়।
+- Trace ID বা request ID-কে key বানানো - প্রতি attempt-এ সেগুলো বদলায়।
 - Key টেবিল অসীম বাড়তে দেওয়া, তারপর sale-এর দিনে আবিষ্কার করা যে index আর RAM-এ ধরে না।
-- `GET`/`DELETE`-এ idempotency middleware লাগানো, যেগুলো এমনিতেই idempotent — শুধু write খরচ বাড়ে।
+- `GET`/`DELETE`-এ idempotency middleware লাগানো, যেগুলো এমনিতেই idempotent - শুধু write খরচ বাড়ে।
 
 ## Related
 

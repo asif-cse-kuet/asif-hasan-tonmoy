@@ -1,9 +1,9 @@
-> **Scenario** — একটা "import from URL" feature customer-কে নিজের server-এর CSV দেখাতে দেয়। কেউ সেটা `http://169.254.169.254/latest/meta-data/iam/…`-এ তাক করল, আর response body import preview-তে render হয়ে গেল। Application-এর নিজের code-এ কোনো vulnerability ছিল না — সে কেবল যা বলা হয়েছিল তা fetch করেছে।
+> **Scenario** - একটা "import from URL" feature customer-কে নিজের server-এর CSV দেখাতে দেয়। কেউ সেটা `http://169.254.169.254/latest/meta-data/iam/…`-এ তাক করল, আর response body import preview-তে render হয়ে গেল। Application-এর নিজের code-এ কোনো vulnerability ছিল না - সে কেবল যা বলা হয়েছিল তা fetch করেছে।
 
 ## Why it matters
 
 - Server-side request forgery আপনার application-কে এমন proxy বানায় যেটা network perimeter-এর *ভেতরে* বসে, workload-এর IAM identity নিয়ে।
-- Cloud metadata endpoint, internal admin panel, unauthenticated Redis, Kubernetes API — সবই এমন pod থেকে reachable যা "exposed নয়"।
+- Cloud metadata endpoint, internal admin panel, unauthenticated Redis, Kubernetes API - সবই এমন pod থেকে reachable যা "exposed নয়"।
 - যে feature এটা ঘটায় তা সাধারণত নিরীহ দেখায়: avatar-by-URL, webhook delivery, PDF rendering, link preview, RSS import, OIDC discovery।
 - Blind SSRF-ও কাজ করে। Attacker internal state change ঘটাতে বা timing মাপতে পারলে response body দরকার হয় না।
 
@@ -20,7 +20,7 @@
 
 ## How it breaks
 
-Validation সাধারণত *string*-এ হয়, আর connection হয় *resolved address*-এ। Attacker এমন hostname দেয় যা string check pass করে কিন্তু private address-এ resolve করে — বা প্রথম lookup-এ (validation) public এবং দ্বিতীয়টায় (connection) private-এ resolve করে। Redirect দ্বিতীয় সুযোগ দেয়: প্রথম URL ঠিক, আর দ্বিতীয় hop attacker-এর ইচ্ছেমতো জায়গায় যায়।
+Validation সাধারণত *string*-এ হয়, আর connection হয় *resolved address*-এ। Attacker এমন hostname দেয় যা string check pass করে কিন্তু private address-এ resolve করে - বা প্রথম lookup-এ (validation) public এবং দ্বিতীয়টায় (connection) private-এ resolve করে। Redirect দ্বিতীয় সুযোগ দেয়: প্রথম URL ঠিক, আর দ্বিতীয় hop attacker-এর ইচ্ছেমতো জায়গায় যায়।
 
 ```mermaid
 sequenceDiagram
@@ -148,7 +148,7 @@ aws ec2 modify-instance-metadata-options \
 
 ### 6. Upstream response echo করবেন না
 
-Raw body নয়, একটা normalised ফল দিন — row count, detected column, validation summary। Upstream detail server-side log করুন। Reflected SSRF-এর চেয়ে blind SSRF অনেক কম উপকারী।
+Raw body নয়, একটা normalised ফল দিন - row count, detected column, validation summary। Upstream detail server-side log করুন। Reflected SSRF-এর চেয়ে blind SSRF অনেক কম উপকারী।
 
 ### 7. Signal-এ alert দিন
 

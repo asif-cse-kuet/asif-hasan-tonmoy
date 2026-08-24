@@ -1,12 +1,12 @@
-> **Scenario** — Support agent একজন customer-এর shipping address আপডেট করে, UI detail page-এ redirect করে, কিন্তু পুরনো address-ই দেখায়। Write গেছে primary-তে; read গেছে ৯০০ ms পিছিয়ে থাকা replica-তে। Support data-loss ticket খোলে, engineering reproduce করতে পারে না।
+> **Scenario** - Support agent একজন customer-এর shipping address আপডেট করে, UI detail page-এ redirect করে, কিন্তু পুরনো address-ই দেখায়। Write গেছে primary-তে; read গেছে ৯০০ ms পিছিয়ে থাকা replica-তে। Support data-loss ticket খোলে, engineering reproduce করতে পারে না।
 
 ## কেন গুরুত্বপূর্ণ
 
-- "আমার পরিবর্তন হারিয়ে গেছে" — user-visible bug-এর সবচেয়ে দামি শ্রেণি: user retry করে, duplicate record তৈরি হয়, product-এর উপর আস্থা কমে।
+- "আমার পরিবর্তন হারিয়ে গেছে" - user-visible bug-এর সবচেয়ে দামি শ্রেণি: user retry করে, duplicate record তৈরি হয়, product-এর উপর আস্থা কমে।
 - Read replica সাধারণত load *কমাতে* যোগ করা হয়, আর চুপচাপ একটা নতুন consistency model আনে যেটা কেউ লিখে রাখে না।
-- Lag স্থির নয়। রাত ৩টায় প্রায় শূন্য, bulk import-এর সময় কয়েক সেকেন্ড — তাই চাইলেই bug reproduce হয় না।
+- Lag স্থির নয়। রাত ৩টায় প্রায় শূন্য, bulk import-এর সময় কয়েক সেকেন্ড - তাই চাইলেই bug reproduce হয় না।
 - Cross-service read আরও খারাপ: service A লেখে, event publish করে, service B নিজের replica পড়ে pre-write state দেখে।
-- Asynchronous replication-এ lagging replica-তে failover হলে committed transaction হারায় — এটা latency নয়, correctness সমস্যা।
+- Asynchronous replication-এ lagging replica-তে failover হলে committed transaction হারায় - এটা latency নয়, correctness সমস্যা।
 
 ## লক্ষণ
 
@@ -21,7 +21,7 @@
 
 ## কীভাবে ভাঙে
 
-Asynchronous replication মানে primary-তে `COMMIT` ফিরে আসে replica পরিবর্তন apply করার আগেই। lag window-এর ভেতরে replica-তে যাওয়া যেকোনো read pre-write state দেখে। বাস্তবে এই window মিলিসেকেন্ড নয়: একটা বড় transaction (২০ লাখ row backfill, `VACUUM FULL`, schema change) replica-তে *serially* apply হয়, তাই primary-তে ৪০ সেকেন্ড নেওয়া write replica-কে ৪০ সেকেন্ড পিছিয়ে রাখে — আপনার নিজের transaction যত ছোটই হোক।
+Asynchronous replication মানে primary-তে `COMMIT` ফিরে আসে replica পরিবর্তন apply করার আগেই। lag window-এর ভেতরে replica-তে যাওয়া যেকোনো read pre-write state দেখে। বাস্তবে এই window মিলিসেকেন্ড নয়: একটা বড় transaction (২০ লাখ row backfill, `VACUUM FULL`, schema change) replica-তে *serially* apply হয়, তাই primary-তে ৪০ সেকেন্ড নেওয়া write replica-কে ৪০ সেকেন্ড পিছিয়ে রাখে - আপনার নিজের transaction যত ছোটই হোক।
 
 Redirect-after-POST pattern race-টা প্রায় নিশ্চিত করে: read হয় write-এর কয়েক দশ মিলিসেকেন্ড পরেই, অর্থাৎ lag window-এর ভেতরে।
 
@@ -57,7 +57,7 @@ sequenceDiagram
 সবচেয়ে সস্তা সঠিক সমাধান: যেকোনো write-এর পর অল্প সময়ের জন্য ওই user-এর read primary-তে পাঠান।
 
 ```ts
-// Express/TypeScript middleware — write-এর পর ৩ সেকেন্ড sticky primary
+// Express/TypeScript middleware - write-এর পর ৩ সেকেন্ড sticky primary
 const WRITE_TTL_MS = 3_000
 
 export function readsAfterWrites(req: Req, res: Res, next: Next) {
@@ -185,7 +185,7 @@ flowchart LR
 
 - Write ও redirect-এর মাঝে `sleep(500)`।
 - "performance-এর জন্য" সব read replica-তে পাঠিয়ে support ticket থেকে consistency model শেখা।
-- `Seconds_Behind_Source`-কে নিখুঁত ঘড়ি ধরা — replica idle থাকলেও ০, relay-log fetch-এ আটকে থাকলেও ০।
+- `Seconds_Behind_Source`-কে নিখুঁত ঘড়ি ধরা - replica idle থাকলেও ০, relay-log fetch-এ আটকে থাকলেও ০।
 - Write সফল হয়েছে "confirm" করতে replica থেকে সেটাই পড়া।
 - এক page ঠিক করতে সব commit synchronous করে দেওয়া, ফলে system-জুড়ে write latency দ্বিগুণ।
 - শুধু ID দিয়ে event publish করা, ফলে consumer নিজের সম্ভাব্য stale replica থেকে fetch করতে বাধ্য।

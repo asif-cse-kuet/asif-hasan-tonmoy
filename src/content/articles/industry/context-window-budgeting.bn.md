@@ -1,10 +1,10 @@
-> **Scenario** — একটি document assistant প্রতিটি request-এ top 40 retrieved chunk আর শেষ ২০টি conversation turn পাঠায়। Prompt গড়ে ৩৮,০০০ token, প্রতি turn-এ খরচ প্রায় $0.11, আর answer accuracy ৬টি chunk-এর সময়ের চেয়েও *খারাপ*।
+> **Scenario** - একটি document assistant প্রতিটি request-এ top 40 retrieved chunk আর শেষ ২০টি conversation turn পাঠায়। Prompt গড়ে ৩৮,০০০ token, প্রতি turn-এ খরচ প্রায় $0.11, আর answer accuracy ৬টি chunk-এর সময়ের চেয়েও *খারাপ*।
 
 ## Why it matters
 
 - Token মানে linear খরচ আর মোটামুটি linear latency। ৬,০০০ থেকে ৩৮,০০০ input token-এ গেলে দুটোই ছয় গুণ হয়, ভালো উত্তরের কোনো নিশ্চয়তা ছাড়াই।
 - লম্বা context quality কমায়। লম্বা prompt-এর মাঝখানে রাখা প্রাসঙ্গিক তথ্য শুরু বা শেষের তথ্যের তুলনায় কম নির্ভরযোগ্যভাবে attend হয়।
-- Truncation-এই correctness মরে। Prompt উপচে গেলে বেশিরভাগ framework চুপচাপ সবচেয়ে পুরনো বা শেষের item ফেলে দেয় — প্রায়ই সেটা system rule বা citation instruction।
+- Truncation-এই correctness মরে। Prompt উপচে গেলে বেশিরভাগ framework চুপচাপ সবচেয়ে পুরনো বা শেষের item ফেলে দেয় - প্রায়ই সেটা system rule বা citation instruction।
 - Bengali ও অন্যান্য non-Latin script English-এর চেয়ে অনেক কম দক্ষভাবে tokenise হয়। একই বাক্যে ২–৩ গুণ token লাগতে পারে, তাই English-এ calibrate করা budget Bengali input-এ উপচে পড়ে।
 - আড্ডাপ্রিয় user আর পাঁচ অঙ্কের মাসিক bill-এর মাঝখানে budget ছাড়া আর কিছুই দাঁড়িয়ে নেই।
 
@@ -20,7 +20,7 @@
 
 ## How it breaks
 
-বেশিরভাগ RAG prompt concatenation দিয়ে জোড়া হয়: system prompt, তারপর history, তারপর retrieved chunk, তারপর প্রশ্ন। মোট কত হবে তা কেউ বেঁধে দেয় না। প্রতিটি অংশ স্বাধীনভাবে বাড়ে — retrieval-এর `k` বড় হয়, history retention ৬ turn থেকে ২০ হয়, নতুন tool description যোগ হয় — আর যোগফল প্রথমে distribution-এর tail-এ সীমা ছাড়ায়, ফলে এটাকে design gap নয়, বিরল bug মনে হয়।
+বেশিরভাগ RAG prompt concatenation দিয়ে জোড়া হয়: system prompt, তারপর history, তারপর retrieved chunk, তারপর প্রশ্ন। মোট কত হবে তা কেউ বেঁধে দেয় না। প্রতিটি অংশ স্বাধীনভাবে বাড়ে - retrieval-এর `k` বড় হয়, history retention ৬ turn থেকে ২০ হয়, নতুন tool description যোগ হয় - আর যোগফল প্রথমে distribution-এর tail-এ সীমা ছাড়ায়, ফলে এটাকে design gap নয়, বিরল bug মনে হয়।
 
 ```mermaid
 flowchart TD
@@ -76,7 +76,7 @@ def ntokens(text: str) -> int:
 
 en = "The refund window is fourteen days from delivery."
 bn = "ডেলিভারির তারিখ থেকে চৌদ্দ দিনের মধ্যে রিফান্ড উইন্ডো।"
-print(ntokens(en), ntokens(bn))   # roughly 10 vs 30 — a 3x multiplier
+print(ntokens(en), ntokens(bn))   # roughly 10 vs 30 - a 3x multiplier
 ```
 
 `len(text) / 4`-এর মতো heuristic English-এ calibrate করা এবং Bengali-কে অনেকটাই কম দেখায়। সবসময় token-এ budget করুন।
@@ -89,7 +89,7 @@ def pack(chunks, budget: int):
     for c in chunks:                     # already reranked, best first
         cost = ntokens(c.text) + 25      # header, separator, citation marker
         if used + cost > budget:
-            continue                     # skip, do not stop — a later chunk may fit
+            continue                     # skip, do not stop - a later chunk may fit
         packed.append(c)
         used += cost
     return packed, used

@@ -1,6 +1,6 @@
 # Micro-packaging decoupled frontend modules
 
-*Educational overview — widely practiced frontend architecture patterns.*
+*Educational overview - widely practiced frontend architecture patterns.*
 
 ## Why package boundaries matter
 
@@ -8,9 +8,9 @@ Monolithic frontends become expensive when multiple teams ship features on diffe
 
 ## Core ideas
 
-1. **Lazy registries** — Features register routes, widgets, or menu entries at runtime instead of hard-coding every import in a central router.
-2. **Stable host shell** — A thin host application owns auth, layout, navigation, and shared design tokens; packages plug in through contracts.
-3. **Versioned contracts** — Public props, events, and data shapes are versioned so a package update does not silently break the host.
+1. **Lazy registries** - Features register routes, widgets, or menu entries at runtime instead of hard-coding every import in a central router.
+2. **Stable host shell** - A thin host application owns auth, layout, navigation, and shared design tokens; packages plug in through contracts.
+3. **Versioned contracts** - Public props, events, and data shapes are versioned so a package update does not silently break the host.
 
 ## Low-code extensibility
 

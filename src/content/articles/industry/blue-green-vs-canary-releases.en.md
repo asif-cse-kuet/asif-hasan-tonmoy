@@ -1,11 +1,11 @@
-> **Scenario** — A checkout release passes staging and rolls out to 100% in four minutes. Twenty minutes later, support reports failed payments for one card issuer only. The bug affected 3% of traffic, but by the time anyone noticed, every pod was running the new build.
+> **Scenario** - A checkout release passes staging and rolls out to 100% in four minutes. Twenty minutes later, support reports failed payments for one card issuer only. The bug affected 3% of traffic, but by the time anyone noticed, every pod was running the new build.
 
 ## Why it matters
 
 - Blast radius is a design choice. Shipping to 100% instantly means 100% of the error budget is exposed to an unproven build.
 - Detection needs traffic *and* time. A rollout faster than your metric scrape and alert window is untestable by definition.
 - Rollback speed differs sharply: blue-green flips a selector in seconds, a rolling update must re-pull and restart every pod.
-- Cost differs too — blue-green needs double capacity for the release window, canary needs about 10% extra.
+- Cost differs too - blue-green needs double capacity for the release window, canary needs about 10% extra.
 
 ## Symptoms
 
@@ -21,7 +21,7 @@
 
 A default `RollingUpdate` is not a canary. It replaces pods in waves with no analysis between them, and the Deployment controller's only success criterion is "the new pods became Ready". Ready means the probe passed, not that orders are still completing.
 
-Worse, during a rolling update both versions serve traffic simultaneously with no way to compare them — the metrics of v1 and v2 are pooled in the same Service, so the 3% failure is averaged into a healthy-looking dashboard.
+Worse, during a rolling update both versions serve traffic simultaneously with no way to compare them - the metrics of v1 and v2 are pooled in the same Service, so the 3% failure is averaged into a healthy-looking dashboard.
 
 ```mermaid
 flowchart TD
@@ -49,7 +49,7 @@ flowchart TD
 httpRequests.inc({ route, status, version: process.env.APP_VERSION ?? 'unknown' })
 ```
 
-Without this label, no canary analysis is possible — automated or human.
+Without this label, no canary analysis is possible - automated or human.
 
 ### 2. Canary with automated analysis
 

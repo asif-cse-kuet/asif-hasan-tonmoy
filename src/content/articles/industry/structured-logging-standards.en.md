@@ -1,4 +1,4 @@
-> **Scenario** — At 02:40 you need every failed payment for tenant 4471 in the last twenty minutes. The logs are free text: three services write `Payment failed for user`, one writes `ERR pay`, and the PHP worker interleaves a 90-line stack trace with no request identifier. You end up grepping raw files on two pods while the incident continues.
+> **Scenario** - At 02:40 you need every failed payment for tenant 4471 in the last twenty minutes. The logs are free text: three services write `Payment failed for user`, one writes `ERR pay`, and the PHP worker interleaves a 90-line stack trace with no request identifier. You end up grepping raw files on two pods while the incident continues.
 
 ## Why it matters
 

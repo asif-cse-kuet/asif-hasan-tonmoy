@@ -1,11 +1,11 @@
-> **Scenario** — একটা account service একই account-এর জন্য ৪ms-এর মধ্যে `balance.debited` তারপর `balance.credited` emit করে। Kafka-তে ২৪টা partition, producer random key ব্যবহার করছে। Downstream ledger debit-এর আগে credit apply করে, মাঝের balance negative হয়ে যায়, আর একটা automated fraud rule account freeze করে দেয়। Produce-এর সময় event দুটো "in order" ছিল, consume-এর সময় নয়।
+> **Scenario** - একটা account service একই account-এর জন্য ৪ms-এর মধ্যে `balance.debited` তারপর `balance.credited` emit করে। Kafka-তে ২৪টা partition, producer random key ব্যবহার করছে। Downstream ledger debit-এর আগে credit apply করে, মাঝের balance negative হয়ে যায়, আর একটা automated fraud rule account freeze করে দেয়। Produce-এর সময় event দুটো "in order" ছিল, consume-এর সময় নয়।
 
 ## Why it matters
 
 - Kafka ordering guarantee দেয় **শুধু partition-এর ভিতরে**। topic globally ordered নয়, যতবারই কেউ বলুক "Kafka is ordered"।
 - Out-of-order state transition অসম্ভব intermediate state বানায় যা downstream automation চালু করে: fraud freeze, dunning email, inventory oversell।
 - পরে ordering ঠিক করা মানে সাধারণত consumer-কে commutative করে লেখা, যা প্রথম দিনেই key ঠিক করার চেয়ে অনেক বেশি ব্যয়বহুল।
-- সরল "ফিক্স" (এক partition, বা global lock) throughput ধ্বংস করে — ২৪-way parallel pipeline single-threaded হয়ে যায়।
+- সরল "ফিক্স" (এক partition, বা global lock) throughput ধ্বংস করে - ২৪-way parallel pipeline single-threaded হয়ে যায়।
 - সঠিক key থাকা সত্ত্বেও consumer group rebalance in-flight message drain না করলে কাজ reorder করে।
 
 ## Symptoms
@@ -47,7 +47,7 @@ sequenceDiagram
 3. Consumer record গুলো thread pool-এ ছড়িয়ে দেয়, ভিতরেই per-partition ordering ভাঙে।
 4. Launch-এর পর partition count বদলানো, ফলে পুরনো key-এর hash এখন অন্য partition-এ যায়।
 5. batch-এর মাঝপথে rebalance হলে reprocessing নতুন owner-এর অগ্রগতির সঙ্গে interleave করে।
-6. `max.in.flight.requests.per.connection > 1` সহ producer retry আর idempotence বন্ধ — partition-এর ভিতরেও reorder হতে পারে।
+6. `max.in.flight.requests.per.connection > 1` সহ producer retry আর idempotence বন্ধ - partition-এর ভিতরেও reorder হতে পারে।
 
 ## How to solve it
 
@@ -94,7 +94,7 @@ function submit(key: string, work: () => Promise<void>): Promise<void> {
 }
 ```
 
-এতে per-key serialisation ও cross-key parallelism দুটোই মেলে — আসল প্রয়োজন এটাই।
+এতে per-key serialisation ও cross-key parallelism দুটোই মেলে - আসল প্রয়োজন এটাই।
 
 ### 4. Defend with sequence numbers
 
@@ -148,7 +148,7 @@ flowchart LR
 - [ ] চলমান producer config-এ সত্যিই `enable.idempotence=true` আছে কিনা যাচাই করুন, শুধু repo-তে নয়।
 - [ ] load-এর সময় rebalance ঘটিয়ে stale-sequence rejection গুনুন; ওগুলো duplicate হওয়া উচিত, gap নয়।
 - [ ] per-partition throughput skew মাপুন; কোনো partition median-এর ২× ছাড়ানো উচিত নয়।
-- [ ] consumer unordered worker pool-এ record দেয় কিনা যাচাই করুন — doc নয়, code path পড়ুন।
+- [ ] consumer unordered worker pool-এ record দেয় কিনা যাচাই করুন - doc নয়, code path পড়ুন।
 
 ## Anti-patterns
 

@@ -1,11 +1,11 @@
-> **Scenario** — The order list endpoint was 40 ms in January and is 410 ms in September. No code changed. The `orders` table went from 800 k rows to 14 M, and a query that was doing a small sequential scan is now doing a large one — plus 50 extra round-trips per request that nobody counted.
+> **Scenario** - The order list endpoint was 40 ms in January and is 410 ms in September. No code changed. The `orders` table went from 800 k rows to 14 M, and a query that was doing a small sequential scan is now doing a large one - plus 50 extra round-trips per request that nobody counted.
 
 ## Why it matters
 
 - Query cost grows with data, not with deploys. An endpoint can degrade to failure without a single commit.
 - The database is shared. One unindexed hot query saturates the buffer cache and slows every other endpoint.
 - N+1 fan-out multiplies round-trip latency by result-set size, so it gets worse exactly as the product succeeds.
-- A single well-chosen index routinely takes an endpoint from hundreds of milliseconds to low tens — the best latency-per-hour-of-work in the stack.
+- A single well-chosen index routinely takes an endpoint from hundreds of milliseconds to low tens - the best latency-per-hour-of-work in the stack.
 - Connections held during slow queries are connections other requests cannot have, so slow queries become throughput limits.
 
 ## Symptoms
@@ -24,7 +24,7 @@
 
 Two independent problems compound. Measure both.
 
-**Problem 1 — the missing index.** The list query is:
+**Problem 1 - the missing index.** The list query is:
 
 ```sql
 SELECT * FROM orders
@@ -35,9 +35,9 @@ SELECT * FROM orders
 
 With 14 M rows and no suitable index, Postgres reads every row. At 8 KB per page and roughly 40 rows per page, that is 14,000,000 / 40 = **350,000 pages** = 2.8 GB. On a warm cache at ~2 GB/s effective, that is ~1.4 s; with the visible 410 ms, most of it was cached and parallel workers helped. Either way the work is O(table), and it doubles when the table doubles.
 
-With a composite index on `(tenant_id, status, created_at DESC)`, the planner walks the index and stops after 25 matching entries. Cost becomes O(log n + 25) — roughly 4 index pages plus 25 heap fetches, about **29 page reads** instead of 350,000. That is a **12,000×** reduction in pages touched.
+With a composite index on `(tenant_id, status, created_at DESC)`, the planner walks the index and stops after 25 matching entries. Cost becomes O(log n + 25) - roughly 4 index pages plus 25 heap fetches, about **29 page reads** instead of 350,000. That is a **12,000×** reduction in pages touched.
 
-**Problem 2 — N+1 fan-out.** For each of the 25 orders the ORM lazily loads the customer:
+**Problem 2 - N+1 fan-out.** For each of the 25 orders the ORM lazily loads the customer:
 
 - 1 query for the orders + 25 queries for customers = **26 round-trips**
 - Each round-trip has ~1.2 ms of network and protocol overhead
@@ -86,10 +86,10 @@ SELECT * FROM orders
 Read the output in this order:
 
 1. **Bottom-up.** The innermost node runs first; that is where the cost originates.
-2. **`actual rows` vs `rows`.** A 100× gap means bad statistics — run `ANALYZE orders` before anything else.
+2. **`actual rows` vs `rows`.** A 100× gap means bad statistics - run `ANALYZE orders` before anything else.
 3. **`Rows Removed by Filter`.** Large values mean the index did not narrow the search; the filter did.
 4. **`Buffers: shared read=N`.** `read` is disk, `hit` is cache. High `read` on an OLTP query is a missing index.
-5. **`Sort Method: external merge Disk: 88MB`.** The sort spilled — either add an index providing the order or raise `work_mem` for that session.
+5. **`Sort Method: external merge Disk: 88MB`.** The sort spilled - either add an index providing the order or raise `work_mem` for that session.
 6. **Total time at the top node** is your query latency. Compare it against the endpoint budget.
 
 ### 2. Add the index that matches filter, then sort
@@ -112,7 +112,7 @@ SELECT * FROM orders WHERE tenant_id = 42 AND status = 'pending'
  ORDER BY created_at DESC LIMIT 25;
 ```
 
-`CONCURRENTLY` avoids the exclusive lock, at the cost of a longer build and a possible `INVALID` index if it fails — check `pg_index.indisvalid` afterwards.
+`CONCURRENTLY` avoids the exclusive lock, at the cost of a longer build and a possible `INVALID` index if it fails - check `pg_index.indisvalid` afterwards.
 
 ### 3. Collapse the fan-out into batched queries
 

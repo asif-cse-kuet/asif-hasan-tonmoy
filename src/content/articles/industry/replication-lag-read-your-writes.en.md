@@ -1,4 +1,4 @@
-> **Scenario** — A support agent updates a customer's shipping address, the UI redirects to the detail page, and the old address is still there. The write went to the primary; the read went to a replica 900 ms behind. Support files a data-loss ticket that engineering cannot reproduce.
+> **Scenario** - A support agent updates a customer's shipping address, the UI redirects to the detail page, and the old address is still there. The write went to the primary; the read went to a replica 900 ms behind. Support files a data-loss ticket that engineering cannot reproduce.
 
 ## Why it matters
 
@@ -6,7 +6,7 @@
 - Read replicas are usually added to *reduce* load, and they silently introduce a new consistency model that no one wrote down.
 - Lag is not constant. It is near zero at 03:00 and seconds long during a bulk import, so the bug is unreproducible on demand.
 - Cross-service reads make it worse: service A writes, publishes an event, service B reads its own replica and sees pre-write state.
-- Failover on a lagging replica loses committed transactions if replication is asynchronous — a correctness problem, not a latency one.
+- Failover on a lagging replica loses committed transactions if replication is asynchronous - a correctness problem, not a latency one.
 
 ## Symptoms
 
@@ -57,7 +57,7 @@ sequenceDiagram
 The cheapest correct fix: for a short window after any write, route that user's reads to the primary.
 
 ```ts
-// Express/TypeScript middleware — sticky primary for 3 s after a write
+// Express/TypeScript middleware - sticky primary for 3 s after a write
 const WRITE_TTL_MS = 3_000
 
 export function readsAfterWrites(req: Req, res: Res, next: Next) {
@@ -185,7 +185,7 @@ flowchart LR
 
 - `sleep(500)` between the write and the redirect.
 - Sending all reads to replicas "for performance" and discovering the consistency model in a support ticket.
-- Using `Seconds_Behind_Source` as an exact clock — it is 0 when the replica is idle *and* when it is stuck waiting on a relay-log fetch.
+- Using `Seconds_Behind_Source` as an exact clock - it is 0 when the replica is idle *and* when it is stuck waiting on a relay-log fetch.
 - Reading the write's own result from a replica to "confirm" it succeeded.
 - Making every commit synchronous to fix one page, doubling write latency system-wide.
 - Publishing an event with only an ID, forcing the consumer to fetch from its own possibly-stale replica.

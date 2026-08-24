@@ -1,8 +1,8 @@
-> **Scenario** — A wallet service reads a balance of 100, subtracts 80, and writes 20. Two concurrent withdrawals both read 100 and both write 20, so 160 leaves an account that held 100. The code was correct in review, had a transaction around it, and passed every single-threaded test.
+> **Scenario** - A wallet service reads a balance of 100, subtracts 80, and writes 20. Two concurrent withdrawals both read 100 and both write 20, so 160 leaves an account that held 100. The code was correct in review, had a transaction around it, and passed every single-threaded test.
 
 ## Why it matters
 
-- Isolation bugs produce silent, permanent data corruption — no error is logged, no alert fires, and reconciliation finds it weeks later.
+- Isolation bugs produce silent, permanent data corruption - no error is logged, no alert fires, and reconciliation finds it weeks later.
 - They are probabilistic: reproduction needs two requests in the same few milliseconds, so they survive code review, CI, and staging.
 - The default isolation level differs by engine (MySQL/InnoDB: `REPEATABLE READ`; PostgreSQL: `READ COMMITTED`), so identical code behaves differently across environments.
 - "Wrap it in a transaction" is the most common misunderstanding: transactions give atomicity, but the isolation level decides what concurrent readers may see.
@@ -49,7 +49,7 @@ sequenceDiagram
 2. Relying on `BEGIN`/`COMMIT` for isolation when only atomicity is guaranteed at the default level.
 3. Uniqueness enforced by a `SELECT` check rather than a database constraint.
 4. Constraints spanning multiple rows (aggregates, "at least one", quotas) validated by reading, which no row lock protects.
-5. Assuming MySQL `REPEATABLE READ` and PostgreSQL `REPEATABLE READ` behave the same — Postgres detects and aborts conflicts, MySQL does not for this pattern.
+5. Assuming MySQL `REPEATABLE READ` and PostgreSQL `REPEATABLE READ` behave the same - Postgres detects and aborts conflicts, MySQL does not for this pattern.
 6. Retry logic that re-runs a non-idempotent transaction after a serialisation failure.
 7. Long transactions spanning user think-time, widening every race window.
 
@@ -94,7 +94,7 @@ COMMIT;
 
 Engine differences that matter:
 
-- `FOR UPDATE NOWAIT` fails immediately instead of queueing (both engines) — better for user-facing paths.
+- `FOR UPDATE NOWAIT` fails immediately instead of queueing (both engines) - better for user-facing paths.
 - `FOR UPDATE SKIP LOCKED` skips locked rows, which is how you build a queue table.
 - MySQL `FOR UPDATE` on a non-indexed predicate escalates to locking many rows via gap locks; PostgreSQL locks only matched tuples.
 - Always lock rows in a consistent order (ascending primary key) to avoid deadlocks.
@@ -113,7 +113,7 @@ RETURNING id;
 
 Catch the unique-violation error and translate it to a 409. A constraint is the only check that cannot be raced.
 
-### 4. Use SERIALIZABLE for multi-row invariants — with retries
+### 4. Use SERIALIZABLE for multi-row invariants - with retries
 
 Write skew cannot be fixed by row locks because the conflicting rows differ. Postgres `SERIALIZABLE` (SSI) detects the conflict and aborts one transaction with SQLSTATE `40001`.
 
@@ -132,7 +132,7 @@ async function withSerializableRetry<T>(fn: (tx: Tx) => Promise<T>): Promise<T> 
 }
 ```
 
-Two requirements: the transaction body must be safe to re-run (no side effects outside the database), and every `SERIALIZABLE` transaction in the app needs this wrapper. MySQL's `SERIALIZABLE` works differently — it converts plain `SELECT`s into `SELECT ... LOCK IN SHARE MODE`, which blocks rather than aborts, and is usually too coarse for hot paths.
+Two requirements: the transaction body must be safe to re-run (no side effects outside the database), and every `SERIALIZABLE` transaction in the app needs this wrapper. MySQL's `SERIALIZABLE` works differently - it converts plain `SELECT`s into `SELECT ... LOCK IN SHARE MODE`, which blocks rather than aborts, and is usually too coarse for hot paths.
 
 ### 5. Materialise the invariant so a constraint can guard it
 
@@ -142,7 +142,7 @@ Instead of "at least one engineer on shift", keep a counter row and add a `CHECK
 ALTER TABLE shift_summary ADD CONSTRAINT shift_min_staff CHECK (on_call_count >= 1);
 
 -- Every add/remove updates the summary in the same transaction,
--- so the constraint — not application logic — enforces the invariant.
+-- so the constraint - not application logic - enforces the invariant.
 UPDATE shift_summary SET on_call_count = on_call_count - 1 WHERE shift_id = $1;
 ```
 

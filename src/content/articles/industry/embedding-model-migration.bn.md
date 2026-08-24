@@ -1,12 +1,12 @@
-> **Scenario** — Bengali document সমর্থনের জন্য দল ৭৬৮-dimension English embedding model থেকে ১০২৪-dimension multilingual model-এ যাচ্ছে। "nightly backfill-এ index ধরে ফেলবে" ভেবে তারা আগে query path-এ model বদলে দেয়। কয়েক মিনিটেই retrieval quality খাদে পড়ে।
+> **Scenario** - Bengali document সমর্থনের জন্য দল ৭৬৮-dimension English embedding model থেকে ১০২৪-dimension multilingual model-এ যাচ্ছে। "nightly backfill-এ index ধরে ফেলবে" ভেবে তারা আগে query path-এ model বদলে দেয়। কয়েক মিনিটেই retrieval quality খাদে পড়ে।
 
 ## Why it matters
 
 - দুই model-এর vector সম্পূর্ণ অসম্পর্কিত coordinate system-এ থাকে। তাদের মধ্যে cosine score similarity নয়, noise-এর উপর গাণিতিক ক্রিয়া।
-- ৮M chunk backfill করা তাৎক্ষণিক নয়। hosted embedding API-তে ৪০০ chunk/সেকেন্ড হারে পুরো re-embed-এ প্রায় ৫.৫ ঘণ্টা লাগে আর সত্যিকারের টাকা যায় — প্রতি chunk ৩৫০ token ধরে ৮M chunk মানে ২.৮B token।
+- ৮M chunk backfill করা তাৎক্ষণিক নয়। hosted embedding API-তে ৪০০ chunk/সেকেন্ড হারে পুরো re-embed-এ প্রায় ৫.৫ ঘণ্টা লাগে আর সত্যিকারের টাকা যায় - প্রতি chunk ৩৫০ token ধরে ৮M chunk মানে ২.৮B token।
 - Dimension বদলালে index schema সরাসরি ভাঙে, তাই পুরনো collection-এ নতুন vector লেখাই যায় না।
 - অর্ধেক migrate হওয়া corpus সবচেয়ে খারাপ failure দেয়: retrieval result দেয় ঠিকই, কিন্তু ranking অর্থহীন।
-- Bengali ও অন্যান্য non-Latin script-এর জন্য migration-টাই আসল উদ্দেশ্য — কিন্তু লাভ দেখা যায় corpus পুরো re-embed হওয়ার পরে, তাই খারাপ rollout দেখে মনে হয় নতুন model-ই খারাপ।
+- Bengali ও অন্যান্য non-Latin script-এর জন্য migration-টাই আসল উদ্দেশ্য - কিন্তু লাভ দেখা যায় corpus পুরো re-embed হওয়ার পরে, তাই খারাপ rollout দেখে মনে হয় নতুন model-ই খারাপ।
 
 ## Symptoms
 
@@ -20,7 +20,7 @@
 
 ## How it breaks
 
-Embedding space শেখা জিনিস, canonical নয়। Model A "refund policy"-কে এক অঞ্চলে বসাতে পারে, model B একেবারে অন্য জায়গায়; এমন কোনো rotation নেই যা দিয়ে দুটো মেলানো যায়। Query path model B ব্যবহার করছে অথচ corpus-এর ৭০% এখনো model A — তখন ANN search বেশিরভাগ candidate-এর ক্ষেত্রে model-B query-কে model-A vector-এর সাথে তুলনা করে। সেই তুলনাগুলো প্রায়-random score দেয়, তবু sort হয়, তাই সিস্টেম আবর্জনার একটি আত্মবিশ্বাসী ranking তৈরি করে।
+Embedding space শেখা জিনিস, canonical নয়। Model A "refund policy"-কে এক অঞ্চলে বসাতে পারে, model B একেবারে অন্য জায়গায়; এমন কোনো rotation নেই যা দিয়ে দুটো মেলানো যায়। Query path model B ব্যবহার করছে অথচ corpus-এর ৭০% এখনো model A - তখন ANN search বেশিরভাগ candidate-এর ক্ষেত্রে model-B query-কে model-A vector-এর সাথে তুলনা করে। সেই তুলনাগুলো প্রায়-random score দেয়, তবু sort হয়, তাই সিস্টেম আবর্জনার একটি আত্মবিশ্বাসী ranking তৈরি করে।
 
 ```mermaid
 sequenceDiagram
@@ -61,7 +61,7 @@ for name, encoder in (("v1-768", old_encoder), ("v2-1024", new_encoder)):
         print(f"{name} {bucket}: recall@10={r:.3f} nDCG@10={n:.3f}")
 ```
 
-যে bucket নিয়ে আপনার মাথাব্যথা সেখানে নতুন model না জিতলে এখানেই থামুন — ২.৮B token বেঁচে গেল।
+যে bucket নিয়ে আপনার মাথাব্যথা সেখানে নতুন model না জিতলে এখানেই থামুন - ২.৮B token বেঁচে গেল।
 
 ### 2. নতুন namespace-এ লিখুন, কখনো in-place নয়
 
@@ -91,7 +91,7 @@ def backfill(batch_size: int = 256) -> None:
         metrics.gauge("backfill.progress", repo.progress_ratio(cursor))
 ```
 
-শুরুর আগে খরচের হিসাব: ৮M chunk × ৩৫০ token = ২.৮B token। প্রতি মিলিয়ন input token $0.02 হলে $56 — সস্তা। $0.13 হলে $364, যেটা হঠাৎ invoice নয়, budget approval-এর যোগ্য।
+শুরুর আগে খরচের হিসাব: ৮M chunk × ৩৫০ token = ২.৮B token। প্রতি মিলিয়ন input token $0.02 হলে $56 - সস্তা। $0.13 হলে $364, যেটা হঠাৎ invoice নয়, budget approval-এর যোগ্য।
 
 ### 4. Parity না আসা পর্যন্ত shadow-read করুন
 

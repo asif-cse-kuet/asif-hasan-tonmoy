@@ -1,4 +1,4 @@
-> **Scenario** — A checkout service writes the `orders` row to Postgres, then publishes `order.created` to Kafka. During a 40-second broker failover, 1,180 orders commit to the database but never publish. Fulfilment never hears about them. Two days later finance finds paid orders with no shipment, and nobody can tell which events were lost because the publish call had no durable record.
+> **Scenario** - A checkout service writes the `orders` row to Postgres, then publishes `order.created` to Kafka. During a 40-second broker failover, 1,180 orders commit to the database but never publish. Fulfilment never hears about them. Two days later finance finds paid orders with no shipment, and nobody can tell which events were lost because the publish call had no durable record.
 
 ## Why it matters
 
@@ -6,7 +6,7 @@
 - The inverse failure is worse: publish succeeds, transaction rolls back, and downstream services act on an order that does not exist.
 - Recovery is manual and slow. Reconciling "rows without events" requires a bespoke script per entity, written under pressure.
 - Retrying the publish inside the request path adds broker latency to user-facing p99 and still loses events when the process dies.
-- Auditors and finance need a provable record of what was emitted and when — a fire-and-forget publish provides neither.
+- Auditors and finance need a provable record of what was emitted and when - a fire-and-forget publish provides neither.
 
 ## Symptoms
 
@@ -128,7 +128,7 @@ async function relayBatch(): Promise<number> {
 }
 ```
 
-The relay is at-least-once: if the process dies after `sendBatch` but before the `UPDATE`, those events publish twice. That is correct and expected — consumers dedup on `event_id`.
+The relay is at-least-once: if the process dies after `sendBatch` but before the `UPDATE`, those events publish twice. That is correct and expected - consumers dedup on `event_id`.
 
 ### 4. Or let CDC do the relay
 
@@ -184,11 +184,11 @@ flowchart LR
 
 ## Anti-patterns
 
-- Publishing inside the transaction block "to keep it together" — the broker call is not transactional and holds locks open.
+- Publishing inside the transaction block "to keep it together" - the broker call is not transactional and holds locks open.
 - Deleting outbox rows on publish instead of marking `published_at`, which destroys the audit trail and makes debugging impossible.
 - A relay that scans the whole table because someone dropped the partial index.
 - Treating the outbox as a queue with business logic in the relay; it is a transport, not a processor.
-- Skipping consumer-side dedup because "the relay only sends once" — it does not.
+- Skipping consumer-side dedup because "the relay only sends once" - it does not.
 - Letting the outbox table grow forever until autovacuum falls behind and the partial index bloats.
 
 ## Related

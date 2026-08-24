@@ -1,10 +1,10 @@
-> **Scenario** — একটি support assistant policy প্রশ্নের ভালো উত্তর দেয়, কিন্তু ticket `INC-48213` বা SKU `BX-9920-BD` খুঁজে পায় না। Retrieval পুরোপুরি dense vector search, ১.২M chunk-এর উপরে, আর exact identifier embedding-এ আলাদা কিছু হয়ে ওঠে না।
+> **Scenario** - একটি support assistant policy প্রশ্নের ভালো উত্তর দেয়, কিন্তু ticket `INC-48213` বা SKU `BX-9920-BD` খুঁজে পায় না। Retrieval পুরোপুরি dense vector search, ১.২M chunk-এর উপরে, আর exact identifier embedding-এ আলাদা কিছু হয়ে ওঠে না।
 
 ## Why it matters
 
 - Dense-only retrieval exact token মিস করে: order ID, error code, config key, SKU। এই query-গুলোতেই intent সবচেয়ে বেশি, আর ভুল উত্তরের সহনশীলতা সবচেয়ে কম।
-- প্রতিটি retrieval miss generation failure হয়ে দাঁড়ায়। Model-এর grounding নেই, তাই সে হয় refuse করে, নয়তো বানিয়ে বলে — আর বানানো উত্তরে trust নষ্ট হয়।
-- Production log-এ recall failure অদৃশ্য। Pipeline দশটি chunk ফেরত দেয়, cosine score ০.৭১ — কিছুই বলে না যে সঠিক chunk ৩৪০ নম্বরে আছে।
+- প্রতিটি retrieval miss generation failure হয়ে দাঁড়ায়। Model-এর grounding নেই, তাই সে হয় refuse করে, নয়তো বানিয়ে বলে - আর বানানো উত্তরে trust নষ্ট হয়।
+- Production log-এ recall failure অদৃশ্য। Pipeline দশটি chunk ফেরত দেয়, cosine score ০.৭১ - কিছুই বলে না যে সঠিক chunk ৩৪০ নম্বরে আছে।
 - Latency খরচ করার সবচেয়ে সস্তা জায়গা retrieval। ৪ সেকেন্ডের ভুল generation বাঁচাতে ৬০ms rerank যোগ করা প্রায় সবসময়ই লাভজনক।
 - Multilingual corpus-এ সমস্যা আরও বাড়ে। English documentation-এর বিপরীতে Bengali query embedding space-এর অন্য অঞ্চলে পড়ে, যদি না model cross-lingually train করা থাকে।
 
@@ -37,7 +37,7 @@ flowchart LR
 
 1. একটিমাত্র retriever-কে পুরো retrieval layer ধরা হয়, candidate generator হিসেবে নয়।
 2. Bi-encoder embedding পুরো chunk-কে একটি vector-এ চাপে, ফলে term-level precision হারায়।
-3. Top-k বাছা হয় prompt budget দেখে (k=5), recall দেখে নয় — তাই পরে আর recover করা যায় না।
+3. Top-k বাছা হয় prompt budget দেখে (k=5), recall দেখে নয় - তাই পরে আর recover করা যায় না।
 4. আলাদা retriever-এর score সরাসরি average করা হয়, যদিও তাদের scale অসম্পর্কিত।
 5. কোনো offline eval identifier query আর natural-language query আলাদা করে না, তাই gap-টা কখনো ধরাই পড়ে না।
 
@@ -45,7 +45,7 @@ flowchart LR
 
 ### 1. BM25 আর dense retrieval একসাথে চালান
 
-প্রতিটি থেকে চওড়া candidate set নিন — প্রতি retriever-এ `k=50` ভালো শুরু। খরচের বড় অংশ ANN scan, আর HNSW index-এ k=10 থেকে k=50-এ গেলে সাধারণত ৫ms-এর কমই বাড়ে।
+প্রতিটি থেকে চওড়া candidate set নিন - প্রতি retriever-এ `k=50` ভালো শুরু। খরচের বড় অংশ ANN scan, আর HNSW index-এ k=10 থেকে k=50-এ গেলে সাধারণত ৫ms-এর কমই বাড়ে।
 
 ```python
 lexical = opensearch.search(index="chunks", body={
@@ -63,7 +63,7 @@ RRF raw score উপেক্ষা করে শুধু rank ব্যবহ�
 RRF(d) = Σ over retrievers r of  1 / (k + rank_r(d))
 ```
 
-এখানে `k = 60` প্রচলিত smoothing constant। BM25-এ rank 1 আর dense-এ rank 25 থাকা document পায় `1/61 + 1/85 = 0.0281`; দুটোতেই rank 8 থাকা document পায় `1/68 + 1/68 = 0.0294` এবং জেতে — এই আচরণটাই কাম্য।
+এখানে `k = 60` প্রচলিত smoothing constant। BM25-এ rank 1 আর dense-এ rank 25 থাকা document পায় `1/61 + 1/85 = 0.0281`; দুটোতেই rank 8 থাকা document পায় `1/68 + 1/68 = 0.0294` এবং জেতে - এই আচরণটাই কাম্য।
 
 ```python
 def rrf(rankings: list[list[str]], k: int = 60) -> dict[str, float]:
@@ -143,9 +143,9 @@ flowchart TD
 
 ## Anti-patterns
 
-- Cosine similarity আর BM25 score সরাসরি average করা — scale অসম্পর্কিত, আর BM25 unbounded।
+- Cosine similarity আর BM25 score সরাসরি average করা - scale অসম্পর্কিত, আর BM25 unbounded।
 - Rerank না করে prompt-এ top-k বাড়ানো; noise-এর জন্য token গুনতে হয় আর attention পাতলা হয়।
-- Reranker-কে একমাত্র retriever বানানো — cross-encoder ১.২M chunk scan করতে পারে না।
+- Reranker-কে একমাত্র retriever বানানো - cross-encoder ১.২M chunk scan করতে পারে না।
 - Rank position না মেপে generated answer পড়ে retrieval quality বিচার করা।
 - Lexical store আর vector store আলাদা schedule-এ reindex করা, ফলে দুটো চুপচাপ diverge করে।
 

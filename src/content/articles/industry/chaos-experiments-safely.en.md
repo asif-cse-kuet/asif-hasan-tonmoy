@@ -1,4 +1,4 @@
-> **Scenario** — A team runs its first "chaos day" at 15:00 on a Wednesday by terminating 30% of pods in the payments namespace. There is no steady-state hypothesis, no abort criteria, and no feature flag to stop it. Eleven minutes later they have a real Sev-1, a 40-minute payment outage, and a leadership ban on chaos engineering.
+> **Scenario** - A team runs its first "chaos day" at 15:00 on a Wednesday by terminating 30% of pods in the payments namespace. There is no steady-state hypothesis, no abort criteria, and no feature flag to stop it. Eleven minutes later they have a real Sev-1, a 40-minute payment outage, and a leadership ban on chaos engineering.
 
 ## Why it matters
 
@@ -21,7 +21,7 @@
 
 ## How it breaks
 
-The dangerous pattern is chaos without instrumentation. If you cannot see steady state, you cannot tell whether the experiment caused a deviation, and you cannot decide when to abort. The second failure mode is blast radius that is not actually bounded: killing 30% of pods sounds contained until you learn that a single-replica leader election sidecar lives in the same namespace, and that the connection pool on the surviving pods cannot absorb the redistributed load. The experiment discovers a real weakness — by exploiting it in production, at full customer impact.
+The dangerous pattern is chaos without instrumentation. If you cannot see steady state, you cannot tell whether the experiment caused a deviation, and you cannot decide when to abort. The second failure mode is blast radius that is not actually bounded: killing 30% of pods sounds contained until you learn that a single-replica leader election sidecar lives in the same namespace, and that the connection pool on the surviving pods cannot absorb the redistributed load. The experiment discovers a real weakness - by exploiting it in production, at full customer impact.
 
 ```mermaid
 stateDiagram-v2
@@ -124,7 +124,7 @@ Start in staging with synthetic traffic, then canary with internal tenants, then
 
 ### 6. Publish the finding, not the fact that you ran it
 
-The deliverable is a list of weaknesses with owners and dates. "Hypothesis held" is also a result — it means the fallback works today and you can say so with evidence.
+The deliverable is a list of weaknesses with owners and dates. "Hypothesis held" is also a result - it means the fallback works today and you can say so with evidence.
 
 ## Target design
 

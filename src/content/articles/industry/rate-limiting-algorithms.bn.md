@@ -1,4 +1,4 @@
-> **Scenario** — আপনার public API প্রতি tenant-কে মিনিটে ১,০০০ request দেয়। এক partner-এর nightly sync প্রতি মিনিটের প্রথম ৩০০ms-এ ১,০০০ request ছুড়ে তারপর ঘুমায়। Limiter বলছে তারা quota-র ভেতরেই আছে। আপনার database burst-এ ৩,৩০০ rps দেখে, connection pool ভরে যায়, আর কারিগরিভাবে নিখুঁত limiter-এর কারণে বাকি সব tenant 504 পায়।
+> **Scenario** - আপনার public API প্রতি tenant-কে মিনিটে ১,০০০ request দেয়। এক partner-এর nightly sync প্রতি মিনিটের প্রথম ৩০০ms-এ ১,০০০ request ছুড়ে তারপর ঘুমায়। Limiter বলছে তারা quota-র ভেতরেই আছে। আপনার database burst-এ ৩,৩০০ rps দেখে, connection pool ভরে যায়, আর কারিগরিভাবে নিখুঁত limiter-এর কারণে বাকি সব tenant 504 পায়।
 
 ## Why it matters
 
@@ -55,7 +55,7 @@ flowchart TD
 | Token bucket | ২ field (tokens, ts) | configurable burst | সঠিক |
 | Leaky bucket | ২ field (level, ts) | burst নেই, output মসৃণ | সঠিক |
 
-API-র default পছন্দ token bucket: এটি নিয়ন্ত্রিত burst (bucket capacity) দেয় আর দীর্ঘমেয়াদি rate (refill rate) ধরে রাখে। Downstream-এর *মসৃণ* stream দরকার হলে leaky bucket — payment processor ও SMS gateway সাধারণত তাই চায়।
+API-র default পছন্দ token bucket: এটি নিয়ন্ত্রিত burst (bucket capacity) দেয় আর দীর্ঘমেয়াদি rate (refill rate) ধরে রাখে। Downstream-এর *মসৃণ* stream দরকার হলে leaky bucket - payment processor ও SMS gateway সাধারণত তাই চায়।
 
 ### 2. Redis-এ atomic token bucket
 
@@ -168,7 +168,7 @@ location /v1/ {
 
 ### 5. Endpoint-এর আলাদা দাম রাখুন
 
-প্রতিটি route-এ cost বসান — `GET /v1/orders/{id}` = ১, `POST /v1/reports` = ৫০ — আর সেই cost bucket থেকে কাটুন। তখন একটিমাত্র quota সংখ্যা ভিন্নধর্মী API জুড়ে অর্থবহ হয়।
+প্রতিটি route-এ cost বসান - `GET /v1/orders/{id}` = ১, `POST /v1/reports` = ৫০ - আর সেই cost bucket থেকে কাটুন। তখন একটিমাত্র quota সংখ্যা ভিন্নধর্মী API জুড়ে অর্থবহ হয়।
 
 ## Target design
 
@@ -198,7 +198,7 @@ flowchart LR
 - [ ] এক burst-এ limit-এর ২x পাঠিয়ে দেখুন ঠিক `capacity` পাস করে, বাকিরা যুক্তিসঙ্গত `Retry-After` সহ `429` পায়।
 - [ ] মিনিট boundary-র দুই পাশে দুটি burst দিয়ে যাচাই করুন ২x পাস *হয় না*।
 - [ ] API ২ থেকে ৬ pod-এ scale করে কার্যকর limit অপরিবর্তিত আছে কিনা দেখুন।
-- [ ] এক window-এ `RateLimit-Remaining` monotonically কমছে — assert করুন।
+- [ ] এক window-এ `RateLimit-Remaining` monotonically কমছে - assert করুন।
 - [ ] একটি `429` app time ৫ms-এর কম নেয় (বা edge-এ serve হয়) কিনা দেখুন।
 - [ ] Peak load-এ কোনো একক Redis key instance CPU-র ~১% ছাড়ায় না তা নিশ্চিত করুন।
 

@@ -1,11 +1,11 @@
-> **Scenario** — A new "export attachments" endpoint ships on Friday. It loads records by primary key and streams them. On Monday a customer emails a PDF belonging to a competitor, downloaded from their own dashboard. The query was correct SQL — it just had no tenant predicate.
+> **Scenario** - A new "export attachments" endpoint ships on Friday. It loads records by primary key and streams them. On Monday a customer emails a PDF belonging to a competitor, downloaded from their own dashboard. The query was correct SQL - it just had no tenant predicate.
 
 ## Why it matters
 
 - Cross-tenant exposure is the highest-severity class of application bug in shared-infrastructure SaaS. It usually triggers customer notification, and often contractual penalties.
 - It is invisible to monitoring: no 5xx, no slow query, no error rate change. The system behaves exactly as written.
 - The defect is one missing clause in one query, so review catches it only if scoping is structural rather than manual.
-- Every new surface — reports, exports, webhooks, admin tooling, background jobs — reintroduces the risk unless the boundary enforces it.
+- Every new surface - reports, exports, webhooks, admin tooling, background jobs - reintroduces the risk unless the boundary enforces it.
 
 ## Symptoms
 
@@ -20,7 +20,7 @@
 
 ## How it breaks
 
-Tenancy is usually implemented as a *convention* — "always filter by `tenant_id`" — and conventions decay. A developer writing the twelfth report reaches for `Model::find($id)` because it is the shortest path. Route model binding resolves the record globally, the policy checks a role rather than ownership, and the response is returned. The same gap appears in raw SQL, in cache keys, and in queued jobs where there is no authenticated user to scope against.
+Tenancy is usually implemented as a *convention* - "always filter by `tenant_id`" - and conventions decay. A developer writing the twelfth report reaches for `Model::find($id)` because it is the shortest path. Route model binding resolves the record globally, the policy checks a role rather than ownership, and the response is returned. The same gap appears in raw SQL, in cache keys, and in queued jobs where there is no authenticated user to scope against.
 
 ```mermaid
 flowchart TD
@@ -80,7 +80,7 @@ Route::get('/attachments/{attachment}', [AttachmentController::class, 'show'])
     ->scopeBindings();
 ```
 
-Combined with the global scope, `{attachment}` can only resolve inside the current tenant — a foreign id yields 404, which also avoids confirming the record exists.
+Combined with the global scope, `{attachment}` can only resolve inside the current tenant - a foreign id yields 404, which also avoids confirming the record exists.
 
 ### 3. Compare tenancy in the policy too
 

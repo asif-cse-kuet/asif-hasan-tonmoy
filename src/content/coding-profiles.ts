@@ -17,8 +17,8 @@ export type FeaturedRepo = {
 }
 
 export const CODING_NARRATIVE: LocaleText = {
-  en: 'Competitive programming sharpens the same muscles production engineering needs — tight complexity bounds, edge cases, and calm debugging under pressure.',
-  bn: 'কম্পিটিটিভ প্রোগ্রামিং প্রোডাকশন ইঞ্জিনিয়ারিংয়ের মতো একই দক্ষতা ধরে — tight complexity, edge case, এবং চাপে শান্ত ডিবাগিং।',
+  en: 'Competitive programming sharpens the same muscles production engineering needs - tight complexity bounds, edge cases, and calm debugging under pressure.',
+  bn: 'কম্পিটিটিভ প্রোগ্রামিং প্রোডাকশন ইঞ্জিনিয়ারিংয়ের মতো একই দক্ষতা ধরে - tight complexity, edge case, এবং চাপে শান্ত ডিবাগিং।',
 }
 
 export const CODING_PROFILES: CodingProfile[] = [
@@ -48,8 +48,8 @@ export const CODING_PROFILES: CodingProfile[] = [
     handle: 'noooob_bot',
     url: 'https://leetcode.com/u/noooob_bot/',
     narrative: {
-      en: 'Interview-style problem archive — bridging LeetCode patterns to shipped systems.',
-      bn: 'ইন্টারভিউ-স্টাইল সমস্যা আর্কাইভ — LeetCode প্যাটার্ন থেকে শিপ করা সিস্টেমে সেতু।',
+      en: 'Interview-style problem archive - bridging LeetCode patterns to shipped systems.',
+      bn: 'ইন্টারভিউ-স্টাইল সমস্যা আর্কাইভ - LeetCode প্যাটার্ন থেকে শিপ করা সিস্টেমে সেতু।',
     },
   },
   {
@@ -59,7 +59,7 @@ export const CODING_PROFILES: CodingProfile[] = [
     url: 'https://github.com/asif-cse-kuet',
     narrative: {
       en: '26 public repositories spanning full-stack apps, research code, and interview solutions.',
-      bn: '২৬টি পাবলিক রিপো — ফুলস্ট্যাক অ্যাপ, গবেষণা কোড ও ইন্টারভিউ সমাধান।',
+      bn: '২৬টি পাবলিক রিপো - ফুলস্ট্যাক অ্যাপ, গবেষণা কোড ও ইন্টারভিউ সমাধান।',
     },
     highlights: ['26 public repos', 'Ticketing System FE/BE', 'Dockerized API'],
   },
@@ -70,8 +70,8 @@ export const FEATURED_REPOS: FeaturedRepo[] = [
     name: '100-Top-Interview-LeetCode-Problem-Solution',
     url: 'https://github.com/asif-cse-kuet/100-Top-Interview-LeetCode-Problem-Solution',
     description: {
-      en: 'Curated LeetCode solutions with explanations — algorithms archive.',
-      bn: 'ব্যাখ্যাসহ কিউরেটেড LeetCode সমাধান — অ্যালগরিদম আর্কাইভ।',
+      en: 'Curated LeetCode solutions with explanations - algorithms archive.',
+      bn: 'ব্যাখ্যাসহ কিউরেটেড LeetCode সমাধান - অ্যালগরিদম আর্কাইভ।',
     },
     language: 'C++ / Python',
   },

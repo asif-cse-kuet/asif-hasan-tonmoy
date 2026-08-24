@@ -21,20 +21,20 @@ const facts = [
   {
     label: { en: 'Availability', bn: 'উপলভ্যতা' },
     value: {
-      en: 'Open to Tech Lead, architecture, and Marketing Director seats — together as one hire, or either chair on its own.',
-      bn: 'টেক লিড, আর্কিটেকচার ও মার্কেটিং ডিরেক্টর আসনের জন্য উন্মুক্ত — একসাথে এক নিয়োগ, অথবা যেকোনো একটি আসন।',
+      en: 'Open to Tech Lead, architecture, and Marketing Director seats - together as one hire, or either chair on its own.',
+      bn: 'টেক লিড, আর্কিটেকচার ও মার্কেটিং ডিরেক্টর আসনের জন্য উন্মুক্ত - একসাথে এক নিয়োগ, অথবা যেকোনো একটি আসন।',
     },
   },
 ]
 
 const teaching = [
   {
-    en: 'Programming instructor at Timedoor Academy — JavaScript, Python, and C++ for beginners through project work.',
-    bn: 'Timedoor Academy-তে প্রোগ্রামিং ইন্সট্রাক্টর — প্রজেক্টভিত্তিক শিক্ষায় JavaScript, Python ও C++।',
+    en: 'Programming instructor at Timedoor Academy - JavaScript, Python, and C++ for beginners through project work.',
+    bn: 'Timedoor Academy-তে প্রোগ্রামিং ইন্সট্রাক্টর - প্রজেক্টভিত্তিক শিক্ষায় JavaScript, Python ও C++।',
   },
   {
-    en: 'Head of Physics at Interaid — curriculum delivery and explaining hard ideas simply.',
-    bn: 'Interaid-এ হেড অফ ফিজিক্স — কারিকুলাম ডেলিভারি ও কঠিন ধারণা সহজে ব্যাখ্যা।',
+    en: 'Head of Physics at Interaid - curriculum delivery and explaining hard ideas simply.',
+    bn: 'Interaid-এ হেড অফ ফিজিক্স - কারিকুলাম ডেলিভারি ও কঠিন ধারণা সহজে ব্যাখ্যা।',
   },
   {
     en: 'Mentoring habit carried into code review: debugging discipline, structure, and clear written reasoning.',

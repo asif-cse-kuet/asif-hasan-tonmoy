@@ -1,10 +1,10 @@
-> **Scenario** — A routine node pool upgrade drains twelve nodes. Checkout error rate hits 4% for eleven minutes, and 300 background jobs are lost. Nobody deployed anything; the cluster upgrade alone caused the incident.
+> **Scenario** - A routine node pool upgrade drains twelve nodes. Checkout error rate hits 4% for eleven minutes, and 300 background jobs are lost. Nobody deployed anything; the cluster upgrade alone caused the incident.
 
 ## Why it matters
 
 - Node upgrades, spot reclaims, and autoscaler scale-down are *routine*. If a drain hurts, you have a weekly outage on a schedule.
 - Kubernetes sends SIGTERM and waits `terminationGracePeriodSeconds`, then SIGKILLs. An app that ignores SIGTERM loses every in-flight request at that deadline.
-- Endpoint removal and process shutdown are concurrent, not sequential — without a `preStop` delay, the proxy still sends traffic to a closing socket.
+- Endpoint removal and process shutdown are concurrent, not sequential - without a `preStop` delay, the proxy still sends traffic to a closing socket.
 - A missing PodDisruptionBudget lets the drain take every replica of a service at once; a wrong one blocks cluster upgrades indefinitely.
 
 ## Symptoms
@@ -21,7 +21,7 @@
 
 Eviction runs two clocks at once. The API removes the pod from Endpoints, and the kubelet sends SIGTERM to PID 1. Neither waits for the other. kube-proxy and the ingress controller need a second or more to converge, so traffic keeps arriving after the app has begun shutting down.
 
-If the process also ignores SIGTERM — common with shell wrappers where PID 1 is `/bin/sh -c` and never forwards signals — nothing shuts down gracefully at all. The container runs until the grace period expires and is then killed mid-request.
+If the process also ignores SIGTERM - common with shell wrappers where PID 1 is `/bin/sh -c` and never forwards signals - nothing shuts down gracefully at all. The container runs until the grace period expires and is then killed mid-request.
 
 ```mermaid
 sequenceDiagram
@@ -95,7 +95,7 @@ spec:
     matchLabels: { app: api }
 ```
 
-Use `maxUnavailable` for scalable Deployments and `minAvailable` for quorum systems (for example `minAvailable: 2` on a 3-node etcd or Redis cluster). Never set `minAvailable` equal to `replicas` — that blocks every node upgrade.
+Use `maxUnavailable` for scalable Deployments and `minAvailable` for quorum systems (for example `minAvailable: 2` on a 3-node etcd or Redis cluster). Never set `minAvailable` equal to `replicas` - that blocks every node upgrade.
 
 ### 4. Spread replicas so one node is not a single point of failure
 
@@ -153,7 +153,7 @@ flowchart LR
 - Wrapping the entrypoint in `sh -c "npm start"` and losing signal delivery.
 - Setting `terminationGracePeriodSeconds: 5` to make deploys look fast.
 - Setting `minAvailable: 3` on a 3-replica Deployment, then force-deleting pods when upgrades stall.
-- Relying on `preStop` alone while the app still ignores SIGTERM — you delayed the SIGKILL, not the data loss.
+- Relying on `preStop` alone while the app still ignores SIGTERM - you delayed the SIGKILL, not the data loss.
 - Running all replicas of a service on one node because the scheduler had no spread constraint.
 
 ## Related

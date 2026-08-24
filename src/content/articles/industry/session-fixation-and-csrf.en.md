@@ -1,4 +1,4 @@
-> **Scenario** — A support agent forwards a "helpful" link to a customer. The link carries a session identifier the agent's machine already knows. After the customer logs in, the agent's browser is holding an authenticated session for the customer's account — and nothing in the logs looks abnormal.
+> **Scenario** - A support agent forwards a "helpful" link to a customer. The link carries a session identifier the agent's machine already knows. After the customer logs in, the agent's browser is holding an authenticated session for the customer's account - and nothing in the logs looks abnormal.
 
 ## Why it matters
 
@@ -20,7 +20,7 @@
 
 ## How it breaks
 
-Fixation is a *pre-authentication* attack: the attacker plants a session identifier, the victim authenticates into it, and the attacker now shares an authenticated session. CSRF is a *post-authentication* attack: the browser attaches cookies automatically, so a form submitted from an unrelated page carries the victim's session. Both exploit the fact that a cookie is ambient authority — it travels with the request regardless of who initiated it.
+Fixation is a *pre-authentication* attack: the attacker plants a session identifier, the victim authenticates into it, and the attacker now shares an authenticated session. CSRF is a *post-authentication* attack: the browser attaches cookies automatically, so a form submitted from an unrelated page carries the victim's session. Both exploit the fact that a cookie is ambient authority - it travels with the request regardless of who initiated it.
 
 ```mermaid
 sequenceDiagram
@@ -114,7 +114,7 @@ await fetch('/api/invoices/9182/approve', {
 
 ### 4. Verify origin as a second layer
 
-`SameSite` is a browser behaviour, not a server guarantee — older clients and non-browser callers ignore it. Check the `Origin` header server-side for cookie-authenticated writes:
+`SameSite` is a browser behaviour, not a server guarantee - older clients and non-browser callers ignore it. Check the `Origin` header server-side for cookie-authenticated writes:
 
 ```php
 $origin = $request->headers->get('Origin');

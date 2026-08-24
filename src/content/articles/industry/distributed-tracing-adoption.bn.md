@@ -1,8 +1,8 @@
-> **Scenario** — OpenTelemetry rollout-এর ছয় মাস পর 84% trace-এ ঠিক একটি span। Gateway trace শুরু করে, Laravel API continue করে, তারপর notification service — যার HTTP client rollout-এর আগে লেখা — নতুন trace ID শুরু করে। প্রতিটি slow checkout দেখতে লাগে দ্রুত gateway call, তারপর কিছুই নেই।
+> **Scenario** - OpenTelemetry rollout-এর ছয় মাস পর 84% trace-এ ঠিক একটি span। Gateway trace শুরু করে, Laravel API continue করে, তারপর notification service - যার HTTP client rollout-এর আগে লেখা - নতুন trace ID শুরু করে। প্রতিটি slow checkout দেখতে লাগে দ্রুত gateway call, তারপর কিছুই নেই।
 
 ## Why it matters
 
-- Service boundary-তে থেমে যাওয়া trace "কোন hop 4 সেকেন্ড খেল" বলতে পারে না — tracing-এর অস্তিত্বই এই প্রশ্নের জন্য।
+- Service boundary-তে থেমে যাওয়া trace "কোন hop 4 সেকেন্ড খেল" বলতে পারে না - tracing-এর অস্তিত্বই এই প্রশ্নের জন্য।
 - ভাঙা propagation চুপচাপ span bill দ্বিগুণ করে: যে fragment কেউ join করতে পারে না, তার storage-এর দাম দিচ্ছেন।
 - 1% head sampling ঠিক সেই বিরল slow request ফেলে দেয় যেগুলো debug করতে চাইছেন।
 - Span name-এ ID (`GET /orders/8814`) থাকলে operation dimension বিস্ফোরিত হয়, per-endpoint latency aggregation অকেজো।
@@ -21,7 +21,7 @@
 
 ## How it breaks
 
-W3C trace context যায় `traceparent` header-এ: `00-<32 hex trace id>-<16 hex span id>-01`। যে component সেই header copy না করে outbound request বানায়, সে trace শেষ করে দেয়। সাধারণ অপরাধী: hand-rolled HTTP client, শুধু domain payload serialise করা message publisher, এবং unknown header strip করতে configure করা load balancer বা proxy। আরও খারাপ, downstream service তবুও span *শুরু* করে — তাই volume-এর হিসাবে data সুস্থ দেখায়; span প্রচুর, শুধু tree নেই। এদিকে head-based sampling root-এ সিদ্ধান্ত নেয়, latency জানার আগেই; ফলে 9 সেকেন্ড নেওয়া 0.3% request বাকি সবের মতোই সমান সম্ভাবনায় বাদ পড়ে।
+W3C trace context যায় `traceparent` header-এ: `00-<32 hex trace id>-<16 hex span id>-01`। যে component সেই header copy না করে outbound request বানায়, সে trace শেষ করে দেয়। সাধারণ অপরাধী: hand-rolled HTTP client, শুধু domain payload serialise করা message publisher, এবং unknown header strip করতে configure করা load balancer বা proxy। আরও খারাপ, downstream service তবুও span *শুরু* করে - তাই volume-এর হিসাবে data সুস্থ দেখায়; span প্রচুর, শুধু tree নেই। এদিকে head-based sampling root-এ সিদ্ধান্ত নেয়, latency জানার আগেই; ফলে 9 সেকেন্ড নেওয়া 0.3% request বাকি সবের মতোই সমান সম্ভাবনায় বাদ পড়ে।
 
 ```mermaid
 sequenceDiagram
@@ -52,7 +52,7 @@ sequenceDiagram
 
 ## How to solve it
 
-### 1. SDK একবার initialise করুন — batching ও route-aware namer দিয়ে
+### 1. SDK একবার initialise করুন - batching ও route-aware namer দিয়ে
 
 ```ts
 import { NodeSDK } from '@opentelemetry/sdk-node'
@@ -174,7 +174,7 @@ location /api/ {
 ### 6. Trace health-এই alert করুন
 
 ```promql
-# Fraction of traces that never got a child span — propagation regression detector.
+# Fraction of traces that never got a child span - propagation regression detector.
 sum(rate(otelcol_processor_tail_sampling_sampling_trace_dropped_too_early[10m]))
 /
 sum(rate(otelcol_receiver_accepted_spans[10m]))

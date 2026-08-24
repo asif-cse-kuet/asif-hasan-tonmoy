@@ -1,4 +1,4 @@
-> **Scenario** — The dashboard endpoint fans out to 9 services: profile, balance, orders, notifications, badges, fx-rates, feature-flags, audit, and search-suggest. `badges` starts returning 500s. `Promise.all` rejects, the handler returns 500, and every user sees an empty dashboard because of a gamification widget.
+> **Scenario** - The dashboard endpoint fans out to 9 services: profile, balance, orders, notifications, badges, fx-rates, feature-flags, audit, and search-suggest. `badges` starts returning 500s. `Promise.all` rejects, the handler returns 500, and every user sees an empty dashboard because of a gamification widget.
 
 ## Why it matters
 
@@ -43,7 +43,7 @@ flowchart TD
 
 1. `Promise.all` (or equivalent) used where `Promise.allSettled` semantics are required.
 2. No per-dependency criticality, so optional widgets are treated like the account balance.
-3. No partial-response contract in the API schema — the client has no way to represent "orders unavailable".
+3. No partial-response contract in the API schema - the client has no way to represent "orders unavailable".
 4. Shared timeout budget consumed sequentially instead of a parallel fan-out with a hard deadline.
 5. Retries at the aggregator level re-issue *all* calls instead of only the failed ones.
 6. Observability at the endpoint level only, so per-dependency success rates are invisible.
@@ -98,7 +98,7 @@ type DashboardResponse = {
     orders: SectionResult<Order[]>
     badges: SectionResult<Badge[]>
   }
-  degraded: string[] // ['badges'] — for logging and UI banner
+  degraded: string[] // ['badges'] - for logging and UI banner
 }
 ```
 
@@ -174,7 +174,7 @@ sequenceDiagram
 - [ ] Add 5s of latency to one dependency (`tc qdisc add dev eth0 root netem delay 5000ms`); endpoint still answers inside its 800ms budget.
 - [ ] `degraded` array appears in logs and is queryable, so you can count degraded responses per section.
 - [ ] Per-section success rate panels exist for all 9 dependencies.
-- [ ] No code path discards successful sibling results on a single failure — verified by unit test.
+- [ ] No code path discards successful sibling results on a single failure - verified by unit test.
 - [ ] Client UI has a rendered, reviewed placeholder state for every optional section.
 - [ ] Sum of section timeouts on the critical path is less than the endpoint budget.
 

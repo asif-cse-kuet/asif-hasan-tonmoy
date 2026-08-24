@@ -4,7 +4,7 @@ export type Capability = {
   id: string
   titles: LocaleText
   headline: LocaleText
-  /** Keyword clusters — presented as chips, never as self-rated scores. */
+  /** Keyword clusters - presented as chips, never as self-rated scores. */
   clusters: {
     titles: LocaleText
     items: string[]
@@ -17,34 +17,52 @@ export const CAPABILITIES: Capability[] = [
     id: 'software-engineering',
     titles: { en: 'Software engineering', bn: 'সফটওয়্যার ইঞ্জিনিয়ারিং' },
     headline: {
-      en: 'Production features from database row to pixel — shipped, reviewed, and maintained.',
-      bn: 'ডেটাবেস রো থেকে পিক্সেল পর্যন্ত প্রোডাকশন ফিচার — শিপড, রিভিউড ও মেইনটেইনড।',
+      en: 'Production features from database row to pixel: shipped, reviewed, and maintained on the stack the job needs.',
+      bn: 'ডেটাবেস রো থেকে পিক্সেল পর্যন্ত প্রোডাকশন ফিচার: যে স্ট্যাক দরকার সেটাতে শিপ, রিভিউ ও মেইনটেইন।',
     },
     clusters: [
       {
         titles: { en: 'Application layer', bn: 'অ্যাপ্লিকেশন স্তর' },
         items: [
-          'Vue 3 composition API',
-          'Quasar component systems',
-          'Pinia state design',
-          'Vite build pipelines',
-          'Server-driven UI',
+          'Typed UI (TypeScript)',
+          'Component systems (React, Vue)',
+          'App routers (Next.js, Nuxt)',
+          'Client state design',
+          'SSR / hydration strategy',
+          'Vite / bundler pipelines',
           'Design-to-code (Figma)',
-          'Accessibility basics',
+          'Accessibility in components',
           'Responsive layout systems',
         ],
       },
       {
         titles: { en: 'Service layer', bn: 'সার্ভিস স্তর' },
         items: [
-          'Laravel 11 modules',
-          'REST contract design',
-          'Middleware pipelines',
-          'Auth & session flows',
-          'RBAC (user/admin/super-admin)',
-          'Validation & error shaping',
-          'File upload handling',
-          'Third-party API integration',
+          'Node.js & Express services',
+          'NestJS modular backends',
+          'Laravel / PHP services',
+          'Spring Boot (Java)',
+          '.NET services',
+          'Python & FastAPI services',
+          'Auth, session, RBAC',
+          'Middleware, validation, errors',
+          'Third-party integrations',
+        ],
+      },
+      {
+        titles: { en: 'APIs, contracts & realtime', bn: 'API, কন্ট্রাক্ট ও রিয়েলটাইম' },
+        items: [
+          'REST',
+          'GraphQL',
+          'gRPC / RPC',
+          'tRPC / JSON-RPC',
+          'OpenAPI & AsyncAPI',
+          'WebSockets',
+          'Server-Sent Events (SSE)',
+          'Short & long polling',
+          'Webhooks',
+          'Realtime chat & presence',
+          'MQTT / pub-sub',
         ],
       },
       {
@@ -76,8 +94,8 @@ export const CAPABILITIES: Capability[] = [
     id: 'architecture',
     titles: { en: 'System & solution architecture', bn: 'সিস্টেম ও সলিউশন আর্কিটেকচার' },
     headline: {
-      en: 'Choosing the boring option on purpose — and knowing exactly what it costs.',
-      bn: 'সচেতনভাবে সহজ সমাধান বেছে নেওয়া — এবং তার খরচ ঠিক জানা।',
+      en: 'Choosing the boring option on purpose, and knowing exactly what it costs.',
+      bn: 'সচেতনভাবে সহজ সমাধান বেছে নেওয়া, এবং তার খরচ ঠিক জানা।',
     },
     clusters: [
       {
@@ -134,8 +152,8 @@ export const CAPABILITIES: Capability[] = [
     id: 'ai-engineering',
     titles: { en: 'AI engineering', bn: 'এআই ইঞ্জিনিয়ারিং' },
     headline: {
-      en: 'Published transformer research plus the production plumbing that makes LLM features usable.',
-      bn: 'প্রকাশিত ট্রান্সফরমার গবেষণা এবং LLM ফিচার ব্যবহারযোগ্য করার প্রোডাকশন কারিগরি।',
+      en: 'I ship AI that closes a customer job: RAG, agentic RAG, vector stores, evals, and a fallback when retrieval is empty. Not a model call with a UI on top.',
+      bn: 'আমি এমন AI শিপ করি যা কাস্টমারের কাজ শেষ করে: RAG, agentic RAG, ভেক্টর স্টোর, ইভ্যাল, আর রিট্রিভাল খালি হলে ফলব্যাক। UI-সহ মডেল-কল নয়।',
     },
     clusters: [
       {
@@ -143,12 +161,15 @@ export const CAPABILITIES: Capability[] = [
         items: [
           'RAG pipelines',
           'Agentic RAG',
+          'LangChain',
+          'LangGraph',
+          'Python / FastAPI AI services',
+          'Pinecone',
+          'Vector indexes (pgvector)',
           'Chunking strategies',
           'Embeddings',
-          'Vector databases',
           'Hybrid search (BM25 + dense)',
           'Rerankers',
-          'Context window budgeting',
           'Citation grounding',
         ],
       },
@@ -156,12 +177,13 @@ export const CAPABILITIES: Capability[] = [
         titles: { en: 'Agents & tooling', bn: 'এজেন্ট ও টুলিং' },
         items: [
           'Tool / function calling',
-          'Multi-step planning',
-          'Streaming UX',
-          'Structured output',
+          'Multi-step agent loops',
+          'Cursor',
+          'Claude',
+          'Codex',
+          'Antigravity',
           'Guardrails',
           'Prompt injection defense',
-          'Cost & token budgeting',
           'Fallback model routing',
         ],
       },
@@ -191,7 +213,7 @@ export const CAPABILITIES: Capability[] = [
     titles: { en: 'DevOps & platform', bn: 'ডেভঅপস ও প্ল্যাটফর্ম' },
     headline: {
       en: 'Containers, proxies, and pipelines that make deploys unremarkable.',
-      bn: 'কন্টেইনার, প্রক্সি ও পাইপলাইন — যাতে ডিপ্লয় সাধারণ ঘটনা হয়।',
+      bn: 'কন্টেইনার, প্রক্সি ও পাইপলাইন - যাতে ডিপ্লয় সাধারণ ঘটনা হয়।',
     },
     clusters: [
       {
@@ -239,8 +261,8 @@ export const CAPABILITIES: Capability[] = [
     id: 'observability',
     titles: { en: 'Observability & reliability', bn: 'পর্যবেক্ষণযোগ্যতা ও নির্ভরযোগ্যতা' },
     headline: {
-      en: 'If a pager fires, it should mean something — and the answer should already be on a dashboard.',
-      bn: 'পেজার বাজলে তার অর্থ থাকতে হবে — এবং উত্তর ড্যাশবোর্ডে আগেই থাকতে হবে।',
+      en: 'If a pager fires, it should mean something - and the answer should already be on a dashboard.',
+      bn: 'পেজার বাজলে তার অর্থ থাকতে হবে - এবং উত্তর ড্যাশবোর্ডে আগেই থাকতে হবে।',
     },
     clusters: [
       {
@@ -286,7 +308,7 @@ export const CAPABILITIES: Capability[] = [
     titles: { en: 'Software to business', bn: 'সফটওয়্যার থেকে ব্যবসা' },
     headline: {
       en: 'I do not bolt marketing onto engineering. I already ran demand for 50+ brands, so the product I ship is the product a market can find.',
-      bn: 'ইঞ্জিনিয়ারিংয়ের ওপর মার্কেটিং জোড়া লাগাই না। ৫০+ ব্র্যান্ডের চাহিদা আমি চালিয়েছি — তাই যে পণ্য শিপ করি, বাজার সেটা খুঁজে পায়।',
+      bn: 'ইঞ্জিনিয়ারিংয়ের ওপর মার্কেটিং জোড়া লাগাই না। ৫০+ ব্র্যান্ডের চাহিদা আমি চালিয়েছি - তাই যে পণ্য শিপ করি, বাজার সেটা খুঁজে পায়।',
     },
     clusters: [
       {
@@ -331,8 +353,8 @@ export const CAPABILITIES: Capability[] = [
     ],
     proof: [
       {
-        en: 'Owners hiring a Tech Lead usually still need a Marketing Director. I already sat in both chairs — Cozy Cottage, Enterprising Society, and 50+ independent retainers.',
-        bn: 'টেক লিড নিয়োগ করলেও মার্কেটিং ডিরেক্টর লাগে। আমি দুই আসনেই বসেছি — Cozy Cottage, Enterprising Society, এবং ৫০+ ইন্ডিপেন্ডেন্ট রিটেইনার।',
+        en: 'Owners hiring a Tech Lead usually still need a Marketing Director. I already sat in both chairs - Cozy Cottage, Enterprising Society, and 50+ independent retainers.',
+        bn: 'টেক লিড নিয়োগ করলেও মার্কেটিং ডিরেক্টর লাগে। আমি দুই আসনেই বসেছি - Cozy Cottage, Enterprising Society, এবং ৫০+ ইন্ডিপেন্ডেন্ট রিটেইনার।',
       },
     ],
   },
@@ -357,7 +379,7 @@ export const SERVICE_PITCHES: ServicePitch[] = [
     bullets: [
       { en: 'Customer-facing apps, admin desks, and internal tools', bn: 'কাস্টমার অ্যাপ, অ্যাডমিন ডেস্ক ও ইন্টারনাল টুল' },
       { en: 'APIs that other vendors can plug into without a war room', bn: 'অন্য ভেন্ডর সহজে প্লাগ করতে পারে এমন API' },
-      { en: 'AI features that cite their sources — not chat for chat’s sake', bn: 'উৎসসহ এআই ফিচার — শুধু চ্যাট নয়' },
+      { en: 'RAG, agentic RAG, and vector search that cite sources, not chat for chat’s sake', bn: 'RAG, agentic RAG ও ভেক্টর সার্চ যা উৎস দেখায়, শুধু চ্যাট নয়' },
     ],
   },
   {
@@ -368,7 +390,7 @@ export const SERVICE_PITCHES: ServicePitch[] = [
       bn: 'কোম্পানি আপনার। আর্কিটেকচার, পেজার ও রোডম্যাপ আমি সৎ রাখি।',
     },
     bullets: [
-      { en: 'Latency, data, and failure modes before they become a board slide', bn: 'লেটেন্সি, ডেটা ও ব্যর্থতা — বোর্ড স্লাইড হওয়ার আগে' },
+      { en: 'Latency, data, and failure modes before they become a board slide', bn: 'লেটেন্সি, ডেটা ও ব্যর্থতা - বোর্ড স্লাইড হওয়ার আগে' },
       { en: 'A team that ships in slices, not in hero weekends', bn: 'হিরো উইকএন্ড নয়, স্লাইসে শিপ করা টিম' },
       { en: 'Observability that tells an owner what broke, in one screen', bn: 'এক স্ক্রিনে কী ভাঙল বলে দেয় এমন পর্যবেক্ষণ' },
     ],
@@ -382,7 +404,7 @@ export const SERVICE_PITCHES: ServicePitch[] = [
     },
     bullets: [
       { en: 'Funnels wired to real product events, not vanity dashboards', bn: 'ভ্যানিটি ড্যাশবোর্ড নয়, আসল প্রোডাক্ট ইভেন্টে বাঁধা ফানেল' },
-      { en: 'SEO, social, and paid as one system — 50+ brands of scar tissue', bn: 'SEO, সোশ্যাল ও পেইড এক সিস্টেম — ৫০+ ব্র্যান্ডের অভিজ্ঞতা' },
+      { en: 'SEO, social, and paid as one system - 50+ brands of scar tissue', bn: 'SEO, সোশ্যাল ও পেইড এক সিস্টেম - ৫০+ ব্র্যান্ডের অভিজ্ঞতা' },
       { en: 'A growth engine that engineering can actually operate', bn: 'ইঞ্জিনিয়ারিং যে গ্রোথ ইঞ্জিন চালাতে পারে' },
     ],
   },
@@ -401,8 +423,8 @@ export const HIRE_SEATS = [
     id: 'marketing-director',
     titles: { en: 'Marketing Director', bn: 'মার্কেটিং ডিরেক্টর' },
     pitch: {
-      en: 'Own the story, the channels, and the number that lands in the bank — not the number that lands in a screenshot.',
-      bn: 'গল্প, চ্যানেল ও ব্যাংকে আসা সংখ্যা — স্ক্রিনশটের সংখ্যা নয়।',
+      en: 'Own the story, the channels, and the number that lands in the bank - not the number that lands in a screenshot.',
+      bn: 'গল্প, চ্যানেল ও ব্যাংকে আসা সংখ্যা - স্ক্রিনশটের সংখ্যা নয়।',
     },
   },
   {

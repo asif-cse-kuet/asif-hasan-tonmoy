@@ -52,7 +52,7 @@ const topics: IndustryTopic[] = [
     },
     summary: {
       en: 'One page calls nine services and two of them time out. Whether that renders a usable page or a 500 depends entirely on code you wrote before the incident.',
-      bn: 'এক page নয়টা service ডাকে, দুইটা timeout করে। সেটা usable page না 500 হবে — তা incident-এর আগে লেখা কোডের উপর নির্ভর করে।',
+      bn: 'এক page নয়টা service ডাকে, দুইটা timeout করে। সেটা usable page না 500 হবে - তা incident-এর আগে লেখা কোডের উপর নির্ভর করে।',
     },
     tags: ['partial-failure', 'fan-out', 'timeouts', 'aggregation', 'resilience'],
     difficulty: 'intermediate',
@@ -96,7 +96,7 @@ const topics: IndustryTopic[] = [
     },
     summary: {
       en: 'Storing local time, trusting a fixed +06:00 offset, or scheduling a job at 02:30 local are three different ways to lose an hour of data. IANA identifiers and UTC storage are not optional.',
-      bn: 'Local time store করা, fixed +06:00 offset-এ ভরসা, বা 02:30 local-এ job schedule — এক ঘণ্টার ডেটা হারানোর তিনটি আলাদা উপায়। IANA identifier ও UTC storage optional নয়।',
+      bn: 'Local time store করা, fixed +06:00 offset-এ ভরসা, বা 02:30 local-এ job schedule - এক ঘণ্টার ডেটা হারানোর তিনটি আলাদা উপায়। IANA identifier ও UTC storage optional নয়।',
     },
     tags: ['timezones', 'dst', 'datetime', 'scheduling', 'iana'],
     difficulty: 'intermediate',
@@ -179,8 +179,8 @@ const topics: IndustryTopic[] = [
       bn: 'দীর্ঘ job-এর recovery',
     },
     summary: {
-      en: 'A six-hour import killed at hour five by a rolling deploy either resumes from a checkpoint or starts over — and starting over is how you double-charge 40,000 rows.',
-      bn: 'ছয় ঘণ্টার import পাঁচ ঘণ্টায় rolling deploy-এ মারা গেলে checkpoint থেকে resume করবে নাহলে শুরু থেকে — আর শুরু থেকে করলেই ৪০,০০০ row double-charge।',
+      en: 'A six-hour import killed at hour five by a rolling deploy either resumes from a checkpoint or starts over - and starting over is how you double-charge 40,000 rows.',
+      bn: 'ছয় ঘণ্টার import পাঁচ ঘণ্টায় rolling deploy-এ মারা গেলে checkpoint থেকে resume করবে নাহলে শুরু থেকে - আর শুরু থেকে করলেই ৪০,০০০ row double-charge।',
     },
     tags: ['jobs', 'checkpointing', 'resumability', 'workers', 'batch'],
     difficulty: 'advanced',

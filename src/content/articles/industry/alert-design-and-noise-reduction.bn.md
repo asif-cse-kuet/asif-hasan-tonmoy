@@ -1,4 +1,4 @@
-> **Scenario** — On-call handover doc-এ লেখা "DiskWillFillIn4Days ignore করুন, সবসময় fire করে"। গতরাতে pager বেজেছে 38 বার: 31টি একই node restart, 4টি batch box-এ CPU 80%-এর উপরে, 3টি সত্যি। সত্যিগুলো acknowledge হয়েছে 04:12-তে — প্রথম customer complaint-এর উনিশ মিনিট পরে।
+> **Scenario** - On-call handover doc-এ লেখা "DiskWillFillIn4Days ignore করুন, সবসময় fire করে"। গতরাতে pager বেজেছে 38 বার: 31টি একই node restart, 4টি batch box-এ CPU 80%-এর উপরে, 3টি সত্যি। সত্যিগুলো acknowledge হয়েছে 04:12-তে - প্রথম customer complaint-এর উনিশ মিনিট পরে।
 
 ## Why it matters
 
@@ -16,12 +16,12 @@
 | Duplication | একটি node failure 12 rule জুড়ে 30 alert বানায় |
 | Flapping | Alert মিনিটের মধ্যে resolve হয়ে আবার fire করে |
 | Timing | Pager-এর আগেই customer আসল incident ধরে |
-| Content | Alert body বলে "CPU high" — link নেই, owner নেই, next step নেই |
+| Content | Alert body বলে "CPU high" - link নেই, owner নেই, next step নেই |
 | Coverage | শেষ তিনটি আসল incident-এর জন্য কোনো alert নেই |
 
 ## How it breaks
 
-Alert জমতে থাকে। এক incident-এর পর কেউ CPU threshold যোগ করে, আরেকজন memory threshold, তারপর queue-depth threshold — প্রত্যেকটি ভিন্ন window-তে। কোনোটিই "user ক্ষতিগ্রস্ত কি না"-র সাথে যুক্ত নয়, তাই batch job, deploy ও autoscaling event-এ fire করে। Inhibition না থাকায় একটিমাত্র node failure একসাথে node, pod, endpoint ও probe alert জ্বালায়। এদিকে যা নির্ভরযোগ্যভাবে ক্ষতি ট্র্যাক করে — SLI — তাতে কোনো alert নেই, তাই আসল slow-burn degradation customer টের পাওয়া পর্যন্ত অদৃশ্য থাকে।
+Alert জমতে থাকে। এক incident-এর পর কেউ CPU threshold যোগ করে, আরেকজন memory threshold, তারপর queue-depth threshold - প্রত্যেকটি ভিন্ন window-তে। কোনোটিই "user ক্ষতিগ্রস্ত কি না"-র সাথে যুক্ত নয়, তাই batch job, deploy ও autoscaling event-এ fire করে। Inhibition না থাকায় একটিমাত্র node failure একসাথে node, pod, endpoint ও probe alert জ্বালায়। এদিকে যা নির্ভরযোগ্যভাবে ক্ষতি ট্র্যাক করে - SLI - তাতে কোনো alert নেই, তাই আসল slow-burn degradation customer টের পাওয়া পর্যন্ত অদৃশ্য থাকে।
 
 ```mermaid
 flowchart TD
@@ -63,7 +63,7 @@ Error budget হলো `1 - SLO`। 30 দিনে 99.9% availability target-�
 | 3 | 1 d | 2 h | 10% | Ticket |
 | 1 | 3 d | 6 h | 10% | Ticket |
 
-`14.4 = 0.02 × 30 × 24 / 1` — অর্থাৎ এক ঘণ্টায় 30-দিনের budget-এর 2% খরচ।
+`14.4 = 0.02 × 30 × 24 / 1` - অর্থাৎ এক ঘণ্টায় 30-দিনের budget-এর 2% খরচ।
 
 ```yaml
 groups:
@@ -160,7 +160,7 @@ annotations:
 ### 5. Alert review করুন মত দিয়ে নয়, data দিয়ে
 
 ```promql
-# Pages per week by alertname — the noise leaderboard
+# Pages per week by alertname - the noise leaderboard
 sort_desc(
   sum by (alertname) (
     increase(alertmanager_notifications_total{integration="pagerduty"}[7d])
@@ -213,7 +213,7 @@ flowchart LR
 - সরাসরি p99 latency-তে page করা, যা প্রতিটি traffic spike ও cold cache-এ fire করে।
 - Flapping alert-এ `for: 5m` যোগ করা, বদলে জিজ্ঞেস না করা alert-টির থাকা উচিত কি না।
 - সবকিছুর জন্য একটি receiver, তাই ticket ও page একই channel-এ যায় এবং দুটোই ignore হয়।
-- Service-প্রতি নয়, pod-প্রতি alert — ফলে autoscaling page তৈরি করে।
+- Service-প্রতি নয়, pod-প্রতি alert - ফলে autoscaling page তৈরি করে।
 - "একবার outage-এ fire করেছিল" বলে alert রেখে দেওয়া, অন্য সময়েও fire করে কি না না দেখে।
 
 ## Related

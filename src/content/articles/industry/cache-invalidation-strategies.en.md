@@ -1,4 +1,4 @@
-> **Scenario** — A deploy ships a new pricing rule at 14:02. The API returns the new price immediately, but 30% of users see the old one for the next four hours. The cache TTL is 300 seconds, so nobody can explain where a four-hour stale read comes from.
+> **Scenario** - A deploy ships a new pricing rule at 14:02. The API returns the new price immediately, but 30% of users see the old one for the next four hours. The cache TTL is 300 seconds, so nobody can explain where a four-hour stale read comes from.
 
 ## Why it matters
 
@@ -13,7 +13,7 @@
 |---|---|
 | Staleness duration | Far longer than any single configured TTL |
 | Distribution | Some users fixed instantly, others stuck; correlates with CDN POP or pod |
-| Hit rate | Unchanged during the incident — the cache is working, it is just wrong |
+| Hit rate | Unchanged during the incident - the cache is working, it is just wrong |
 | After a purge | Origin QPS spikes 20-50x for 10-60s, p99 goes vertical |
 | Post-deploy | Errors referencing fields that only exist in the new schema, served from old cached JSON |
 | `Age` header | Values greater than `max-age`, revealing a `stale-while-revalidate` or shared cache |
@@ -176,7 +176,7 @@ flowchart TD
 
 - [ ] Grep proves no cache key is constructed outside the key-builder module.
 - [ ] Total staleness budget is documented and the sum of every layer's TTL is under it.
-- [ ] An integration test writes, invalidates, and asserts a fresh read within the budget — through the CDN, not just the app cache.
+- [ ] An integration test writes, invalidates, and asserts a fresh read within the budget - through the CDN, not just the app cache.
 - [ ] Purging one entity at peak does not raise origin QPS by more than 2x (`proxy_cache_lock` or single-flight is proven on).
 - [ ] `X-Cache-Status` and `Age` are exposed and graphed per POP.
 - [ ] Deploying a response-shape change bumps `CACHE_SCHEMA_VERSION`; a test fails if the shape changes without it.
@@ -184,7 +184,7 @@ flowchart TD
 
 ## Anti-patterns
 
-- `FLUSHALL` or a full CDN purge as the incident response — you traded a stale-read bug for an origin outage.
+- `FLUSHALL` or a full CDN purge as the incident response - you traded a stale-read bug for an origin outage.
 - Invalidating inside the transaction, which reliably caches the pre-commit value.
 - `Cache-Control: no-cache` on everything to "fix it for now"; origin cost goes up 30x and the real bug survives to the next release.
 - Fire-and-forget invalidation over a message bus with no retry; one dropped message means one permanently stale key.

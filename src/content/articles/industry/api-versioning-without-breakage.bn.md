@@ -1,4 +1,4 @@
-> **Scenario** — একটি cleanup PR consistency-র জন্য JSON field `customer_name`-কে `customerName` করল। বৃহস্পতিবার বিকেলে সেটি ship হলো। মাঠে থাকা দুটি mobile app version এখনো non-nullable decoder দিয়ে `customer_name` parse করে এবং launch-এই crash করে। API team-এর সব test পাস, কারণ সেই test-গুলো একই PR-এ আপডেট হয়েছিল।
+> **Scenario** - একটি cleanup PR consistency-র জন্য JSON field `customer_name`-কে `customerName` করল। বৃহস্পতিবার বিকেলে সেটি ship হলো। মাঠে থাকা দুটি mobile app version এখনো non-nullable decoder দিয়ে `customer_name` parse করে এবং launch-এই crash করে। API team-এর সব test পাস, কারণ সেই test-গুলো একই PR-এ আপডেট হয়েছিল।
 
 ## Why it matters
 
@@ -15,7 +15,7 @@
 | Client crash spike | app release নয়, API deploy-এর কয়েক মিনিটে mobile crash rate লাফায় |
 | Support pattern | কেবল N সপ্তাহের পুরোনো client সমস্যা জানায় |
 | Frozen schema | field যোগের PR merge হয়; field মোছার PR এক বছর পড়ে থাকে |
-| Unknown caller | "v1 কে ব্যবহার করে?" — log grep ছাড়া উত্তর নেই |
+| Unknown caller | "v1 কে ব্যবহার করে?" - log grep ছাড়া উত্তর নেই |
 | Version sprawl | business logic জুড়ে `if ($version >= 3)` ছড়ানো |
 
 ## How it breaks
@@ -84,7 +84,7 @@ class OrderResource extends JsonResource
 }
 ```
 
-v2 resource আলাদা class। Controller ও domain model ভাগাভাগি হয়; কেবল boundary duplicate হয়। এই duplication-ই উদ্দেশ্য — এর কারণেই model স্বাধীনভাবে বদলাতে পারেন।
+v2 resource আলাদা class। Controller ও domain model ভাগাভাগি হয়; কেবল boundary duplicate হয়। এই duplication-ই উদ্দেশ্য - এর কারণেই model স্বাধীনভাবে বদলাতে পারেন।
 
 ### 3. Header থেকে version, URL fallback সহ
 
@@ -139,7 +139,7 @@ Date-based version (Stripe-এর মডেল) প্রতি তিন বছ
 
 ### 4. নতুন integration signup-এ pin করুন
 
-Tenant প্রথম যে version-এ integrate করেছিল সেটি সংরক্ষণ করুন। স্পষ্টভাবে upgrade না করা পর্যন্ত তারা সেই shape পাবে, আর upgrade হবে ইচ্ছাকৃত API call — আকস্মিক deploy নয়।
+Tenant প্রথম যে version-এ integrate করেছিল সেটি সংরক্ষণ করুন। স্পষ্টভাবে upgrade না করা পর্যন্ত তারা সেই shape পাবে, আর upgrade হবে ইচ্ছাকৃত API call - আকস্মিক deploy নয়।
 
 ### 5. মোছার আগে মাপুন
 
@@ -155,7 +155,7 @@ GROUP BY api_version, tenant_id
 ORDER BY calls DESC;
 ```
 
-এই query ছোট তালিকা ফেরানোর পর — এবং প্রতিটি tenant-কে email করার পর — তবেই removal schedule করুন।
+এই query ছোট তালিকা ফেরানোর পর - এবং প্রতিটি tenant-কে email করার পর - তবেই removal schedule করুন।
 
 ### 6. Client-কেও সহনশীল বানান
 
@@ -165,7 +165,7 @@ const OrderSchema = z.object({
   customer_name: z.string().nullish(),
   customerName: z.string().nullish(),
   total: z.string(),
-  status: z.string(), // not z.enum — unknown values must not throw
+  status: z.string(), // not z.enum - unknown values must not throw
 }).passthrough()
 
 export function normalizeOrder(raw: unknown) {
@@ -209,7 +209,7 @@ flowchart LR
 ## Verification checklist
 
 - [ ] প্রতিটি PR-এ CI-তে আগের version-এর contract test `main`-এর বিরুদ্ধে চালান।
-- [ ] v2-তে field যোগের পর v1 response snapshot byte-অভিন্ন — assert করুন।
+- [ ] v2-তে field যোগের পর v1 response snapshot byte-অভিন্ন - assert করুন।
 - [ ] প্রতিটি non-current version response-এ `Deprecation` ও `Sunset` header আছে কিনা দেখুন।
 - [ ] ৩০ দিনের request log query করে removal candidate-এর caller শূন্য নিশ্চিত করুন।
 - [ ] Cache version header-এ vary করে কিনা যাচাই করুন, যাতে v1 client cached v3 body না পায়।

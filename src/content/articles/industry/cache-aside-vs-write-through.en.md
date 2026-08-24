@@ -1,9 +1,9 @@
-> **Scenario** — A pricing service uses cache-aside. A support agent changes a product price from 4,200 to 3,900, the write commits, and the cache is deleted. Two hours later customers still see 4,200 on one of the six app pods. The database is correct; the cache holds a value that no writer ever wrote.
+> **Scenario** - A pricing service uses cache-aside. A support agent changes a product price from 4,200 to 3,900, the write commits, and the cache is deleted. Two hours later customers still see 4,200 on one of the six app pods. The database is correct; the cache holds a value that no writer ever wrote.
 
 ## Why it matters
 
 - Cache-aside has a well-known interleaving where a slow reader writes a value it fetched *before* your update, overwriting the fresh entry with a stale one that then survives the full TTL.
-- Wrong prices, wrong balances, and wrong permission flags are correctness bugs, not performance bugs — they generate refunds and support tickets.
+- Wrong prices, wrong balances, and wrong permission flags are correctness bugs, not performance bugs - they generate refunds and support tickets.
 - The write strategy determines what happens when the cache is down. Write-through makes the cache a dependency of every write; cache-aside does not.
 - Write-behind trades durability for throughput. If the process dies with dirty entries in memory, those writes are gone and nothing will tell you.
 - Teams pick a strategy once, informally, in the first sprint, and inherit its consistency profile for years.
@@ -13,7 +13,7 @@
 | Signal | What you observe |
 |--------|------------------|
 | Stale reads | Some pods serve the old value, others the new one, for exactly one TTL |
-| Reproducibility | Impossible to reproduce on demand — it needs a concurrent slow read |
+| Reproducibility | Impossible to reproduce on demand - it needs a concurrent slow read |
 | Write path errors | With write-through: 500s on save when Redis is unreachable |
 | Data loss | With write-behind: rows missing after a pod OOMKill, no error logged |
 | Cache/DB drift | A reconciliation job finds a small, non-zero percentage of mismatched keys |
@@ -151,16 +151,16 @@ flowchart LR
 - [ ] `redis-cli HGET price:42 v` returns a version that never decreases across a write burst.
 - [ ] Kill Redis and confirm the write path still succeeds (cache-aside) or fails loudly with a clear error (write-through).
 - [ ] A nightly reconciliation job compares a sample of cached keys against the database and reports mismatch count as a metric.
-- [ ] Every writer path — admin UI, CLI import, queue worker, API — is covered by the invalidation test suite.
+- [ ] Every writer path - admin UI, CLI import, queue worker, API - is covered by the invalidation test suite.
 - [ ] Delayed double-delete jobs appear in the queue after each write and complete within their delay window.
 
 ## Anti-patterns
 
-- Updating the cache *before* the transaction commits — a rollback leaves the cache permanently ahead.
+- Updating the cache *before* the transaction commits - a rollback leaves the cache permanently ahead.
 - Invalidating inside a database transaction: the delete happens before other sessions can see the new row.
 - Using `DEL` plus `SET` from the request handler and trusting the ordering across pods.
 - Write-behind without a durable buffer, then discovering the gap during a postmortem.
-- Adding a "clear all cache" admin button as the invalidation strategy — it converts a correctness bug into a stampede.
+- Adding a "clear all cache" admin button as the invalidation strategy - it converts a correctness bug into a stampede.
 - Different TTLs for the same entity across services, so the stale window depends on which service you ask.
 
 ## Related

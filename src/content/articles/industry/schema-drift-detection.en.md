@@ -1,4 +1,4 @@
-> **Scenario** — On Tuesday a producer renames `user_type` to `account_type` and adds a nested `preferences` object. The Kafka consumer keeps running because it deserialises to a dict. On Friday the churn model's `user_type` feature is 100% null, the model still returns scores, and the retention dashboard shows a suspiciously flat line.
+> **Scenario** - On Tuesday a producer renames `user_type` to `account_type` and adds a nested `preferences` object. The Kafka consumer keeps running because it deserialises to a dict. On Friday the churn model's `user_type` feature is 100% null, the model still returns scores, and the retention dashboard shows a suspiciously flat line.
 
 ## Why it matters
 
@@ -262,7 +262,7 @@ flowchart TD
 ## Anti-patterns
 
 - `SELECT *` from staging into marts, so an added upstream column silently changes downstream schemas and breaks views.
-- Catching the deserialisation exception and `continue` — silent data loss with no quarantine record.
+- Catching the deserialisation exception and `continue` - silent data loss with no quarantine record.
 - Treating additive changes as always safe; adding a field that shares a name with a computed feature will shadow it.
 - Pinning the consumer to an exact schema version and never upgrading, so drift accumulates until the migration is a project.
 - Alerting on "schema changed" rather than "a field my consumers depend on changed".

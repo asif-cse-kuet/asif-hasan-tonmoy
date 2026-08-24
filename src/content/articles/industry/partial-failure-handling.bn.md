@@ -1,4 +1,4 @@
-> **Scenario** — Dashboard endpoint ৯টা service-এ fan out করে: profile, balance, orders, notifications, badges, fx-rates, feature-flags, audit, search-suggest। `badges` 500 দিতে শুরু করে। `Promise.all` reject করে, handler 500 ফেরায়, আর একটা gamification widget-এর কারণে প্রত্যেক user খালি dashboard দেখে।
+> **Scenario** - Dashboard endpoint ৯টা service-এ fan out করে: profile, balance, orders, notifications, badges, fx-rates, feature-flags, audit, search-suggest। `badges` 500 দিতে শুরু করে। `Promise.all` reject করে, handler 500 ফেরায়, আর একটা gamification widget-এর কারণে প্রত্যেক user খালি dashboard দেখে।
 
 ## Why it matters
 
@@ -43,7 +43,7 @@ flowchart TD
 
 1. যেখানে `Promise.allSettled` semantics দরকার, সেখানে `Promise.all` ব্যবহার।
 2. Per-dependency criticality নেই, তাই optional widget আর account balance একই মর্যাদা পায়।
-3. API schema-তে partial-response contract নেই — client "orders unavailable" বোঝানোর উপায় পায় না।
+3. API schema-তে partial-response contract নেই - client "orders unavailable" বোঝানোর উপায় পায় না।
 4. Hard deadline-সহ parallel fan-out না করে shared timeout budget sequentially খরচ।
 5. Aggregator-level retry শুধু failed নয়, *সব* call আবার পাঠায়।
 6. Observability শুধু endpoint level-এ, per-dependency success rate অদৃশ্য।
@@ -98,7 +98,7 @@ type DashboardResponse = {
     orders: SectionResult<Order[]>
     badges: SectionResult<Badge[]>
   }
-  degraded: string[] // ['badges'] — logging ও UI banner-এর জন্য
+  degraded: string[] // ['badges'] - logging ও UI banner-এর জন্য
 }
 ```
 
@@ -130,7 +130,7 @@ async def build_dashboard(user_id: str, budget_ms: int = 800):
 
 ### 4. শুধু যা fail করেছে, budget-সহ retry করুন
 
-সফল result রেখে দিন, শুধু failed section আবার পাঠান — সর্বোচ্চ একবার, এবং বাকি deadline অনুমতি দিলে। একই request-এর ভেতর timeout retry করবেন না, যদি বাকি budget timeout-এর অন্তত দুই গুণ না হয়।
+সফল result রেখে দিন, শুধু failed section আবার পাঠান - সর্বোচ্চ একবার, এবং বাকি deadline অনুমতি দিলে। একই request-এর ভেতর timeout retry করবেন না, যদি বাকি budget timeout-এর অন্তত দুই গুণ না হয়।
 
 ### 5. প্রতি section-এ last-good cache
 
@@ -174,7 +174,7 @@ sequenceDiagram
 - [ ] এক dependency-তে ৫s latency যোগ করুন (`tc qdisc add dev eth0 root netem delay 5000ms`); endpoint তবু ৮০০ms budget-এর ভেতর উত্তর দেয়।
 - [ ] `degraded` array log-এ আছে ও queryable, যাতে per-section degraded response গোনা যায়।
 - [ ] নয়টা dependency-র সবার per-section success rate panel আছে।
-- [ ] এক failure-এ সফল sibling result ফেলে দেয় এমন কোনো path নেই — unit test দিয়ে যাচাই।
+- [ ] এক failure-এ সফল sibling result ফেলে দেয় এমন কোনো path নেই - unit test দিয়ে যাচাই।
 - [ ] প্রতিটি optional section-এর জন্য client UI-তে render করা, reviewed placeholder state আছে।
 - [ ] Critical path-এর section timeout-এর যোগফল endpoint budget-এর চেয়ে কম।
 

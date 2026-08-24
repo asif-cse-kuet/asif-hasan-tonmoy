@@ -1,6 +1,6 @@
 import type { IndustryTopic } from '../topic-types'
 
-/** Frontend architecture wave — micro-frontends, state, rendering, performance, a11y. */
+/** Frontend architecture wave - micro-frontends, state, rendering, performance, a11y. */
 const topics: IndustryTopic[] = [
   {
     id: 'micro-frontend-integration-strategies',
@@ -11,8 +11,8 @@ const topics: IndustryTopic[] = [
       bn: 'Micro-frontend integration strategy',
     },
     summary: {
-      en: 'Build-time packages, module federation, or iframes — and the shared-singleton bugs each one hides.',
-      bn: 'build-time package, module federation নাকি iframe — প্রতিটির লুকানো shared-singleton বাগ।',
+      en: 'Build-time packages, module federation, or iframes - and the shared-singleton bugs each one hides.',
+      bn: 'build-time package, module federation নাকি iframe - প্রতিটির লুকানো shared-singleton বাগ।',
     },
     tags: ['micro-frontends', 'module-federation', 'vite', 'integration'],
     difficulty: 'advanced',
@@ -83,8 +83,8 @@ const topics: IndustryTopic[] = [
       bn: 'Optimistic UI ও নিরাপদ rollback',
     },
     summary: {
-      en: 'Applying mutations before the server answers — and undoing them without losing the user’s next three edits.',
-      bn: 'server উত্তর দেওয়ার আগে mutation apply — user-এর পরের তিনটা edit না হারিয়ে undo।',
+      en: 'Applying mutations before the server answers - and undoing them without losing the user’s next three edits.',
+      bn: 'server উত্তর দেওয়ার আগে mutation apply - user-এর পরের তিনটা edit না হারিয়ে undo।',
     },
     tags: ['optimistic-ui', 'rollback', 'pinia', 'mutations', 'ux'],
     difficulty: 'intermediate',
@@ -137,8 +137,8 @@ const topics: IndustryTopic[] = [
       bn: 'Rendering strategy বেছে নেওয়া',
     },
     summary: {
-      en: 'CSR, SSR, SSG, and islands — matching route economics to LCP targets instead of framework fashion.',
-      bn: 'CSR, SSR, SSG, islands — framework fashion নয়, route economics-কে LCP target-এর সাথে মেলানো।',
+      en: 'CSR, SSR, SSG, and islands - matching route economics to LCP targets instead of framework fashion.',
+      bn: 'CSR, SSR, SSG, islands - framework fashion নয়, route economics-কে LCP target-এর সাথে মেলানো।',
     },
     tags: ['ssr', 'ssg', 'hydration', 'core-web-vitals', 'islands'],
     difficulty: 'intermediate',

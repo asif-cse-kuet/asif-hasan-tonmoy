@@ -1,4 +1,4 @@
-> **Scenario** — The design system ships `v4.0.0` renaming `<AppButton variant="primary">` to `variant="filled"`. Twelve product apps consume it. Four upgrade the same week, six stay on `v3`, and two end up with both versions in one bundle because a shared chart package depends on `v3`. Support tickets about mismatched button colours arrive for a month.
+> **Scenario** - The design system ships `v4.0.0` renaming `<AppButton variant="primary">` to `variant="filled"`. Twelve product apps consume it. Four upgrade the same week, six stay on `v3`, and two end up with both versions in one bundle because a shared chart package depends on `v3`. Support tickets about mismatched button colours arrive for a month.
 
 ## Why it matters
 
@@ -38,7 +38,7 @@ flowchart TD
 
 1. No written definition of the public surface, so semver decisions are guesses.
 2. Tokens and components version together, forcing a component major for a colour tweak.
-3. No deprecation window — the old prop is deleted in the same release the new one appears.
+3. No deprecation window - the old prop is deleted in the same release the new one appears.
 4. Consumers pin exact versions, so patched security fixes never flow.
 5. Peer dependency ranges are too narrow, guaranteeing duplicate installs.
 6. No visual regression suite, so unintended changes ship as patches.
@@ -52,7 +52,7 @@ Declare explicitly: props, events, slots, exported types, documented CSS custom 
 ### 2. Split the packages
 
 ```
-@acme/tokens      # colours, spacing, type scale — changes rarely
+@acme/tokens      # colours, spacing, type scale - changes rarely
 @acme/primitives  # unstyled behaviour: menu, dialog, combobox
 @acme/components  # styled Vue components built on both
 ```
@@ -65,7 +65,7 @@ Tokens can go to `2.0.0` for a palette change without forcing a component major.
 // AppButton.vue
 const props = withDefaults(defineProps<{
   variant?: 'filled' | 'outline' | 'ghost'
-  /** @deprecated since 4.1 — use `variant="filled"`. Removed in 6.0. */
+  /** @deprecated since 4.1 - use `variant="filled"`. Removed in 6.0. */
   primary?: boolean
 }>(), { variant: 'outline' })
 

@@ -1,11 +1,11 @@
-> **Scenario** — একটি JVM search service p50 18 ms-এ ধরে রাখছে, কিন্তু প্রতি 40 সেকেন্ডে p99 লাফিয়ে 1.4 s — নিখুঁত sawtooth। Heap graph দেখতে "ঠিক" — usage ওঠে আর নামে। নামাটাই সমস্যা: প্রতিটি নামা মানে 900 ms stop-the-world pause, আর ওই মুহূর্তে in-flight প্রতিটি request সেটা খায়।
+> **Scenario** - একটি JVM search service p50 18 ms-এ ধরে রাখছে, কিন্তু প্রতি 40 সেকেন্ডে p99 লাফিয়ে 1.4 s - নিখুঁত sawtooth। Heap graph দেখতে "ঠিক" - usage ওঠে আর নামে। নামাটাই সমস্যা: প্রতিটি নামা মানে 900 ms stop-the-world pause, আর ওই মুহূর্তে in-flight প্রতিটি request সেটা খায়।
 
 ## Why it matters
 
 - GC pause average-এ অদৃশ্য কিন্তু tail-এ প্রভাবশালী। প্রতি 40 s-এ 900 ms pause p99 নষ্ট করে, p50 প্রায় ছোঁয়ই না।
 - Stop-the-world pause চলাকালে process কিছুই উত্তর দেয় না: health check fail করে, load balancer node বাদ দেয়, আর capacity সমস্যা rollout সমস্যা হয়ে যায়।
 - Memory pressure `OutOfMemoryError` হিসেবে দেখা দেওয়ার বহু আগে latency হিসেবে দেখা দেয়, তাই দল দিনভর ভুল subsystem debug করে।
-- Allocation rate একটা design property। আপনি কীভাবে serialise, buffer ও copy করেন তা ঠিক করে — কোন collector বেছেছেন তা নয়।
+- Allocation rate একটা design property। আপনি কীভাবে serialise, buffer ও copy করেন তা ঠিক করে - কোন collector বেছেছেন তা নয়।
 - একই physics Node.js (V8 major GC), Go (assist ও mark phase) এবং PHP (request-scoped arena, তাই বেশিরভাগ ক্ষেত্রে মুক্ত)-এও খাটে।
 
 ## Symptoms
@@ -24,13 +24,13 @@
 
 হিসাব করুন। 4 GB heap, 1 GB young generation ধরুন, আর GC log থেকে allocation rate মাপুন:
 
-Eden ভরলেই young collection হয়। Eden 800 MB আর allocation rate 400 MB/s হলে প্রতি 800 / 400 = **2 সেকেন্ডে** একটি young GC হয়। প্রতিটি young pause ছোট — ধরুন 12 ms। খরচ 12 / 2000 = **0.6%** wall time। সহনীয়।
+Eden ভরলেই young collection হয়। Eden 800 MB আর allocation rate 400 MB/s হলে প্রতি 800 / 400 = **2 সেকেন্ডে** একটি young GC হয়। প্রতিটি young pause ছোট - ধরুন 12 ms। খরচ 12 / 2000 = **0.6%** wall time। সহনীয়।
 
 সমস্যা হল **promotion**। allocation-এর 5% young collection পার হলে promotion rate = 400 × 0.05 = **20 MB/s** old generation-এ। Old generation 3 GB। তা ভরে 3,000 / 20 = **150 সেকেন্ডে**, তারপর full collection চলে।
 
-কিন্তু পর্যবেক্ষিত period 40 সেকেন্ড, 150 নয়। মানে promotion মোটামুটি 3,000 / 40 = **75 MB/s**, তাই টিকে থাকা ভগ্নাংশ 75 / 400 ≈ **19%**, 5% নয়। কিছু object-কে তার young lifetime পার করে ধরে রাখছে। এই service-এ সেটা ছিল deserialised document-এর 30 সেকেন্ডের `Caffeine` cache: entry কয়েকটি young collection পার হয়, promote হয়, তারপর evict হলে মরে — সম্ভাব্য সবচেয়ে বাজে আকার, কারণ এতে একটা promotion *এবং* একটা full-collection scan দুটোই খরচ হয়।
+কিন্তু পর্যবেক্ষিত period 40 সেকেন্ড, 150 নয়। মানে promotion মোটামুটি 3,000 / 40 = **75 MB/s**, তাই টিকে থাকা ভগ্নাংশ 75 / 400 ≈ **19%**, 5% নয়। কিছু object-কে তার young lifetime পার করে ধরে রাখছে। এই service-এ সেটা ছিল deserialised document-এর 30 সেকেন্ডের `Caffeine` cache: entry কয়েকটি young collection পার হয়, promote হয়, তারপর evict হলে মরে - সম্ভাব্য সবচেয়ে বাজে আকার, কারণ এতে একটা promotion *এবং* একটা full-collection scan দুটোই খরচ হয়।
 
-এখন pause-এর খরচ। 4-core container-এ 3 GB old generation-এর full collection, collector মোটামুটি 3.5 GB/s marking করলে, লাগে প্রায় 3.0 / 3.5 = **0.86 s** — পর্যবেক্ষিত 900 ms। ওই window-এ আসা request queue করে। 1,200 req/s-এ 900 ms pause আটকে রাখে 1,200 × 0.9 = **1,080 request**, যার প্রত্যেকটি নিজের latency-র সাথে 900 ms পর্যন্ত যোগ করে রিপোর্ট করে। এটা ঠিক 1,080 / (1,200 × 40) = **2.25%** request প্রতি cycle — p99 (যা সবচেয়ে খারাপ 1% থেকে শুরু) দখল করার মতো যথেষ্ট, আর অন্য কিছু নয়।
+এখন pause-এর খরচ। 4-core container-এ 3 GB old generation-এর full collection, collector মোটামুটি 3.5 GB/s marking করলে, লাগে প্রায় 3.0 / 3.5 = **0.86 s** - পর্যবেক্ষিত 900 ms। ওই window-এ আসা request queue করে। 1,200 req/s-এ 900 ms pause আটকে রাখে 1,200 × 0.9 = **1,080 request**, যার প্রত্যেকটি নিজের latency-র সাথে 900 ms পর্যন্ত যোগ করে রিপোর্ট করে। এটা ঠিক 1,080 / (1,200 × 40) = **2.25%** request প্রতি cycle - p99 (যা সবচেয়ে খারাপ 1% থেকে শুরু) দখল করার মতো যথেষ্ট, আর অন্য কিছু নয়।
 
 ```mermaid
 flowchart TD
@@ -125,7 +125,7 @@ Cache<String, byte[]> cache = Caffeine.newBuilder()
 ### 4. Pause-target collector বাছুন এবং তার জন্য heap size করুন
 
 ```yaml
-# deployment.yaml — pause-sensitive service-এ ZGC
+# deployment.yaml - pause-sensitive service-এ ZGC
 env:
   - name: JAVA_TOOL_OPTIONS
     value: >-

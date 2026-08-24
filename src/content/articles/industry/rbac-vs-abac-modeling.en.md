@@ -1,10 +1,10 @@
-> **Scenario** — A B2B SaaS ships "let regional managers approve invoices under $5,000 for their own branch". Two sprints later the roles table has 63 rows, `role_permission` has 1,400, and nobody can answer whether a support agent can read another tenant's invoice.
+> **Scenario** - A B2B SaaS ships "let regional managers approve invoices under $5,000 for their own branch". Two sprints later the roles table has 63 rows, `role_permission` has 1,400, and nobody can answer whether a support agent can read another tenant's invoice.
 
 ## Why it matters
 
-- Authorization bugs are the most common critical finding in application penetration tests, and they rarely show up as errors — the request returns `200 OK` with someone else's data.
+- Authorization bugs are the most common critical finding in application penetration tests, and they rarely show up as errors - the request returns `200 OK` with someone else's data.
 - Role explosion turns every product request into a migration. A single new dimension (branch, amount, contract type) multiplies role count instead of adding one attribute.
-- On-call load moves from "the service is down" to "customer X can see customer Y" — an incident with legal reporting deadlines, not just a rollback.
+- On-call load moves from "the service is down" to "customer X can see customer Y" - an incident with legal reporting deadlines, not just a rollback.
 - The permission model leaks into the UI, the API, background jobs, and reports. Each copy drifts, so the answer depends on which surface you ask.
 
 ## Symptoms
@@ -19,7 +19,7 @@
 
 ## How it breaks
 
-The failure is almost never a broken check — it is a *missing* one. RBAC answers "does this subject hold this role?" but the real question is "may this subject perform this action on this specific resource, right now?" When the resource dimension is absent, the check passes for every record of that type. Teams then patch individual endpoints, so the policy lives in dozens of places and the newest endpoint is always the unprotected one.
+The failure is almost never a broken check - it is a *missing* one. RBAC answers "does this subject hold this role?" but the real question is "may this subject perform this action on this specific resource, right now?" When the resource dimension is absent, the check passes for every record of that type. Teams then patch individual endpoints, so the policy lives in dozens of places and the newest endpoint is always the unprotected one.
 
 ```mermaid
 flowchart TD
@@ -34,7 +34,7 @@ flowchart TD
 
 1. Role checks are coarse: they encode *who the user is*, never *which resource is being touched*.
 2. Contextual rules (amount limits, ownership, time windows) get pushed into role names instead of attributes.
-3. Authorization is enforced in controllers, so any other entry point — console command, queue worker, GraphQL resolver — bypasses it.
+3. Authorization is enforced in controllers, so any other entry point - console command, queue worker, GraphQL resolver - bypasses it.
 4. The client-side guard is treated as enforcement rather than a UX hint.
 5. There is no single place to read the effective policy, so review cannot catch omissions.
 
@@ -99,7 +99,7 @@ protected $policies = [
     \App\Models\Invoice::class => \App\Policies\InvoicePolicy::class,
 ];
 
-// routes/web.php — authorizeResource wires index/show/update/destroy
+// routes/web.php - authorizeResource wires index/show/update/destroy
 Route::resource('invoices', InvoiceController::class);
 
 // app/Http/Controllers/InvoiceController.php
@@ -109,7 +109,7 @@ public function __construct()
 }
 ```
 
-For queue jobs and console commands, resolve the actor explicitly and call the same policy — never a duplicated condition:
+For queue jobs and console commands, resolve the actor explicitly and call the same policy - never a duplicated condition:
 
 ```php
 Gate::forUser($job->actor)->authorize('approve', $invoice);
@@ -137,7 +137,7 @@ public function test_manager_cannot_approve_above_limit(): void
 }
 ```
 
-Write the negative case first. The dangerous test is the one asserting a *different authenticated user* gets 403 — not the anonymous one.
+Write the negative case first. The dangerous test is the one asserting a *different authenticated user* gets 403 - not the anonymous one.
 
 ## Target design
 

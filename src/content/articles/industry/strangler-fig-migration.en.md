@@ -1,4 +1,4 @@
-> **Scenario** — Two years into replacing a legacy billing system, 62% of traffic goes to the new service, the routing facade has grown 3,000 lines of conditionals, both systems write to the `invoices` table, and last month's reconciliation found 214 invoices that exist in one system and not the other. Nobody can name the date the old system gets deleted.
+> **Scenario** - Two years into replacing a legacy billing system, 62% of traffic goes to the new service, the routing facade has grown 3,000 lines of conditionals, both systems write to the `invoices` table, and last month's reconciliation found 214 invoices that exist in one system and not the other. Nobody can name the date the old system gets deleted.
 
 ## Why it matters
 
@@ -23,7 +23,7 @@
 
 The strangler fig pattern works because the facade lets you move one capability at a time. It fails when the facade becomes the place where decisions live. Every unmigrated edge case gets a conditional, and after 18 months the conditionals encode business rules that exist nowhere else. At that point removing the facade is a third migration.
 
-The deeper failure is write ownership. As soon as both systems can write the same entity, you need conflict resolution, and almost nobody builds it. Teams instead do "dual write": write to both, hope both succeed. When the second write fails — timeouts, deploys, validation differences — the systems diverge, and there is no ordering information to reconstruct which one is right.
+The deeper failure is write ownership. As soon as both systems can write the same entity, you need conflict resolution, and almost nobody builds it. Teams instead do "dual write": write to both, hope both succeed. When the second write fails - timeouts, deploys, validation differences - the systems diverge, and there is no ordering information to reconstruct which one is right.
 
 ```mermaid
 sequenceDiagram
@@ -54,18 +54,18 @@ sequenceDiagram
 
 ### 1. Sequence by dependency, and write the order down
 
-Migrate reads before writes, leaves before roots, and low-risk before high-risk — but never move a capability whose dependencies still live in the legacy system.
+Migrate reads before writes, leaves before roots, and low-risk before high-risk - but never move a capability whose dependencies still live in the legacy system.
 
 ```md
 ## Migration sequence (billing)
 
-1. Read-only invoice PDF rendering        — no writes, no dependencies      [done]
-2. Invoice list and detail reads          — shadow-read verified 30 days    [done]
-3. Invoice creation                       — new system authoritative        [in progress]
-4. Payment application                    — depends on 3                    [blocked on 3]
-5. Credit notes                           — depends on 3, 4
-6. Dunning and retries                    — depends on 4
-7. Legacy deletion                        — hard date: 2026-11-30
+1. Read-only invoice PDF rendering        - no writes, no dependencies      [done]
+2. Invoice list and detail reads          - shadow-read verified 30 days    [done]
+3. Invoice creation                       - new system authoritative        [in progress]
+4. Payment application                    - depends on 3                    [blocked on 3]
+5. Credit notes                           - depends on 3, 4
+6. Dunning and retries                    - depends on 4
+7. Legacy deletion                        - hard date: 2026-11-30
 ```
 
 ### 2. Shadow-read before you cut over
@@ -98,7 +98,7 @@ export async function getInvoice(id: string, ctx: Ctx): Promise<Invoice> {
 }
 ```
 
-Cut over a route when the mismatch rate has been below your threshold — 0.01% is a reasonable bar for financial data — for a full business cycle, including month-end.
+Cut over a route when the mismatch rate has been below your threshold - 0.01% is a reasonable bar for financial data - for a full business cycle, including month-end.
 
 ### 3. Give every entity exactly one writer at a time
 
@@ -197,7 +197,7 @@ flowchart LR
 
 ## Anti-patterns
 
-- Dual writes as a migration strategy — you have created a distributed consistency problem to avoid a sequencing problem.
+- Dual writes as a migration strategy - you have created a distributed consistency problem to avoid a sequencing problem.
 - Letting business logic accumulate in the facade, creating a third system nobody plans to delete.
 - Migrating the easy capabilities first and leaving the tightly coupled core for a mythical final phase.
 - Declaring success at "traffic is on the new system" while the legacy system is still deployed and still costing money.

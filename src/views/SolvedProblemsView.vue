@@ -41,8 +41,8 @@ const filtered = computed(() => {
       :title="pick({ en: 'Problems I personally solved', bn: 'আমি ব্যক্তিগতভাবে সমাধান করা সমস্যা' })"
       :subtitle="
         pick({
-          en: 'Real production and project issues — not hypotheticals. Each entry covers context, diagnosis, fix, and measurable impact.',
-          bn: 'আসল production ও project issue — hypothetical নয়। প্রতিটিতে context, diagnosis, fix ও measurable impact।',
+          en: 'Real production and project issues - not hypotheticals. Each entry covers context, diagnosis, fix, and measurable impact.',
+          bn: 'আসল production ও project issue - hypothetical নয়। প্রতিটিতে context, diagnosis, fix ও measurable impact।',
         })
       "
     />

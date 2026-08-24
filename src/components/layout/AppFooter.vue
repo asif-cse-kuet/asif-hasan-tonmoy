@@ -22,7 +22,7 @@ const pages = computed(() => [
       <div class="grid gap-8 sm:grid-cols-2">
         <div>
           <p class="font-display text-lg font-semibold text-paper">{{ PROFILE.name }}</p>
-          <p class="mt-1.5 max-w-sm text-sm text-mist">{{ pick(PROFILE.brandLine) }}</p>
+          <p class="mt-1.5 max-w-md text-sm leading-relaxed text-mist">{{ pick(PROFILE.brandLine) }}</p>
           <a :href="PROFILE.telHref" class="mt-3 mr-4 inline-block text-sm font-semibold">
             {{ PROFILE.phone }}
           </a>

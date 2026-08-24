@@ -1,9 +1,9 @@
-> **Scenario** — একটি nightly reconciliation job 4 worker-এ 6 ঘণ্টা নেয়। দল 32 worker-এ scale করে 45 মিনিট আশা করে, পায় 2 ঘ 10 মি। 64 worker-এ তা *আরও খারাপ* — 2 ঘ 35 মি। কেউ বলে "worker গুলো নিশ্চয়ই ছোট", আর বড় instance order করে।
+> **Scenario** - একটি nightly reconciliation job 4 worker-এ 6 ঘণ্টা নেয়। দল 32 worker-এ scale করে 45 মিনিট আশা করে, পায় 2 ঘ 10 মি। 64 worker-এ তা *আরও খারাপ* - 2 ঘ 35 মি। কেউ বলে "worker গুলো নিশ্চয়ই ছোট", আর বড় instance order করে।
 
 ## Why it matters
 
 - Parallel speedup-এর একটা কঠিন গাণিতিক ছাদ আছে। ছাদ পেরিয়ে worker কেনা মানে টাকা দিয়ে contention কেনা।
-- Retrograde region — যেখানে capacity বাড়ালে ধীর হয় — বাস্তব ও সাধারণ। Batch ও fan-out system-এ এটাই সবচেয়ে দামি ভুল রোগনির্ণয়।
+- Retrograde region - যেখানে capacity বাড়ালে ধীর হয় - বাস্তব ও সাধারণ। Batch ও fan-out system-এ এটাই সবচেয়ে দামি ভুল রোগনির্ণয়।
 - Amdahl's Law parallelisation-এ sprint খরচ করার *আগেই* সর্বোচ্চ সম্ভব speedup বলে দেয়।
 - একই হিসাব বলে কেন 5% serial section আপনাকে 20×-এ আটকে রাখে, যত hardware ভাড়া করুন।
 - এর দাম on-call দেয়: যে job আগে business day শুরুর আগে শেষ হত, এখন তার ভিতরে গড়ায়।
@@ -15,7 +15,7 @@
 | Speedup curve | সমান হয়ে যায়, তারপর কোনো worker count-এর পরে নিচে নামে |
 | Per-worker throughput | worker বাড়লে কমে |
 | Lock wait / `pg_locks` | worker-এর সাথে superlinear বাড়ে |
-| Worker-এ CPU | উঁচু `%sys`, কম `%usr` — coordination, কাজ নয় |
+| Worker-এ CPU | উঁচু `%sys`, কম `%usr` - coordination, কাজ নয় |
 | Coordinator node | saturated, অথচ worker idle |
 | Job duration variance | scale-out-এর পর হঠাৎ চওড়া হয় |
 
@@ -63,7 +63,7 @@ flowchart TD
 ## Root causes
 
 1. একটি serial phase (manifest read, report write, advisory lock) যার সময় আলাদা করে কেউ মাপেনি।
-2. Shared mutable state — প্রতিটি worker একই summary row update করছে — parallel কাজকে lock queue বানায়।
+2. Shared mutable state - প্রতিটি worker একই summary row update করছে - parallel কাজকে lock queue বানায়।
 3. Coordinator সব worker-কে progress broadcast করে, ফলে O(N²) message।
 4. অসম partitioning, তাই N যাই হোক job সবচেয়ে ধীর shard-এ বাঁধা।
 5. Scaling সিদ্ধান্ত measured speedup curve-এর বদলে intuition-এ নেওয়া।
@@ -142,7 +142,7 @@ def write_report(conn, run_id: str, out) -> None:
 ### 4. Fleet-কে measured peak-এ cap করুন
 
 ```yaml
-# recon-job.yaml — queue autoscaler-কে N* ছাড়াতে দেবেন না
+# recon-job.yaml - queue autoscaler-কে N* ছাড়াতে দেবেন না
 apiVersion: batch/v1
 kind: Job
 metadata:

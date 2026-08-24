@@ -1,6 +1,6 @@
 import type { IndustryTopic } from '../topic-types'
 
-/** Auth, security & tenancy wave — identity mistakes that turn into incidents. */
+/** Auth, security & tenancy wave - identity mistakes that turn into incidents. */
 const topics: IndustryTopic[] = [
   {
     id: 'rbac-vs-abac-modeling',
@@ -29,8 +29,8 @@ const topics: IndustryTopic[] = [
       bn: 'JWT revocation-এর সমস্যা',
     },
     summary: {
-      en: 'Stateless tokens cannot be un-issued — denylists, short TTLs, and token versioning that actually log a user out.',
-      bn: 'stateless token ফেরত নেওয়া যায় না — denylist, short TTL, token versioning যা সত্যিই logout করায়।',
+      en: 'Stateless tokens cannot be un-issued - denylists, short TTLs, and token versioning that actually log a user out.',
+      bn: 'stateless token ফেরত নেওয়া যায় না - denylist, short TTL, token versioning যা সত্যিই logout করায়।',
     },
     tags: ['jwt', 'tokens', 'revocation', 'sessions'],
     difficulty: 'intermediate',
@@ -65,8 +65,8 @@ const topics: IndustryTopic[] = [
       bn: 'Multi-tenant authorization leak',
     },
     summary: {
-      en: 'One forgotten where-clause exposes another customer — scoping at the boundary instead of per query.',
-      bn: 'একটা ভুলে যাওয়া where-clause অন্য customer-কে খুলে দেয় — per query নয়, boundary-তে scoping।',
+      en: 'One forgotten where-clause exposes another customer - scoping at the boundary instead of per query.',
+      bn: 'একটা ভুলে যাওয়া where-clause অন্য customer-কে খুলে দেয় - per query নয়, boundary-তে scoping।',
     },
     tags: ['tenancy', 'idor', 'authorization', 'sql', 'laravel'],
     difficulty: 'advanced',
@@ -101,8 +101,8 @@ const topics: IndustryTopic[] = [
       bn: 'Password reset flow-এ আক্রমণ',
     },
     summary: {
-      en: 'Host header poisoning, token reuse, and enumeration — the account takeover path nobody load-tests.',
-      bn: 'host header poisoning, token reuse, enumeration — account takeover-এর যে path কেউ load-test করে না।',
+      en: 'Host header poisoning, token reuse, and enumeration - the account takeover path nobody load-tests.',
+      bn: 'host header poisoning, token reuse, enumeration - account takeover-এর যে path কেউ load-test করে না।',
     },
     tags: ['password-reset', 'account-takeover', 'tokens', 'email'],
     difficulty: 'intermediate',
@@ -119,8 +119,8 @@ const topics: IndustryTopic[] = [
       bn: 'ORM escape hatch দিয়ে injection',
     },
     summary: {
-      en: 'Raw expressions, dynamic order-by, and JSON paths — the places a query builder stops protecting you.',
-      bn: 'raw expression, dynamic order-by, JSON path — query builder যেখানে আর রক্ষা করে না।',
+      en: 'Raw expressions, dynamic order-by, and JSON paths - the places a query builder stops protecting you.',
+      bn: 'raw expression, dynamic order-by, JSON path - query builder যেখানে আর রক্ষা করে না।',
     },
     tags: ['sql-injection', 'orm', 'parameterisation', 'owasp'],
     difficulty: 'intermediate',
@@ -155,8 +155,8 @@ const topics: IndustryTopic[] = [
       bn: 'SSRF ও internal metadata exposure',
     },
     summary: {
-      en: 'Any URL a user supplies becomes your outbound request — allowlists, DNS pinning, and egress proxies.',
-      bn: 'user-এর দেওয়া যেকোনো URL আপনার outbound request হয়ে যায় — allowlist, DNS pinning, egress proxy।',
+      en: 'Any URL a user supplies becomes your outbound request - allowlists, DNS pinning, and egress proxies.',
+      bn: 'user-এর দেওয়া যেকোনো URL আপনার outbound request হয়ে যায় - allowlist, DNS pinning, egress proxy।',
     },
     tags: ['ssrf', 'egress', 'metadata', 'webhooks', 'owasp'],
     difficulty: 'advanced',
@@ -191,8 +191,8 @@ const topics: IndustryTopic[] = [
       bn: 'MFA ও account recovery tradeoff',
     },
     summary: {
-      en: 'Your recovery path is your real security level — TOTP, WebAuthn, and the support-desk bypass.',
-      bn: 'recovery path-ই আসল security level — TOTP, WebAuthn, আর support-desk bypass।',
+      en: 'Your recovery path is your real security level - TOTP, WebAuthn, and the support-desk bypass.',
+      bn: 'recovery path-ই আসল security level - TOTP, WebAuthn, আর support-desk bypass।',
     },
     tags: ['mfa', 'totp', 'webauthn', 'recovery'],
     difficulty: 'intermediate',

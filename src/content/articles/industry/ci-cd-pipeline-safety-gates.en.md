@@ -1,4 +1,4 @@
-> **Scenario** — A green pipeline deploys `app:v2.4` to production. The image was rebuilt in the deploy job from a branch that had moved on since CI ran, and the test suite exited 0 because a `|| true` was added months ago to unblock a flaky test.
+> **Scenario** - A green pipeline deploys `app:v2.4` to production. The image was rebuilt in the deploy job from a branch that had moved on since CI ran, and the test suite exited 0 because a `|| true` was added months ago to unblock a flaky test.
 
 ## Why it matters
 
@@ -19,7 +19,7 @@
 
 ## How it breaks
 
-The pipeline appears linear but has a break in the middle. CI builds and tests commit `abc123`. The deploy job checks out `main` again — now `def456` — rebuilds, and tags it with the same release tag. Nothing tested `def456`.
+The pipeline appears linear but has a break in the middle. CI builds and tests commit `abc123`. The deploy job checks out `main` again - now `def456` - rebuilds, and tags it with the same release tag. Nothing tested `def456`.
 
 Meanwhile, tests that never fail cannot gate anything. `|| true` and `continue-on-error` turn a gate into a logging statement, and a test suite that silently matches zero files reports success in under a second.
 
@@ -95,7 +95,7 @@ jobs:
           kubectl rollout status deploy/api -n prod --timeout=10m
 ```
 
-The deploy step never sees a tag — only the digest that the test job verified.
+The deploy step never sees a tag - only the digest that the test job verified.
 
 ### 2. Make the gates mandatory
 

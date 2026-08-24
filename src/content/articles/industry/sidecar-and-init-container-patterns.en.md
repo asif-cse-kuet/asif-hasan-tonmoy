@@ -1,11 +1,11 @@
-> **Scenario** — A nightly billing Job finishes its work in 90 seconds and then sits in `Running` forever. The service-mesh proxy sidecar never exits, so the Job never reaches `Complete`, and the next night's Job refuses to start.
+> **Scenario** - A nightly billing Job finishes its work in 90 seconds and then sits in `Running` forever. The service-mesh proxy sidecar never exits, so the Job never reaches `Complete`, and the next night's Job refuses to start.
 
 ## Why it matters
 
 - A Job that cannot complete blocks every downstream schedule and quietly stops producing data nobody notices until month end.
-- Ordinary sidecars start in parallel with the app container, so the app can make network calls before the proxy is ready — a burst of connection refused errors on every pod start.
+- Ordinary sidecars start in parallel with the app container, so the app can make network calls before the proxy is ready - a burst of connection refused errors on every pod start.
 - Sidecars multiply resource usage: 200 pods with a 150 MB proxy is 30 GB of RAM that never appears in application dashboards.
-- Init containers run before anything else and block the pod on failure, which is exactly what you want for setup — and a self-inflicted outage when used for optional work.
+- Init containers run before anything else and block the pod on failure, which is exactly what you want for setup - and a self-inflicted outage when used for optional work.
 
 ## Symptoms
 
@@ -21,7 +21,7 @@
 
 A pod is Complete only when *all* its containers exit. A classic sidecar is designed to run forever, so a Job containing one can never finish. The same asymmetry appears at both ends of the lifecycle: on start, container order is not guaranteed, and on stop, the sidecar may exit before the app finishes flushing telemetry.
 
-Native sidecars (init containers with `restartPolicy: Always`, generally available since Kubernetes 1.29) fix the ordering: they start before app containers, stay running alongside them, and — importantly — are not counted when deciding whether a Job is complete.
+Native sidecars (init containers with `restartPolicy: Always`, generally available since Kubernetes 1.29) fix the ordering: they start before app containers, stay running alongside them, and - importantly - are not counted when deciding whether a Job is complete.
 
 ```mermaid
 sequenceDiagram
@@ -80,7 +80,7 @@ spec:
           command: ["php", "artisan", "billing:run"]
 ```
 
-Because `proxy` is an init container with `restartPolicy: Always`, Kubernetes waits for its startup probe before starting `billing`, keeps it alive during the run, and terminates it once `billing` exits — so the Job completes.
+Because `proxy` is an init container with `restartPolicy: Always`, Kubernetes waits for its startup probe before starting `billing`, keeps it alive during the run, and terminates it once `billing` exits - so the Job completes.
 
 ### 2. Keep init containers for hard prerequisites only
 

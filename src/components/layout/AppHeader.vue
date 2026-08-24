@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, onBeforeUnmount, watch } from 'vue'
 import { RouterLink, useRoute } from 'vue-router'
 
 import LangToggle from '@/components/LangToggle.vue'
@@ -34,6 +34,24 @@ function isActive(item: NavItem) {
   if (!item.to) return false
   return route.path === item.to || route.path.startsWith(`${item.to}/`)
 }
+
+function onKey(event: KeyboardEvent) {
+  if (event.key === 'Escape') ui.closeMobileNav()
+}
+
+watch(
+  () => ui.mobileNavOpen,
+  (open) => {
+    document.body.style.overflow = open ? 'hidden' : ''
+    if (open) window.addEventListener('keydown', onKey)
+    else window.removeEventListener('keydown', onKey)
+  },
+)
+
+onBeforeUnmount(() => {
+  document.body.style.overflow = ''
+  window.removeEventListener('keydown', onKey)
+})
 </script>
 
 <template>
@@ -41,11 +59,10 @@ function isActive(item: NavItem) {
     <div class="page-wrap flex items-center justify-between gap-3 py-3">
       <RouterLink
         to="/"
-        class="min-w-0 font-display text-base font-semibold tracking-tight text-paper no-underline hover:text-glow sm:text-lg"
+        class="min-w-0 font-display text-sm font-semibold leading-tight tracking-tight text-paper no-underline hover:text-glow sm:text-lg"
         @click="ui.closeMobileNav()"
       >
-        <span class="hidden truncate sm:block">{{ PROFILE.name }}</span>
-        <span class="sm:hidden">AHT</span>
+        {{ PROFILE.name }}
       </RouterLink>
 
       <nav class="hidden items-center lg:flex" aria-label="Main">
@@ -85,40 +102,50 @@ function isActive(item: NavItem) {
         </button>
       </div>
     </div>
+  </header>
 
-    <nav
+  <Teleport to="body">
+    <div
       v-if="ui.mobileNavOpen"
-      id="mobile-nav"
-      class="border-t border-steel/60 bg-ink-soft lg:hidden"
-      aria-label="Mobile"
+      class="fixed inset-0 z-[60] lg:hidden"
     >
-      <div class="page-wrap flex flex-col gap-1 py-3">
+      <button
+        type="button"
+        class="absolute inset-0 bg-ink/65 backdrop-blur-[2px]"
+        :aria-label="pick({ en: 'Close menu', bn: 'মেনু বন্ধ' })"
+        @click="ui.closeMobileNav()"
+      />
+      <nav
+        id="mobile-nav"
+        class="absolute right-3 top-[4.35rem] w-[min(22rem,calc(100vw-1.5rem))] rounded-xl border border-steel/70 bg-ink-soft p-2 shadow-[0_18px_50px_rgb(0_0_0_/_0.45)]"
+        aria-label="Mobile"
+      >
         <RouterLink
           v-for="item in items"
           :key="item.label"
           :to="target(item)"
-          class="rounded px-3 py-2.5 text-sm no-underline hover:bg-steel/30"
+          class="block rounded-lg px-3 py-2.5 text-sm no-underline hover:bg-steel/30"
           @click="ui.closeMobileNav()"
         >
           {{ item.label }}
         </RouterLink>
         <a
           :href="PROFILE.telHref"
-          class="rounded px-3 py-2.5 text-sm no-underline hover:bg-steel/30"
+          class="block rounded-lg px-3 py-2.5 text-sm no-underline hover:bg-steel/30"
           @click="ui.closeMobileNav()"
         >
           {{ pick({ en: 'Call me', bn: 'কল করুন' }) }} · {{ PROFILE.phone }}
         </a>
         <RouterLink
           :to="{ path: '/', hash: '#contact' }"
-          class="mt-1 rounded bg-accent px-3 py-2.5 text-center text-sm font-semibold text-paper no-underline"
+          class="mt-1 block rounded-lg bg-accent px-3 py-2.5 text-center text-sm font-semibold text-paper no-underline"
           @click="ui.closeMobileNav()"
         >
           {{ pick({ en: 'Hire me', bn: 'নিয়োগ' }) }}
         </RouterLink>
-      </div>
-    </nav>
-  </header>
+      </nav>
+    </div>
+  </Teleport>
 </template>
 
 <style scoped>

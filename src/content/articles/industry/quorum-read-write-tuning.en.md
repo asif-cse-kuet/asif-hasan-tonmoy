@@ -1,9 +1,9 @@
-> **Scenario** — A Cassandra keyspace runs `RF=3` with `LOCAL_QUORUM` reads and writes. A single replica's disk starts returning 400ms reads after a firmware bug. Read p99 across the whole service triples, even though two healthy replicas could have answered every query.
+> **Scenario** - A Cassandra keyspace runs `RF=3` with `LOCAL_QUORUM` reads and writes. A single replica's disk starts returning 400ms reads after a firmware bug. Read p99 across the whole service triples, even though two healthy replicas could have answered every query.
 
 ## Why it matters
 
 - `R + W > N` is the textbook rule for read-your-writes, and it is necessary but not sufficient: sloppy quorums, hinted handoff, and node replacement all break the assumption that the R replicas you read overlap the W replicas you wrote.
-- Quorum latency is set by the *slowest replica in the quorum*, not the average. With `RF=3, QUORUM=2`, you wait for the second-fastest of three — so one degraded node out of three raises p99 for a third of requests.
+- Quorum latency is set by the *slowest replica in the quorum*, not the average. With `RF=3, QUORUM=2`, you wait for the second-fastest of three - so one degraded node out of three raises p99 for a third of requests.
 - Getting `R` and `W` wrong is a correctness bug that looks like a flaky test: writes appear to succeed, and a read a moment later returns the old value about 1 in 20 times.
 - Consistency level is per-query in most stores, so a single badly written analytics query at `ALL` can take down the whole read path when any node is down.
 
@@ -11,13 +11,13 @@
 
 | Signal | What you observe |
 |---|---|
-| Read p99 | 3-5x baseline while p50 is unchanged — the tail follows one slow replica |
+| Read p99 | 3-5x baseline while p50 is unchanged - the tail follows one slow replica |
 | Per-replica latency | `nodetool tablehistograms` shows one node at 400ms, peers at 3ms |
 | Stale reads | A read immediately after a write returns the previous value a few percent of the time |
 | Hinted handoff | `nodetool netstats` shows a growing hint backlog for one node |
 | `UnavailableException` | Thrown at `QUORUM` when 2 of 3 replicas are down, even though 1 is alive |
 | Read repair | `ReadRepairStage` pending tasks climbing; digest mismatches rising |
-| Tombstone warnings | `Read 5001 live rows and 21000 tombstone cells` — quorum reads amplify tombstone cost |
+| Tombstone warnings | `Read 5001 live rows and 21000 tombstone cells` - quorum reads amplify tombstone cost |
 
 ## How it breaks
 
@@ -25,7 +25,7 @@ The arithmetic looks safe and the runtime is not.
 
 `R + W > N` guarantees overlap **only when the replica set is fixed**. In practice: with sloppy quorums (Dynamo-style), a write can be accepted by a node that is not a natural replica and stored as a hint. Your `W=2` succeeded, but one of those two acknowledgements came from a coordinator holding a hint that has not yet been delivered. A subsequent `R=2` read against the two natural replicas can miss the write entirely.
 
-Then there is latency. A quorum read at `RF=3, R=2` waits for the second response. The probability that a given request touches the slow replica and needs it to reach quorum is high — with three replicas and two required, the slow node is in the required set for roughly two thirds of requests, and it determines latency whenever it is the second to answer. This is why one bad disk out of dozens of nodes moves service-wide p99: the coordinator cannot answer until the quorum is satisfied.
+Then there is latency. A quorum read at `RF=3, R=2` waits for the second response. The probability that a given request touches the slow replica and needs it to reach quorum is high - with three replicas and two required, the slow node is in the required set for roughly two thirds of requests, and it determines latency whenever it is the second to answer. This is why one bad disk out of dozens of nodes moves service-wide p99: the coordinator cannot answer until the quorum is satisfied.
 
 ```mermaid
 sequenceDiagram
@@ -48,7 +48,7 @@ sequenceDiagram
 ## Root causes
 
 1. Consistency level chosen once, globally, without separating latency-sensitive from correctness-critical queries.
-2. Sloppy quorum and hinted handoff assumed to preserve `R + W > N` — they do not while hints are undelivered.
+2. Sloppy quorum and hinted handoff assumed to preserve `R + W > N` - they do not while hints are undelivered.
 3. No speculative retry, so the coordinator waits for a degraded replica instead of asking a fourth node.
 4. Replication factor equal to the quorum size (`RF=2, QUORUM=2`), leaving zero failure tolerance.
 5. `RF` spread across regions with `QUORUM` instead of `LOCAL_QUORUM`, so every read crosses an ocean.
@@ -79,7 +79,7 @@ feed = SimpleStatement(
 # Never in application code paths: ALL means any single node loss is an outage.
 ```
 
-The invariant to hold is `R + W > RF` for the pairs that need read-your-writes. `W=LOCAL_QUORUM (2 of 3)` plus `R=LOCAL_QUORUM (2 of 3)` gives `2 + 2 > 3`. Dropping the read to `ONE` gives `2 + 1 = 3`, which is *not* greater than 3 — that is where the 1-in-20 stale read comes from.
+The invariant to hold is `R + W > RF` for the pairs that need read-your-writes. `W=LOCAL_QUORUM (2 of 3)` plus `R=LOCAL_QUORUM (2 of 3)` gives `2 + 2 > 3`. Dropping the read to `ONE` gives `2 + 1 = 3`, which is *not* greater than 3 - that is where the 1-in-20 stale read comes from.
 
 ### 2. Turn on speculative retry so one slow replica cannot own your tail
 
@@ -114,7 +114,7 @@ ALTER KEYSPACE app WITH replication = {
 nodetool netstats | grep -A3 'Hints'
 nodetool tpstats | grep -E 'MutationStage|ReadStage|Hints'
 
-# Per-replica read latency — find the one bad node before it moves service p99.
+# Per-replica read latency - find the one bad node before it moves service p99.
 for host in $(nodetool status | awk '/^UN/ {print $2}'); do
   echo -n "$host "
   nodetool -h "$host" tablehistograms app.orders | awk '/^99%/ {print $4"us read"}'
@@ -129,7 +129,7 @@ max by (instance) (cassandra_table_read_latency_99p)
 
 ### 5. Give yourself failure tolerance in the RF, not the CL
 
-`RF=3, QUORUM=2` tolerates one node loss. `RF=5, QUORUM=3` tolerates two but makes every write fan out to five nodes. Pick RF for the failure tolerance you need, then set CL for consistency — not the other way around. `RF=2` with `QUORUM` is the trap: quorum is 2, so a single node loss makes the partition unavailable while giving you none of the benefits of RF=3.
+`RF=3, QUORUM=2` tolerates one node loss. `RF=5, QUORUM=3` tolerates two but makes every write fan out to five nodes. Pick RF for the failure tolerance you need, then set CL for consistency - not the other way around. `RF=2` with `QUORUM` is the trap: quorum is 2, so a single node loss makes the partition unavailable while giving you none of the benefits of RF=3.
 
 ## Target design
 
@@ -172,7 +172,7 @@ flowchart TD
 
 ## Anti-patterns
 
-- Using `ALL` "to be safe" — you have made every node a single point of failure.
+- Using `ALL` "to be safe" - you have made every node a single point of failure.
 - Running `RF=2` with `QUORUM`, which is strictly worse than `RF=3`: no failure tolerance, same write cost as a quorum.
 - Fixing stale reads by adding a `sleep(200)` in the client instead of correcting `R + W`.
 - Assuming hinted handoff preserves consistency; it preserves durability, not read overlap.

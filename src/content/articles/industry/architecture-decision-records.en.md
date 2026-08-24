@@ -1,4 +1,4 @@
-> **Scenario** — Two years after the fact, a new staff engineer asks why the platform uses Kafka for a workload that produces 40 messages per minute. Nobody who made the decision still works there. The wiki has a page titled "Event Architecture (DRAFT)" last edited 19 months ago, and the only surviving artefact is a Slack thread that has been truncated by the retention policy.
+> **Scenario** - Two years after the fact, a new staff engineer asks why the platform uses Kafka for a workload that produces 40 messages per minute. Nobody who made the decision still works there. The wiki has a page titled "Event Architecture (DRAFT)" last edited 19 months ago, and the only surviving artefact is a Slack thread that has been truncated by the retention policy.
 
 ## Why it matters
 
@@ -21,7 +21,7 @@
 
 ## How it breaks
 
-ADR programmes fail in a predictable way. Someone reads about them, creates `docs/adr/`, writes a template with eleven required sections including "Stakeholder Sign-off" and "Risk Matrix", and files six records. The seventh decision happens during a sprint under deadline pressure. Writing the record would take ninety minutes, so it does not happen. The eighth does not happen either. Six months later the directory is a museum of decisions the team has already outgrown, which makes it actively misleading — worse than nothing, because people trust it and are wrong.
+ADR programmes fail in a predictable way. Someone reads about them, creates `docs/adr/`, writes a template with eleven required sections including "Stakeholder Sign-off" and "Risk Matrix", and files six records. The seventh decision happens during a sprint under deadline pressure. Writing the record would take ninety minutes, so it does not happen. The eighth does not happen either. Six months later the directory is a museum of decisions the team has already outgrown, which makes it actively misleading - worse than nothing, because people trust it and are wrong.
 
 The other failure is placement. Records that live in a separate wiki, a Notion space, or a Google Drive folder are invisible during code review, which is exactly when someone is about to contradict one. Records in the repository show up in the diff, get reviewed alongside the change, and are searchable with the same tools as the code.
 
@@ -40,10 +40,10 @@ stateDiagram-v2
 
 ## Root causes
 
-1. The template is too heavy to write during the decision, so it is written after — which means never.
+1. The template is too heavy to write during the decision, so it is written after - which means never.
 2. Records live outside the repository, so nothing in the development workflow surfaces them.
 3. No status lifecycle, so a superseded record looks identical to a current one.
-4. Only successes are recorded; the rejected options — the actually useful part — are omitted.
+4. Only successes are recorded; the rejected options - the actually useful part - are omitted.
 5. No trigger rule, so the team argues about whether each decision "deserves" a record instead of writing it.
 6. Nobody links from code to the record, so the connection is lost the first time a file is moved.
 
@@ -57,8 +57,8 @@ stateDiagram-v2
 - Status: Accepted
 - Date: 2026-03-11
 - Deciders: platform team (A. Rahman, S. Chen)
-- Supersedes: —
-- Superseded by: —
+- Supersedes: -
+- Superseded by: -
 
 ## Context
 
@@ -111,7 +111,7 @@ Write a record when the decision is **hard to reverse** or **surprising**. Concr
 
 ```ts
 // Dispatch runs through the outbox rather than a broker.
-// See docs/adr/0023-postgres-notify-job-dispatch.md — revisit above 500 msg/min.
+// See docs/adr/0023-postgres-notify-job-dispatch.md - revisit above 500 msg/min.
 export async function dispatch(event: DomainEvent, tx: Transaction) {
   await tx.insert('outbox', { payload: event, created_at: new Date() })
 }
@@ -123,7 +123,7 @@ One comment line with a path. When someone deletes the outbox and installs a bro
 
 ```bash
 #!/usr/bin/env bash
-# scripts/check-adr.sh — every ADR must declare a status; superseded links must resolve.
+# scripts/check-adr.sh - every ADR must declare a status; superseded links must resolve.
 set -euo pipefail
 fail=0
 for f in docs/adr/[0-9]*.md; do
@@ -177,7 +177,7 @@ flowchart LR
 
 ## Anti-patterns
 
-- A template with a risk matrix and a sign-off table — the ceremony guarantees nobody writes the eighth record.
+- A template with a risk matrix and a sign-off table - the ceremony guarantees nobody writes the eighth record.
 - Editing an accepted record in place when the decision changes, erasing the reasoning that was correct at the time.
 - Writing records only for decisions that went well, which makes the directory a marketing artefact.
 - Storing ADRs in a wiki nobody opens during code review.

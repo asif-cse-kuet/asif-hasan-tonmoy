@@ -1,4 +1,4 @@
-> **Scenario** — একটা nightly settlement job `America/New_York`-এ local `02:30`-এ schedule করা। 2024-03-10-এ ওই clock time নেই — 01:59:59 EST-এর পরেই 03:00:00 EDT। Job চুপচাপ চলে না। আট মাস পর, 2024-11-03-এ `01:30` দুইবার আসে, job দুইবার চলে, ১২,৪০০ ledger entry double-post হয়।
+> **Scenario** - একটা nightly settlement job `America/New_York`-এ local `02:30`-এ schedule করা। 2024-03-10-এ ওই clock time নেই - 01:59:59 EST-এর পরেই 03:00:00 EDT। Job চুপচাপ চলে না। আট মাস পর, 2024-11-03-এ `01:30` দুইবার আসে, job দুইবার চলে, ১২,৪০০ ledger entry double-post হয়।
 
 ## Why it matters
 
@@ -6,7 +6,7 @@
 - Offset আর timezone এক নয়। `Asia/Dhaka` আজ `+06:00`, কিন্তু 2009-06-19 থেকে 2009-12-31 পর্যন্ত বাংলাদেশে DST ছিল `+07:00`-এ। ওই window-এ offset হিসেবে জমা যেকোনো historical timestamp এখন ambiguous।
 - Timezone নিয়ম সরকারি সিদ্ধান্তে, কয়েক সপ্তাহের নোটিশে বদলায়। ব্রাজিল ২০১৯-এ DST বাতিল করে; hardcoded rule table ship করার দিনেই ভুল।
 - "Local midnight" প্রত্যেক user-এর জন্য আলাদা instant। Daily report boundary একটা business সিদ্ধান্ত, technical constant নয়।
-- বাগ বছরে দুইবার, production-এ, ০২:০০-তে reproduce হয় — ঠিক যখন কেউ দেখছে না।
+- বাগ বছরে দুইবার, production-এ, ০২:০০-তে reproduce হয় - ঠিক যখন কেউ দেখছে না।
 
 ## Symptoms
 
@@ -65,7 +65,7 @@ Postgres-এ `timestamptz` UTC instant জমা করে; input zone মনে
 
 ### 2. Transition window-এর ভেতর কখনো schedule করবেন না
 
-Recurring job local `04:00`-এ সরান, বা আরও ভালো — UTC-তে ঠিক করুন এবং local drift মেনে নিন:
+Recurring job local `04:00`-এ সরান, বা আরও ভালো - UTC-তে ঠিক করুন এবং local drift মেনে নিন:
 
 ```yaml
 # Kubernetes CronJob: স্পষ্ট zone, local 00:00-03:00-এর বাইরে
@@ -132,8 +132,8 @@ const start = DateTime.fromISO('2024-11-02T09:00', { zone: 'America/New_York' })
 const naive = start.toUTC().plus({ seconds: 86_400 }).setZone('America/New_York')
 const correct = start.plus({ days: 1 })
 
-console.log(naive.toFormat('HH:mm'))   // 08:00 — ভুল
-console.log(correct.toFormat('HH:mm')) // 09:00 — ঠিক
+console.log(naive.toFormat('HH:mm'))   // 08:00 - ভুল
+console.log(correct.toFormat('HH:mm')) // 09:00 - ঠিক
 ```
 
 ### 5. tzdata টাটকা রাখুন ও version pin করুন
@@ -200,7 +200,7 @@ sequenceDiagram
 
 - Connection-এ `SET time zone 'UTC'` দিয়ে সমাধান ভাবা, অথচ application তখনো local string বানাচ্ছে।
 - PHP-তে global `date_default_timezone_set('Asia/Dhaka')` দিয়ে `DATETIME` column-এ `date('Y-m-d H:i:s')` জমা করা।
-- "আমরা এক দেশেই চলি, offset-ই চলবে" — যতক্ষণ না সরকার offset বদলায়, বা আপনি বিদেশে নিয়োগ দেন।
+- "আমরা এক দেশেই চলি, offset-ই চলবে" - যতক্ষণ না সরকার offset বদলায়, বা আপনি বিদেশে নিয়োগ দেন।
 - Skip হওয়া job হাতে cron আবার চালিয়ে retry করা, দ্বিতীয় চেষ্টা idempotent কি না না দেখে।
 - আলাদা zone-এ format করার পর timestamp string হিসেবে তুলনা করা।
 - `getTimezoneOffset()`-কে user-এর timezone ধরা।

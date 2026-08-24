@@ -1,4 +1,4 @@
-> **Scenario** — একটি delivery app rider offline থাকলে event buffer করে। সোমবার একজন rider basement car park-এ ছয় ঘণ্টা কাটিয়ে reconnect করে রবিবারের timestamp সহ ৪০০টি event flush করল। রবিবারের daily revenue rollup ইতিমধ্যেই ০২:০০-এ বন্ধ হয়েছে, streaming job সবকিছু সোমবারের window-এ দিয়েছে, আর দুটি report এখন ৩.২% আলাদা।
+> **Scenario** - একটি delivery app rider offline থাকলে event buffer করে। সোমবার একজন rider basement car park-এ ছয় ঘণ্টা কাটিয়ে reconnect করে রবিবারের timestamp সহ ৪০০টি event flush করল। রবিবারের daily revenue rollup ইতিমধ্যেই ০২:০০-এ বন্ধ হয়েছে, streaming job সবকিছু সোমবারের window-এ দিয়েছে, আর দুটি report এখন ৩.২% আলাদা।
 
 ## Why it matters
 
@@ -21,9 +21,9 @@
 
 ## How it breaks
 
-বেশিরভাগ pipeline processing time দিয়ে শুরু করে, কারণ সেটা সবসময় পাওয়া যায় ও monotonic। Aggregate হয় `GROUP BY DATE_TRUNC('day', ingested_at)` — শান্ত দিনে ঠিক, প্রতিটি backlog-এ ভুল।
+বেশিরভাগ pipeline processing time দিয়ে শুরু করে, কারণ সেটা সবসময় পাওয়া যায় ও monotonic। Aggregate হয় `GROUP BY DATE_TRUNC('day', ingested_at)` - শান্ত দিনে ঠিক, প্রতিটি backlog-এ ভুল।
 
-Event time-এ গেলে দ্বিতীয় সমস্যা সামনে আসে: window কখন final তা ঠিক করতে হবে। Watermark ছাড়া job হয় প্রতিটি window চিরকাল খোলা রাখে (unbounded state), নয় নির্দিষ্ট wall-clock সময়ে বন্ধ করে (late event নীরবে drop)। Client clock skew আরও খারাপ করে — event ভবিষ্যতের timestamp নিয়ে আসতে পারে, আর `max(event_time)` হিসেবে naive watermark সামনে লাফিয়ে বৈধ event-কে সাথে সাথে late চিহ্নিত করে।
+Event time-এ গেলে দ্বিতীয় সমস্যা সামনে আসে: window কখন final তা ঠিক করতে হবে। Watermark ছাড়া job হয় প্রতিটি window চিরকাল খোলা রাখে (unbounded state), নয় নির্দিষ্ট wall-clock সময়ে বন্ধ করে (late event নীরবে drop)। Client clock skew আরও খারাপ করে - event ভবিষ্যতের timestamp নিয়ে আসতে পারে, আর `max(event_time)` হিসেবে naive watermark সামনে লাফিয়ে বৈধ event-কে সাথে সাথে late চিহ্নিত করে।
 
 ```mermaid
 flowchart TD
@@ -212,7 +212,7 @@ stateDiagram-v2
 
 ## Anti-patterns
 
-- Business metric-এ `ingested_at` আর engineering metric-এ event time — দুই dashboard কখনও মিলবে না।
+- Business metric-এ `ingested_at` আর engineering metric-এ event time - দুই dashboard কখনও মিলবে না।
 - State ছোট রাখতে allowed lateness শূন্য করা, তারপর `late_dropped` counter-কে informational ধরা।
 - Clamping ছাড়া client timestamp বিশ্বাস করা। একটি ভুল clock-এর device পুরো stream-এর watermark নষ্ট করতে পারে।
 - Partition জুড়ে minimum না নিয়ে per-partition maximum থেকে watermark বানানো; তখন idle partition আটকায় বা active partition এগিয়ে যায়।

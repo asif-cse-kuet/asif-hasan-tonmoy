@@ -1,9 +1,9 @@
-> **Scenario** — সারা সপ্তাহ checkout ঠিকঠাক চলে। শুক্রবার রাত ৮টায় traffic দ্বিগুণ হয় আর MySQL `ERROR 1213: Deadlock found when trying to get lock` log করা শুরু করে। প্রায় ০.৪% order fail করে, retry wrapper চলে, আর support জানায় customer একই cart-এ দুবার charge হয়েছে।
+> **Scenario** - সারা সপ্তাহ checkout ঠিকঠাক চলে। শুক্রবার রাত ৮টায় traffic দ্বিগুণ হয় আর MySQL `ERROR 1213: Deadlock found when trying to get lock` log করা শুরু করে। প্রায় ০.৪% order fail করে, retry wrapper চলে, আর support জানায় customer একই cart-এ দুবার charge হয়েছে।
 
 ## Why it matters
 
-- Deadlock concurrency-র সাথে super-linearly বাড়ে। Traffic দ্বিগুণ হলে deadlock rate চারগুণ বা তার বেশি হতে পারে — অর্থাৎ ঠিক যখন revenue সর্বোচ্চ তখনই failure।
-- Database সঠিকভাবেই সমাধান করে — একটি transaction মেরে ফেলে — কিন্তু *application*-এর প্রতিক্রিয়া সাধারণত সরল retry। Transaction-এর side effect database-এর বাইরে থাকলে (payment capture, email) retry সেটা duplicate করে।
+- Deadlock concurrency-র সাথে super-linearly বাড়ে। Traffic দ্বিগুণ হলে deadlock rate চারগুণ বা তার বেশি হতে পারে - অর্থাৎ ঠিক যখন revenue সর্বোচ্চ তখনই failure।
+- Database সঠিকভাবেই সমাধান করে - একটি transaction মেরে ফেলে - কিন্তু *application*-এর প্রতিক্রিয়া সাধারণত সরল retry। Transaction-এর side effect database-এর বাইরে থাকলে (payment capture, email) retry সেটা duplicate করে।
 - Deadlock victim engine বেছে নেয়, গুরুত্ব দেখে নয়। 40ms-এর payment write প্রায়ই 3-সেকেন্ডের reporting query-র কাছে হারে।
 - Stack trace সেই statement দেখায় যেটা *অপেক্ষা করছিল*, যে transaction আগে conflicting lock নিয়েছিল সেটা নয়। দল ঘণ্টার পর ঘণ্টা ভুল query optimize করে।
 
@@ -13,7 +13,7 @@
 |---|---|
 | Error code | MySQL `1213` / Postgres `40P01 deadlock detected`, burst-এ, ধারাবাহিকভাবে নয় |
 | Correlation | Deadlock rate concurrent-transaction সংখ্যার সাথে চলে, request count-এর সাথে নয় |
-| Duration | প্রতিটি victim পুরো detection interval অপেক্ষা করে — Postgres `deadlock_timeout` ডিফল্ট 1s |
+| Duration | প্রতিটি victim পুরো detection interval অপেক্ষা করে - Postgres `deadlock_timeout` ডিফল্ট 1s |
 | Lock wait | এমন row-তে `SELECT ... FOR UPDATE` যেগুলোর conflict হওয়ার "কথা না" |
 | Gap lock (MySQL) | `REPEATABLE READ`-এ এমন range-এ deadlock যেখানে কেউ insert করেনি |
 | Retry | Retry সফল হয়, কিন্তু downstream side effect দুবার ঘটে |
@@ -45,7 +45,7 @@ sequenceDiagram
 
 ## Root causes
 
-1. দুটি code path একই table ভিন্ন ক্রমে update করে — সাধারণত একটি অন্য টিমের লেখা।
+1. দুটি code path একই table ভিন্ন ক্রমে update করে - সাধারণত একটি অন্য টিমের লেখা।
 2. দীর্ঘ transaction যা network call-এর মধ্যেও lock ধরে রাখে, ফলে lock window 4ms-এর বদলে 400ms।
 3. Missing বা unusable index-এর কারণে full scan অপ্রয়োজনীয় row lock করে।
 4. `REPEATABLE READ`-এ gap lock, যখন অন্য transaction-এর range scan-এর ভেতরে insert হয়।
@@ -56,7 +56,7 @@ sequenceDiagram
 
 ### 1. Global lock order চাপিয়ে দিন
 
-সবচেয়ে সস্তা structural fix। একটি canonical ক্রম বেছে নিন — table-এর নাম alphabetical, তারপর primary key ascending — এবং সর্বত্র মানুন।
+সবচেয়ে সস্তা structural fix। একটি canonical ক্রম বেছে নিন - table-এর নাম alphabetical, তারপর primary key ascending - এবং সর্বত্র মানুন।
 
 ```php
 // Laravel: always lock in a deterministic order, never in the order the caller happened to pass.
@@ -173,7 +173,7 @@ flowchart LR
 
 | Option | Pros | Cons | Choose when |
 |---|---|---|---|
-| Global lock ordering | Cycle পুরোপুরি দূর করে; runtime খরচ নেই | প্রতিটি টিম ও code path-এ শৃঙ্খলা দরকার | সবসময় — এটাই baseline |
+| Global lock ordering | Cycle পুরোপুরি দূর করে; runtime খরচ নেই | প্রতিটি টিম ও code path-এ শৃঙ্খলা দরকার | সবসময় - এটাই baseline |
 | `REPEATABLE READ`-এর বদলে `READ COMMITTED` | Gap lock নেই; MySQL deadlock অনেক কম | Non-repeatable read; কিছু replication-এ row-based binlog লাগে | Insert-heavy OLTP, ছোট transaction |
 | Optimistic concurrency (version column) | কোনো lock ধরা হয় না; core-এর সাথে scale করে | বেশি contention-এ conflict retry হিসেবে আসে | Low-conflict entity, read-mostly workload |
 | Key দিয়ে partition করা queue-তে serialize | গঠনগতভাবেই zero contention | Latency ও একটি operational component যোগ হয় | Hot row: এক SKU, এক account, এক seat map |
@@ -191,7 +191,7 @@ flowchart LR
 
 ## Anti-patterns
 
-- `innodb_lock_wait_timeout` বাড়ানো — deadlock ঠেকাচ্ছেন না, প্রতিটি deadlock connection আরও বেশিক্ষণ ধরে রাখছে।
+- `innodb_lock_wait_timeout` বাড়ানো - deadlock ঠেকাচ্ছেন না, প্রতিটি deadlock connection আরও বেশিক্ষণ ধরে রাখছে।
 - স্থির 100ms delay-তে অসীম retry; দুই victim আবার সিঙ্ক হয়ে একই সময়সূচিতে deadlock করে।
 - "নিরাপত্তার জন্য" পুরো HTTP handler transaction-এ মোড়ানো, যা প্রতিটি ধীর dependency-কে lock বানায়।
 - সমস্যা মেটাতে `LOCK TABLES` যোগ করা, যা ০.৪% error rate-কে global throughput ceiling-এ পরিণত করে।

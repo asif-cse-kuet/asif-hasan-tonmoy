@@ -1,4 +1,4 @@
-> **Scenario** — A Redis instance shared by sessions, rate limiters, and page fragments hits its 8 GB `maxmemory`. The policy is the default `noeviction`, so every write starts returning `OOM command not allowed when used memory > 'maxmemory'`. Logins fail, rate limiters stop recording, and the read path keeps working perfectly — which is why it takes eleven minutes to find.
+> **Scenario** - A Redis instance shared by sessions, rate limiters, and page fragments hits its 8 GB `maxmemory`. The policy is the default `noeviction`, so every write starts returning `OOM command not allowed when used memory > 'maxmemory'`. Logins fail, rate limiters stop recording, and the read path keeps working perfectly - which is why it takes eleven minutes to find.
 
 ## Why it matters
 
@@ -21,7 +21,7 @@
 
 ## How it breaks
 
-Redis enforces `maxmemory` at write time. Under `noeviction` it refuses the write; under an `allkeys-*` policy it evicts something to make room; under a `volatile-*` policy it evicts only among keys that carry a TTL — and if none do, it behaves like `noeviction` while looking configured.
+Redis enforces `maxmemory` at write time. Under `noeviction` it refuses the write; under an `allkeys-*` policy it evicts something to make room; under a `volatile-*` policy it evicts only among keys that carry a TTL - and if none do, it behaves like `noeviction` while looking configured.
 
 The mixed-workload failure is the common one. Sessions, locks, queues, and cache fragments on one instance have incompatible eviction requirements: fragments are regenerable, sessions are not, locks must never disappear early. A single policy cannot express all three.
 
@@ -50,17 +50,17 @@ stateDiagram-v2
 
 ### 1. Separate keyspaces by durability requirement
 
-The cleanest fix is not a policy — it is two instances. Cache is regenerable and should evict; sessions and locks are authoritative and must not.
+The cleanest fix is not a policy - it is two instances. Cache is regenerable and should evict; sessions and locks are authoritative and must not.
 
 ```yaml
-# redis-cache.yaml — evictable, sized for hit ratio
+# redis-cache.yaml - evictable, sized for hit ratio
 maxmemory: 6gb
 maxmemory-policy: allkeys-lfu
 maxmemory-samples: 10
 ```
 
 ```yaml
-# redis-state.yaml — sessions, locks, rate limiters
+# redis-state.yaml - sessions, locks, rate limiters
 maxmemory: 2gb
 maxmemory-policy: volatile-ttl
 appendonly: "yes"
@@ -151,7 +151,7 @@ flowchart LR
 - [ ] `redis-cli CONFIG GET maxmemory-policy` returns a deliberately chosen value on every instance, documented in the runbook.
 - [ ] `redis-cli CONFIG GET maxmemory` is non-zero and below the container memory limit.
 - [ ] Fill the cache past `maxmemory` in staging and confirm `evicted_keys` rises while writes still succeed.
-- [ ] Confirm sessions survive that same test — if they do not, the keyspaces are not separated.
+- [ ] Confirm sessions survive that same test - if they do not, the keyspaces are not separated.
 - [ ] `evicted_keys` rate and `used_memory / maxmemory` are both on a dashboard with alerts.
 - [ ] Run a large `SCAN`-based batch job and verify hit ratio recovers within minutes (LFU) rather than collapsing.
 - [ ] Every write path goes through a wrapper that requires a TTL.

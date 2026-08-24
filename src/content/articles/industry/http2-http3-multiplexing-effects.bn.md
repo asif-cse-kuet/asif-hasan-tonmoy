@@ -1,8 +1,8 @@
-> **Scenario** — edge-এ HTTP/2 চালু করলেন। synthetic test ১৫% ভালো হলো। এরপর hotel Wi-Fi-এর এক customer জানাল পুরো app কয়েক সেকেন্ড ধরে জমে যাচ্ছে, আর আপনার rate limiter — যেটি connection গুনত — কিছুই limit করছে না। ওদিকে এক client এক connection দিয়ে ১২৮টি concurrent stream খুলতে পারছে, যেখানে backend pool-এ worker আছে ৪০টি।
+> **Scenario** - edge-এ HTTP/2 চালু করলেন। synthetic test ১৫% ভালো হলো। এরপর hotel Wi-Fi-এর এক customer জানাল পুরো app কয়েক সেকেন্ড ধরে জমে যাচ্ছে, আর আপনার rate limiter - যেটি connection গুনত - কিছুই limit করছে না। ওদিকে এক client এক connection দিয়ে ১২৮টি concurrent stream খুলতে পারছে, যেখানে backend pool-এ worker আছে ৪০টি।
 
 ## Why it matters
 
-- HTTP/2 বহু TCP connection-কে একটিতে গুটিয়ে আনে। আপনার stack-এর প্রতিটি per-connection ধারণা — rate limit, concurrency cap, logging, load balancing — নীরবে অর্থ বদলায়।
+- HTTP/2 বহু TCP connection-কে একটিতে গুটিয়ে আনে। আপনার stack-এর প্রতিটি per-connection ধারণা - rate limit, concurrency cap, logging, load balancing - নীরবে অর্থ বদলায়।
 - head-of-line blocking মিলিয়ে যায় না; HTTP layer থেকে TCP layer-এ সরে যায়, যেখানে একটিমাত্র হারানো packet *সব* multiplexed stream আটকে দেয়।
 - flow control window (HTTP/2-তে per-stream default 64KB) বড় response-কে এমনভাবে throttle করে যা দেখতে backend slowness-এর মতো।
 - HTTP/3 (QUIC) TCP-স্তরের blocking সরায়, কিন্তু UDP path-এর সমস্যা আনে: middlebox, userspace congestion control-এর CPU খরচ, আর MTU sensitivity।
@@ -24,7 +24,7 @@
 
 HTTP/1.1-এ browser origin-প্রতি ছয়টি connection খুলত, প্রতিটি request-এর নিজস্ব TCP stream ছিল। packet হারালে ছয়টির একটি দেরি করত। HTTP/2 সব request এক TCP connection-এ multiplex করে: একটি segment হারালে retransmission না আসা পর্যন্ত kernel পরের কোনো byte userspace-এ দেয় না, তাই in-flight ৪০টি stream একসাথে আটকায়। পরিচ্ছন্ন datacentre link-এ এটি কখনো দেখা যায় না; ২% loss-এর hotel Wi-Fi-তে এটাই প্রধান অভিজ্ঞতা।
 
-দ্বিতীয় প্রভাব concurrency। nginx-এ `http2_max_concurrent_streams` default ১২৮। অর্থাৎ এক client একসাথে ১২৮টি request দেখাতে পারে, যেখানে HTTP/1.1 দিত ৬টি। connection count ধরে size করা সবকিছু — worker pool, `limit_conn`, database pool — এখন ২০ গুণ কম provisioned।
+দ্বিতীয় প্রভাব concurrency। nginx-এ `http2_max_concurrent_streams` default ১২৮। অর্থাৎ এক client একসাথে ১২৮টি request দেখাতে পারে, যেখানে HTTP/1.1 দিত ৬টি। connection count ধরে size করা সবকিছু - worker pool, `limit_conn`, database pool - এখন ২০ গুণ কম provisioned।
 
 ```mermaid
 sequenceDiagram
@@ -97,7 +97,7 @@ sudo tcpdump -i any -n 'host 203.0.113.10 and tcp port 443' -c 200
 # 14:22:07.590  IP 203.0.113.10.443 > 10.1.2.3.51844: Flags [.], seq 812345  (retransmit)
 ```
 
-user-এর stall-এর সাথে মিলে যাওয়া dup-ACK গুচ্ছ ও তারপর retransmit — এটাই প্রমাণ। শুধু stream-level timing দিয়ে একে slow backend থেকে আলাদা করা যায় না।
+user-এর stall-এর সাথে মিলে যাওয়া dup-ACK গুচ্ছ ও তারপর retransmit - এটাই প্রমাণ। শুধু stream-level timing দিয়ে একে slow backend থেকে আলাদা করা যায় না।
 
 ### 4. bandwidth-delay product অনুযায়ী flow control size করুন
 
@@ -160,7 +160,7 @@ flowchart LR
 ## Anti-patterns
 
 - HTTP/2 চালু করে `limit_conn`-কেই একমাত্র abuse control রাখা।
-- ধরে নেওয়া HTTP/2 head-of-line blocking সরায় — এটি শুধু HTTP-স্তরেরটি সরায়।
+- ধরে নেওয়া HTTP/2 head-of-line blocking সরায় - এটি শুধু HTTP-স্তরেরটি সরায়।
 - একই hostname-এ HTTP/2 fallback ছাড়া HTTP/3 চালু করা।
 - HTTP/2-তে যাওয়ার পরেও subdomain-এ asset sharding (HTTP/1.1-এর কৌশল) রাখা, যা বাড়তি connection ও handshake জোর করে।
 - multi-stream stall-কে application trace-এ খোঁজা, যেখানে প্রতিটি span ঠিক দেখায়।

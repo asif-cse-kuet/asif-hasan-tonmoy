@@ -1,4 +1,4 @@
-> **Scenario** — A support engineer at tenant A opens a ticket and sees an invoice belonging to tenant B. Nothing in the audit log looks wrong. The access token was valid, signed, and unexpired — it just carried a `tenant_id` claim from a session the user switched away from eleven minutes ago.
+> **Scenario** - A support engineer at tenant A opens a ticket and sees an invoice belonging to tenant B. Nothing in the audit log looks wrong. The access token was valid, signed, and unexpired - it just carried a `tenant_id` claim from a session the user switched away from eleven minutes ago.
 
 ## Why it matters
 
@@ -75,7 +75,7 @@ final class ResolveTenantContext
         $membership = $this->memberships->activeFor($userId, $tenantId);
 
         if ($membership === null) {
-            // 404, not 403 — do not confirm the tenant exists to a non-member.
+            // 404, not 403 - do not confirm the tenant exists to a non-member.
             abort(404);
         }
 
@@ -216,7 +216,7 @@ flowchart TD
 ## Anti-patterns
 
 - Extending the access-token TTL to reduce refresh load; you have widened the revocation gap in exchange for a rounding error in QPS.
-- Storing the tenant in the JWT "so we do not have to look it up" — this is the cross-tenant bug, written down in advance.
+- Storing the tenant in the JWT "so we do not have to look it up" - this is the cross-tenant bug, written down in advance.
 - Treating every `invalid_grant` as theft and force-logging-out users whose second browser tab refreshed a moment too late.
 - Putting the full permission set in the token, then discovering the cookie exceeds the proxy's 4KB header limit.
 - Deleting the cookie on logout and calling it revocation; the refresh token is still valid for thirty days.

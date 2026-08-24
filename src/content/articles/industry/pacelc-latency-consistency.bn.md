@@ -1,18 +1,18 @@
-> **Scenario** — ops টিম order database তিন region-এর cluster-এ সরিয়ে `quorum` write চালু করার পর checkout p99 ১৮০ms থেকে ২.৪s-এ উঠল। কোনো node down নয়, database-এ কোনো alert নেই, পরিবর্তন শুধু "better durability"।
+> **Scenario** - ops টিম order database তিন region-এর cluster-এ সরিয়ে `quorum` write চালু করার পর checkout p99 ১৮০ms থেকে ২.৪s-এ উঠল। কোনো node down নয়, database-এ কোনো alert নেই, পরিবর্তন শুধু "better durability"।
 
 ## Why it matters
 
 - প্রতিটি synchronous cross-region write অন্তত এক round trip দেয়: US-East থেকে US-West ৭০ms, Frankfurt ১৬০ms, Singapore ২৪০ms। এই খরচ request path-এ, background-এ নয়।
-- Database dashboard-এ এটা অদৃশ্য। Replication lag শূন্য — synchronous quorum-এর উদ্দেশ্যই তো এটাই — তাই পুরো খরচ application latency-তে গিয়ে পড়ে।
+- Database dashboard-এ এটা অদৃশ্য। Replication lag শূন্য - synchronous quorum-এর উদ্দেশ্যই তো এটাই - তাই পুরো খরচ application latency-তে গিয়ে পড়ে।
 - Timeout budget সাধারণত single-region latency ধরে সেট করা থাকে। ৭০০ms quorum write-এর সামনে ৫০০ms upstream timeout মানে সুস্থ cluster-ও ১০০% error rate দেখাবে।
-- CAP শুধু partition case-এর ভাষা দেয়, ফলে normal-operation tradeoff দুর্ঘটনাক্রমে হয় — Terraform variable-এ, durability optimize করতে চাওয়া কারো হাতে।
+- CAP শুধু partition case-এর ভাষা দেয়, ফলে normal-operation tradeoff দুর্ঘটনাক্রমে হয় - Terraform variable-এ, durability optimize করতে চাওয়া কারো হাতে।
 
 ## Symptoms
 
 | Signal | What you observe |
 |---|---|
 | Write p99 | baseline-এর ৮-১৫x, inter-region RTT-র গুণিতকের কাছে জমাট |
-| Write p50 | প্রায় অপরিবর্তিত — শুধু দূরের replica ছোঁয়া request ধীর |
+| Write p50 | প্রায় অপরিবর্তিত - শুধু দূরের replica ছোঁয়া request ধীর |
 | Replication lag | ০ms-এ সমান, তাই storage টিম বলে cluster healthy |
 | Error rate | API gateway থেকে upstream 504, database error নয় |
 | Latency histogram | bimodal, দ্বিতীয় hump ঠিক `local + দ্বিতীয় নিকটতম region-এর RTT`-তে |
@@ -20,9 +20,9 @@
 
 ## How it breaks
 
-PACELC, CAP-এর সাথে সেই অর্ধেকটা যোগ করে যা সাধারণ মঙ্গলবারে গুরুত্বপূর্ণ: **Partition হলে Availability বা Consistency বাছুন; Else, Latency বা Consistency বাছুন।** Single-region Postgres primary হলো PC/EC — দুই শাখাতেই consistent, কারণ সেখানে "network" মানে একটা rack। Replica set region ছাড়িয়ে গেলেই EC দামি হয়ে যায়: যথেষ্ট replica durably accept না করা পর্যন্ত write ack করতে পারে না, আর "যথেষ্ট"-এর মধ্যে এখন ৪,০০০km দূরের মেশিন আছে।
+PACELC, CAP-এর সাথে সেই অর্ধেকটা যোগ করে যা সাধারণ মঙ্গলবারে গুরুত্বপূর্ণ: **Partition হলে Availability বা Consistency বাছুন; Else, Latency বা Consistency বাছুন।** Single-region Postgres primary হলো PC/EC - দুই শাখাতেই consistent, কারণ সেখানে "network" মানে একটা rack। Replica set region ছাড়িয়ে গেলেই EC দামি হয়ে যায়: যথেষ্ট replica durably accept না করা পর্যন্ত write ack করতে পারে না, আর "যথেষ্ট"-এর মধ্যে এখন ৪,০০০km দূরের মেশিন আছে।
 
-সূক্ষ্ম দিকটা হলো *কোন* replica latency ঠিক করছে। `N=3, W=2` তিন region-এ থাকলে US-East-এর write-কে US-West (৭০ms) বা Frankfurt (১৬০ms)-এ পৌঁছাতে হবে। observed latency হলো *দ্বিতীয় দ্রুততম* ack, তাই p50 নিকট replica অনুসরণ করে আর p99 দূরের — এখান থেকেই bimodal histogram। `W=3` করলে (বা চার region জুড়ে পাঁচ-node cluster-এ `majority`) প্রতিটি write সবচেয়ে ধীর link-এর দাম দেয়।
+সূক্ষ্ম দিকটা হলো *কোন* replica latency ঠিক করছে। `N=3, W=2` তিন region-এ থাকলে US-East-এর write-কে US-West (৭০ms) বা Frankfurt (১৬০ms)-এ পৌঁছাতে হবে। observed latency হলো *দ্বিতীয় দ্রুততম* ack, তাই p50 নিকট replica অনুসরণ করে আর p99 দূরের - এখান থেকেই bimodal histogram। `W=3` করলে (বা চার region জুড়ে পাঁচ-node cluster-এ `majority`) প্রতিটি write সবচেয়ে ধীর link-এর দাম দেয়।
 
 ```mermaid
 sequenceDiagram
@@ -43,7 +43,7 @@ sequenceDiagram
 ## Root causes
 
 1. durability-র জন্য replica set region জুড়ে টানা হয়েছে, কিন্তু write latency budget আবার হিসাব করা হয়নি।
-2. write concern per-operation নয়, cluster-wide `majority` — তাই idempotent audit log আর payment capture একই দাম দেয়।
+2. write concern per-operation নয়, cluster-wide `majority` - তাই idempotent audit log আর payment capture একই দাম দেয়।
 3. upstream timeout budget কখনো বাড়ানো হয়নি, ফলে tail latency error rate হয়ে গেছে।
 4. read-ও primary-তে pin করা, যেসব operation ২s staleness সহ্য করে তারাও cross-region latency দিচ্ছে।
 5. migration-এর আগে `RTT * hops` কেউ মাপেনি; design review-তে CAP নিয়ে কথা হয়েছে, else-branch নিয়ে হয়নি।
@@ -92,7 +92,7 @@ members:
   - { host: db-apse1-az1, priority: 0, votes: 0, hidden: true }
 ```
 
-এতে cross-region ক্ষেত্রে আপনি EL বেছেছেন আর region-এর ভেতরে EC — emergent নয়, স্পষ্ট সিদ্ধান্ত।
+এতে cross-region ক্ষেত্রে আপনি EL বেছেছেন আর region-এর ভেতরে EC - emergent নয়, স্পষ্ট সিদ্ধান্ত।
 
 ### 3. Staleness tolerance দিয়ে read route করুন
 
@@ -124,7 +124,7 @@ histogram_quantile(0.99,
 
 ### 5. Timeout budget ভেতর থেকে বাইরে হিসাব করুন
 
-প্রতিটি hop-এর timeout নিচের সব budget আর retry-র যোগফলের চেয়ে বড় হতে হবে। এক retry সহ ২,০০০ms quorum write-এর জন্য calling service-এর দরকার ≥৪,৫০০ms, gateway-এর আরও বেশি — নইলে timeout নয়, write concern-ই বাদ দিতে হবে।
+প্রতিটি hop-এর timeout নিচের সব budget আর retry-র যোগফলের চেয়ে বড় হতে হবে। এক retry সহ ২,০০০ms quorum write-এর জন্য calling service-এর দরকার ≥৪,৫০০ms, gateway-এর আরও বেশি - নইলে timeout নয়, write concern-ই বাদ দিতে হবে।
 
 ## Target design
 
@@ -161,7 +161,7 @@ flowchart LR
 
 ## Anti-patterns
 
-- 504 থামা পর্যন্ত upstream timeout বাড়ানো — error rate-কে ৩s page-এ রূপান্তর করে কারণ লুকিয়ে ফেলা।
+- 504 থামা পর্যন্ত upstream timeout বাড়ানো - error rate-কে ৩s page-এ রূপান্তর করে কারণ লুকিয়ে ফেলা।
 - quorum তিন মহাদেশে থাকা অবস্থায় "safety-র জন্য" cluster-wide `w: 'majority'` দেওয়া।
 - দূরের region-এ read replica যোগ করে সব read primary-তেই pin রাখা।
 - ০ms replication lag-কে সুস্থতার প্রমাণ ধরা, যখন খরচ request latency-তে সরে গেছে।

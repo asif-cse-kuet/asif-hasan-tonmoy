@@ -1,4 +1,4 @@
-> **Scenario** — A 40-field onboarding form validates on the client with hand-written `if` statements and on the server with Laravel rules. A release adds a `vat_number` requirement server-side only. The client lets users submit, the API returns 422 with a field the form does not render, and the submit button spins forever. Conversion on that step drops 18% before anyone connects the two events.
+> **Scenario** - A 40-field onboarding form validates on the client with hand-written `if` statements and on the server with Laravel rules. A release adds a `vat_number` requirement server-side only. The client lets users submit, the API returns 422 with a field the form does not render, and the submit button spins forever. Conversion on that step drops 18% before anyone connects the two events.
 
 ## Why it matters
 
@@ -20,7 +20,7 @@
 
 ## How it breaks
 
-Two independent rule sets are two sources of truth. The server is authoritative but only speaks at submit time; the client is fast but can be wrong. Without a shared schema, the client's job silently degrades from "prevent invalid submits" to "guess what the server wants". The failure mode is not a crash — it is a form that cannot be completed.
+Two independent rule sets are two sources of truth. The server is authoritative but only speaks at submit time; the client is fast but can be wrong. Without a shared schema, the client's job silently degrades from "prevent invalid submits" to "guess what the server wants". The failure mode is not a crash - it is a form that cannot be completed.
 
 ```mermaid
 flowchart TD

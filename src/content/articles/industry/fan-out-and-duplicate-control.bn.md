@@ -1,10 +1,10 @@
-> **Scenario** — `user.signed_up` ছয়টা subscriber-এ fan-out হয়: welcome email, CRM sync, analytics, provisioning, referral credit ও Slack notification। RabbitMQ config reload-এর সময় একটা deploy script analytics queue-এর জন্য দ্বিতীয় একটা routing key দিয়ে `queue_bind` আবার চালায়, যেটাও match করে। এখন প্রতিটি signup ওই queue-তে দুবার যায়। নয় দিন কেউ টের পায় না, কারণ একমাত্র দৃশ্যমান উপসর্গ হলো dashboard বলছে signup দ্বিগুণ।
+> **Scenario** - `user.signed_up` ছয়টা subscriber-এ fan-out হয়: welcome email, CRM sync, analytics, provisioning, referral credit ও Slack notification। RabbitMQ config reload-এর সময় একটা deploy script analytics queue-এর জন্য দ্বিতীয় একটা routing key দিয়ে `queue_bind` আবার চালায়, যেটাও match করে। এখন প্রতিটি signup ওই queue-তে দুবার যায়। নয় দিন কেউ টের পায় না, কারণ একমাত্র দৃশ্যমান উপসর্গ হলো dashboard বলছে signup দ্বিগুণ।
 
 ## Why it matters
 
 - Fan-out ভুলকে গুণ করে। এক producer bug ছয়টা downstream incident হয়ে যায়, প্রতিটি আলাদা দলের on-call rotation-এ।
 - Duplicate binding application code-এ অদৃশ্য; ওরা থাকে broker topology-তে, যা প্রায়ই হাতে বা কেউ review না করা script দিয়ে বদলানো হয়।
-- Subscriber-দের reliability চাহিদা আকাশ-পাতাল আলাদা — analytics write fail হলে চলে, provisioning write fail হলে চলে না — অথচ সরল fan-out সবাইকে এক চোখে দেখে।
+- Subscriber-দের reliability চাহিদা আকাশ-পাতাল আলাদা - analytics write fail হলে চলে, provisioning write fail হলে চলে না - অথচ সরল fan-out সবাইকে এক চোখে দেখে।
 - ব্যস্ত topic-এ নতুন subscriber যোগ করলে broker egress গুণিত হয় এবং কেউ capacity হিসাব করার আগেই network saturate হয়।
 - Fan-out-এ duplicate side effect (দুটো welcome email, দুটো referral credit) সরাসরি customer-এর কাছে পৌঁছায়।
 
@@ -21,7 +21,7 @@
 
 ## How it breaks
 
-দুই topology, দুই রকম failure। RabbitMQ-তে fanout বা topic exchange প্রতিটি bound queue-তে একটা copy দেয়। Duplicate binding, বা `user.*` ও `user.signed_up` দুটোতেই bound queue, এক queue-তে দুটো copy পাঠায়। Kafka-তে fan-out প্রকাশ পায় consumer group দিয়ে: এক group-এর সব pod partition ভাগ করে নেয়, আলাদা group প্রত্যেকে সবকিছু পায়। ভুল করে প্রতিটি pod-কে নিজস্ব group ID দিন — যেমন hostname যোগ করে — তাহলে ছয়-pod deployment প্রতিটি message ছয়বার process করবে।
+দুই topology, দুই রকম failure। RabbitMQ-তে fanout বা topic exchange প্রতিটি bound queue-তে একটা copy দেয়। Duplicate binding, বা `user.*` ও `user.signed_up` দুটোতেই bound queue, এক queue-তে দুটো copy পাঠায়। Kafka-তে fan-out প্রকাশ পায় consumer group দিয়ে: এক group-এর সব pod partition ভাগ করে নেয়, আলাদা group প্রত্যেকে সবকিছু পায়। ভুল করে প্রতিটি pod-কে নিজস্ব group ID দিন - যেমন hostname যোগ করে - তাহলে ছয়-pod deployment প্রতিটি message ছয়বার process করবে।
 
 ```mermaid
 sequenceDiagram
@@ -44,7 +44,7 @@ sequenceDiagram
 3. Kafka consumer group ID hostname বা pod name থেকে বানানো, ফলে shared group N-টা group হয়ে যায়।
 4. event ID নেই, তাই subscriber বুঝতে পারে না সে এই message আগেই সামলেছে।
 5. অসামঞ্জস্যপূর্ণ SLA-র subscriber-দের এক shared queue-তে fan-out করা।
-6. delivery নয়, *publish* retry করা — যা upstream-এ সত্যিকারের duplicate event বানায়।
+6. delivery নয়, *publish* retry করা - যা upstream-এ সত্যিকারের duplicate event বানায়।
 
 ## How to solve it
 
@@ -100,7 +100,7 @@ CREATE TABLE processed_events (
 
 ### 6. Distinguish fan-out from work distribution
 
-Fan-out মানে "সবাই একটা copy পাবে"। Work distribution মানে "ঠিক একজন worker এটা সামলাবে"। দুটো মেশালে — যেমন একই service-এর দুই instance-কে fanout exchange-এর দুটো আলাদা queue-তে bind করলে — কাজ নীরবে duplicate হয়।
+Fan-out মানে "সবাই একটা copy পাবে"। Work distribution মানে "ঠিক একজন worker এটা সামলাবে"। দুটো মেশালে - যেমন একই service-এর দুই instance-কে fanout exchange-এর দুটো আলাদা queue-তে bind করলে - কাজ নীরবে duplicate হয়।
 
 ## Target design
 

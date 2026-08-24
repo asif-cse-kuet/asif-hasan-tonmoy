@@ -1,4 +1,4 @@
-> **Scenario** — মঙ্গলবার একটি producer `user_type`-কে `account_type` নাম দিল এবং একটি nested `preferences` object যোগ করল। Kafka consumer চলতেই থাকল কারণ সে dict-এ deserialise করে। শুক্রবারে churn model-এর `user_type` feature ১০০% null, model তবু score দিচ্ছে, আর retention dashboard সন্দেহজনকভাবে সমান রেখা দেখাচ্ছে।
+> **Scenario** - মঙ্গলবার একটি producer `user_type`-কে `account_type` নাম দিল এবং একটি nested `preferences` object যোগ করল। Kafka consumer চলতেই থাকল কারণ সে dict-এ deserialise করে। শুক্রবারে churn model-এর `user_type` feature ১০০% null, model তবু score দিচ্ছে, আর retention dashboard সন্দেহজনকভাবে সমান রেখা দেখাচ্ছে।
 
 ## Why it matters
 
@@ -21,7 +21,7 @@
 
 ## How it breaks
 
-Loosely-typed ingestion সুবিধাজনক — যতক্ষণ সেটাই failure না হয়। Pipeline `dict`-এ deserialise করলে বা raw JSON land করলে field যোগ, rename বা retype সব বিনা আপত্তিতে গৃহীত হয়। Downstream-এ staging model `payload->>'user_type'` select করে `NULL` পায় এবং nullable column-এ cast করে। কিছুই error দেয় না।
+Loosely-typed ingestion সুবিধাজনক - যতক্ষণ সেটাই failure না হয়। Pipeline `dict`-এ deserialise করলে বা raw JSON land করলে field যোগ, rename বা retype সব বিনা আপত্তিতে গৃহীত হয়। Downstream-এ staging model `payload->>'user_type'` select করে `NULL` পায় এবং nullable column-এ cast করে। কিছুই error দেয় না।
 
 অন্য প্রান্ত ভিন্নভাবে fail করে। Compatibility policy ছাড়া strictly typed consumer প্রথম অপ্রত্যাশিত field-এ throw করে, message retry হয়, আবার throw করে, আর partition এগোয় না। এখন schema change একটি outage।
 
@@ -150,7 +150,7 @@ HAVING MAX(CASE WHEN d.day = CURRENT_DATE THEN d.occurrences END) IS NULL
 ORDER BY 1;
 ```
 
-যে key শুধু আজ আছে (নতুন field) বা শুধু সপ্তাহ আগে ছিল (হারানো field) — সেটাই মানুষের নজর দেওয়ার মতো drift।
+যে key শুধু আজ আছে (নতুন field) বা শুধু সপ্তাহ আগে ছিল (হারানো field) - সেটাই মানুষের নজর দেওয়ার মতো drift।
 
 ### 4. Null rate ও cardinality time series হিসেবে track করুন
 
@@ -221,7 +221,7 @@ user_profile_drift_gate()
 
 ### 6. Field-level consumer publish করুন
 
-প্রতিটি field কোন feature, model ও dashboard পড়ে — তার machine-readable তালিকা রাখুন। `user_type` সরানোর আগে producer দেখতে পাবে কোন তিনটি consumer ভাঙবে।
+প্রতিটি field কোন feature, model ও dashboard পড়ে - তার machine-readable তালিকা রাখুন। `user_type` সরানোর আগে producer দেখতে পাবে কোন তিনটি consumer ভাঙবে।
 
 ## Target design
 
@@ -262,7 +262,7 @@ flowchart TD
 ## Anti-patterns
 
 - Staging থেকে mart-এ `SELECT *`, ফলে upstream column যোগ হলে downstream schema নীরবে বদলায় ও view ভাঙে।
-- Deserialisation exception ধরে `continue` — quarantine record ছাড়া নীরব data loss।
+- Deserialisation exception ধরে `continue` - quarantine record ছাড়া নীরব data loss।
 - Additive change সবসময় নিরাপদ ভাবা; computed feature-এর সঙ্গে নাম মেলা field সেটাকে shadow করে।
 - Consumer-কে নির্দিষ্ট schema version-এ pin করে কখনও upgrade না করা, ফলে drift জমে migration একটি project হয়ে যায়।
 - "আমার consumer যে field-এ নির্ভর করে তা বদলেছে" নয়, "schema বদলেছে"-তে alert দেওয়া।

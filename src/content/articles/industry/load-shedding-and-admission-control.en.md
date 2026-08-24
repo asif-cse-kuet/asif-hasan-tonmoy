@@ -1,4 +1,4 @@
-> **Scenario** — A marketing push at 20:00 sends 12,000 requests/second at an API that comfortably serves 4,000. Nothing crashes. Every request is accepted, queued, and answered after 14 seconds — by which time the client has already timed out at 5s and retried. Effective goodput: near zero.
+> **Scenario** - A marketing push at 20:00 sends 12,000 requests/second at an API that comfortably serves 4,000. Nothing crashes. Every request is accepted, queued, and answered after 14 seconds - by which time the client has already timed out at 5s and retried. Effective goodput: near zero.
 
 ## Why it matters
 
@@ -17,11 +17,11 @@
 | Goodput | Requests/second *completed before client timeout* collapses while requests/second accepted stays high |
 | Retries | Inbound RPS 2-3x the real user rate; same idempotency keys seen repeatedly |
 | Memory | RSS growth proportional to queue depth, then a `Killed process` in `dmesg` |
-| CPU | Not saturated — the bottleneck is a pool or a lock, and CPU looks "fine" at 55% |
+| CPU | Not saturated - the bottleneck is a pool or a lock, and CPU looks "fine" at 55% |
 
 ## How it breaks
 
-Work arriving faster than it can be served has to go somewhere. Unbounded queues turn an overload problem into a latency problem and then into a memory problem. The critical detail is that queued requests keep aging: by the time a worker picks up request #40,000, the client that sent it gave up 9 seconds ago and has sent two replacements. The server is now spending 100% of its capacity computing responses that will be discarded, while the retries it caused push arrival rate higher. This is metastable failure — even after the marketing traffic stops, the system stays down because the retry backlog sustains the overload.
+Work arriving faster than it can be served has to go somewhere. Unbounded queues turn an overload problem into a latency problem and then into a memory problem. The critical detail is that queued requests keep aging: by the time a worker picks up request #40,000, the client that sent it gave up 9 seconds ago and has sent two replacements. The server is now spending 100% of its capacity computing responses that will be discarded, while the retries it caused push arrival rate higher. This is metastable failure - even after the marketing traffic stops, the system stays down because the retry backlog sustains the overload.
 
 ```mermaid
 flowchart LR
@@ -68,7 +68,7 @@ export function admit(res: Response): boolean {
 
 ### 2. Drop requests that are already too old (LIFO + deadline)
 
-FIFO under overload serves the *oldest* — that is, the most likely to be abandoned — requests first. LIFO with a deadline check serves the ones that can still be useful.
+FIFO under overload serves the *oldest* - that is, the most likely to be abandoned - requests first. LIFO with a deadline check serves the ones that can still be useful.
 
 ```python
 import time
@@ -159,13 +159,13 @@ flowchart TD
 - [ ] Shed responses are served in under 10ms at p99 (measure separately from successful responses).
 - [ ] `queue_depth`, `shed_total{reason}`, and `goodput` are on one dashboard.
 - [ ] Every queue in the path has a documented maximum: listen backlog, app queue, DB pool, HTTP client pool.
-- [ ] Clients honour `Retry-After` — verified by watching inbound RPS *fall* after shedding starts.
+- [ ] Clients honour `Retry-After` - verified by watching inbound RPS *fall* after shedding starts.
 - [ ] A soak test at 3x capacity for 15 minutes ends with the service still up and RSS flat.
 - [ ] Health-check endpoints are never shed, and are not counted against user quotas.
 
 ## Anti-patterns
 
-- Raising the queue size or thread count "to handle the spike" — this increases latency and memory, not capacity.
+- Raising the queue size or thread count "to handle the spike" - this increases latency and memory, not capacity.
 - Shedding *after* authentication and a database lookup, so rejected requests still cost 40ms each.
 - Returning 500 instead of 503, which makes clients retry aggressively and pollutes error SLOs.
 - Retrying shed requests immediately without jitter, recreating the herd.

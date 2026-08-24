@@ -1,11 +1,11 @@
-> **পরিস্থিতি** — একটা queue worker fleet ২০% CPU-তে বসে আছে অথচ ৪ লাখ message জমে গেছে। HPA-র target ৭০% CPU, তাই কখনো scale হয় না। Worker-রা একটা ধীর third-party API-তে আটকে আছে, আর traffic spike শেষ হওয়ার ছয় ঘণ্টা পর backlog পরিষ্কার হয়।
+> **পরিস্থিতি** - একটা queue worker fleet ২০% CPU-তে বসে আছে অথচ ৪ লাখ message জমে গেছে। HPA-র target ৭০% CPU, তাই কখনো scale হয় না। Worker-রা একটা ধীর third-party API-তে আটকে আছে, আর traffic spike শেষ হওয়ার ছয় ঘণ্টা পর backlog পরিষ্কার হয়।
 
 ## কেন গুরুত্বপূর্ণ
 
 - ভুল signal-এ autoscaling না-থাকার চেয়েও খারাপ: queue বাড়তে থাকা অবস্থায় এটি আত্মবিশ্বাসের সাথে নিষ্ক্রিয় থাকে।
 - I/O-bound workload বেশিরভাগ সময় অপেক্ষায় থাকে, তাই CPU কখনো প্রকৃত demand প্রতিফলিত করে না।
 - দেরিতে scale মানে user আগেই টের পেয়েছে; অতি-উৎসাহী scale মানে flapping, cold cache আর বড় বিল।
-- Pod-level scaling node capacity-তে আটকে যায় — cluster autoscaler ছাড়া HPA শুধু `Pending` pod বানায়।
+- Pod-level scaling node capacity-তে আটকে যায় - cluster autoscaler ছাড়া HPA শুধু `Pending` pod বানায়।
 
 ## লক্ষণ
 
@@ -13,13 +13,13 @@
 |---|---|
 | HPA status | backlog বাড়তে থাকা অবস্থায় `TARGET: 21%/70%`, `REPLICAS: 4` |
 | Queue | consumer lag রৈখিকভাবে বাড়ছে, replica-তে কোনো পরিবর্তন নেই |
-| Latency | queue wait time প্রধান, service time সমতল — Little's Law-এর স্বাক্ষর |
+| Latency | queue wait time প্রধান, service time সমতল - Little's Law-এর স্বাক্ষর |
 | Replica graph | করাতদাঁত: দশ মিনিটে ৪ → ২০ → ৪ |
 | Scheduler | নতুন pod `Pending`, কারণ `Insufficient cpu` |
 
 ## কীভাবে ভাঙে
 
-CPU utilisation একটা *resource* metric, *demand* metric নয়। যে worker-এর মূল সীমাবদ্ধতা external API-র বিপরীতে concurrency, তার CPU backlog যত গভীরই হোক নিচেই থাকে। HPA একটা সুস্থ সংখ্যা দেখে এবং তার input অনুযায়ী সঠিক কাজই করে — input-টাই ভুল।
+CPU utilisation একটা *resource* metric, *demand* metric নয়। যে worker-এর মূল সীমাবদ্ধতা external API-র বিপরীতে concurrency, তার CPU backlog যত গভীরই হোক নিচেই থাকে। HPA একটা সুস্থ সংখ্যা দেখে এবং তার input অনুযায়ী সঠিক কাজই করে - input-টাই ভুল।
 
 উল্টো failure হলো flapping। ছোট stabilisation window আর আঁটসাঁট target থাকলে একটা scrape target ছাড়ালেই pod যোগ হয়, বাড়তি capacity utilisation target-এর নিচে নামায়, controller আবার pod সরায়। প্রতিটি চক্রে warm connection pool ও JIT state হারায়, latency বাড়ে, আর তা আরও scaling ডেকে আনে।
 
@@ -152,7 +152,7 @@ flowchart LR
 - গড় latency-তে scale করা, যা incident-এর পিছনে চলে এবং দ্রুত fail হওয়া request-এ কমেও যেতে পারে।
 - ৯০ সেকেন্ড cold start-এর service-এ `minReplicas: 1` রাখা।
 - CPU limit ও CPU-ভিত্তিক HPA একসাথে ব্যবহার, যাতে throttled pod কৃত্রিমভাবে সীমিত utilisation দেখায়।
-- যার আসল bottleneck একটাই database, সেই service autoscale করা — এতে saturated server-এ শুধু connection বাড়ে।
+- যার আসল bottleneck একটাই database, সেই service autoscale করা - এতে saturated server-এ শুধু connection বাড়ে।
 
 ## সম্পর্কিত
 

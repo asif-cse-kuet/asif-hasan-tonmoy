@@ -1,8 +1,8 @@
-> **Scenario** — A batch scheduler uses a Redis lock for "only one instance runs the nightly billing job". At 02:14 a GC pause of 6.8 seconds freezes the current leader; the lock expires, a second instance takes over, and the first wakes up and keeps writing invoices. Customers get billed twice.
+> **Scenario** - A batch scheduler uses a Redis lock for "only one instance runs the nightly billing job". At 02:14 a GC pause of 6.8 seconds freezes the current leader; the lock expires, a second instance takes over, and the first wakes up and keeps writing invoices. Customers get billed twice.
 
 ## Why it matters
 
-- Leader election is the mechanism behind singleton cron jobs, database primaries, Kafka partition leaders, shard owners, and stream processors. A wrong leader is not a slowdown — it is duplicated or corrupted data.
+- Leader election is the mechanism behind singleton cron jobs, database primaries, Kafka partition leaders, shard owners, and stream processors. A wrong leader is not a slowdown - it is duplicated or corrupted data.
 - Each re-election costs real unavailability: one election timeout plus leader warm-up. Flapping every 30 seconds on a 3-second timeout is a 10% availability loss that no health check reports.
 - The dangerous case is not "no leader" (loud, obvious, self-healing) but "two leaders that both believe they are valid" (silent, and it corrupts data at full throughput).
 - Timeout tuning is where most teams go wrong: they tune for fast detection on a LAN and then run across availability zones with a co-tenanted CPU.
@@ -15,7 +15,7 @@
 | Duplicate work | Two instances logging the same job id; unique constraint violations on downstream inserts |
 | Lock TTL logs | `lock lost` immediately followed by `lock acquired` on a different host |
 | GC / STW pause | `jvm_gc_pause_seconds` or Go `gc_pause` p99 near or above the lease TTL |
-| Election never converges | Repeated `RequestVote` with rising terms and no winner — usually a partial partition |
+| Election never converges | Repeated `RequestVote` with rising terms and no winner - usually a partial partition |
 | Zombie writes | Writes from a node whose epoch is lower than the current one, accepted by the store |
 | Failover latency | Recovery time far above the configured timeout because DNS/connection pools cache the old leader |
 
@@ -23,7 +23,7 @@
 
 Two distinct failures hide under one name.
 
-**Flapping.** The election timeout is a bet on the maximum stall of a healthy leader. Anything that stalls a process longer than the timeout looks identical to death: a stop-the-world GC pause, a blocked `fsync`, CPU throttling from a Kubernetes CPU limit (a container with `limits.cpu: 500m` that needs 600m is stalled for 40ms of every 100ms period), or a VM live-migration freeze. The leader is alive, loses leadership, then re-acquires it — and the cluster spends its time on elections instead of work.
+**Flapping.** The election timeout is a bet on the maximum stall of a healthy leader. Anything that stalls a process longer than the timeout looks identical to death: a stop-the-world GC pause, a blocked `fsync`, CPU throttling from a Kubernetes CPU limit (a container with `limits.cpu: 500m` that needs 600m is stalled for 40ms of every 100ms period), or a VM live-migration freeze. The leader is alive, loses leadership, then re-acquires it - and the cluster spends its time on elections instead of work.
 
 **Split brain via expired lease.** A lock with a TTL is a lease, and a lease only guarantees mutual exclusion if the holder can prove liveness *to the resource*, not just to the lock service. The classic sequence: leader A acquires a 10s lease, pauses for 12s, the lease expires, B acquires it, A resumes and issues a write that it believes is protected. Neither A nor the database knows A's lease is dead.
 
@@ -127,7 +127,7 @@ class Lease {
 # Measure what actually stalls the leader before choosing a timeout.
 # Go: p99 STW pause
 curl -s localhost:6060/debug/vars | jq '.memstats.PauseNs | max / 1e6'
-# Kubernetes CPU throttling — the most common invisible stall.
+# Kubernetes CPU throttling - the most common invisible stall.
 kubectl exec -it "$POD" -- cat /sys/fs/cgroup/cpu.stat | grep throttled
 # nr_throttled / nr_periods above 0.01 means you are stalled ~1% of periods.
 ```
@@ -161,7 +161,7 @@ upstream primary {
 # long after the election finished.
 ```
 
-Also drop pooled connections on a leadership change event rather than waiting for TCP timeouts — this is usually where "30 second failover" hides.
+Also drop pooled connections on a leadership change event rather than waiting for TCP timeouts - this is usually where "30 second failover" hides.
 
 ## Target design
 
@@ -199,7 +199,7 @@ stateDiagram-v2
 
 ## Anti-patterns
 
-- Raising the lease TTL to 60s to "stop the split brain" — you have only widened the window in which nothing runs.
+- Raising the lease TTL to 60s to "stop the split brain" - you have only widened the window in which nothing runs.
 - Using `Date.now()` for lease expiry on hosts under NTP correction.
 - Trusting `isLeader()` checked once at job start and never re-checked across a 20-minute run.
 - Setting Kubernetes CPU limits on a leader-electing process and then wondering why it flaps at exactly p95 load.

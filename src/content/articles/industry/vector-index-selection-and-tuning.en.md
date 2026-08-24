@@ -1,4 +1,4 @@
-> **Scenario** — A vector store holding 8M chunks was fine at 400k. After a bulk ingest, p95 search latency went from 18ms to 240ms and answer quality dropped, but nobody changed the retrieval code. The index was rebuilt with default parameters.
+> **Scenario** - A vector store holding 8M chunks was fine at 400k. After a bulk ingest, p95 search latency went from 18ms to 240ms and answer quality dropped, but nobody changed the retrieval code. The index was rebuilt with default parameters.
 
 ## Why it matters
 
@@ -65,7 +65,7 @@ def recall_at_k(approx: list[int], exact: list[int]) -> float:
 
 ### 2. Sweep `efSearch` against latency
 
-`efSearch` is a query-time knob — you can change it without rebuilding. Sweep it and pick the knee.
+`efSearch` is a query-time knob - you can change it without rebuilding. Sweep it and pick the knee.
 
 ```python
 for ef in (16, 32, 64, 128, 256, 512):
@@ -140,7 +140,7 @@ flowchart LR
 
 - Treating ANN recall as a constant property of the database rather than a tuned parameter.
 - Raising `M` to fix recall when `efSearch` is the free query-time knob.
-- Benchmarking on 50k vectors and extrapolating to 8M — graph behaviour is not linear.
+- Benchmarking on 50k vectors and extrapolating to 8M - graph behaviour is not linear.
 - Deleting and re-adding documents constantly without compaction, leaving the graph full of tombstones.
 - Comparing two index configurations on different query sets.
 

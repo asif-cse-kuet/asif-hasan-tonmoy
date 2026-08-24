@@ -1,4 +1,4 @@
-> **Scenario** — Security rotates the database password after an audit finding. The Secret is updated, the ticket is closed, and three days later a pod restarts, picks up the new value, and fails — because half the fleet never restarted and the old connection pool was still working fine.
+> **Scenario** - Security rotates the database password after an audit finding. The Secret is updated, the ticket is closed, and three days later a pod restarts, picks up the new value, and fails - because half the fleet never restarted and the old connection pool was still working fine.
 
 ## Why it matters
 
@@ -21,7 +21,7 @@
 
 Two mechanisms, two different failure shapes.
 
-Environment variables are copied into the process at exec time. Kubernetes will not restart a pod because a Secret changed, so the Deployment's pod template hash is unchanged and there is nothing to roll. Mounted volumes do update (kubelet refreshes them, typically within a minute), but only if the application re-reads the file — most read once at boot.
+Environment variables are copied into the process at exec time. Kubernetes will not restart a pod because a Secret changed, so the Deployment's pod template hash is unchanged and there is nothing to roll. Mounted volumes do update (kubelet refreshes them, typically within a minute), but only if the application re-reads the file - most read once at boot.
 
 Meanwhile, an unvalidated config means a typo in a key name produces `undefined`, which becomes `""`, which becomes a connection to `localhost`.
 

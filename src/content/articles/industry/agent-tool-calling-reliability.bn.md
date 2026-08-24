@@ -1,9 +1,9 @@
-> **Scenario** — একটি ops assistant এগারোটি tool খুলে রেখেছে। এক সপ্তাহে সে একই order-এ `create_refund` দুবার ডাকে, date হিসেবে `"2024-13-45"` পাঠায়, আর `list_all_refunds` নামে একটি tool বানিয়ে ফেলে যা আদৌ নেই। প্রতিটি failure API-তে 500 আর user-এর কাছে বিভ্রান্তি হয়ে দেখা দেয়।
+> **Scenario** - একটি ops assistant এগারোটি tool খুলে রেখেছে। এক সপ্তাহে সে একই order-এ `create_refund` দুবার ডাকে, date হিসেবে `"2024-13-45"` পাঠায়, আর `list_all_refunds` নামে একটি tool বানিয়ে ফেলে যা আদৌ নেই। প্রতিটি failure API-তে 500 আর user-এর কাছে বিভ্রান্তি হয়ে দেখা দেয়।
 
 ## Why it matters
 
 - Tool call মানে side effect। read-only search-এ hallucinated argument নিছক noise; `create_refund`-এ সেই একই ভুল টাকা সরায়।
-- Model tool call structured text হিসেবে বের করে। JSON parse হবে, enum বৈধ হবে, বা tool-টি আদৌ আছে — sampling প্রক্রিয়ায় এর কোনো গ্যারান্টি নেই।
+- Model tool call structured text হিসেবে বের করে। JSON parse হবে, enum বৈধ হবে, বা tool-টি আদৌ আছে - sampling প্রক্রিয়ায় এর কোনো গ্যারান্টি নেই।
 - Idempotency ছাড়া ব্যর্থ tool call retry করলে একটি অনিশ্চিত ফলাফল দুটি বাস্তব ফলাফলে পরিণত হয়।
 - প্রতিটি malformed call একটি পূর্ণ round trip খায়: ব্যর্থ call, context-এ ফেরত যাওয়া error message, আর repair চেষ্টা। এক logical operation-এ ৩ গুণ token।
 - Tool schema context খায়। এগারোটি বাচাল tool definition প্রতিটি request-এ ৩,০০০+ token দখল করতে পারে, কোনো user content ঢোকার আগেই।
@@ -20,7 +20,7 @@
 
 ## How it breaks
 
-Model এমন token sequence তৈরি করে যা দেখতে বৈধ call-এর মতো। Schema ঢিলা হলে — free-form string, optional field, enum নেই — প্রায় যেকোনো কিছুই syntactic validation পেরিয়ে business layer-এ গিয়ে ব্যর্থ হয়। ব্যর্থ হলে চেনা প্যাটার্ন হলো error ফেরত দিয়ে model-কে আবার চেষ্টা করতে দেওয়া। Attempt counter না থাকলে সেই loop request timeout পর্যন্ত চলতে পারে, আর idempotency key না থাকলে যে attempt *আংশিক* সফল হয়েছিল সে ইতিমধ্যেই state লিখে ফেলেছে।
+Model এমন token sequence তৈরি করে যা দেখতে বৈধ call-এর মতো। Schema ঢিলা হলে - free-form string, optional field, enum নেই - প্রায় যেকোনো কিছুই syntactic validation পেরিয়ে business layer-এ গিয়ে ব্যর্থ হয়। ব্যর্থ হলে চেনা প্যাটার্ন হলো error ফেরত দিয়ে model-কে আবার চেষ্টা করতে দেওয়া। Attempt counter না থাকলে সেই loop request timeout পর্যন্ত চলতে পারে, আর idempotency key না থাকলে যে attempt *আংশিক* সফল হয়েছিল সে ইতিমধ্যেই state লিখে ফেলেছে।
 
 ```mermaid
 sequenceDiagram

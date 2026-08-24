@@ -1,10 +1,10 @@
-> **Scenario** — একটা travel booking saga প্রথমে seat reserve করে, তারপর card charge করে, শেষে hotel book করে। Hotel provider এগারো মিনিট ধরে 503 দিচ্ছে। Saga compensation চালায়: card refund, seat release। Refund সফল, কিন্তু seat release message দুবার consume হয় এবং *অন্য* একটা booking-এর seat release হয়ে যায় যেটা একই seat ID পুনর্ব্যবহার করেছিল। Support দুজন রাগী customer পায়, আর saga log-এ লেখা `COMPLETED`।
+> **Scenario** - একটা travel booking saga প্রথমে seat reserve করে, তারপর card charge করে, শেষে hotel book করে। Hotel provider এগারো মিনিট ধরে 503 দিচ্ছে। Saga compensation চালায়: card refund, seat release। Refund সফল, কিন্তু seat release message দুবার consume হয় এবং *অন্য* একটা booking-এর seat release হয়ে যায় যেটা একই seat ID পুনর্ব্যবহার করেছিল। Support দুজন রাগী customer পায়, আর saga log-এ লেখা `COMPLETED`।
 
 ## Why it matters
 
 - Compensation মানে rollback নয়। কোনো undo log নেই; প্রতিটি reversal একটা নতুন business operation, তার নিজস্ব failure mode ও নিজস্ব টাকার নড়াচড়া সহ।
 - অর্ধেক-compensate হওয়া saga এমন state রেখে যায় যা কোনো একক service বর্ণনা করতে পারে না, ফলে incident response-কে চারটা service-এর log থেকে intent পুনর্গঠন করতে হয়।
-- আটকে থাকা saga আসল resource ধরে রাখে — inventory, seat, credit hold — এবং নীরবে sellable capacity কমায়।
+- আটকে থাকা saga আসল resource ধরে রাখে - inventory, seat, credit hold - এবং নীরবে sellable capacity কমায়।
 - Compensation code প্রায়ই system-এর সবচেয়ে কম-tested path, শুধু incident-এর সময়ই চলে।
 - Financial reversal-এর regulatory timing থাকে; ৬ ঘণ্টা দেরিতে চলা compensation শুধু bug নয়, compliance সমস্যা।
 
@@ -21,7 +21,7 @@
 
 ## How it breaks
 
-Saga coordinator forward step চালায়, failure পায়, উল্টো ক্রমে compensation পাঠায়। বাস্তবে তিনটা জিনিস ভাঙে। এক, compensation fire-and-forget message হিসেবে যায় — শুধু transport delivery-র ack থাকে, *business* completion-এর নয়। দুই, compensation idempotent নয়, তাই at-least-once redelivery দুবার refund বা release করে। তিন, saga-র কোনো timeout নেই, তাই যে step কখনো উত্তর দেয় না সেটা saga-কে অনন্তকাল pending রেখে resource আটকে রাখে।
+Saga coordinator forward step চালায়, failure পায়, উল্টো ক্রমে compensation পাঠায়। বাস্তবে তিনটা জিনিস ভাঙে। এক, compensation fire-and-forget message হিসেবে যায় - শুধু transport delivery-র ack থাকে, *business* completion-এর নয়। দুই, compensation idempotent নয়, তাই at-least-once redelivery দুবার refund বা release করে। তিন, saga-র কোনো timeout নেই, তাই যে step কখনো উত্তর দেয় না সেটা saga-কে অনন্তকাল pending রেখে resource আটকে রাখে।
 
 ```mermaid
 sequenceDiagram
@@ -47,7 +47,7 @@ sequenceDiagram
 2. saga instance-scoped idempotency key নেই, তাই redelivery reversal পুনরাবৃত্তি করে।
 3. per-step timeout নেই, তাই নীরব upstream saga-কে অনির্দিষ্টকাল pending রাখে।
 4. booking-এর মধ্যে resource identifier পুনর্ব্যবহার, ফলে "release seat 14C" অস্পষ্ট।
-5. persisted saga state machine নেই — state থাকে in-memory coordinator object-এ, restart-এ উবে যায়।
+5. persisted saga state machine নেই - state থাকে in-memory coordinator object-এ, restart-এ উবে যায়।
 6. compensation ordering কঠোরভাবে উল্টো ধরে নেওয়া, যদিও কিছু step স্বাধীন আর কিছু নয়।
 
 ## How to solve it
@@ -125,7 +125,7 @@ const bookHotel: Step = {
 
 ### 4. Compensate in reverse, but only what actually succeeded
 
-শুধু `status = 'succeeded'` step-গুলোর reversal দরকার। যে step timeout করেছে সেটা *অস্পষ্ট* — হয়তো apply হয়ে গেছে। অস্পষ্ট step-ও compensate করতে হবে, তাই compensation-কে "undo করার কিছু নেই" অবস্থাও সহ্য করতে হবে।
+শুধু `status = 'succeeded'` step-গুলোর reversal দরকার। যে step timeout করেছে সেটা *অস্পষ্ট* - হয়তো apply হয়ে গেছে। অস্পষ্ট step-ও compensate করতে হবে, তাই compensation-কে "undo করার কিছু নেই" অবস্থাও সহ্য করতে হবে।
 
 ### 5. Choose orchestration over choreography for money
 

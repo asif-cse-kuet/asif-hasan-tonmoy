@@ -1,4 +1,4 @@
-> **Scenario** — A Node.js worker restarts every 40 minutes with exit code 137. Memory looks fine in the app's own metrics, the heap never exceeds 900 MB, and the container limit is 1 GiB. Meanwhile the API pod's p99 tripled after someone "helpfully" set `cpu: 500m` as a limit.
+> **Scenario** - A Node.js worker restarts every 40 minutes with exit code 137. Memory looks fine in the app's own metrics, the heap never exceeds 900 MB, and the container limit is 1 GiB. Meanwhile the API pod's p99 tripled after someone "helpfully" set `cpu: 500m` as a limit.
 
 ## Why it matters
 
@@ -23,7 +23,7 @@ Two distinct failures wear the same "the pod is unhappy" costume.
 
 **Memory:** the cgroup limit counts RSS *plus* page cache, off-heap allocations, thread stacks, and native library arenas. A JVM with `-Xmx900m` or a Node process with a 900 MB heap can easily use 1.3 GiB RSS. The kernel OOM killer does not read your heap dashboard; it reads the cgroup counter and kills PID 1.
 
-**CPU:** a limit is enforced by CFS quota over a 100ms period. `cpu: 500m` means 50ms of CPU per 100ms window. A request that needs 80ms of CPU gets stopped mid-flight and resumes 50ms later — latency appears in visible steps, even though average utilisation reads a comfortable 45%.
+**CPU:** a limit is enforced by CFS quota over a 100ms period. `cpu: 500m` means 50ms of CPU per 100ms window. A request that needs 80ms of CPU gets stopped mid-flight and resumes 50ms later - latency appears in visible steps, even though average utilisation reads a comfortable 45%.
 
 ```mermaid
 flowchart TD
@@ -128,7 +128,7 @@ flowchart LR
 
 ## Anti-patterns
 
-- Doubling the memory limit as a "fix" — the leak now takes 80 minutes instead of 40.
+- Doubling the memory limit as a "fix" - the leak now takes 80 minutes instead of 40.
 - Copying requests and limits between services because "the template had them".
 - Setting `cpu: 1` limits on every pod for fairness, then debugging tail latency for a quarter.
 - Using `emptyDir: {medium: Memory}` for scratch space without counting it against the limit.

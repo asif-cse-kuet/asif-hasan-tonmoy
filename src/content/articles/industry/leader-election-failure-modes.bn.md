@@ -1,8 +1,8 @@
-> **Scenario** — "রাতের billing job একটাই instance চালাবে" নিশ্চিত করতে batch scheduler Redis lock ব্যবহার করে। রাত ০২:১৪-তে ৬.৮ সেকেন্ডের GC pause বর্তমান leader-কে জমিয়ে দেয়; lock expire হয়, দ্বিতীয় instance দায়িত্ব নেয়, আর প্রথমটি জেগে উঠে invoice লেখা চালিয়ে যায়। Customer দুইবার bill পায়।
+> **Scenario** - "রাতের billing job একটাই instance চালাবে" নিশ্চিত করতে batch scheduler Redis lock ব্যবহার করে। রাত ০২:১৪-তে ৬.৮ সেকেন্ডের GC pause বর্তমান leader-কে জমিয়ে দেয়; lock expire হয়, দ্বিতীয় instance দায়িত্ব নেয়, আর প্রথমটি জেগে উঠে invoice লেখা চালিয়ে যায়। Customer দুইবার bill পায়।
 
 ## Why it matters
 
-- Leader election singleton cron job, database primary, Kafka partition leader, shard owner আর stream processor-এর পেছনের যন্ত্র। ভুল leader মানে ধীরগতি নয় — duplicate বা corrupt data।
+- Leader election singleton cron job, database primary, Kafka partition leader, shard owner আর stream processor-এর পেছনের যন্ত্র। ভুল leader মানে ধীরগতি নয় - duplicate বা corrupt data।
 - প্রতিটি re-election আসল unavailability খরচ করে: এক election timeout + leader warm-up। ৩ সেকেন্ড timeout-এ প্রতি ৩০ সেকেন্ডে flap মানে ১০% availability loss, যা কোনো health check দেখায় না।
 - বিপজ্জনক অবস্থা "leader নেই" (জোরে, স্পষ্ট, নিজে সারে) নয়, বরং "দুই leader দুজনেই নিজেকে বৈধ ভাবছে" (নীরব, আর পূর্ণ throughput-এ data নষ্ট করে)।
 - Timeout tuning-এই বেশিরভাগ দল ভুল করে: LAN-এ দ্রুত detection ধরে tune করে, তারপর co-tenanted CPU নিয়ে availability zone জুড়ে চালায়।
@@ -15,7 +15,7 @@
 | Duplicate work | দুই instance একই job id log করছে; downstream insert-এ unique constraint violation |
 | Lock TTL logs | `lock lost`-এর ঠিক পরেই অন্য host-এ `lock acquired` |
 | GC / STW pause | `jvm_gc_pause_seconds` বা Go `gc_pause` p99 lease TTL-এর কাছে বা উপরে |
-| Election converge করে না | term বাড়তে থাকা বারবার `RequestVote`, কোনো winner নেই — সাধারণত partial partition |
+| Election converge করে না | term বাড়তে থাকা বারবার `RequestVote`, কোনো winner নেই - সাধারণত partial partition |
 | Zombie writes | বর্তমানের চেয়ে কম epoch-এর node থেকে write, store সেটা মেনে নিচ্ছে |
 | Failover latency | configured timeout-এর অনেক বেশি recovery time, কারণ DNS/connection pool পুরনো leader cache করেছে |
 
@@ -23,7 +23,7 @@
 
 এক নামের নিচে দুইটি আলাদা failure লুকানো।
 
-**Flapping.** Election timeout সুস্থ leader-এর সর্বোচ্চ stall নিয়ে বাজি। timeout-এর চেয়ে বেশি সময় process থামায় এমন যেকোনো কিছু মৃত্যুর মতোই দেখায়: stop-the-world GC pause, আটকে যাওয়া `fsync`, Kubernetes CPU limit থেকে throttling (`limits.cpu: 500m` container-এর ৬০০m দরকার হলে প্রতি ১০০ms period-এর ৪০ms সে থেমে আছে), বা VM live-migration freeze। leader বেঁচে আছে, leadership হারায়, আবার নেয় — আর cluster কাজের বদলে election-এ সময় দেয়।
+**Flapping.** Election timeout সুস্থ leader-এর সর্বোচ্চ stall নিয়ে বাজি। timeout-এর চেয়ে বেশি সময় process থামায় এমন যেকোনো কিছু মৃত্যুর মতোই দেখায়: stop-the-world GC pause, আটকে যাওয়া `fsync`, Kubernetes CPU limit থেকে throttling (`limits.cpu: 500m` container-এর ৬০০m দরকার হলে প্রতি ১০০ms period-এর ৪০ms সে থেমে আছে), বা VM live-migration freeze। leader বেঁচে আছে, leadership হারায়, আবার নেয় - আর cluster কাজের বদলে election-এ সময় দেয়।
 
 **Expired lease-এর split brain.** TTL সহ lock আসলে lease, আর lease শুধু তখনই mutual exclusion দেয় যখন holder *resource*-এর কাছে liveness প্রমাণ করতে পারে, শুধু lock service-এর কাছে নয়। ক্লাসিক ধারা: leader A ১০s lease নেয়, ১২s pause করে, lease expire হয়, B নেয়, A ফিরে এসে এমন write পাঠায় যেটাকে সে protected ভাবে। A-ও জানে না, database-ও জানে না A-র lease মৃত।
 
@@ -127,7 +127,7 @@ class Lease {
 # Measure what actually stalls the leader before choosing a timeout.
 # Go: p99 STW pause
 curl -s localhost:6060/debug/vars | jq '.memstats.PauseNs | max / 1e6'
-# Kubernetes CPU throttling — the most common invisible stall.
+# Kubernetes CPU throttling - the most common invisible stall.
 kubectl exec -it "$POD" -- cat /sys/fs/cgroup/cpu.stat | grep throttled
 # nr_throttled / nr_periods above 0.01 means you are stalled ~1% of periods.
 ```
@@ -161,7 +161,7 @@ upstream primary {
 # long after the election finished.
 ```
 
-TCP timeout-এর অপেক্ষা না করে leadership change event-এ pooled connection ফেলে দিন — "৩০ সেকেন্ড failover" সাধারণত এখানেই লুকিয়ে থাকে।
+TCP timeout-এর অপেক্ষা না করে leadership change event-এ pooled connection ফেলে দিন - "৩০ সেকেন্ড failover" সাধারণত এখানেই লুকিয়ে থাকে।
 
 ## Target design
 
@@ -199,7 +199,7 @@ stateDiagram-v2
 
 ## Anti-patterns
 
-- "split brain থামাতে" lease TTL ৬০s করা — শুধু যে সময়ে কিছুই চলে না সেই জানালা বড় করেছেন।
+- "split brain থামাতে" lease TTL ৬০s করা - শুধু যে সময়ে কিছুই চলে না সেই জানালা বড় করেছেন।
 - NTP correction-এর অধীন host-এ lease expiry-র জন্য `Date.now()` ব্যবহার।
 - job শুরুতে একবার `isLeader()` দেখে ২০ মিনিটের run-এ আর না দেখা।
 - leader-electing process-এ Kubernetes CPU limit দিয়ে ঠিক p95 load-এ flap দেখে অবাক হওয়া।

@@ -1,6 +1,6 @@
 import type { IndustryTopic } from '../topic-types'
 
-/** Data & storage wave — schema change, replication, sharding, locking, retention. */
+/** Data & storage wave - schema change, replication, sharding, locking, retention. */
 const topics: IndustryTopic[] = [
   {
     id: 'zero-downtime-schema-migrations',
@@ -209,8 +209,8 @@ const topics: IndustryTopic[] = [
       bn: 'Storage layer-এ multi-tenant data isolation',
     },
     summary: {
-      en: 'Shared schema, schema-per-tenant, or database-per-tenant — each choice moves the cross-tenant leak risk somewhere else. Enforce the tenant filter below the ORM.',
-      bn: 'shared schema, schema-per-tenant বা database-per-tenant — প্রতিটি পছন্দ cross-tenant leak-এর ঝুঁকি অন্য জায়গায় সরায়। tenant filter ORM-এর নিচে enforce করুন।',
+      en: 'Shared schema, schema-per-tenant, or database-per-tenant - each choice moves the cross-tenant leak risk somewhere else. Enforce the tenant filter below the ORM.',
+      bn: 'shared schema, schema-per-tenant বা database-per-tenant - প্রতিটি পছন্দ cross-tenant leak-এর ঝুঁকি অন্য জায়গায় সরায়। tenant filter ORM-এর নিচে enforce করুন।',
     },
     tags: ['multi-tenancy', 'rls', 'isolation', 'noisy-neighbour'],
     difficulty: 'advanced',

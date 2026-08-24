@@ -1,4 +1,4 @@
-> **Scenario** — A 40-second network blip isolates one availability zone. When it clears, the Postgres cluster has two nodes that both accepted writes as primary, and the sequence for `orders.id` has been handed out twice. Two customers now own order `88214`.
+> **Scenario** - A 40-second network blip isolates one availability zone. When it clears, the Postgres cluster has two nodes that both accepted writes as primary, and the sequence for `orders.id` has been handed out twice. Two customers now own order `88214`.
 
 ## Why it matters
 
@@ -23,7 +23,7 @@
 
 The mechanism is always the same shape: a node cannot distinguish "my peers are dead" from "I cannot reach my peers." A majority-quorum system survives this because only one side can hold `⌊N/2⌋ + 1` votes. A cluster with an even number of voters, or with a failover controller that promotes on a timeout rather than a vote, has no such guarantee.
 
-The dangerous window is not the partition itself — it is the interval between *the old primary losing quorum* and *the old primary noticing*. A node with a 15s lease renewal and a 5s heartbeat interval keeps serving writes for up to 20s after the new primary is elected. Anything that trusts wall-clock time makes this worse: a paused VM or a 2-second GC stop can resume believing its lease is still valid.
+The dangerous window is not the partition itself - it is the interval between *the old primary losing quorum* and *the old primary noticing*. A node with a 15s lease renewal and a 5s heartbeat interval keeps serving writes for up to 20s after the new primary is elected. Anything that trusts wall-clock time makes this worse: a paused VM or a 2-second GC stop can resume believing its lease is still valid.
 
 ```mermaid
 sequenceDiagram
@@ -43,7 +43,7 @@ sequenceDiagram
 
 ## Root causes
 
-1. An even number of voting members, so a 2/2 split leaves neither side with a majority — or worse, both sides with "half".
+1. An even number of voting members, so a 2/2 split leaves neither side with a majority - or worse, both sides with "half".
 2. Failover triggered by a health-check timeout instead of a consensus decision.
 3. No fencing: the demoted primary is never forcibly stopped from accepting writes.
 4. Leases validated against local wall-clock time, which pauses, jumps, or skews.
@@ -63,7 +63,7 @@ bootstrap:
     ttl: 30
     loop_wait: 10
     retry_timeout: 10
-    maximum_lag_on_failover: 1048576   # 1 MiB — refuse to promote a stale replica
+    maximum_lag_on_failover: 1048576   # 1 MiB - refuse to promote a stale replica
     synchronous_mode: true
     synchronous_mode_strict: true      # refuse writes rather than drop to async
 ```
@@ -171,7 +171,7 @@ flowchart TD
 
 - Adding a fourth node "for redundancy", which turns a 3-node majority into a 2/2 tie.
 - Promoting on health-check failure without consulting the consensus store, because "the checks were failing for 30 seconds".
-- Reattaching the old primary with `pg_rewind` before capturing a diff of the divergent WAL — the evidence is destroyed by the repair.
+- Reattaching the old primary with `pg_rewind` before capturing a diff of the divergent WAL - the evidence is destroyed by the repair.
 - Trusting `NOW()` on either node to order events; clock skew of 200ms is normal and 2s is not rare.
 - Building an automatic "merge both sides" job. Merging divergent writes without business rules produces plausible, wrong data.
 

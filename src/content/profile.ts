@@ -22,12 +22,12 @@ export type ProofMetric = {
 export const PROFILE = {
   name: 'Asif Hasan Tonmoy',
   brandLine: {
-    en: 'Fullstack AI Engineer · System / Software Architect · Marketing Consultant',
-    bn: 'ফুলস্ট্যাক এআই ইঞ্জিনিয়ার · সিস্টেম / সফটওয়্যার আর্কিটেক্ট · মার্কেটিং কনসালট্যান্ট',
+    en: 'Software Architect · AI Systems · Observability · Software to Business Consultant · Business Consultant (B2B, B2C, C2C)',
+    bn: 'সফটওয়্যার আর্কিটেক্ট · এআই সিস্টেম · অবজারভেবিলিটি · সফটওয়্যার-টু-বিজনেস কনসালট্যান্ট · বিজনেস কনসালট্যান্ট (B2B, B2C, C2C)',
   } satisfies LocaleText,
   tagline: {
-    en: 'I architect the product, then I architect the demand — one person who can sit in both rooms.',
-    bn: 'আমি পণ্যের আর্কিটেকচার করি, তারপর চাহিদারও — দুই ঘরেই বসতে পারা একজন মানুষ।',
+    en: 'I architect production software around how a business actually runs, not around a stack I happen to like.',
+    bn: 'আমি ব্যবসা যেভাবে চলে সেই হিসেবে প্রোডাকশন সফটওয়্যারের আর্কিটেকচার করি, যে স্ট্যাকে অভ্যস্ত সেই হিসেবে নয়।',
   } satisfies LocaleText,
   email: 'asifhasan.cse75@gmail.com',
   phone: '+880 1937-181793',
@@ -37,12 +37,12 @@ export const PROFILE = {
     bn: 'ঢাকা, বাংলাদেশ',
   } satisfies LocaleText,
   education: {
-    en: 'Khulna University of Engineering & Technology (KUET) — CSE, 2018–2023',
-    bn: 'খুলনা প্রকৌশল ও প্রযুক্তি বিশ্ববিদ্যালয় (কুয়েট) — CSE, ২০১৮–২০২৩',
+    en: 'Khulna University of Engineering & Technology (KUET), CSE, 2018–2023',
+    bn: 'খুলনা প্রকৌশল ও প্রযুক্তি বিশ্ববিদ্যালয় (কুয়েট), CSE, ২০১৮–২০২৩',
   } satisfies LocaleText,
   shortBio: {
-    en: 'KUET CSE. Ships production Vue/Laravel systems, publishes Bengali NLP research, and spent 8+ years growing 50+ brands — so a Tech Lead hire already thinks like a Marketing Director.',
-    bn: 'কুয়েট CSE। প্রোডাকশন Vue/Laravel সিস্টেম শিপ করেন, বাংলা NLP গবেষণা প্রকাশ করেন, এবং ৮+ বছরে ৫০+ ব্র্যান্ড বাড়িয়েছেন — তাই একজন Tech Lead ইতিমধ্যে Marketing Director-এর মতো ভাবেন।',
+    en: 'I design the system a company can operate: platforms, APIs, data paths, and the failure modes between them. The stack follows the problem: typed UI on React, Next, Vue, or Nuxt; services on Node, Express, Nest, Laravel, Spring Boot, .NET, Python, or FastAPI. I watch production where it actually hurts (metrics, traces, the pitfalls that hide in p99) and I design the CI/CD path so a change leaves the laptop without a war room. I have trained multiple software-engineering teams to work that way, which makes deployment smoother and deliverables faster. When AI is on the brief I ship a pipeline you can measure: Python, FastAPI, LangChain, LangGraph, RAG, agentic RAG, vector stores such as Pinecone, evals, and a fallback when retrieval is empty. I do that work in Cursor, Claude, Codex, and Antigravity as part of the engineering loop, not as a party trick. Eight years growing 50+ brands means the architecture already knows what the market will demand of it.',
+    bn: 'আমি এমন সিস্টেম ডিজাইন করি যা কোম্পানি চালাতে পারে: প্ল্যাটফর্ম, API, ডেটা পথ, আর মাঝখানের ব্যর্থতাগুলো। স্ট্যাক সমস্যাকে অনুসরণ করে: React, Next, Vue বা Nuxt-এ টাইপড UI; Node, Express, Nest, Laravel, Spring Boot, .NET, Python বা FastAPI-তে সার্ভিস। প্রোডাকশন যেখানে আসলে ব্যথা করে সেখানে দেখি (মেট্রিক্স, ট্রেস, p99-এ লুকানো ফাঁদ) এবং এমন CI/CD ডিজাইন করি যাতে চেঞ্জ ওয়ার-রুম ছাড়াই ল্যাপটপ ছাড়ে। একাধিক সফটওয়্যার ইঞ্জিনিয়ারিং টিমকে সেই পথে ট্রেইন করেছি, যাতে ডিপ্লয়মেন্ট মসৃণ হয় এবং ডেলিভারেবল দ্রুত আসে। ব্রিফে AI থাকলে মাপযোগ্য পাইপলাইন শিপ করি: Python, FastAPI, LangChain, LangGraph, RAG, agentic RAG, Pinecone-এর মতো ভেক্টর স্টোর, ইভ্যাল, আর রিট্রিভাল খালি হলে ফলব্যাক। সেই কাজ Cursor, Claude, Codex ও Antigravity-তে ইঞ্জিনিয়ারিং লুপের অংশ হিসেবে করি, শোপিস হিসেবে নয়। ৮+ বছরে ৫০+ ব্র্যান্ড বাড়ানোর অর্থ: আর্কিটেকচার আগেই জানে বাজার কী চাইবে।',
   } satisfies LocaleText,
 } as const
 

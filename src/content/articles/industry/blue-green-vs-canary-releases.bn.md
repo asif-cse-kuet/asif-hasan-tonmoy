@@ -1,11 +1,11 @@
-> **পরিস্থিতি** — একটা checkout release staging পাস করে চার মিনিটে ১০০%-এ চলে যায়। বিশ মিনিট পর support জানায় শুধু একটি card issuer-এর payment fail করছে। Bug-টি ৩% traffic-কে ছুঁয়েছিল, কিন্তু কেউ টের পাওয়ার আগেই প্রতিটি pod নতুন build চালাচ্ছে।
+> **পরিস্থিতি** - একটা checkout release staging পাস করে চার মিনিটে ১০০%-এ চলে যায়। বিশ মিনিট পর support জানায় শুধু একটি card issuer-এর payment fail করছে। Bug-টি ৩% traffic-কে ছুঁয়েছিল, কিন্তু কেউ টের পাওয়ার আগেই প্রতিটি pod নতুন build চালাচ্ছে।
 
 ## কেন গুরুত্বপূর্ণ
 
 - Blast radius একটা design সিদ্ধান্ত। সরাসরি ১০০%-এ ship করা মানে পুরো error budget একটা অপরীক্ষিত build-এর হাতে তুলে দেওয়া।
 - Detection-এর জন্য traffic *এবং* সময় দুটোই লাগে। metric scrape ও alert window-এর চেয়ে দ্রুত rollout সংজ্ঞাগতভাবেই অপরীক্ষণীয়।
 - Rollback-এর গতি খুব আলাদা: blue-green সেকেন্ডে selector flip করে, rolling update-কে প্রতিটি pod আবার pull ও restart করতে হয়।
-- খরচও আলাদা — blue-green-এ release window-এ দ্বিগুণ capacity লাগে, canary-তে প্রায় ১০% বাড়তি।
+- খরচও আলাদা - blue-green-এ release window-এ দ্বিগুণ capacity লাগে, canary-তে প্রায় ১০% বাড়তি।
 
 ## লক্ষণ
 
@@ -21,7 +21,7 @@
 
 Default `RollingUpdate` canary নয়। এটি ঢেউয়ে ঢেউয়ে pod বদলায়, মাঝখানে কোনো analysis নেই, আর Deployment controller-এর একমাত্র সাফল্যের মাপকাঠি "নতুন pod Ready হয়েছে"। Ready মানে probe পাস করেছে, order এখনো সম্পন্ন হচ্ছে তা নয়।
 
-আরও খারাপ: rolling update-এর সময় দুই version একসাথে traffic serve করে অথচ তুলনার উপায় নেই — v1 ও v2-র metric একই Service-এ মিশে যায়, তাই ৩% failure সুস্থ দেখানো dashboard-এ গড় হয়ে মিলিয়ে যায়।
+আরও খারাপ: rolling update-এর সময় দুই version একসাথে traffic serve করে অথচ তুলনার উপায় নেই - v1 ও v2-র metric একই Service-এ মিশে যায়, তাই ৩% failure সুস্থ দেখানো dashboard-এ গড় হয়ে মিলিয়ে যায়।
 
 ```mermaid
 flowchart TD
@@ -49,7 +49,7 @@ flowchart TD
 httpRequests.inc({ route, status, version: process.env.APP_VERSION ?? 'unknown' })
 ```
 
-এই label ছাড়া canary analysis সম্ভব নয় — স্বয়ংক্রিয় হোক বা মানুষের।
+এই label ছাড়া canary analysis সম্ভব নয় - স্বয়ংক্রিয় হোক বা মানুষের।
 
 ### ২. স্বয়ংক্রিয় analysis সহ canary
 

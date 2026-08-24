@@ -1,8 +1,8 @@
-> **Scenario** — Four teams ship into one Quasar admin shell. After the checkout team upgrades to Vue 3.5 and Pinia 2.2, the shell's global toast stops firing and `inject()` returns `undefined` in every remote. Nothing in the shell changed; two copies of Vue are now on the page.
+> **Scenario** - Four teams ship into one Quasar admin shell. After the checkout team upgrades to Vue 3.5 and Pinia 2.2, the shell's global toast stops firing and `inject()` returns `undefined` in every remote. Nothing in the shell changed; two copies of Vue are now on the page.
 
 ## Why it matters
 
-- Duplicate framework copies break `provide/inject`, `app.config.globalProperties`, and every plugin that relies on module-level singletons — symptoms look like random component bugs, not an integration fault.
+- Duplicate framework copies break `provide/inject`, `app.config.globalProperties`, and every plugin that relies on module-level singletons - symptoms look like random component bugs, not an integration fault.
 - Each duplicated runtime adds roughly 40–60 KB gzipped. Three remotes carrying their own Vue + Pinia + Quasar can push LCP past 2.5 s on a 4G median device.
 - Independent deploys are the whole point of micro-frontends. If a remote upgrade requires a coordinated shell release, you paid the complexity tax and got none of the autonomy.
 - Runtime integration failures are silent: the remote's `remoteEntry.js` 404s, the shell renders an empty `<div>`, and error tracking sees nothing because no exception crossed a boundary.
@@ -38,7 +38,7 @@ flowchart TD
 
 1. `shared` config omits `singleton: true` for `vue`, `vue-router`, `pinia`, and `quasar`.
 2. Semver ranges across repos stop intersecting after a minor upgrade, so federation legitimately loads two versions.
-3. The contract between shell and remote is implicit — props and events are passed as untyped objects with no versioned interface.
+3. The contract between shell and remote is implicit - props and events are passed as untyped objects with no versioned interface.
 4. Remotes ship global CSS instead of scoped or layer-isolated styles.
 5. No fallback path when `remoteEntry.js` fails, so a CDN blip becomes a blank page.
 6. Shared state is passed by importing the shell's Pinia store directly instead of through an injected contract.
@@ -47,12 +47,12 @@ flowchart TD
 
 ### 1. Pick the integration model deliberately
 
-Build-time packages (npm workspaces) give one runtime and one bundle — pick them when teams deploy on a shared cadence. Runtime federation buys independent deploys at the cost of share-scope discipline. Iframes give hard isolation and are the right answer only for untrusted or legacy code.
+Build-time packages (npm workspaces) give one runtime and one bundle - pick them when teams deploy on a shared cadence. Runtime federation buys independent deploys at the cost of share-scope discipline. Iframes give hard isolation and are the right answer only for untrusted or legacy code.
 
 ### 2. Lock singletons in the Vite federation config
 
 ```ts
-// vite.config.ts — remote
+// vite.config.ts - remote
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import federation from '@originjs/vite-plugin-federation'
@@ -174,7 +174,7 @@ flowchart LR
 
 - Marking `vue` shared but leaving `singleton` unset because "it worked in dev".
 - Importing the shell's Pinia store directly from a remote instead of using an injected contract.
-- Using `window` globals as the integration API — untyped, untestable, and impossible to version.
+- Using `window` globals as the integration API - untyped, untestable, and impossible to version.
 - Pinning every remote to the exact shell version, which reintroduces lockstep deploys.
 - Treating a failed `remoteEntry` fetch as a non-event because no exception was thrown.
 

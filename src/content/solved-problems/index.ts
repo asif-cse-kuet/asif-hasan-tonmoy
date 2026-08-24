@@ -27,8 +27,8 @@ export const SOLVED_PROBLEMS: SolvedProblem[] = [
       bn: 'API ও DB লেটেন্সি ~১০× কমানো',
     },
     summary: {
-      en: 'Production endpoints were drowning in N+1 queries and missing indexes — profiling exposed the real bottlenecks.',
-      bn: 'প্রোডাকশন এন্ডপয়েন্ট N+1 query ও missing index-এ ডুবছিল — প্রোফাইলিং আসল bottleneck ধরিয়ে দিয়েছিল।',
+      en: 'Production endpoints were drowning in N+1 queries and missing indexes - profiling exposed the real bottlenecks.',
+      bn: 'প্রোডাকশন এন্ডপয়েন্ট N+1 query ও missing index-এ ডুবছিল - প্রোফাইলিং আসল bottleneck ধরিয়ে দিয়েছিল।',
     },
     problem: {
       en: 'Critical list and detail APIs routinely exceeded acceptable latency under normal load.',
@@ -76,8 +76,8 @@ export const SOLVED_PROBLEMS: SolvedProblem[] = [
       bn: '২০০+ ইউজারে রিয়েলটাইম চ্যাট স্টেট',
     },
     summary: {
-      en: 'Read/unread badges and favorites broke under concurrency — state had to be authoritative and UI-resilient.',
-      bn: 'read/unread badge ও favorites concurrency-তে ভেঙে যাচ্ছিল — state authoritative ও UI-resilient হতে হবে।',
+      en: 'Read/unread badges and favorites broke under concurrency - state had to be authoritative and UI-resilient.',
+      bn: 'read/unread badge ও favorites concurrency-তে ভেঙে যাচ্ছিল - state authoritative ও UI-resilient হতে হবে।',
     },
     problem: {
       en: 'Chat unread counts drifted; favorites desynced when multiple tabs or rapid message bursts occurred.',
@@ -109,8 +109,8 @@ export const SOLVED_PROBLEMS: SolvedProblem[] = [
       bn: 'RBAC মাল্টি-রোল ড্যাশবোর্ড',
     },
     summary: {
-      en: 'Role explosion made admin maintenance painful — policy layers and composable guards cut effort ~35%.',
-      bn: 'রোল explosion admin maintenance কষ্টকর করেছিল — policy layer ও composable guard ~৩৫% effort কমিয়েছে।',
+      en: 'Role explosion made admin maintenance painful - policy layers and composable guards cut effort ~35%.',
+      bn: 'রোল explosion admin maintenance কষ্টকর করেছিল - policy layer ও composable guard ~৩৫% effort কমিয়েছে।',
     },
     problem: {
       en: 'Each new role required scattered if-checks across views, routes, and API policies.',
@@ -142,8 +142,8 @@ export const SOLVED_PROBLEMS: SolvedProblem[] = [
       bn: 'লো-কোড R&D-র জন্য মাইক্রো-প্যাকেজিং',
     },
     summary: {
-      en: 'Monolithic frontend blocked parallel R&D — decoupled packages let teams ship modules independently.',
-      bn: 'Monolithic frontend parallel R&D বাধা দিচ্ছিল — decoupled package দলকে স্বাধীনভাবে মডিউল ship করতে দিয়েছে।',
+      en: 'Monolithic frontend blocked parallel R&D - decoupled packages let teams ship modules independently.',
+      bn: 'Monolithic frontend parallel R&D বাধা দিচ্ছিল - decoupled package দলকে স্বাধীনভাবে মডিউল ship করতে দিয়েছে।',
     },
     problem: {
       en: 'Feature teams stepped on each other; low-code experiments required full-app rebuilds.',
@@ -151,7 +151,7 @@ export const SOLVED_PROBLEMS: SolvedProblem[] = [
     },
     context: {
       en: 'Proficient IS R&D track exploring composable UI for client-specific extensions.',
-      bn: 'Proficient IS R&D — client-specific extension-এর composable UI অনুসন্ধান।',
+      bn: 'Proficient IS R&D - client-specific extension-এর composable UI অনুসন্ধান।',
     },
     diagnosis: {
       en: 'Tight coupling via shared global state and implicit cross-imports between feature folders.',
@@ -175,8 +175,8 @@ export const SOLVED_PROBLEMS: SolvedProblem[] = [
       bn: 'Vue recursive reactivity বাগ',
     },
     summary: {
-      en: 'Deep tree editors triggered infinite update loops — shallow refs and explicit update paths fixed it.',
-      bn: 'Deep tree editor infinite update loop ট্রিগার করছিল — shallow ref ও explicit update path সমাধান করেছে।',
+      en: 'Deep tree editors triggered infinite update loops - shallow refs and explicit update paths fixed it.',
+      bn: 'Deep tree editor infinite update loop ট্রিগার করছিল - shallow ref ও explicit update path সমাধান করেছে।',
     },
     problem: {
       en: 'Nested category/tree UI froze the browser or threw "Maximum recursive updates exceeded".',
@@ -208,8 +208,8 @@ export const SOLVED_PROBLEMS: SolvedProblem[] = [
       bn: 'Pinia + localStorage sync',
     },
     summary: {
-      en: 'Persisted UI preferences corrupted across tabs — keyed storage and merge strategy restored trust.',
-      bn: 'Persisted UI preference tab-এ corrupt হচ্ছিল — keyed storage ও merge strategy বিশ্বাস ফিরিয়েছে।',
+      en: 'Persisted UI preferences corrupted across tabs - keyed storage and merge strategy restored trust.',
+      bn: 'Persisted UI preference tab-এ corrupt হচ্ছিল - keyed storage ও merge strategy বিশ্বাস ফিরিয়েছে।',
     },
     problem: {
       en: 'Filters and layout prefs randomly reset or showed stale data after refresh.',
@@ -241,8 +241,8 @@ export const SOLVED_PROBLEMS: SolvedProblem[] = [
       bn: 'CSRF ও Laravel session সমস্যা',
     },
     summary: {
-      en: 'SPA AJAX calls failed intermittently with 419 — cookie, Sanctum, and axios defaults had to align.',
-      bn: 'SPA AJAX call মাঝে মাঝে 419 — cookie, Sanctum, axios default align করতে হয়েছিল।',
+      en: 'SPA AJAX calls failed intermittently with 419 - cookie, Sanctum, and axios defaults had to align.',
+      bn: 'SPA AJAX call মাঝে মাঝে 419 - cookie, Sanctum, axios default align করতে হয়েছিল।',
     },
     problem: {
       en: 'Users logged out or saw "CSRF token mismatch" on form submits after idle time.',
@@ -274,8 +274,8 @@ export const SOLVED_PROBLEMS: SolvedProblem[] = [
       bn: 'Vite বনাম Webpack/Mix মাইগ্রেশন',
     },
     summary: {
-      en: 'Legacy Mix configs blocked modern Vue — incremental Vite migration with env parity unblocked the team.',
-      bn: 'Legacy Mix config modern Vue block করছিল — env parity সহ incremental Vite migration দলকে unblock করেছে।',
+      en: 'Legacy Mix configs blocked modern Vue - incremental Vite migration with env parity unblocked the team.',
+      bn: 'Legacy Mix config modern Vue block করছিল - env parity সহ incremental Vite migration দলকে unblock করেছে।',
     },
     problem: {
       en: 'Slow HMR, broken aliases, and incompatible plugins under Laravel Mix.',
@@ -307,8 +307,8 @@ export const SOLVED_PROBLEMS: SolvedProblem[] = [
       bn: 'Composer / PHP env / Imagick',
     },
     summary: {
-      en: 'Image pipeline failed on Windows/XAMPP — extension matrix and Composer platform config documented the fix.',
-      bn: 'Windows/XAMPP-এ image pipeline fail — extension matrix ও Composer platform config fix নথিভুক্ত করেছে।',
+      en: 'Image pipeline failed on Windows/XAMPP - extension matrix and Composer platform config documented the fix.',
+      bn: 'Windows/XAMPP-এ image pipeline fail - extension matrix ও Composer platform config fix নথিভুক্ত করেছে।',
     },
     problem: {
       en: 'Thumbnail generation crashed with Imagick or GD extension missing on local dev machines.',
@@ -340,8 +340,8 @@ export const SOLVED_PROBLEMS: SolvedProblem[] = [
       bn: 'npm + PowerShell tooling friction',
     },
     summary: {
-      en: 'Script failures on Windows PowerShell — execution policy and path fixes standardized cross-platform scripts.',
-      bn: 'Windows PowerShell-এ script fail — execution policy ও path fix cross-platform script standardize করেছে।',
+      en: 'Script failures on Windows PowerShell - execution policy and path fixes standardized cross-platform scripts.',
+      bn: 'Windows PowerShell-এ script fail - execution policy ও path fix cross-platform script standardize করেছে।',
     },
     problem: {
       en: 'npm run dev failed for Windows teammates with opaque PowerShell errors.',
@@ -373,8 +373,8 @@ export const SOLVED_PROBLEMS: SolvedProblem[] = [
       bn: 'জটিল API query construction',
     },
     summary: {
-      en: 'Dynamic filters produced invalid SQL — builder pattern and whitelist validation tamed the combinatorics.',
-      bn: 'dynamic filter invalid SQL — builder pattern ও whitelist validation combinatorics নিয়ন্ত্রণ করেছে।',
+      en: 'Dynamic filters produced invalid SQL - builder pattern and whitelist validation tamed the combinatorics.',
+      bn: 'dynamic filter invalid SQL - builder pattern ও whitelist validation combinatorics নিয়ন্ত্রণ করেছে।',
     },
     problem: {
       en: 'Report endpoints accepted arbitrary filter JSON that sometimes generated cartesian explosions.',
@@ -406,8 +406,8 @@ export const SOLVED_PROBLEMS: SolvedProblem[] = [
       bn: 'JSON/AJAX font grouping (FontUploader)',
     },
     summary: {
-      en: 'Font family grouping broke on partial payloads — schema validation and incremental merge fixed uploads.',
-      bn: 'partial payload-এ font family grouping ভেঙে যাচ্ছিল — schema validation ও incremental merge upload ঠিক করেছে।',
+      en: 'Font family grouping broke on partial payloads - schema validation and incremental merge fixed uploads.',
+      bn: 'partial payload-এ font family grouping ভেঙে যাচ্ছিল - schema validation ও incremental merge upload ঠিক করেছে।',
     },
     problem: {
       en: 'Bulk font uploads showed wrong families or duplicate entries in the UI grid.',
@@ -439,8 +439,8 @@ export const SOLVED_PROBLEMS: SolvedProblem[] = [
       bn: 'Dockerizing registration + Gmail API path',
     },
     summary: {
-      en: 'Email scheduling worked locally but failed in containers — secrets, queues, and network egress aligned.',
-      bn: 'email scheduling local-এ কাজ, container-এ fail — secret, queue, network egress align।',
+      en: 'Email scheduling worked locally but failed in containers - secrets, queues, and network egress aligned.',
+      bn: 'email scheduling local-এ কাজ, container-এ fail - secret, queue, network egress align।',
     },
     problem: {
       en: 'Registration succeeded but welcome emails never sent from Docker deployment.',
@@ -472,8 +472,8 @@ export const SOLVED_PROBLEMS: SolvedProblem[] = [
       bn: 'Ticketing + chat architecture split',
     },
     summary: {
-      en: 'Support chat and tickets shared models but different lifecycles — bounded contexts clarified ownership.',
-      bn: 'support chat ও ticket shared model কিন্তু ভিন্ন lifecycle — bounded context ownership স্পষ্ট করেছে।',
+      en: 'Support chat and tickets shared models but different lifecycles - bounded contexts clarified ownership.',
+      bn: 'support chat ও ticket shared model কিন্তু ভিন্ন lifecycle - bounded context ownership স্পষ্ট করেছে।',
     },
     problem: {
       en: 'Closing a ticket did not reliably archive chat threads; agents saw ghost conversations.',
@@ -505,8 +505,8 @@ export const SOLVED_PROBLEMS: SolvedProblem[] = [
       bn: 'Imbalanced NLP classification (গবেষণা)',
     },
     summary: {
-      en: 'Minority mental-health classes collapsed under naive training — TransMentalNet-6 rebalanced the objective.',
-      bn: 'naive training-এ minority mental-health class collapse — TransMentalNet-6 objective rebalance করেছে।',
+      en: 'Minority mental-health classes collapsed under naive training - TransMentalNet-6 rebalanced the objective.',
+      bn: 'naive training-এ minority mental-health class collapse - TransMentalNet-6 objective rebalance করেছে।',
     },
     problem: {
       en: '12-class Bengali dataset with severe skew; macro-F1 unusable on minority disorders.',

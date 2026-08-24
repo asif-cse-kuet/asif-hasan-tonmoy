@@ -54,8 +54,8 @@ const topics: IndustryTopic[] = [
       bn: 'Thread ও connection pool sizing formula',
     },
     summary: {
-      en: 'The pool that is too big is worse than the pool that is too small — sizing from cores, wait ratio, and database capacity.',
-      bn: 'বড় pool ছোট pool-এর চেয়েও খারাপ — core, wait ratio ও database capacity থেকে sizing।',
+      en: 'The pool that is too big is worse than the pool that is too small - sizing from cores, wait ratio, and database capacity.',
+      bn: 'বড় pool ছোট pool-এর চেয়েও খারাপ - core, wait ratio ও database capacity থেকে sizing।',
     },
     tags: ['pools', 'threads', 'connections', 'concurrency', 'saturation'],
     difficulty: 'intermediate',
@@ -142,8 +142,8 @@ const topics: IndustryTopic[] = [
       bn: 'Payload size ও serialisation-এর লুকানো খরচ',
     },
     summary: {
-      en: 'JSON encoding can cost more CPU than the query — measure bytes per response and the allocations behind them.',
-      bn: 'JSON encoding query-র চেয়েও বেশি CPU খেতে পারে — response-প্রতি byte ও তার allocation মাপুন।',
+      en: 'JSON encoding can cost more CPU than the query - measure bytes per response and the allocations behind them.',
+      bn: 'JSON encoding query-র চেয়েও বেশি CPU খেতে পারে - response-প্রতি byte ও তার allocation মাপুন।',
     },
     tags: ['serialization', 'json', 'payload', 'compression', 'bandwidth'],
     difficulty: 'intermediate',
@@ -186,8 +186,8 @@ const topics: IndustryTopic[] = [
       bn: 'বাস্তবতা মেলানো load testing',
     },
     summary: {
-      en: 'Closed-model tests hide coordinated omission — open-model arrival rates, warm caches, and honest percentiles.',
-      bn: 'closed-model test coordinated omission লুকায় — open-model arrival rate, warm cache, সৎ percentile।',
+      en: 'Closed-model tests hide coordinated omission - open-model arrival rates, warm caches, and honest percentiles.',
+      bn: 'closed-model test coordinated omission লুকায় - open-model arrival rate, warm cache, সৎ percentile।',
     },
     tags: ['load-testing', 'k6', 'jmeter', 'benchmarking', 'percentiles'],
     difficulty: 'intermediate',
@@ -230,8 +230,8 @@ const topics: IndustryTopic[] = [
       bn: 'Autoscaling lag, warmup আর যে gap আগে থেকে রাখতে হয়',
     },
     summary: {
-      en: 'Metric delay plus scheduling plus JIT warmup is often 3-4 minutes — traffic does not wait that long.',
-      bn: 'metric delay + scheduling + JIT warmup প্রায়ই ৩-৪ মিনিট — traffic এত অপেক্ষা করে না।',
+      en: 'Metric delay plus scheduling plus JIT warmup is often 3-4 minutes - traffic does not wait that long.',
+      bn: 'metric delay + scheduling + JIT warmup প্রায়ই ৩-৪ মিনিট - traffic এত অপেক্ষা করে না।',
     },
     tags: ['autoscaling', 'kubernetes', 'hpa', 'warmup', 'headroom'],
     difficulty: 'advanced',

@@ -1,10 +1,10 @@
-> **Scenario** — A document assistant sends the top 40 retrieved chunks plus the last 20 conversation turns into every request. Prompts average 38,000 tokens, each turn costs about $0.11, and answer accuracy is *worse* than when the prompt held 6 chunks.
+> **Scenario** - A document assistant sends the top 40 retrieved chunks plus the last 20 conversation turns into every request. Prompts average 38,000 tokens, each turn costs about $0.11, and answer accuracy is *worse* than when the prompt held 6 chunks.
 
 ## Why it matters
 
 - Tokens are linear cost and roughly linear latency. Going from 6,000 to 38,000 input tokens multiplies both by six with no guarantee of better answers.
 - Long contexts degrade quality. Relevant facts placed in the middle of a long prompt are attended to less reliably than facts near the start or end.
-- Truncation is where correctness dies. When the prompt overflows, most frameworks silently drop the oldest or last items — often the system rules or the citation instructions.
+- Truncation is where correctness dies. When the prompt overflows, most frameworks silently drop the oldest or last items - often the system rules or the citation instructions.
 - Bengali and other non-Latin scripts tokenise far less efficiently than English. The same sentence can cost 2–3x more tokens, so a budget calibrated on English overflows on Bengali input.
 - Budgets are the only thing standing between a chatty user and a five-figure monthly bill.
 
@@ -20,7 +20,7 @@
 
 ## How it breaks
 
-Most RAG prompts are assembled by concatenation: system prompt, then history, then retrieved chunks, then the question. Nothing enforces a total. Each component grows independently — retrieval gets a bigger `k`, history retention gets bumped from 6 turns to 20, a new tool description gets added — and the sum crosses the limit on the tail of the distribution first, so it looks like a rare bug rather than a design gap.
+Most RAG prompts are assembled by concatenation: system prompt, then history, then retrieved chunks, then the question. Nothing enforces a total. Each component grows independently - retrieval gets a bigger `k`, history retention gets bumped from 6 turns to 20, a new tool description gets added - and the sum crosses the limit on the tail of the distribution first, so it looks like a rare bug rather than a design gap.
 
 ```mermaid
 flowchart TD
@@ -76,7 +76,7 @@ def ntokens(text: str) -> int:
 
 en = "The refund window is fourteen days from delivery."
 bn = "ডেলিভারির তারিখ থেকে চৌদ্দ দিনের মধ্যে রিফান্ড উইন্ডো।"
-print(ntokens(en), ntokens(bn))   # roughly 10 vs 30 — a 3x multiplier
+print(ntokens(en), ntokens(bn))   # roughly 10 vs 30 - a 3x multiplier
 ```
 
 Character-count heuristics like `len(text) / 4` are calibrated on English and understate Bengali by a wide margin. Budget in tokens, always.
@@ -89,7 +89,7 @@ def pack(chunks, budget: int):
     for c in chunks:                     # already reranked, best first
         cost = ntokens(c.text) + 25      # header, separator, citation marker
         if used + cost > budget:
-            continue                     # skip, do not stop — a later chunk may fit
+            continue                     # skip, do not stop - a later chunk may fit
         packed.append(c)
         used += cost
     return packed, used

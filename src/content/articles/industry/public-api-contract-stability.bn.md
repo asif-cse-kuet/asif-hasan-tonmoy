@@ -1,12 +1,12 @@
-> **Scenario** — একটা cleanup PR consistency-র জন্য response field `created`-কে `created_at` করে দেয়। প্রতিটি internal test pass করে, কারণ সব internal caller একই commit-এ আপডেট হয়েছে। নয় ঘণ্টা পর তিন integrator down: একজন field positionally parse করত, একজনের strict JSON schema validator ছিল, আর একজন `created`-কে dictionary key হিসেবে ব্যবহার করত এমন report-এ যা এখন চুপচাপ `null` লেখে।
+> **Scenario** - একটা cleanup PR consistency-র জন্য response field `created`-কে `created_at` করে দেয়। প্রতিটি internal test pass করে, কারণ সব internal caller একই commit-এ আপডেট হয়েছে। নয় ঘণ্টা পর তিন integrator down: একজন field positionally parse করত, একজনের strict JSON schema validator ছিল, আর একজন `created`-কে dictionary key হিসেবে ব্যবহার করত এমন report-এ যা এখন চুপচাপ `null` লেখে।
 
 ## Why it matters
 
-- একবার third party আপনার JSON parse করলে response shape একটা contract — লিখে রাখুন বা না রাখুন। Field মুছে ফেলা breaking; type, nullability বদলানোও তাই।
+- একবার third party আপনার JSON parse করলে response shape একটা contract - লিখে রাখুন বা না রাখুন। Field মুছে ফেলা breaking; type, nullability বদলানোও তাই।
 - Integrator-এর ভাঙা আপনার error rate-এ দেখা যায় না। তাদের কোড 500 দেয়, আপনার endpoint 200 দেয়, আর আপনি পরদিন সকালে support ticket-এ জানেন।
 - আপনি যত version বাঁচিয়ে রাখেন, প্রতিটি একটি স্থায়ী test matrix entry আর কোডে স্থায়ী branch। দুটো সামলানো যায়; পাঁচটা মানে একটা দল।
 - Founder-দের জন্য: API stability একটা sales asset। "আমরা কখনো customer integration ভাঙিনি" এমন deal বন্ধ করে যা feature list পারে না।
-- Unstable API-র খরচ দেয় আপনার customer-এর engineer-রা, মানে খরচটা আস্থায় — যা আবার গড়তে সবচেয়ে বেশি সময় লাগে।
+- Unstable API-র খরচ দেয় আপনার customer-এর engineer-রা, মানে খরচটা আস্থায় - যা আবার গড়তে সবচেয়ে বেশি সময় লাগে।
 
 ## Symptoms
 
@@ -44,7 +44,7 @@ sequenceDiagram
 
 1. Machine-readable contract নেই, তাই review-এর সময় "breaking" মানে মতামতের ব্যাপার।
 2. Consumer-driven contract test নেই, তাই একমাত্র integration test হলো production।
-3. URL prefix দিয়ে versioning, কিন্তু নতুন prefix কখন হবে তার policy নেই — মেজাজমাফিক হয়।
+3. URL prefix দিয়ে versioning, কিন্তু নতুন prefix কখন হবে তার policy নেই - মেজাজমাফিক হয়।
 4. Deprecation clock নেই: endpoint deprecated লেখা থাকে, কিন্তু কিছুই অপসারণ বাধ্য করে না।
 5. Per-client usage telemetry নেই, তাই "এই field এখনো কে ব্যবহার করে?" প্রশ্নের উত্তর নেই।
 6. Serializer সরাসরি database model থেকে আসে, তাই column rename স্বয়ংক্রিয়ভাবে API change।
@@ -54,7 +54,7 @@ sequenceDiagram
 ### 1. Contract-কে একটা file বানান, CI-তে diff করুন
 
 ```yaml
-# openapi.yaml — the contract, committed and reviewed like code.
+# openapi.yaml - the contract, committed and reviewed like code.
 components:
   schemas:
     Order:
@@ -79,7 +79,7 @@ npx oasdiff breaking \
 ### 2. Wire shape-কে database model থেকে আলাদা করুন
 
 ```php
-// app/Http/Resources/OrderResource.php — explicit, not reflective.
+// app/Http/Resources/OrderResource.php - explicit, not reflective.
 class OrderResource extends JsonResource
 {
     public function toArray($request): array
@@ -99,7 +99,7 @@ class OrderResource extends JsonResource
 ### 3. Consumer-driven contract test যোগ করুন
 
 ```ts
-// tests/contract/orders.spec.ts — asserts the promises, not the implementation.
+// tests/contract/orders.spec.ts - asserts the promises, not the implementation.
 import { describe, expect, it } from 'vitest'
 
 describe('GET /v1/orders/:id contract', () => {
@@ -195,7 +195,7 @@ flowchart LR
 
 ## Anti-patterns
 
-- Cleanup PR-এ "consistency"-র জন্য field rename — ভেতরের পরিপাটি বাইরের outage-এর দাম নয়।
+- Cleanup PR-এ "consistency"-র জন্য field rename - ভেতরের পরিপাটি বাইরের outage-এর দাম নয়।
 - সরাসরি ORM model থেকে response বানানো, ফলে যেকোনো column change মানেই API change।
 - Sunset তারিখ ছাড়া endpoint deprecated ঘোষণা, যা নিশ্চিত করে সেটা চিরকাল থাকবে।
 - বিদ্যমান field-এ নতুন enum value যোগ করে সেটাকে additive বলা; strict client অজানা value reject করে।

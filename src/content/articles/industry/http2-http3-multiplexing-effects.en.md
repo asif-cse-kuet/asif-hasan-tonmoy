@@ -1,12 +1,12 @@
-> **Scenario** — You enable HTTP/2 at the edge. Synthetic tests improve by 15%. Then a customer on a hotel Wi-Fi reports that the whole app freezes for seconds at a time, and your rate limiter — which counted connections — stops limiting anything. Meanwhile a single client with one connection can now open 128 concurrent streams against a backend pool of 40 workers.
+> **Scenario** - You enable HTTP/2 at the edge. Synthetic tests improve by 15%. Then a customer on a hotel Wi-Fi reports that the whole app freezes for seconds at a time, and your rate limiter - which counted connections - stops limiting anything. Meanwhile a single client with one connection can now open 128 concurrent streams against a backend pool of 40 workers.
 
 ## Why it matters
 
-- HTTP/2 collapses many TCP connections into one. Every per-connection assumption in your stack — rate limits, concurrency caps, logging, load balancing — silently changes meaning.
+- HTTP/2 collapses many TCP connections into one. Every per-connection assumption in your stack - rate limits, concurrency caps, logging, load balancing - silently changes meaning.
 - Head-of-line blocking does not disappear; it moves from the HTTP layer to the TCP layer, where a single lost packet stalls *every* multiplexed stream.
 - Flow control windows (default 64KB per stream in HTTP/2) throttle large responses in ways that look like backend slowness.
 - HTTP/3 over QUIC removes the TCP-level blocking but adds UDP path problems: middleboxes, CPU cost of userspace congestion control, and MTU sensitivity.
-- Load balancing at connect time means one connection sticks to one backend for its lifetime — with HTTP/2 that can be hours.
+- Load balancing at connect time means one connection sticks to one backend for its lifetime - with HTTP/2 that can be hours.
 
 ## Symptoms
 
@@ -24,7 +24,7 @@
 
 In HTTP/1.1 a browser opened six connections per origin and each request had its own TCP stream. A lost packet delayed one of six things. HTTP/2 multiplexes all requests over one TCP connection: when a segment is lost, the kernel will not deliver any later bytes to userspace until the retransmission arrives, so all 40 in-flight streams stall together. On a clean datacentre link this never shows up; on 2% loss hotel Wi-Fi it is the dominant experience.
 
-The second effect is concurrency. `http2_max_concurrent_streams` defaults to 128 in nginx. A single client can therefore present 128 simultaneous requests where HTTP/1.1 gave you 6. Anything sized around connection counts — worker pools, `limit_conn`, database pool sizes — is now under-provisioned by a factor of 20.
+The second effect is concurrency. `http2_max_concurrent_streams` defaults to 128 in nginx. A single client can therefore present 128 simultaneous requests where HTTP/1.1 gave you 6. Anything sized around connection counts - worker pools, `limit_conn`, database pool sizes - is now under-provisioned by a factor of 20.
 
 ```mermaid
 sequenceDiagram
@@ -160,7 +160,7 @@ flowchart LR
 ## Anti-patterns
 
 - Enabling HTTP/2 and keeping `limit_conn` as the only abuse control.
-- Assuming HTTP/2 removes head-of-line blocking — it removes the HTTP-layer one only.
+- Assuming HTTP/2 removes head-of-line blocking - it removes the HTTP-layer one only.
 - Turning on HTTP/3 without an HTTP/2 fallback on the same hostname.
 - Sharding assets across subdomains (an HTTP/1.1 trick) after moving to HTTP/2, which forces extra connections and handshakes.
 - Diagnosing multi-stream stalls in application traces where every span looks fine.

@@ -1,10 +1,10 @@
-> **Scenario** — একটা avatar upload browser যা `image/png` বলে তা-ই মেনে নেয় এবং মূল filename দিয়ে `public/uploads/`-এ রাখে। `../avatars/../../index.php` নামের একটা file নির্ধারিত directory-র বাইরে পড়ে, আর web server `.php`-তে শেষ হওয়া যেকোনো কিছু আনন্দে execute করে।
+> **Scenario** - একটা avatar upload browser যা `image/png` বলে তা-ই মেনে নেয় এবং মূল filename দিয়ে `public/uploads/`-এ রাখে। `../avatars/../../index.php` নামের একটা file নির্ধারিত directory-র বাইরে পড়ে, আর web server `.php`-তে শেষ হওয়া যেকোনো কিছু আনন্দে execute করে।
 
 ## Why it matters
 
 - Upload endpoint attacker-নিয়ন্ত্রিত byte আপনার infrastructure-এ আনে। ওই byte execute বা HTML হিসেবে serve হতে পারলে সেটা remote code execution বা stored XSS।
 - Upload shared surface: একই file thumbnailer, antivirus hook, export job ও CDN পড়ে। ক্ষতিকর file কয়েকটা সুযোগ পায়।
-- Unbounded upload availability সমস্যাও — disk exhaustion ও image-bomb decompression সুস্থ node নামিয়ে দেয়।
+- Unbounded upload availability সমস্যাও - disk exhaustion ও image-bomb decompression সুস্থ node নামিয়ে দেয়।
 - File থেকে যায়। আজ ঢোকা vulnerability endpoint নতুন করে লেখার বছর পরেও bucket-এ reachable।
 
 ## Symptoms
@@ -20,7 +20,7 @@
 
 ## How it breaks
 
-দুটো অনুমান একসাথে fail করে। Declared content type কেবল client-এর বাছা একটা header, আর filename কেবল client-এর বাছা একটা string। Server যদি নাম থেকে storage path আর extension থেকে handler ঠিক করে, তবে byte কোথায় যাবে ও কীভাবে ব্যাখ্যা হবে — দুটোই client বেছে দিয়েছে। এরপর nginx, image library, browser — সবাই ঠিক যেভাবে configure করা তেমনই কাজ করে।
+দুটো অনুমান একসাথে fail করে। Declared content type কেবল client-এর বাছা একটা header, আর filename কেবল client-এর বাছা একটা string। Server যদি নাম থেকে storage path আর extension থেকে handler ঠিক করে, তবে byte কোথায় যাবে ও কীভাবে ব্যাখ্যা হবে - দুটোই client বেছে দিয়েছে। এরপর nginx, image library, browser - সবাই ঠিক যেভাবে configure করা তেমনই কাজ করে।
 
 ```mermaid
 flowchart TD

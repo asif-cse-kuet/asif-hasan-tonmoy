@@ -1,4 +1,4 @@
-> **Scenario** — An invoice for 1,000.00 BDT has a 15% VAT line and a 10.00 BDT discount split across three items. Finance reports that 1,140 invoices in March are off by 0.01 BDT, and 12 are off by 0.03. Nothing crashed. The sum of the line items simply does not equal the stored invoice total.
+> **Scenario** - An invoice for 1,000.00 BDT has a 15% VAT line and a 10.00 BDT discount split across three items. Finance reports that 1,140 invoices in March are off by 0.01 BDT, and 12 are off by 0.03. Nothing crashed. The sum of the line items simply does not equal the stored invoice total.
 
 ## Why it matters
 
@@ -84,7 +84,7 @@ console.log(money('100', 'JPY').amount)                  // 100n, not 10000n
 console.log(money('1.500', 'KWD').amount)                // 1500n
 ```
 
-`bigint` removes the precision question entirely. Everything downstream — comparison, summation, equality — becomes exact integer arithmetic.
+`bigint` removes the precision question entirely. Everything downstream - comparison, summation, equality - becomes exact integer arithmetic.
 
 ### 2. Allocate remainders explicitly (largest remainder method)
 
@@ -214,7 +214,7 @@ sequenceDiagram
 
 ## Anti-patterns
 
-- `Math.round(x * 100) / 100` as the rounding strategy — this is float arithmetic with extra steps.
+- `Math.round(x * 100) / 100` as the rounding strategy - this is float arithmetic with extra steps.
 - Comparing money with a tolerance (`Math.abs(a - b) < 0.001`), which hides real one-paisa bugs.
 - Storing amounts as `DECIMAL` but doing the arithmetic in the application as floats.
 - Multiplying by 100 to get minor units, breaking JPY and KWD.

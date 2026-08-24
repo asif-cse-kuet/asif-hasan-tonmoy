@@ -15,8 +15,8 @@ const cards = computed(() => [
     kicker: pick({ en: 'First-hand', bn: 'সরাসরি অভিজ্ঞতা' }),
     title: pick({ en: 'Critical problems I solved', bn: 'আমি সমাধান করা ক্রিটিক্যাল সমস্যা' }),
     body: pick({
-      en: 'Real production incidents and hard bugs — the constraint, the diagnosis, the fix, and what it changed.',
-      bn: 'বাস্তব প্রোডাকশন ঘটনা ও কঠিন বাগ — সীমাবদ্ধতা, নির্ণয়, সমাধান এবং তার প্রভাব।',
+      en: 'Real production incidents and hard bugs - the constraint, the diagnosis, the fix, and what it changed.',
+      bn: 'বাস্তব প্রোডাকশন ঘটনা ও কঠিন বাগ - সীমাবদ্ধতা, নির্ণয়, সমাধান এবং তার প্রভাব।',
     }),
     count: `${SOLVED_PROBLEMS.length}`,
     countLabel: pick({ en: 'cases', bn: 'কেস' }),
@@ -26,8 +26,8 @@ const cards = computed(() => [
     kicker: pick({ en: 'Knowledge library', bn: 'জ্ঞান ভাণ্ডার' }),
     title: pick({ en: 'My Engineering Blog', bn: 'আমার ইঞ্জিনিয়ারিং ব্লগ' }),
     body: pick({
-      en: 'A documentation-style library of industry-critical failures and the designs that survive them — English and Bengali.',
-      bn: 'ইন্ডাস্ট্রি-ক্রিটিক্যাল ব্যর্থতা ও যে ডিজাইনগুলো টিকে থাকে — ডকুমেন্টেশন স্টাইলে, ইংরেজি ও বাংলায়।',
+      en: 'A documentation-style library of industry-critical failures and the designs that survive them - English and Bengali.',
+      bn: 'ইন্ডাস্ট্রি-ক্রিটিক্যাল ব্যর্থতা ও যে ডিজাইনগুলো টিকে থাকে - ডকুমেন্টেশন স্টাইলে, ইংরেজি ও বাংলায়।',
     }),
     count: `${TOPICS.length}+`,
     countLabel: pick({ en: 'topics', bn: 'টপিক' }),
@@ -37,8 +37,8 @@ const cards = computed(() => [
     kicker: pick({ en: 'Software to business', bn: 'সফটওয়্যার থেকে ব্যবসা' }),
     title: pick({ en: 'Hire both chairs in one person', bn: 'দুই আসন একজনের মধ্যে' }),
     body: pick({
-      en: 'Eight years running demand for 50+ owners, now shipping the software those funnels depend on. Tech Lead, Marketing Director, or both — without a translation layer.',
-      bn: '৮ বছর ৫০+ মালিকের চাহিদা চালিয়ে, এখন সেই ফানেল যে সফটওয়্যার চালায় সেটাই শিপ করি। টেক লিড, মার্কেটিং ডিরেক্টর, বা দুই আসন — অনুবাদক ছাড়া।',
+      en: 'Eight years running demand for 50+ owners, now shipping the software those funnels depend on. Tech Lead, Marketing Director, or both - without a translation layer.',
+      bn: '৮ বছর ৫০+ মালিকের চাহিদা চালিয়ে, এখন সেই ফানেল যে সফটওয়্যার চালায় সেটাই শিপ করি। টেক লিড, মার্কেটিং ডিরেক্টর, বা দুই আসন - অনুবাদক ছাড়া।',
     }),
     count: '50+',
     countLabel: pick({ en: 'clients', bn: 'ক্লায়েন্ট' }),

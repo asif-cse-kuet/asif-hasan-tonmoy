@@ -1,4 +1,4 @@
-> **Scenario** — A bad pricing rule ships behind the flag `new_pricing_v2`. On-call flips the kill switch, but the flag provider's edge is the thing that is degraded, the SDK's cached values are 90 seconds stale, and half the fleet keeps serving wrong prices for four more minutes. Meanwhile the flag repository contains 312 flags, of which 41 have been permanently `true` for over a year.
+> **Scenario** - A bad pricing rule ships behind the flag `new_pricing_v2`. On-call flips the kill switch, but the flag provider's edge is the thing that is degraded, the SDK's cached values are 90 seconds stale, and half the fleet keeps serving wrong prices for four more minutes. Meanwhile the flag repository contains 312 flags, of which 41 have been permanently `true` for over a year.
 
 ## Why it matters
 
@@ -21,7 +21,7 @@
 
 ## How it breaks
 
-The mental model most teams have is "the flag is a boolean in a service". In production it is a distributed cache with three layers: the provider's edge, the SDK's in-memory snapshot in every process, and whatever local fallback exists when both fail. A toggle propagates at the speed of the slowest layer, and each layer fails differently — the edge can be up but stale, the SDK can be connected but holding a snapshot from before the change, and a pod that started during the incident may have fallen back to its compile-time default, which is often the *wrong* one.
+The mental model most teams have is "the flag is a boolean in a service". In production it is a distributed cache with three layers: the provider's edge, the SDK's in-memory snapshot in every process, and whatever local fallback exists when both fail. A toggle propagates at the speed of the slowest layer, and each layer fails differently - the edge can be up but stale, the SDK can be connected but holding a snapshot from before the change, and a pod that started during the incident may have fallen back to its compile-time default, which is often the *wrong* one.
 
 The second failure is semantic. Release flags, experiment flags, operational kill switches, and permission entitlements have completely different lifecycles, but they are usually stored in one system with one interface. Someone cleans up "stale" flags, deletes an entitlement flag that has been `true` for a year, and every enterprise customer loses a feature they pay for.
 
@@ -104,7 +104,7 @@ Two properties matter here. The bootstrap file means a total provider outage deg
 
 ### 3. Make the kill switch independent of the flag provider
 
-The operational kill switch should be readable from a path you control end to end — an environment variable, a ConfigMap, or a row in your own database — checked before the SDK.
+The operational kill switch should be readable from a path you control end to end - an environment variable, a ConfigMap, or a row in your own database - checked before the SDK.
 
 ```yaml
 # ConfigMap watched by the pod; propagates in ~5s without a provider round trip.
@@ -138,7 +138,7 @@ This turns cleanup from an argument into a query: a flag whose non-default branc
 
 ```bash
 #!/usr/bin/env bash
-# scripts/check-flag-expiry.sh — fails the build on expired temporary flags.
+# scripts/check-flag-expiry.sh - fails the build on expired temporary flags.
 set -euo pipefail
 today=$(date +%F)
 node -e '
@@ -157,7 +157,7 @@ node -e '
 
 ### 6. Test both branches
 
-Parameterise the critical test suite over the flag matrix for flags that are currently in flight — not all 312, just the temporary ones. Two runs of the checkout suite is cheap; discovering the off-branch has been broken for a month during a rollback is not.
+Parameterise the critical test suite over the flag matrix for flags that are currently in flight - not all 312, just the temporary ones. Two runs of the checkout suite is cheap; discovering the off-branch has been broken for a month during a rollback is not.
 
 ## Target design
 
@@ -196,7 +196,7 @@ flowchart LR
 
 - Making the new behaviour the code default, so a flag outage rolls you *forward* into the risky path.
 - Reading flags at every call site, letting one request take both branches of the same decision.
-- Using a flag to gate a database migration — the schema does not roll back when you flip the switch.
+- Using a flag to gate a database migration - the schema does not roll back when you flip the switch.
 - Treating "we can flag it off" as a substitute for a canary; a flag reduces mean time to recovery but does not reduce blast radius during rollout.
 - Bulk-deleting long-lived `true` flags in a cleanup sprint without checking which ones encode paid entitlements.
 

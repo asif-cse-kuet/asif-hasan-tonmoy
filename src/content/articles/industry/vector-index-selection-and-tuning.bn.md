@@ -1,9 +1,9 @@
-> **Scenario** — ৮M chunk রাখা একটি vector store ৪০০k-তে ঠিকই চলছিল। Bulk ingest-এর পরে search p95 latency ১৮ms থেকে ২৪০ms হলো আর answer quality পড়ে গেল, অথচ retrieval code কেউ বদলায়নি। Index default parameter দিয়ে rebuild হয়েছিল।
+> **Scenario** - ৮M chunk রাখা একটি vector store ৪০০k-তে ঠিকই চলছিল। Bulk ingest-এর পরে search p95 latency ১৮ms থেকে ২৪০ms হলো আর answer quality পড়ে গেল, অথচ retrieval code কেউ বদলায়নি। Index default parameter দিয়ে rebuild হয়েছিল।
 
 ## Why it matters
 
 - Approximate nearest neighbour index গঠনগতভাবেই recall-কে speed-এর বিনিময়ে ছাড়ে। কেউ ইচ্ছে করে trade না বাছলে library আপনার হয়ে বেছে নেয়।
-- Recall loss নীরব। ANN index সবসময় `k`টি result দেয়; আসল top-10-এর তিনটি graph-এ অগম্য ছিল — এটা সে কখনো জানায় না।
+- Recall loss নীরব। ANN index সবসময় `k`টি result দেয়; আসল top-10-এর তিনটি graph-এ অগম্য ছিল - এটা সে কখনো জানায় না।
 - Index parameter memory-র সাথে জড়িত। ১০২৪ dimension-এর ৮M vector-এ `M=64` HNSW-তে শুধু vector-এর জন্যই প্রায় ৩৩GB লাগে, graph overhead ছাড়া।
 - Rebuild আচরণ বদলায়। একই vector ভিন্ন ক্রমে insert করলে ভিন্ন graph আর ভিন্ন recall profile তৈরি হয়।
 - Retrieval latency user-visible turn-এর ভেতরে বসে। ২৪০ms p95, ৪০ms reranker আর ২.৫s generation ধরলে retrieval এখন budget-এর ০.৭% নয়, ৮%।
@@ -65,7 +65,7 @@ def recall_at_k(approx: list[int], exact: list[int]) -> float:
 
 ### 2. Latency-র বিপরীতে `efSearch` sweep করুন
 
-`efSearch` query-time knob — rebuild ছাড়াই বদলানো যায়। Sweep করে knee বেছে নিন।
+`efSearch` query-time knob - rebuild ছাড়াই বদলানো যায়। Sweep করে knee বেছে নিন।
 
 ```python
 for ef in (16, 32, 64, 128, 256, 512):
@@ -140,7 +140,7 @@ flowchart LR
 
 - ANN recall-কে tuned parameter নয়, database-এর ধ্রুব বৈশিষ্ট্য ভাবা।
 - `efSearch` নামের বিনামূল্যের query-time knob থাকতে recall ঠিক করতে `M` বাড়ানো।
-- ৫০k vector-এ benchmark করে ৮M-এ extrapolate করা — graph behaviour linear নয়।
+- ৫০k vector-এ benchmark করে ৮M-এ extrapolate করা - graph behaviour linear নয়।
 - Compaction ছাড়া অনবরত delete ও re-add, ফলে graph tombstone-এ ভরে যায়।
 - দুটি index configuration আলাদা query set-এ তুলনা করা।
 

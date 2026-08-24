@@ -1,4 +1,4 @@
-> **Scenario** — A merchant's endpoint returns `200 OK` in 8ms because their framework acknowledges before processing. Their queue backs up, 40,000 `order.paid` events are dropped on their side, and three days later they open a ticket claiming your webhooks "never fired". Your logs show 40,000 successful deliveries. Neither side can prove anything because the events carry no sequence number and no replay endpoint exists.
+> **Scenario** - A merchant's endpoint returns `200 OK` in 8ms because their framework acknowledges before processing. Their queue backs up, 40,000 `order.paid` events are dropped on their side, and three days later they open a ticket claiming your webhooks "never fired". Your logs show 40,000 successful deliveries. Neither side can prove anything because the events carry no sequence number and no replay endpoint exists.
 
 ## Why it matters
 
@@ -46,7 +46,7 @@ sequenceDiagram
 2. Delivery workers are shared with other jobs, so one slow endpoint starves everything.
 3. No signature, so consumers cannot verify origin and you cannot prove authorship.
 4. No event ID or sequence number, so consumers cannot dedupe or detect gaps.
-5. Retries are unbounded or nonexistent — never a defined schedule.
+5. Retries are unbounded or nonexistent - never a defined schedule.
 6. Consumers are expected to process synchronously inside the request.
 7. There is no replay API, so recovery requires an engineer with database access.
 
@@ -217,7 +217,7 @@ flowchart LR
 
 - Sending the webhook inside the database transaction, holding row locks for the duration of a third-party HTTP call.
 - Signing only the body, allowing an attacker to replay a captured request forever.
-- Retrying `410 Gone` and `404` — the endpoint is telling you to stop.
+- Retrying `410 Gone` and `404` - the endpoint is telling you to stop.
 - Treating `2xx` as "processed" when it usually means "received".
 - Putting sensitive data in the payload instead of an ID the consumer fetches over an authenticated API.
 - Promising ordering you cannot deliver, then discovering parallel workers reorder events.

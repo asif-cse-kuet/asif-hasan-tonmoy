@@ -1,4 +1,4 @@
-> **Scenario** — একটি marketing send নব্বই সেকেন্ডে ২৪ লক্ষ notification job enqueue করে। Consumer drain করে ৪,০০০/s হারে। Queue healthy, কোনো error নেই, অথচ একই queue ভাগ করা password-reset email দশ মিনিট দেরিতে পৌঁছাতে শুরু করে। দুই ঘণ্টায় broker-এর disk ৯১%।
+> **Scenario** - একটি marketing send নব্বই সেকেন্ডে ২৪ লক্ষ notification job enqueue করে। Consumer drain করে ৪,০০০/s হারে। Queue healthy, কোনো error নেই, অথচ একই queue ভাগ করা password-reset email দশ মিনিট দেরিতে পৌঁছাতে শুরু করে। দুই ঘণ্টায় broker-এর disk ৯১%।
 
 ## Why it matters
 
@@ -14,16 +14,16 @@
 | Queue depth | পুরো shift জুড়ে একটানা বাড়ে, কখনো শূন্যে নামে না |
 | Consumer CPU | ১০০%-এ আটকে, অথবা সন্দেহজনকভাবে idle অথচ depth বাড়ছে |
 | Message age | oldest-message-age রৈখিকভাবে বাড়ে; এই metric-ই আসল, depth নয় |
-| Latency | Producer p99 অপরিবর্তিত — ব্যথা পুরোটাই consumer দিকে |
+| Latency | Producer p99 অপরিবর্তিত - ব্যথা পুরোটাই consumer দিকে |
 | Broker disk | একটানা বাড়ে; RabbitMQ memory/disk alarm তুলে publisher block করে |
 | Mixed traffic | একই queue-তে bulk backlog-এর কারণে কম-volume, বেশি-জরুরি job দেরি করে |
 | Redelivery | Processing চলাকালে visibility timeout শেষ হয়, ধীর message অনন্তকাল reprocess হয় |
 
 ## How it breaks
 
-Queue একটি buffer, আর buffer শুধু *burst* শোষণ করে। গড় arrival rate λ যদি গড় service rate μ-এর চেয়ে বেশি হয় এবং তা টিকে থাকে, backlog অসীম বাড়ে — কোনো queue size তা ঠিক করে না। Queue-র কাজ variance শোষণ করা, deficit নয়।
+Queue একটি buffer, আর buffer শুধু *burst* শোষণ করে। গড় arrival rate λ যদি গড় service rate μ-এর চেয়ে বেশি হয় এবং তা টিকে থাকে, backlog অসীম বাড়ে - কোনো queue size তা ঠিক করে না। Queue-র কাজ variance শোষণ করা, deficit নয়।
 
-Delay-র হিসাবটাই দল ভুল করে। Little's Law সরাসরি দেয়: `W = L / λ`। ৯,০০,০০০ message আর ৪,০০০/s drain rate মানে ২২৫ সেকেন্ড অপেক্ষা। Utilisation ρ = λ/μ ১-এর কাছে গেলে queueing delay `1/(1-ρ)` হারে বাড়ে — ৯০% utilisation-এ service time-এর ১০x, ৯৯%-এ ১০০x। Consumer বাড়ানো ততক্ষণই কাজ করে যতক্ষণ তারা shared downstream-এ contend না করে; এরপর μ বাড়া থামে এবং আপনি queue-টাকে database-এর connection pool-এ সরিয়েছেন মাত্র।
+Delay-র হিসাবটাই দল ভুল করে। Little's Law সরাসরি দেয়: `W = L / λ`। ৯,০০,০০০ message আর ৪,০০০/s drain rate মানে ২২৫ সেকেন্ড অপেক্ষা। Utilisation ρ = λ/μ ১-এর কাছে গেলে queueing delay `1/(1-ρ)` হারে বাড়ে - ৯০% utilisation-এ service time-এর ১০x, ৯৯%-এ ১০০x। Consumer বাড়ানো ততক্ষণই কাজ করে যতক্ষণ তারা shared downstream-এ contend না করে; এরপর μ বাড়া থামে এবং আপনি queue-টাকে database-এর connection pool-এ সরিয়েছেন মাত্র।
 
 ```mermaid
 flowchart LR
@@ -59,24 +59,24 @@ flowchart LR
 ```yaml
 # Sizing follows the SLO, not the message volume.
 queues:
-  interactive:          # password reset, OTP — SLO: p99 under 5s
+  interactive:          # password reset, OTP - SLO: p99 under 5s
     max_length: 50_000
     overflow: reject-publish     # fail fast; the caller retries or degrades
     consumers: 40
     prefetch: 1
-  standard:             # order confirmations — SLO: p99 under 60s
+  standard:             # order confirmations - SLO: p99 under 60s
     max_length: 500_000
     overflow: reject-publish
     consumers: 20
     prefetch: 10
-  bulk:                 # marketing sends — SLO: complete within 6h
+  bulk:                 # marketing sends - SLO: complete within 6h
     max_length: 5_000_000
     overflow: drop-head          # oldest marketing message is the least valuable
     consumers: 10
     prefetch: 100
 ```
 
-Interactive queue-তে `prefetch: 1` গুরুত্বপূর্ণ: বেশি prefetch একটি consumer-কে এমন message জমিয়ে রাখতে দেয় যা সে কয়েক মিনিট ধরে process করবে না — এটাই head-of-line blocking।
+Interactive queue-তে `prefetch: 1` গুরুত্বপূর্ণ: বেশি prefetch একটি consumer-কে এমন message জমিয়ে রাখতে দেয় যা সে কয়েক মিনিট ধরে process করবে না - এটাই head-of-line blocking।
 
 ### 2. প্রতিটি queue bound করুন এবং overflow-এর মানে ঠিক করুন
 
@@ -177,7 +177,7 @@ flowchart TD
 
 ## Anti-patterns
 
-- Backlog drain করতে consumer বাড়িয়ে বদলে database ফেলে দেওয়া — queue সরিয়েছেন, ছোট করেননি।
+- Backlog drain করতে consumer বাড়িয়ে বদলে database ফেলে দেওয়া - queue সরিয়েছেন, ছোট করেননি।
 - স্থির threshold-এ queue depth-এ alert দেওয়া; ১ লক্ষ message এক queue-তে স্বাভাবিক, অন্যটিতে বিপর্যয়।
 - "সরলতার জন্য" এক queue ব্যবহার করে একটি `priority` field যোগ করা যা broker মূলত উপেক্ষা করে।
 - Handler idempotent কিনা না দেখে redelivery থামাতে visibility timeout বাড়ানো।

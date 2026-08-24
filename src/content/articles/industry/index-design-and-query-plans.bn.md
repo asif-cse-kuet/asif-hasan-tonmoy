@@ -1,4 +1,4 @@
-> **Scenario** — একটি order search endpoint ২ লাখ row-এ ঠিক ছিল, ৩ কোটি row-এ ৪.২ সেকেন্ড নেয়। `EXPLAIN ANALYZE` দেখায় ৩ কোটি row sequential scan করে filter করে ২০টি row ফেরত দিচ্ছে — কারণ একমাত্র index শুরু হয় `status` দিয়ে, যার distinct মান চারটি, অথচ query filter করে `tenant_id`-তে আর sort করে `created_at`-এ।
+> **Scenario** - একটি order search endpoint ২ লাখ row-এ ঠিক ছিল, ৩ কোটি row-এ ৪.২ সেকেন্ড নেয়। `EXPLAIN ANALYZE` দেখায় ৩ কোটি row sequential scan করে filter করে ২০টি row ফেরত দিচ্ছে - কারণ একমাত্র index শুরু হয় `status` দিয়ে, যার distinct মান চারটি, অথচ query filter করে `tenant_id`-তে আর sort করে `created_at`-এ।
 
 ## কেন গুরুত্বপূর্ণ
 
@@ -6,7 +6,7 @@
 - Missing index connection বেশিক্ষণ ধরে রাখে, তাই এক slow query pattern pool খালি করে সম্পর্কহীন endpoint-ও নামিয়ে দেয়।
 - Redundant index free নয়: প্রতিটি বাড়তি index `INSERT`/`UPDATE` ধীর করে, buffer pool ফোলায়, backup ও migration লম্বা করে।
 - Plan পাল্টে যায়। বছরভর index ব্যবহার করা query statistics drift বা data growth cost threshold ছাড়ালে sequential scan-এ চলে যেতে পারে।
-- এটি সবচেয়ে সস্তা সমাধান — সাধারণত একটি DDL, কোনো architecture পরিবর্তন নয়।
+- এটি সবচেয়ে সস্তা সমাধান - সাধারণত একটি DDL, কোনো architecture পরিবর্তন নয়।
 
 ## লক্ষণ
 
@@ -23,7 +23,7 @@
 
 B-tree index কেবল তার leading column থেকে ব্যবহারযোগ্য। `(status, tenant_id, created_at)`-এর index `WHERE tenant_id = ?`-কে দক্ষভাবে serve করতে পারে না, কারণ planner-কে প্রতিটি `status` মান scan করতে হবে। তাই কোন column আছে তার চেয়ে *column order* বেশি গুরুত্বপূর্ণ।
 
-এরপর দুটি গৌণ ব্যর্থতা আসে। প্রথমত, কম selectivity-র leading column (`status`, `is_active`, `deleted_at`) মানে index scan-ও লক্ষ লক্ষ row ছোঁবে, তাই planner যুক্তিসঙ্গতভাবেই sequential scan বাছে। দ্বিতীয়ত, sort column যদি index-এর শেষ column না হয়, database পুরো result set materialise করে sort করতে বাধ্য — `work_mem` ছাড়ালে যা disk-এ spill করে।
+এরপর দুটি গৌণ ব্যর্থতা আসে। প্রথমত, কম selectivity-র leading column (`status`, `is_active`, `deleted_at`) মানে index scan-ও লক্ষ লক্ষ row ছোঁবে, তাই planner যুক্তিসঙ্গতভাবেই sequential scan বাছে। দ্বিতীয়ত, sort column যদি index-এর শেষ column না হয়, database পুরো result set materialise করে sort করতে বাধ্য - `work_mem` ছাড়ালে যা disk-এ spill করে।
 
 Column-কে function-এ মুড়ে দিলে (`WHERE lower(email) = ?`, `WHERE DATE(created_at) = ?`) index সম্পূর্ণ অচল হয়, যদি মিলে যাওয়া expression index না থাকে।
 
@@ -42,7 +42,7 @@ flowchart TD
 ## মূল কারণ
 
 1. Leading index column query-র equality predicate দেখে নয়, intuition-এ বাছা।
-2. কম selectivity-র leading column — boolean-এ index প্রায় কখনও সাহায্য করে না।
+2. কম selectivity-র leading column - boolean-এ index প্রায় কখনও সাহায্য করে না।
 3. Sort column index-এ নেই, ফলে বড় intermediate result-এ explicit sort।
 4. Indexed column-এ function বা implicit cast (`varchar` column-এর সাথে integer parameter তুলনা)।
 5. Bulk load-এর পর stale statistics, তাই planner-এর row estimate কয়েক ক্রম ভুল।
@@ -63,7 +63,7 @@ ORDER BY created_at DESC
 LIMIT 20;
 ```
 
-আগে — যে আকার আপনি চান না:
+আগে - যে আকার আপনি চান না:
 
 ```
 Limit  (cost=1284410.42..1284410.47 rows=20 width=24) (actual time=4188.902..4188.911 rows=20 loops=1)
@@ -107,7 +107,7 @@ Limit  (cost=0.56..8.71 rows=20 width=24) (actual time=0.038..0.061 rows=20 loop
 Execution Time: 0.092 ms
 ```
 
-`Heap Fetches: 0` সহ `Index Only Scan` মানে index-ই query-র উত্তর দিয়েছে, table ছোঁয়নি — এটাই `INCLUDE`-এর লাভ। MySQL-এ `INCLUDE` নেই; column-টি key-তে যোগ করুন: `(tenant_id, created_at, total_cents)`।
+`Heap Fetches: 0` সহ `Index Only Scan` মানে index-ই query-র উত্তর দিয়েছে, table ছোঁয়নি - এটাই `INCLUDE`-এর লাভ। MySQL-এ `INCLUDE` নেই; column-টি key-তে যোগ করুন: `(tenant_id, created_at, total_cents)`।
 
 ### ৩. skewed predicate-এ partial index
 
@@ -164,7 +164,7 @@ CREATE STATISTICS orders_tenant_region (dependencies)
   ON tenant_id, region FROM orders;
 ```
 
-MySQL-এ সমতুল্য: `ANALYZE TABLE orders;` এবং histogram — `ANALYZE TABLE orders UPDATE HISTOGRAM ON tenant_id WITH 32 BUCKETS;`।
+MySQL-এ সমতুল্য: `ANALYZE TABLE orders;` এবং histogram - `ANALYZE TABLE orders UPDATE HISTOGRAM ON tenant_id WITH 32 BUCKETS;`।
 
 ## Target design
 

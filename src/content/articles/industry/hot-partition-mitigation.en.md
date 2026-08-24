@@ -1,11 +1,11 @@
-> **Scenario** — A flash sale starts. Every purchase does `UPDATE inventory SET remaining = remaining - 1 WHERE sku_id = 4471`. Throughput collapses from 3 000 to 190 writes per second, `SHOW ENGINE INNODB STATUS` shows 400 threads queued on one row lock, and the other 15 shards sit at 4% CPU.
+> **Scenario** - A flash sale starts. Every purchase does `UPDATE inventory SET remaining = remaining - 1 WHERE sku_id = 4471`. Throughput collapses from 3 000 to 190 writes per second, `SHOW ENGINE INNODB STATUS` shows 400 threads queued on one row lock, and the other 15 shards sit at 4% CPU.
 
 ## Why it matters
 
 - A hot partition caps total system throughput at whatever *one* node or *one* row can do, no matter how much capacity you bought.
 - The failure is invisible in aggregate dashboards: average CPU looks fine while one shard is on fire.
 - Row-level contention converts into pool exhaustion and then into errors on endpoints that have nothing to do with the hot key.
-- It is often triggered by success — a viral product, a whale tenant onboarding, a marketing email at 09:00 sharp.
+- It is often triggered by success - a viral product, a whale tenant onboarding, a marketing email at 09:00 sharp.
 - Scaling out during the incident makes it worse: rebalancing competes for the same IO.
 
 ## Symptoms
@@ -25,7 +25,7 @@ Two mechanisms, often together.
 
 **Skewed key distribution.** The partition function spreads keys evenly, but *traffic* is not evenly distributed across keys. One `tenant_id`, one `sku_id`, or one `celebrity_user_id` receives a disproportionate share, so the node holding it saturates first.
 
-**Serialised writes on one row.** Even with capacity to spare, a single row is a serialisation point. Each `UPDATE` holds an exclusive row lock for the duration of its transaction, so maximum throughput on that row is `1 / transaction_hold_time`. With a 5 ms hold time that ceiling is 200 writes/second — and every extra concurrent request just lengthens the lock queue and burns a connection.
+**Serialised writes on one row.** Even with capacity to spare, a single row is a serialisation point. Each `UPDATE` holds an exclusive row lock for the duration of its transaction, so maximum throughput on that row is `1 / transaction_hold_time`. With a 5 ms hold time that ceiling is 200 writes/second - and every extra concurrent request just lengthens the lock queue and burns a connection.
 
 Monotonic keys produce the same shape without any obvious "hot" entity: with an auto-increment primary key, every insert targets the rightmost B-tree leaf page, so all inserts contend on one page latch.
 
@@ -44,7 +44,7 @@ flowchart TD
 ## Root causes
 
 1. Traffic skew across partition keys (whale tenants, viral items, one big customer).
-2. A single counter row updated by every request — inventory, balances, `views_count`.
+2. A single counter row updated by every request - inventory, balances, `views_count`.
 3. Monotonically increasing keys concentrating inserts on the last page or newest partition.
 4. Long transactions holding the hot row's lock across network calls (payment gateway inside the transaction).
 5. Time-bucketed partitions where the current bucket takes 100% of writes.
@@ -133,14 +133,14 @@ A sweeper job releases `held` reservations past `expires_at`, returning stock.
 For append-heavy tables, prefix the partition key with a bucket so inserts spread across pages and partitions.
 
 ```sql
--- Instead of PRIMARY KEY (created_at, id) — all inserts on the newest page
+-- Instead of PRIMARY KEY (created_at, id) - all inserts on the newest page
 ALTER TABLE events ADD COLUMN bucket smallint
   GENERATED ALWAYS AS (abs(hashtext(session_id)) % 16) STORED;
 
 CREATE INDEX CONCURRENTLY idx_events_bucket_time ON events (bucket, created_at DESC);
 ```
 
-Range queries must now fan out over 16 buckets — a deliberate trade of read fan-out for write spread. Prefer UUIDv7/ULID over UUIDv4 for primary keys: time-ordered but not single-page-contending, and it keeps B-tree locality.
+Range queries must now fan out over 16 buckets - a deliberate trade of read fan-out for write spread. Prefer UUIDv7/ULID over UUIDv4 for primary keys: time-ordered but not single-page-contending, and it keeps B-tree locality.
 
 ### 5. Add per-key admission control
 
@@ -193,7 +193,7 @@ flowchart LR
 - [ ] Per-shard/per-key dashboards exist; skew alert fires at 3× median write rate.
 - [ ] Transaction hold time measured (p99 in ms) for the hot path, with no network calls inside.
 - [ ] `Innodb_row_lock_time_avg` or Postgres `wait_event` counters graphed and alerted.
-- [ ] Reservation sweeper tested by killing a worker mid-flow — stock returns within the expiry window.
+- [ ] Reservation sweeper tested by killing a worker mid-flow - stock returns within the expiry window.
 - [ ] Sharded-counter read path benchmarked at the shard count you chose.
 - [ ] Admission control returns 429 with `Retry-After` rather than exhausting the pool.
 

@@ -1,8 +1,8 @@
-> **Scenario** — Finance reports that last quarter's revenue by region is wrong. The transformation that mapped `country_code` to region ran inside a Python ETL job six weeks ago, wrote only the aggregated result, and the raw payloads were never landed. Nobody can reproduce the old numbers or the new ones.
+> **Scenario** - Finance reports that last quarter's revenue by region is wrong. The transformation that mapped `country_code` to region ran inside a Python ETL job six weeks ago, wrote only the aggregated result, and the raw payloads were never landed. Nobody can reproduce the old numbers or the new ones.
 
 ## Why it matters
 
-- When transformation happens before load, the raw record is the only evidence of what the source actually said — and you threw it away. Every audit becomes an archaeology project.
+- When transformation happens before load, the raw record is the only evidence of what the source actually said - and you threw it away. Every audit becomes an archaeology project.
 - Re-running six weeks of history costs one SQL statement in ELT and a full pipeline redeploy in ETL. That difference is the gap between a 20-minute fix and a two-day incident.
 - Warehouse compute is metered. Naive ELT that re-scans a 4 TB table on every `dbt run` turns a $900/month bill into $9,000 without anyone noticing until the invoice.
 - On-call load follows the transformation boundary: ETL failures page a data engineer who owns Python and Airflow; ELT failures page whoever owns SQL models, which is often an analyst with no pager.
@@ -160,7 +160,7 @@ flowchart TD
 
 - [ ] Pick a random dashboard number from 60 days ago and reproduce it from `raw.*` alone.
 - [ ] Re-run the ingestion task for a completed partition twice; row counts in `raw.*` do not change.
-- [ ] `dbt run` on a normal day scans new partitions only — check bytes scanned in the query history, not just wall clock.
+- [ ] `dbt run` on a normal day scans new partitions only - check bytes scanned in the query history, not just wall clock.
 - [ ] Add an unknown `country_code` in a staging fixture; the `unmapped` test fails the build.
 - [ ] Every business rule appears in exactly one model; grep the repo for the rule name.
 - [ ] Column-level lineage from `raw.payload` to each mart column is resolvable in your catalog tool.
@@ -169,7 +169,7 @@ flowchart TD
 ## Anti-patterns
 
 - "We'll add the raw layer later." The raw layer only has value for data you already landed; adding it later does not recover history.
-- Full-refresh materialisation everywhere because incremental logic is fiddly — until the bill arrives.
+- Full-refresh materialisation everywhere because incremental logic is fiddly - until the bill arrives.
 - Dropping unknown JSON keys in the ingestion layer to keep the schema tidy.
 - Encoding business rules in the BI tool because it is faster, creating a fourth definition of `active_user`.
 - Treating `dbt test` warnings as informational; a warning nobody reads is not a contract.

@@ -1,4 +1,4 @@
-> **Scenario** — Your public API allows 1,000 requests per minute per tenant. A partner's nightly sync fires 1,000 requests in the first 300ms of every minute, then sleeps. The limiter says they are within quota. Your database sees 3,300 rps in bursts, connection pool saturates, and every other tenant gets 504s from a limiter that is technically working perfectly.
+> **Scenario** - Your public API allows 1,000 requests per minute per tenant. A partner's nightly sync fires 1,000 requests in the first 300ms of every minute, then sleeps. The limiter says they are within quota. Your database sees 3,300 rps in bursts, connection pool saturates, and every other tenant gets 504s from a limiter that is technically working perfectly.
 
 ## Why it matters
 
@@ -55,7 +55,7 @@ flowchart TD
 | Token bucket | 2 fields (tokens, ts) | Configurable burst | Correct |
 | Leaky bucket | 2 fields (level, ts) | No burst, smooths output | Correct |
 
-Token bucket is the default choice for APIs: it allows a controlled burst (bucket capacity) while enforcing a long-run rate (refill rate). Leaky bucket is the choice when the downstream needs a *smooth* stream — payment processors and SMS gateways usually do.
+Token bucket is the default choice for APIs: it allows a controlled burst (bucket capacity) while enforcing a long-run rate (refill rate). Leaky bucket is the choice when the downstream needs a *smooth* stream - payment processors and SMS gateways usually do.
 
 ### 2. Token bucket in Redis, atomically
 
@@ -168,7 +168,7 @@ location /v1/ {
 
 ### 5. Price endpoints differently
 
-Assign a cost to each route — `GET /v1/orders/{id}` costs 1, `POST /v1/reports` costs 50 — and deduct that cost from the bucket. A single quota number then means something across a heterogeneous API.
+Assign a cost to each route - `GET /v1/orders/{id}` costs 1, `POST /v1/reports` costs 50 - and deduct that cost from the bucket. A single quota number then means something across a heterogeneous API.
 
 ## Target design
 

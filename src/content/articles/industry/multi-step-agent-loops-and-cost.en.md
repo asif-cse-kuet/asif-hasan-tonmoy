@@ -1,10 +1,10 @@
-> **Scenario** — A research agent is given "summarise every open incident and their root causes." It runs 61 steps, re-reads the same three documents nine times, and burns $87 in one request. Two hundred similar requests land the same afternoon.
+> **Scenario** - A research agent is given "summarise every open incident and their root causes." It runs 61 steps, re-reads the same three documents nine times, and burns $87 in one request. Two hundred similar requests land the same afternoon.
 
 ## Why it matters
 
 - Agent loops grow context quadratically. Every step appends the tool result to history, and every subsequent step re-sends the entire history. Total tokens scale with the square of step count, not linearly.
 - A single unbounded request can cost more than a month of normal usage. There is no natural ceiling unless you build one.
-- Loops that do not terminate look identical to loops that are still working. Without a progress signal, the timeout is your only stop condition — and it fires after the money is spent.
+- Loops that do not terminate look identical to loops that are still working. Without a progress signal, the timeout is your only stop condition - and it fires after the money is spent.
 - Latency compounds. Sixty steps at 1.8s each is 108 seconds of wall clock, well past any reasonable request timeout.
 - Concurrency limits are capacity limits. By Little's Law, `concurrency = arrival rate × duration`; long agent runs consume worker slots that short requests need.
 
@@ -20,9 +20,9 @@
 
 ## How it breaks
 
-The naive loop is: call the model, execute any tool call, append the result, repeat. Nothing measures progress. If the model is uncertain, the cheapest action available to it is another retrieval, so it retrieves again — with a slightly different query, getting slightly different chunks, growing the context, and increasing its own confusion.
+The naive loop is: call the model, execute any tool call, append the result, repeat. Nothing measures progress. If the model is uncertain, the cheapest action available to it is another retrieval, so it retrieves again - with a slightly different query, getting slightly different chunks, growing the context, and increasing its own confusion.
 
-The token arithmetic is unforgiving. Suppose the base prompt is 2,000 tokens and each tool result adds 1,200. At step *n* the prompt is `2000 + 1200(n-1)`. Summing over 60 steps gives about 2.2M input tokens. At $3.00 per million that is $6.60 of input per run, plus output — and a larger model or fatter tool results multiplies it straight through.
+The token arithmetic is unforgiving. Suppose the base prompt is 2,000 tokens and each tool result adds 1,200. At step *n* the prompt is `2000 + 1200(n-1)`. Summing over 60 steps gives about 2.2M input tokens. At $3.00 per million that is $6.60 of input per run, plus output - and a larger model or fatter tool results multiplies it straight through.
 
 ```mermaid
 stateDiagram-v2
@@ -40,7 +40,7 @@ stateDiagram-v2
 1. The loop has a step cap but no token or currency budget, and the cap is set far too high.
 2. Tool results are appended verbatim instead of being summarised or referenced by handle.
 3. There is no duplicate-call detector, so the agent can revisit the same state indefinitely.
-4. No progress signal exists — nothing distinguishes "making headway" from "spinning".
+4. No progress signal exists - nothing distinguishes "making headway" from "spinning".
 5. Cost is measured per month across the whole product, never per request, so the tail is invisible.
 
 ## How to solve it
@@ -63,7 +63,7 @@ class RunBudget:
         return None
 ```
 
-When a budget trips, return the best partial answer with an honest note — not an error page. A partial summary of eight incidents is more useful than a timeout.
+When a budget trips, return the best partial answer with an honest note - not an error page. A partial summary of eight incidents is more useful than a timeout.
 
 ### 2. Store tool results by handle, not by value
 
@@ -109,7 +109,7 @@ If the p95 run cost or step count crosses a threshold across recent traffic, deg
 
 ### 6. Cap concurrency deliberately
 
-By Little's Law, 200 concurrent agent runs at 40s each need `200 × 40 = 8,000` worker-seconds of capacity per 40s window — that is 200 workers. Set a queue with a bounded depth and shed load rather than letting agents starve interactive traffic.
+By Little's Law, 200 concurrent agent runs at 40s each need `200 × 40 = 8,000` worker-seconds of capacity per 40s window - that is 200 workers. Set a queue with a bounded depth and shed load rather than letting agents starve interactive traffic.
 
 ## Target design
 

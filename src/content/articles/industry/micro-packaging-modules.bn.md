@@ -1,6 +1,6 @@
 # Micro-packaging decoupled frontend module
 
-*শিক্ষামূলক সংক্ষিপ্ত বিবরণ — প্রচলিত frontend architecture pattern.*
+*শিক্ষামূলক সংক্ষিপ্ত বিবরণ - প্রচলিত frontend architecture pattern.*
 
 ## Package boundary কেন গুরুত্বপূর্ণ
 
@@ -8,9 +8,9 @@ Monolithic frontend বিভিন্ন cadence-এ feature ship করতে 
 
 ## মূল ধারণা
 
-1. **Lazy registry** — Feature route, widget বা menu entry runtime-এ register করে, central router-এ সব import hard-code করে না।
-2. **Stable host shell** — পাতলা host auth, layout, navigation ও shared design token ধরে; package contract দিয়ে plug-in করে।
-3. **Versioned contract** — Public props, events ও data shape version করা হয় যাতে package update host silently ভাঙে না।
+1. **Lazy registry** - Feature route, widget বা menu entry runtime-এ register করে, central router-এ সব import hard-code করে না।
+2. **Stable host shell** - পাতলা host auth, layout, navigation ও shared design token ধরে; package contract দিয়ে plug-in করে।
+3. **Versioned contract** - Public props, events ও data shape version করা হয় যাতে package update host silently ভাঙে না।
 
 ## Low-code extensibility
 

@@ -1,8 +1,8 @@
-> **Scenario** — A marketing site and a logged-in dashboard share one Vue SPA. Field data shows LCP at 4.3 s on the public pricing page because visitors download 900 KB of dashboard code before any text paints. The team's proposed fix is "add SSR everywhere", which would put a Node render on the critical path for pages that never change.
+> **Scenario** - A marketing site and a logged-in dashboard share one Vue SPA. Field data shows LCP at 4.3 s on the public pricing page because visitors download 900 KB of dashboard code before any text paints. The team's proposed fix is "add SSR everywhere", which would put a Node render on the critical path for pages that never change.
 
 ## Why it matters
 
-- Rendering strategy sets the floor on LCP. A client-rendered page cannot paint content until JS downloads, parses, and fetches data — three serial steps that a prerendered page skips entirely.
+- Rendering strategy sets the floor on LCP. A client-rendered page cannot paint content until JS downloads, parses, and fetches data - three serial steps that a prerendered page skips entirely.
 - Search and social crawlers vary in how they treat JS-rendered content. Public pages that depend on client rendering routinely lose the meta and content a crawler expected.
 - SSR moves cost to your servers. A page rendering in 80 ms of CPU at 500 requests per second needs 40 cores of headroom, plus a cache strategy, plus a stampede guard when the cache expires.
 - Hydration is where INP goes wrong. A fully server-rendered page that ships 900 KB of hydration JS looks fast and responds slowly, which users find worse than an honest spinner.

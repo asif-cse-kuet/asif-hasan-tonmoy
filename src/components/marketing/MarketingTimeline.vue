@@ -28,7 +28,7 @@ const { pick } = useLocaleText()
           <p class="mt-1 text-sm text-glow">{{ pick(entry.role) }}</p>
           <ul class="mt-4 space-y-2 text-sm text-mist">
             <li v-for="(highlight, idx) in entry.highlights" :key="idx" class="flex gap-2">
-              <span class="text-accent">—</span>
+              <span class="text-accent">-</span>
               <span>{{ pick(highlight) }}</span>
             </li>
           </ul>

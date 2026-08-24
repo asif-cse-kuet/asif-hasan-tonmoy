@@ -1,10 +1,10 @@
-> **Scenario** — `user.signed_up` fans out to six subscribers: welcome email, CRM sync, analytics, provisioning, referral credit, and a Slack notification. During a RabbitMQ config reload, a deploy script re-runs `queue_bind` for the analytics queue with a second routing key that also matches. Every signup now delivers twice to that queue. Nobody notices for nine days, because the only visible symptom is a dashboard that says signups doubled.
+> **Scenario** - `user.signed_up` fans out to six subscribers: welcome email, CRM sync, analytics, provisioning, referral credit, and a Slack notification. During a RabbitMQ config reload, a deploy script re-runs `queue_bind` for the analytics queue with a second routing key that also matches. Every signup now delivers twice to that queue. Nobody notices for nine days, because the only visible symptom is a dashboard that says signups doubled.
 
 ## Why it matters
 
 - Fan-out multiplies mistakes. One producer bug becomes six downstream incidents, each in a different team's on-call rotation.
 - Duplicate bindings are invisible in application code; they live in broker topology that is often edited by hand or by a script nobody reviews.
-- Subscribers have wildly different reliability requirements — a failed analytics write is fine, a failed provisioning write is not — but a naive fan-out treats them identically.
+- Subscribers have wildly different reliability requirements - a failed analytics write is fine, a failed provisioning write is not - but a naive fan-out treats them identically.
 - Adding a subscriber to a busy topic can multiply broker egress and saturate the network before anyone models the capacity.
 - Duplicate side effects in fan-out (two welcome emails, two referral credits) reach customers directly.
 
@@ -21,7 +21,7 @@
 
 ## How it breaks
 
-Two topologies, two failure shapes. In RabbitMQ, a fanout or topic exchange delivers a copy to every bound queue. Duplicate bindings, or a queue bound with both `user.*` and `user.signed_up`, deliver two copies to one queue. In Kafka, fan-out is expressed by consumer groups: all pods in one group split the partitions, while separate groups each receive everything. Give every pod its own group ID by accident — for example by including the hostname — and a six-pod deployment processes every message six times.
+Two topologies, two failure shapes. In RabbitMQ, a fanout or topic exchange delivers a copy to every bound queue. Duplicate bindings, or a queue bound with both `user.*` and `user.signed_up`, deliver two copies to one queue. In Kafka, fan-out is expressed by consumer groups: all pods in one group split the partitions, while separate groups each receive everything. Give every pod its own group ID by accident - for example by including the hostname - and a six-pod deployment processes every message six times.
 
 ```mermaid
 sequenceDiagram
@@ -100,7 +100,7 @@ Each new subscriber to a 4 KB message at 3,000/s adds 12 MB/s of broker egress. 
 
 ### 6. Distinguish fan-out from work distribution
 
-Fan-out means "everyone gets a copy". Work distribution means "exactly one worker handles this". Mixing them — for instance binding two instances of the same service to two different queues on a fanout exchange — silently duplicates work.
+Fan-out means "everyone gets a copy". Work distribution means "exactly one worker handles this". Mixing them - for instance binding two instances of the same service to two different queues on a fanout exchange - silently duplicates work.
 
 ## Target design
 

@@ -1,10 +1,10 @@
-> **Scenario** — এক analytics partner প্রতি রাতে আপনার `/v1/events` export করে, পৃষ্ঠায় ২৫ row ধরে `?page=1` থেকে `?page=8000` পর্যন্ত হাঁটে। Page 1 ফেরে ৮ms-এ। Page 8000 লাগে ৪.২ সেকেন্ড, পুরো সময় একটি connection ধরে রাখে, আর export peak traffic-এর সাথে মিলে যায়। আরও খারাপ: হাঁটার সময় ঢোকা row প্রতিটি পরবর্তী page সরিয়ে দেয়, তাই partner একই সাথে event মিস করে ও duplicate import করে।
+> **Scenario** - এক analytics partner প্রতি রাতে আপনার `/v1/events` export করে, পৃষ্ঠায় ২৫ row ধরে `?page=1` থেকে `?page=8000` পর্যন্ত হাঁটে। Page 1 ফেরে ৮ms-এ। Page 8000 লাগে ৪.২ সেকেন্ড, পুরো সময় একটি connection ধরে রাখে, আর export peak traffic-এর সাথে মিলে যায়। আরও খারাপ: হাঁটার সময় ঢোকা row প্রতিটি পরবর্তী page সরিয়ে দেয়, তাই partner একই সাথে event মিস করে ও duplicate import করে।
 
 ## Why it matters
 
 - `LIMIT 25 OFFSET 200000` মানে database ২,০০,০০০ row পড়ে ফেলে দেয়। খরচ page number-এর সাথে রৈখিকভাবে বাড়ে।
 - একটিমাত্র deep-paging client কম request volume দেখিয়েও connection pool ভরিয়ে ফেলতে পারে।
-- পরিবর্তনশীল টেবিলে offset pagination শুধু ধীর নয়, *ভুল* — item বাদ পড়ে ও পুনরাবৃত্তি হয়।
+- পরিবর্তনশীল টেবিলে offset pagination শুধু ধীর নয়, *ভুল* - item বাদ পড়ে ও পুনরাবৃত্তি হয়।
 - চুপচাপ row মিস করা export এমন reconciliation সমস্যা বানায় যা সপ্তাহ পরে কারও finance report-এ ধরা পড়ে।
 - বড় টেবিলে total count নিজেই full scan, প্রায়ই page-এর চেয়ে দামি।
 
@@ -23,7 +23,7 @@
 
 `OFFSET` seek নয়, discard। ২,০০,০০১–২,০০,০২৫ row ফেরাতে database sorted order-এ প্রথম ২,০০,০০০ row তৈরি করে ফেলে দেয়। নিখুঁত index থাকলেও কাজ offset-এর সমানুপাতিক।
 
-Drift আরও সূক্ষ্ম বাগ। নতুন row ঢোকার সময় `created_at DESC`-এ sort করা মানে প্রতিটি insert window এক ধাপ নিচে ঠেলে। Page 5 তারপর page 6 পড়া partner page 5-এর শেষ row আবার page 6-এর প্রথমে দেখে — আর boundary-র কাছের row পুরোপুরি বাদ পড়তে পারে।
+Drift আরও সূক্ষ্ম বাগ। নতুন row ঢোকার সময় `created_at DESC`-এ sort করা মানে প্রতিটি insert window এক ধাপ নিচে ঠেলে। Page 5 তারপর page 6 পড়া partner page 5-এর শেষ row আবার page 6-এর প্রথমে দেখে - আর boundary-র কাছের row পুরোপুরি বাদ পড়তে পারে।
 
 ```mermaid
 flowchart TD
@@ -49,7 +49,7 @@ flowchart TD
 
 ### 1. Keyset (cursor) pagination ব্যবহার করুন
 
-"২,০০,০০০ skip করো"-র বদলে বলুন "এই বিন্দুর পরের row দাও"। Sort key unique হতে হবে — timestamp-এর সাথে primary key tiebreaker হিসেবে জুড়ুন।
+"২,০০,০০০ skip করো"-র বদলে বলুন "এই বিন্দুর পরের row দাও"। Sort key unique হতে হবে - timestamp-এর সাথে primary key tiebreaker হিসেবে জুড়ুন।
 
 ```sql
 -- Composite index matching the exact sort order
@@ -214,13 +214,13 @@ flowchart LR
 - [ ] Page 1 ও page 4,000-এর p99 তুলনা করুন; পার্থক্য ২০%-এর নিচে থাকা উচিত।
 - [ ] Cursor query-তে `EXPLAIN ANALYZE` চালিয়ে `Sort` node ছাড়া `Index Scan` নিশ্চিত করুন।
 - [ ] হাঁটার মাঝপথে ৫০০ row insert করে দেখুন client কোনো duplicate ID পায় না।
-- [ ] `limit=100000` নথিভুক্ত সর্বোচ্চে clamp হচ্ছে — assert করুন।
+- [ ] `limit=100000` নথিভুক্ত সর্বোচ্চে clamp হচ্ছে - assert করুন।
 - [ ] ভিন্ন sort order-এর cursor দিয়ে দেখুন `400` আসে, নীরব ভুল data নয়।
-- [ ] পুরো export-এর মোট query time row count-এ রৈখিক, quadratic নয় — যাচাই করুন।
+- [ ] পুরো export-এর মোট query time row count-এ রৈখিক, quadratic নয় - যাচাই করুন।
 
 ## Anti-patterns
 
-- Read replica যোগ করে ধীর deep page "ঠিক" করা — full scan সরালেন, সরালেন না।
+- Read replica যোগ করে ধীর deep page "ঠিক" করা - full scan সরালেন, সরালেন না।
 - শুধু `created_at`-এর মতো non-unique column-এ sort, ফলে tie প্রতি request-এ ক্রম বদলায়।
 - কাঁচা `id` বা `offset` cursor হিসেবে প্রকাশ করা, যাতে client অনাকাঙ্ক্ষিত cursor বানাতে পারে।
 - চার কোটি row-এর টেবিলে প্রতি page-এ `total_count` ফেরানো।

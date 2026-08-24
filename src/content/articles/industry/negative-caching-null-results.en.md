@@ -1,11 +1,11 @@
-> **Scenario** — A scraper walks `/api/products/{id}` for IDs 1 through 5,000,000. Roughly 4.6 million of those IDs do not exist. Every one of them misses the cache — because "not found" was never cached — and hits Postgres. Database CPU sits at 95% for six hours while the cache hit ratio dashboard cheerfully reports 98%.
+> **Scenario** - A scraper walks `/api/products/{id}` for IDs 1 through 5,000,000. Roughly 4.6 million of those IDs do not exist. Every one of them misses the cache - because "not found" was never cached - and hits Postgres. Database CPU sits at 95% for six hours while the cache hit ratio dashboard cheerfully reports 98%.
 
 ## Why it matters
 
 - A miss that is never cached is an uncapped channel from the internet straight to your database. The cache provides zero protection for exactly the traffic pattern an attacker will choose.
 - Hit-ratio dashboards hide it. Only lookups for existing entities are counted, so the metric looks healthy while the origin burns.
 - Legitimate traffic causes it too: deleted products still linked from search engines, expired share links, permission checks for resources the user cannot see.
-- Not-found lookups are often the *most* expensive queries — no index shortcut, full predicate evaluation, sometimes a join that returns nothing after scanning.
+- Not-found lookups are often the *most* expensive queries - no index shortcut, full predicate evaluation, sometimes a join that returns nothing after scanning.
 - Once you do cache negatives, a too-long TTL means a newly created record is invisible for that whole window, which reads as "the save button doesn't work".
 
 ## Symptoms
@@ -15,13 +15,13 @@
 | Cache hit ratio | Looks fine (95%+) while database QPS climbs independently |
 | Query log | High volume of queries returning zero rows |
 | ID distribution | Sequential or random IDs far outside the real range |
-| Redis key count | Flat, while origin load rises — nothing is being written |
+| Redis key count | Flat, while origin load rises - nothing is being written |
 | Response codes | Large share of 404s at the app tier |
 | Latency | 404 responses slower than 200 responses |
 
 ## How it breaks
 
-The typical `remember`-style helper only writes to the cache when the loader returns a value. `null`, `false`, an empty array, and a thrown `ModelNotFoundException` all skip the write. The code reads as correct — you would not want to cache an error — but the effect is that the entire not-found space is permanently uncacheable.
+The typical `remember`-style helper only writes to the cache when the loader returns a value. `null`, `false`, an empty array, and a thrown `ModelNotFoundException` all skip the write. The code reads as correct - you would not want to cache an error - but the effect is that the entire not-found space is permanently uncacheable.
 
 Attackers do not need to know your ID space. Any enumeration produces mostly misses, and misses are the expensive path. The same shape appears with tenant-scoped lookups: a valid ID belonging to another tenant looks like "not found" to this tenant and is equally uncacheable.
 
@@ -161,7 +161,7 @@ flowchart TD
 
 | Option | Pros | Cons | Choose when |
 |--------|------|------|-------------|
-| Sentinel value with short TTL | Simple, exact, works with any store | One key per probed ID — memory grows with the attack | Default for bounded or moderate ID spaces |
+| Sentinel value with short TTL | Simple, exact, works with any store | One key per probed ID - memory grows with the attack | Default for bounded or moderate ID spaces |
 | Bloom filter pre-check | Constant memory regardless of probe volume | False positives; rebuilds needed as data changes | Tens of millions of IDs, high enumeration risk |
 | Edge caching of 404s | Origin never sees the repeat probe | Only helps for identical URLs; needs cache-key hygiene | Public, unauthenticated read endpoints |
 | Rate limiting only | No cache semantics to reason about | Legitimate bursts get throttled; determined scrapers slow down but continue | You cannot change the read path right now |

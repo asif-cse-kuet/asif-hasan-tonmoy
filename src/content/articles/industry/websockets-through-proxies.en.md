@@ -1,12 +1,12 @@
-> **Scenario** — A collaborative editor works perfectly on localhost. In production, every client disconnects and reconnects on a 60-second cadence, forever. The backend sees 4,000 WebSocket handshakes per minute for 4,000 users, CPU is pinned by session setup, and the "presence" feature flickers for everyone.
+> **Scenario** - A collaborative editor works perfectly on localhost. In production, every client disconnects and reconnects on a 60-second cadence, forever. The backend sees 4,000 WebSocket handshakes per minute for 4,000 users, CPU is pinned by session setup, and the "presence" feature flickers for everyone.
 
 ## Why it matters
 
-- A reconnect every 60 seconds means every client re-authenticates, re-subscribes, and re-syncs state — turning a chat feature into a load generator.
+- A reconnect every 60 seconds means every client re-authenticates, re-subscribes, and re-syncs state - turning a chat feature into a load generator.
 - Reconnect storms are self-amplifying: all clients disconnect at the same second because they all connected at the same second after a deploy.
 - Proxy misconfiguration here is invisible in application code; the app is correct and still fails in production only.
 - Buffering swallows small frames, so "messages arrive late in batches" gets misdiagnosed as a broker or application issue.
-- WebSocket connections are balanced once, at connect time — a bad distribution persists for the life of the connection.
+- WebSocket connections are balanced once, at connect time - a bad distribution persists for the life of the connection.
 
 ## Symptoms
 
@@ -24,7 +24,7 @@
 
 A WebSocket starts life as an HTTP/1.1 request carrying `Connection: Upgrade` and `Upgrade: websocket`. nginx by default speaks HTTP/1.0 to upstreams and strips hop-by-hop headers, so unless you explicitly set `proxy_http_version 1.1` and forward the `Upgrade`/`Connection` headers, the backend never sees an upgrade request and answers with a plain 400 or 200.
 
-Once the upgrade succeeds, the connection is just a long-lived proxied stream — which means `proxy_read_timeout` still applies. Its default is 60s, measured as the gap between reads. A chat that is quiet for 61 seconds is indistinguishable from a hung upstream, so nginx closes it. The client reconnects, and because it originally connected in the same deploy window as everyone else, so does everyone else.
+Once the upgrade succeeds, the connection is just a long-lived proxied stream - which means `proxy_read_timeout` still applies. Its default is 60s, measured as the gap between reads. A chat that is quiet for 61 seconds is indistinguishable from a hung upstream, so nginx closes it. The client reconnects, and because it originally connected in the same deploy window as everyone else, so does everyone else.
 
 ```mermaid
 stateDiagram-v2
@@ -178,11 +178,11 @@ flowchart LR
 ## Anti-patterns
 
 - Hardcoding `proxy_set_header Connection "upgrade"` on a location that also serves normal HTTP.
-- Setting `proxy_read_timeout 86400s` instead of adding heartbeats — dead sockets then accumulate for a day.
+- Setting `proxy_read_timeout 86400s` instead of adding heartbeats - dead sockets then accumulate for a day.
 - Reconnecting immediately with no backoff, converting a blip into a self-inflicted DDoS.
 - Sticky sessions used to paper over missing shared state (Redis pub/sub) between WebSocket pods.
 - Assuming a cloud load balancer passes WebSockets by default; many require explicit protocol or idle-timeout config.
-- Diagnosing close code 1006 in application code — 1006 means the connection died without a close frame, which is almost always infrastructure.
+- Diagnosing close code 1006 in application code - 1006 means the connection died without a close frame, which is almost always infrastructure.
 
 ## Related
 

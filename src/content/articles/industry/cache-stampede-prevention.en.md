@@ -1,8 +1,8 @@
-> **Scenario** — The homepage feed is cached in Redis under a single key with a 300-second TTL. At 21:00 on a promo night the key expires, 8,000 concurrent requests all miss, and every one of them runs the same 700 ms aggregation query against the primary database. Connection pool exhausts in under two seconds and the site returns 502 for four minutes.
+> **Scenario** - The homepage feed is cached in Redis under a single key with a 300-second TTL. At 21:00 on a promo night the key expires, 8,000 concurrent requests all miss, and every one of them runs the same 700 ms aggregation query against the primary database. Connection pool exhausts in under two seconds and the site returns 502 for four minutes.
 
 ## Why it matters
 
-- A stampede converts a *cache expiry* — a routine, expected event — into a full origin outage. Nothing was broken; a timer fired.
+- A stampede converts a *cache expiry* - a routine, expected event - into a full origin outage. Nothing was broken; a timer fired.
 - The blast radius scales with popularity. The hotter the key, the worse the collapse, so your best-performing pages fail first.
 - Recovery is not automatic. Once the database is saturated, the recomputation itself times out, nothing repopulates the cache, and the next wave misses too.
 - On-call gets paged for "database CPU 100%" and spends the first ten minutes looking at query plans instead of at cache TTLs.
@@ -16,7 +16,7 @@
 | Redis `keyspace_misses` | Sharp step increase, then sustained, while `keyspace_hits` drops |
 | DB active connections | Pool saturated within 1–3 seconds of the spike |
 | p99 latency | Jumps from 40 ms to timeout ceiling (30 s) with no code deploy |
-| Error pattern | 502/504 from the app tier, not 500 — requests never finish |
+| Error pattern | 502/504 from the app tier, not 500 - requests never finish |
 | Periodicity | Incidents recur at intervals matching the TTL, often on round clock boundaries |
 
 ## How it breaks
@@ -33,27 +33,27 @@ sequenceDiagram
     participant D as "Postgres"
     C->>A: "GET /feed"
     A->>R: "GET feed:home"
-    R-->>A: "(nil) — TTL expired"
+    R-->>A: "(nil) - TTL expired"
     A->>D: "8000x aggregation query"
     D-->>A: "Pool exhausted / timeout"
     A-->>C: "502"
-    Note over R: "Key still empty — next wave repeats"
+    Note over R: "Key still empty - next wave repeats"
 ```
 
 ## Root causes
 
-1. No mutual exclusion between the cache miss and the recomputation — the miss path is unbounded in concurrency.
+1. No mutual exclusion between the cache miss and the recomputation - the miss path is unbounded in concurrency.
 2. Hard expiry semantics: at TTL the value goes from perfectly usable to completely gone in one instant.
 3. All replicas were seeded at the same moment (deploy, warm script, or a bulk import), so their TTLs are perfectly correlated.
 4. The recomputation cost is high enough that duplicated work actually matters (hundreds of milliseconds, not microseconds).
-5. No load shedding on the miss path — the app happily queues 8,000 database calls instead of rejecting early.
+5. No load shedding on the miss path - the app happily queues 8,000 database calls instead of rejecting early.
 6. Timeouts longer than the recomputation, so failing requests hold connections instead of releasing them.
 
 ## How to solve it
 
 ### 1. Single-flight with a short lock
 
-Only one request is allowed to recompute; the rest either wait briefly or serve stale. `SET NX PX` is the primitive — the `PX` guarantees the lock self-releases if the holder crashes.
+Only one request is allowed to recompute; the rest either wait briefly or serve stale. `SET NX PX` is the primitive - the `PX` guarantees the lock self-releases if the holder crashes.
 
 ```bash
 # Acquire: succeeds for exactly one caller
@@ -173,17 +173,17 @@ flowchart TD
 - [ ] Load-test the miss path: `redis-cli DEL feed:home` under 2,000 RPS and confirm origin QPS stays near 1.
 - [ ] `redis-cli --hotkeys` (or `MONITOR` sampled) shows a single `SET` per refresh cycle, not thousands.
 - [ ] `TTL feed:home` across many keys returns spread values, not one identical number.
-- [ ] `X-Cache-Status` shows `HIT`, `UPDATING`, or `STALE` during an origin restart — never `MISS` at volume.
+- [ ] `X-Cache-Status` shows `HIT`, `UPDATING`, or `STALE` during an origin restart - never `MISS` at volume.
 - [ ] Lock TTL is strictly greater than p99 recomputation time and strictly less than the request timeout.
 - [ ] Kill the process holding the lock mid-refresh; confirm the lock expires and the next request recovers within its `PX` window.
 - [ ] A dashboard panel plots origin QPS against cache miss rate on the same axis.
 
 ## Anti-patterns
 
-- Raising the TTL to "reduce misses" — it lowers the frequency of the stampede and increases its size.
+- Raising the TTL to "reduce misses" - it lowers the frequency of the stampede and increases its size.
 - `SETNX` without an expiry: one crashed worker and the key is locked forever.
 - Locking with a TTL shorter than the recomputation, so two workers hold the "same" lock and both write.
-- Retrying the miss path on failure — the retry storm and the stampede compound.
+- Retrying the miss path on failure - the retry storm and the stampede compound.
 - Warming every key in a tight loop after deploy, which recreates perfectly correlated TTLs.
 - Adding a local in-process cache and calling it fixed; you divide the herd by the pod count, which is not enough at 200 pods.
 

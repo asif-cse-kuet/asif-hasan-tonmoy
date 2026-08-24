@@ -1,10 +1,10 @@
-> **Scenario** — একটা খারাপ pricing rule `new_pricing_v2` flag-এর পেছনে ship হয়। On-call kill switch চাপে, কিন্তু flag provider-এর edge-ই degraded, SDK-র cached value ৯০ সেকেন্ড পুরনো, আর অর্ধেক fleet আরও চার মিনিট ভুল দাম দেখাতে থাকে। এদিকে flag repository-তে ৩১২টি flag, যার ৪১টি এক বছরের বেশি সময় ধরে স্থায়ীভাবে `true`।
+> **Scenario** - একটা খারাপ pricing rule `new_pricing_v2` flag-এর পেছনে ship হয়। On-call kill switch চাপে, কিন্তু flag provider-এর edge-ই degraded, SDK-র cached value ৯০ সেকেন্ড পুরনো, আর অর্ধেক fleet আরও চার মিনিট ভুল দাম দেখাতে থাকে। এদিকে flag repository-তে ৩১২টি flag, যার ৪১টি এক বছরের বেশি সময় ধরে স্থায়ীভাবে `true`।
 
 ## Why it matters
 
 - যে kill switch third party-র সুস্থ network path-এর উপর নির্ভর করে সেটা kill switch নয়। যখন সবচেয়ে বেশি দরকার, ঠিক তখনই সেটা unreachable থাকার সম্ভাবনা বেশি।
 - Flag debt আসল coupling। ৩১২ flag মানে কোডে nominal ভাবে 2^312 state; কেউ গুটিকয়ের বেশি test করে না, আর dead branch পচে security hole হয়।
-- Request path-এ synchronous flag evaluation প্রতিটি request-এ latency যোগ করে — যাদের flag লাগে না তাদেরও।
+- Request path-এ synchronous flag evaluation প্রতিটি request-এ latency যোগ করে - যাদের flag লাগে না তাদেরও।
 - Founder-দের গুরুত্ব দেওয়া উচিত কারণ flag সবচেয়ে সস্তা বীমা: "deploy rollback করো, release manager-কে জাগাও" ধরনের incident ৩০ সেকেন্ডের config change-এ নেমে আসে।
 - Entitlement (paid plan gating)-এর জন্য ব্যবহৃত flag যদি release flag হিসেবে বানানো হয়, কেউ cleanup করার দিনই সেটা billing bug হয়ে যায়।
 
@@ -15,13 +15,13 @@
 | Kill switch latency | Toggle থেকে শেষ stale pod পর্যন্ত সেকেন্ড নয়, মিনিট |
 | Flag count | কেবল বাড়ে; ছয় মাসে একটাও flag delete হয়নি |
 | Request latency | Cold cache-এ p99-এ flag provider-এ network hop ঢুকে যায় |
-| Incident timeline | "১৪:০২-এ flag off, ১৪:০৭-এ error বন্ধ" — মাঝের ফাঁকের ব্যাখ্যা নেই |
+| Incident timeline | "১৪:০২-এ flag off, ১৪:০৭-এ error বন্ধ" - মাঝের ফাঁকের ব্যাখ্যা নেই |
 | Test suite | শুধু default path covered; অন্য branch CI-তে dead code |
 | Config drift | Staging ও production-এ ভিন্ন flag value, তাই staging কিছুই প্রমাণ করে না |
 
 ## How it breaks
 
-বেশিরভাগ দলের mental model হলো "flag মানে একটা service-এ রাখা boolean"। Production-এ এটা তিন স্তরের distributed cache: provider-এর edge, প্রতিটি process-এর ভেতরে SDK-র in-memory snapshot, আর দুটোই fail করলে যা local fallback আছে তা। Toggle সবচেয়ে ধীর স্তরের গতিতে ছড়ায়, আর প্রতিটি স্তর আলাদাভাবে fail করে — edge up কিন্তু stale হতে পারে, SDK connected কিন্তু পুরনো snapshot ধরে থাকতে পারে, আর incident চলাকালে চালু হওয়া pod compile-time default-এ পড়ে যেতে পারে, যা প্রায়ই *ভুল* মান।
+বেশিরভাগ দলের mental model হলো "flag মানে একটা service-এ রাখা boolean"। Production-এ এটা তিন স্তরের distributed cache: provider-এর edge, প্রতিটি process-এর ভেতরে SDK-র in-memory snapshot, আর দুটোই fail করলে যা local fallback আছে তা। Toggle সবচেয়ে ধীর স্তরের গতিতে ছড়ায়, আর প্রতিটি স্তর আলাদাভাবে fail করে - edge up কিন্তু stale হতে পারে, SDK connected কিন্তু পুরনো snapshot ধরে থাকতে পারে, আর incident চলাকালে চালু হওয়া pod compile-time default-এ পড়ে যেতে পারে, যা প্রায়ই *ভুল* মান।
 
 দ্বিতীয় failure semantic। Release flag, experiment flag, operational kill switch আর permission entitlement-এর lifecycle একেবারে আলাদা, অথচ সবগুলো এক সিস্টেমে এক interface-এ থাকে। কেউ "stale" flag পরিষ্কার করতে গিয়ে এক বছর ধরে `true` থাকা entitlement flag মুছে দেয়, আর প্রতিটি enterprise customer টাকা দেওয়া feature হারায়।
 
@@ -72,7 +72,7 @@ export type FlagDefinition = {
 }
 ```
 
-আসলে flag debt আটকায় `expiresOn`: একটি CI job registry পড়ে, temporary flag-এর তারিখ পেরোলে build fail করে — ফলে হয় deletion, নয়তো নাম সহ স্পষ্ট extension।
+আসলে flag debt আটকায় `expiresOn`: একটি CI job registry পড়ে, temporary flag-এর তারিখ পেরোলে build fail করে - ফলে হয় deletion, নয়তো নাম সহ স্পষ্ট extension।
 
 ### 2. Request-প্রতি একবার evaluate করুন, নিরাপদ fallback সহ
 
@@ -104,7 +104,7 @@ export function resolveFlags(ctx: RequestContext): FlagSnapshot {
 
 ### 3. Kill switch-কে flag provider থেকে স্বাধীন করুন
 
-Operational kill switch এমন path থেকে পড়া উচিত যা শুরু থেকে শেষ আপনার নিয়ন্ত্রণে — environment variable, ConfigMap বা নিজের database-এর row — আর সেটা SDK-র আগে দেখা হবে।
+Operational kill switch এমন path থেকে পড়া উচিত যা শুরু থেকে শেষ আপনার নিয়ন্ত্রণে - environment variable, ConfigMap বা নিজের database-এর row - আর সেটা SDK-র আগে দেখা হবে।
 
 ```yaml
 # ConfigMap watched by the pod; propagates in ~5s without a provider round trip.
@@ -138,7 +138,7 @@ sum by (flag, value) (increase(flag_evaluations_total[14d]))
 
 ```bash
 #!/usr/bin/env bash
-# scripts/check-flag-expiry.sh — fails the build on expired temporary flags.
+# scripts/check-flag-expiry.sh - fails the build on expired temporary flags.
 set -euo pipefail
 today=$(date +%F)
 node -e '
@@ -157,7 +157,7 @@ node -e '
 
 ### 6. দুই branch-ই test করুন
 
-চলমান flag-গুলোর matrix ধরে critical test suite parameterise করুন — ৩১২টা নয়, শুধু temporary গুলো। Checkout suite দুবার চালানো সস্তা; rollback-এর সময় জানা যে off-branch এক মাস ধরে ভাঙা — সেটা সস্তা নয়।
+চলমান flag-গুলোর matrix ধরে critical test suite parameterise করুন - ৩১২টা নয়, শুধু temporary গুলো। Checkout suite দুবার চালানো সস্তা; rollback-এর সময় জানা যে off-branch এক মাস ধরে ভাঙা - সেটা সস্তা নয়।
 
 ## Target design
 
@@ -189,14 +189,14 @@ flowchart LR
 - [ ] Staging-এ flag provider বন্ধ করলে application লিখিত fallback value-তে থাকে।
 - [ ] প্রতিটি temporary flag-এর owner ও `expiresOn` আছে, CI job দিয়ে enforce করা এবং এখন pass করছে।
 - [ ] `flag_evaluations_total` flag ও value দিয়ে labelled, আর dashboard single-valued history-র flag তালিকা দেখায়।
-- [ ] Critical-path test suite চলমান flag on ও off — দুইভাবেই চলে।
+- [ ] Critical-path test suite চলমান flag on ও off - দুইভাবেই চলে।
 - [ ] Entitlement flag release flag থেকে আলাদা রাখা এবং cleanup automation থেকে বাদ।
 
 ## Anti-patterns
 
 - নতুন behaviour-কে কোডের default করা, ফলে flag outage আপনাকে ঝুঁকিপূর্ণ path-এ *এগিয়ে* দেয়।
 - প্রতিটি call site-এ flag পড়া, ফলে এক request একই সিদ্ধান্তের দুই branch নেয়।
-- Database migration gate করতে flag ব্যবহার — switch ঘুরালে schema rollback হয় না।
+- Database migration gate করতে flag ব্যবহার - switch ঘুরালে schema rollback হয় না।
 - "flag off করে দেব" কে canary-র বিকল্প ভাবা; flag MTTR কমায়, rollout-এর blast radius কমায় না।
 - Cleanup sprint-এ দীর্ঘদিনের `true` flag গণহারে মুছে ফেলা, কোনটা paid entitlement সেটা না দেখে।
 

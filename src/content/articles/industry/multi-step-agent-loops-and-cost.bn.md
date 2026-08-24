@@ -1,10 +1,10 @@
-> **Scenario** — একটি research agent-কে বলা হলো "সব open incident আর তাদের root cause summarise করো।" সে ৬১টি step চালায়, একই তিনটি document নয়বার পড়ে, আর এক request-এ $87 পুড়িয়ে ফেলে। একই দুপুরে আরও দুইশো অনুরূপ request আসে।
+> **Scenario** - একটি research agent-কে বলা হলো "সব open incident আর তাদের root cause summarise করো।" সে ৬১টি step চালায়, একই তিনটি document নয়বার পড়ে, আর এক request-এ $87 পুড়িয়ে ফেলে। একই দুপুরে আরও দুইশো অনুরূপ request আসে।
 
 ## Why it matters
 
 - Agent loop-এ context quadratically বাড়ে। প্রতিটি step tool result history-তে যোগ করে, আর পরের প্রতিটি step পুরো history আবার পাঠায়। মোট token step সংখ্যার বর্গের সাথে বাড়ে, linearly নয়।
 - একটিমাত্র unbounded request স্বাভাবিক এক মাসের ব্যবহারের চেয়ে বেশি খরচ করতে পারে। আপনি নিজে না বানালে কোনো স্বাভাবিক ceiling নেই।
-- যে loop থামে না আর যে loop এখনো কাজ করছে — দুটো দেখতে একরকম। Progress signal ছাড়া timeout-ই একমাত্র stop condition, আর সেটা টাকা খরচ হয়ে যাওয়ার পরে বাজে।
+- যে loop থামে না আর যে loop এখনো কাজ করছে - দুটো দেখতে একরকম। Progress signal ছাড়া timeout-ই একমাত্র stop condition, আর সেটা টাকা খরচ হয়ে যাওয়ার পরে বাজে।
 - Latency জমে। প্রতি step ১.৮s ধরে ষাটটি step মানে ১০৮ সেকেন্ড wall clock, যেকোনো যুক্তিসঙ্গত request timeout-এর অনেক বাইরে।
 - Concurrency limit আসলে capacity limit। Little's Law অনুযায়ী `concurrency = arrival rate × duration`; লম্বা agent run সেই worker slot খায় যা ছোট request-এর দরকার।
 
@@ -20,9 +20,9 @@
 
 ## How it breaks
 
-সরল loop-টি এমন: model ডাকো, tool call থাকলে চালাও, result যোগ করো, আবার করো। কেউ progress মাপে না। Model অনিশ্চিত হলে তার হাতের সবচেয়ে সস্তা কাজ আরেকটি retrieval, তাই সে আবার retrieve করে — সামান্য ভিন্ন query দিয়ে, সামান্য ভিন্ন chunk পেয়ে, context বাড়িয়ে, আর নিজের বিভ্রান্তি বাড়িয়ে।
+সরল loop-টি এমন: model ডাকো, tool call থাকলে চালাও, result যোগ করো, আবার করো। কেউ progress মাপে না। Model অনিশ্চিত হলে তার হাতের সবচেয়ে সস্তা কাজ আরেকটি retrieval, তাই সে আবার retrieve করে - সামান্য ভিন্ন query দিয়ে, সামান্য ভিন্ন chunk পেয়ে, context বাড়িয়ে, আর নিজের বিভ্রান্তি বাড়িয়ে।
 
-Token-এর হিসাব নির্দয়। ধরুন base prompt ২,০০০ token আর প্রতিটি tool result যোগ করে ১,২০০। step *n*-এ prompt হয় `2000 + 1200(n-1)`। ৬০ step-এ যোগ করলে প্রায় ২.২M input token। প্রতি মিলিয়ন $3.00 হলে প্রতি run-এ শুধু input বাবদ $6.60, output আলাদা — আর বড় model বা মোটা tool result সরাসরি এটাকে গুণ করে।
+Token-এর হিসাব নির্দয়। ধরুন base prompt ২,০০০ token আর প্রতিটি tool result যোগ করে ১,২০০। step *n*-এ prompt হয় `2000 + 1200(n-1)`। ৬০ step-এ যোগ করলে প্রায় ২.২M input token। প্রতি মিলিয়ন $3.00 হলে প্রতি run-এ শুধু input বাবদ $6.60, output আলাদা - আর বড় model বা মোটা tool result সরাসরি এটাকে গুণ করে।
 
 ```mermaid
 stateDiagram-v2
@@ -40,7 +40,7 @@ stateDiagram-v2
 1. Loop-এ step cap আছে কিন্তু token বা টাকার budget নেই, আর cap-টাও অনেক বেশি রাখা।
 2. Tool result summarise বা handle দিয়ে reference না করে হুবহু যোগ করা হয়।
 3. Duplicate-call detector নেই, তাই agent অনির্দিষ্টকাল একই state-এ ফিরে আসতে পারে।
-4. কোনো progress signal নেই — "এগোচ্ছে" আর "ঘুরপাক খাচ্ছে" আলাদা করার কিছু নেই।
+4. কোনো progress signal নেই - "এগোচ্ছে" আর "ঘুরপাক খাচ্ছে" আলাদা করার কিছু নেই।
 5. খরচ মাপা হয় পুরো product-এর মাসিক হিসেবে, কখনো per request নয়, তাই tail অদৃশ্য।
 
 ## How to solve it
@@ -109,7 +109,7 @@ if (step.advancesPlanItem === previous.advancesPlanItem && step.newFactsFound ==
 
 ### 6. Concurrency সচেতনভাবে বাঁধুন
 
-Little's Law অনুযায়ী প্রতিটি ৪০s-এর ২০০টি সমান্তরাল agent run-এর জন্য প্রতি ৪০s window-তে `200 × 40 = 8,000` worker-second লাগে — মানে ২০০ worker। Bounded depth-এর queue রাখুন আর load shed করুন, agent-দের interactive traffic অনাহারে রাখতে দেবেন না।
+Little's Law অনুযায়ী প্রতিটি ৪০s-এর ২০০টি সমান্তরাল agent run-এর জন্য প্রতি ৪০s window-তে `200 × 40 = 8,000` worker-second লাগে - মানে ২০০ worker। Bounded depth-এর queue রাখুন আর load shed করুন, agent-দের interactive traffic অনাহারে রাখতে দেবেন না।
 
 ## Target design
 

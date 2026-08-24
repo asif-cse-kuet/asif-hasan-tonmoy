@@ -1,4 +1,4 @@
-> **Scenario** — A search service restarts for a routine deploy. 12,000 clients get connection refused, all retry at exactly 1s, then 2s, then 4s. The service comes back up, is immediately hit by 12,000 synchronised requests, falls over again, and the cycle repeats for eleven minutes. The deploy took 20 seconds.
+> **Scenario** - A search service restarts for a routine deploy. 12,000 clients get connection refused, all retry at exactly 1s, then 2s, then 4s. The service comes back up, is immediately hit by 12,000 synchronised requests, falls over again, and the cycle repeats for eleven minutes. The deploy took 20 seconds.
 
 ## Why it matters
 
@@ -16,13 +16,13 @@
 | Amplification | Upstream RPS is 3–4x downstream RPS during degradation |
 | Slow recovery | Service is healthy in isolation but falls over the moment traffic is restored |
 | Duplicate side effects | Two order confirmation emails, same order ID |
-| Retried 4xx | `400` and `422` counts climb during an outage — those should never be retried |
+| Retried 4xx | `400` and `422` counts climb during an outage - those should never be retried |
 
 ## How it breaks
 
 The naive loop is `sleep(2 ** attempt)`. If 12,000 clients fail at the same instant, they all wake at the same instant. The backoff spreads load in *time* but not across *clients*, so instead of one spike you get four sharper spikes.
 
-The second failure is error classification. A retry loop that catches every exception will retry a `422 Unprocessable Entity` forever — the payload is invalid, and it will be invalid on attempt 47 too. Meanwhile a genuine `503 Service Unavailable` with a `Retry-After: 30` header is retried after 1s because nobody read the header.
+The second failure is error classification. A retry loop that catches every exception will retry a `422 Unprocessable Entity` forever - the payload is invalid, and it will be invalid on attempt 47 too. Meanwhile a genuine `503 Service Unavailable` with a `Retry-After: 30` header is retried after 1s because nobody read the header.
 
 ```mermaid
 flowchart TD
@@ -40,7 +40,7 @@ flowchart TD
 1. Backoff without jitter synchronises independent clients.
 2. All errors are treated as retryable, including permanent 4xx.
 3. `Retry-After` on `429` and `503` is ignored.
-4. Retries happen at multiple layers — client, SDK, gateway, and mesh — and multiply.
+4. Retries happen at multiple layers - client, SDK, gateway, and mesh - and multiply.
 5. There is no retry budget, so retries can consume unlimited capacity.
 6. Non-idempotent writes are retried without an idempotency key.
 7. Retry attempts are not counted in the caller's timeout budget.
@@ -134,7 +134,7 @@ export async function requestWithRetry(
 
 ### 4. Cap retries with a budget, not just a count
 
-A retry budget limits retries as a *fraction* of successful requests — typically 10%. Once the ratio is exceeded, retries are dropped until the ratio recovers. This is what stops the storm, because a count-based cap still allows every client three extra requests.
+A retry budget limits retries as a *fraction* of successful requests - typically 10%. Once the ratio is exceeded, retries are dropped until the ratio recovers. This is what stops the storm, because a count-based cap still allows every client three extra requests.
 
 ```php
 <?php
@@ -170,7 +170,7 @@ class RetryBudget
 
 ### 5. Retry at one layer only
 
-Pick the layer closest to the caller that has enough context — usually the service client. Turn off retries in nginx (`proxy_next_upstream off` for non-idempotent routes), the mesh, and the vendor SDK, or document explicitly why a second layer exists.
+Pick the layer closest to the caller that has enough context - usually the service client. Turn off retries in nginx (`proxy_next_upstream off` for non-idempotent routes), the mesh, and the vendor SDK, or document explicitly why a second layer exists.
 
 ## Target design
 
@@ -208,7 +208,7 @@ flowchart LR
 
 ## Anti-patterns
 
-- `while (true) { try ... catch { sleep(1) } }` in a background worker — an infinite storm with no ceiling.
+- `while (true) { try ... catch { sleep(1) } }` in a background worker - an infinite storm with no ceiling.
 - Retrying on `400` because "sometimes it works the second time" (it does not; something else changed).
 - Setting `maxAttempts` to 10 to "be resilient", which mostly guarantees a 10x amplification.
 - Adding jitter to only the first sleep.

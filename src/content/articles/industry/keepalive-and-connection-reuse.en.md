@@ -1,11 +1,11 @@
-> **Scenario** — After moving from a single app server to an nginx tier plus six pods, p50 latency rises from 18ms to 31ms and the proxy node accumulates 28,000 sockets in `TIME_WAIT`. At 60k requests per minute the box starts returning `502` bursts with `connect() failed (99: Cannot assign requested address)` in the error log.
+> **Scenario** - After moving from a single app server to an nginx tier plus six pods, p50 latency rises from 18ms to 31ms and the proxy node accumulates 28,000 sockets in `TIME_WAIT`. At 60k requests per minute the box starts returning `502` bursts with `connect() failed (99: Cannot assign requested address)` in the error log.
 
 ## Why it matters
 
 - Every new upstream connection costs a TCP handshake (1 RTT) plus, for TLS upstreams, a full TLS handshake (1–2 RTT and real CPU). At 1,000 rps that is 1,000 handshakes per second you did not need.
 - `TIME_WAIT` sockets consume ephemeral ports. A single source IP has roughly 28,000 usable ports; exceed that and connections fail outright, not slowly.
 - The failure is bimodal: fine at 40k rpm, catastrophic at 65k rpm, because port exhaustion is a cliff.
-- Connection churn hides the real capacity of your backends — you scale pods to compensate for handshake overhead.
+- Connection churn hides the real capacity of your backends - you scale pods to compensate for handshake overhead.
 - The fix is three lines of config, which is why this bug survives for years: nobody believes it is that.
 
 ## Symptoms
@@ -24,7 +24,7 @@
 
 nginx defaults to HTTP/1.0 toward upstreams and sends `Connection: close`. Every proxied request therefore opens a fresh TCP connection, uses it once, and closes it. The closing side enters `TIME_WAIT` for `2 × MSL` (60s on Linux) to absorb stray segments. At 1,000 rps that is 60,000 sockets sitting in `TIME_WAIT`, competing for a port range that `net.ipv4.ip_local_port_range` typically caps near 28,000 entries per destination tuple.
 
-Adding an `upstream` block with a `keepalive` directive is not enough on its own — without `proxy_http_version 1.1` and clearing the `Connection` header, nginx still asks the backend to close after each response, and the keepalive cache stays empty.
+Adding an `upstream` block with a `keepalive` directive is not enough on its own - without `proxy_http_version 1.1` and clearing the `Connection` header, nginx still asks the backend to close after each response, and the keepalive cache stays empty.
 
 ```mermaid
 sequenceDiagram
@@ -47,13 +47,13 @@ sequenceDiagram
 2. `proxy_set_header Connection ""` missing, so the client's `Connection` header (or nginx's `close`) is forwarded.
 3. No `keepalive` directive in the `upstream` block, so there is no idle connection cache at all.
 4. `keepalive` set far too low (for example 8) for the worker count and request rate.
-5. Backend `keepalive_timeout` shorter than the proxy's idle time, so the backend closes connections nginx believes are alive — producing sporadic 502s.
+5. Backend `keepalive_timeout` shorter than the proxy's idle time, so the backend closes connections nginx believes are alive - producing sporadic 502s.
 6. `keepalive_requests` at the old default of 100, forcing a reconnect every hundredth request.
 7. Application HTTP clients (Guzzle, requests, axios) creating a new client per call, repeating the same problem one layer up.
 
 ## How to solve it
 
-### 1. Enable upstream keepalive properly — all three parts
+### 1. Enable upstream keepalive properly - all three parts
 
 ```nginx
 upstream app_upstream {
@@ -170,7 +170,7 @@ flowchart LR
 
 ## Anti-patterns
 
-- Adding `keepalive 64` to the upstream block and stopping there — without `proxy_http_version 1.1` it does nothing.
+- Adding `keepalive 64` to the upstream block and stopping there - without `proxy_http_version 1.1` it does nothing.
 - Enabling `tcp_tw_recycle` on advice from an old blog post; it breaks clients behind NAT and no longer exists in current kernels.
 - Setting the backend idle timeout shorter than the proxy's and then chasing "random 502s".
 - Scaling backend pods to absorb handshake CPU instead of removing the handshakes.

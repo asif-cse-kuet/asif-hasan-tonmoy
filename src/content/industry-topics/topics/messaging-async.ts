@@ -1,6 +1,6 @@
 import type { IndustryTopic } from '../topic-types'
 
-/** Messaging & async wave — queues, streams, delivery semantics, and job scheduling. */
+/** Messaging & async wave - queues, streams, delivery semantics, and job scheduling. */
 const topics: IndustryTopic[] = [
   {
     id: 'poison-message-and-dlq',
@@ -11,8 +11,8 @@ const topics: IndustryTopic[] = [
       bn: 'Poison message ও dead-letter queue design',
     },
     summary: {
-      en: 'One unparseable payload can pin a consumer in an infinite redelivery loop — retry caps, DLQ routing, and replay tooling.',
-      bn: 'একটা unparseable payload consumer-কে অসীম redelivery loop-এ আটকে দেয় — retry cap, DLQ routing ও replay tooling।',
+      en: 'One unparseable payload can pin a consumer in an infinite redelivery loop - retry caps, DLQ routing, and replay tooling.',
+      bn: 'একটা unparseable payload consumer-কে অসীম redelivery loop-এ আটকে দেয় - retry cap, DLQ routing ও replay tooling।',
     },
     tags: ['dlq', 'poison-pill', 'rabbitmq', 'retries', 'laravel'],
     difficulty: 'intermediate',
@@ -29,8 +29,8 @@ const topics: IndustryTopic[] = [
       bn: 'Transactional outbox বাস্তবায়ন',
     },
     summary: {
-      en: 'Commit business rows and outbound events in one transaction, then relay them — no dual-write race, no phantom events.',
-      bn: 'business row ও outbound event এক transaction-এ commit, তারপর relay — dual-write race বা phantom event নেই।',
+      en: 'Commit business rows and outbound events in one transaction, then relay them - no dual-write race, no phantom events.',
+      bn: 'business row ও outbound event এক transaction-এ commit, তারপর relay - dual-write race বা phantom event নেই।',
     },
     tags: ['outbox', 'cdc', 'postgres', 'dual-write', 'debezium'],
     difficulty: 'advanced',
@@ -47,8 +47,8 @@ const topics: IndustryTopic[] = [
       bn: 'সত্যিই unwind করে এমন saga compensation design',
     },
     summary: {
-      en: 'Compensating steps are not rollbacks — how to design semantic undo, timeouts, and stuck-saga recovery.',
-      bn: 'compensating step rollback নয় — semantic undo, timeout ও stuck-saga recovery কীভাবে design করবেন।',
+      en: 'Compensating steps are not rollbacks - how to design semantic undo, timeouts, and stuck-saga recovery.',
+      bn: 'compensating step rollback নয় - semantic undo, timeout ও stuck-saga recovery কীভাবে design করবেন।',
     },
     tags: ['saga', 'compensation', 'orchestration', 'transactions'],
     difficulty: 'advanced',
@@ -65,8 +65,8 @@ const topics: IndustryTopic[] = [
       bn: 'Partition key দিয়ে ordered processing',
     },
     summary: {
-      en: 'Kafka orders within a partition only — key selection, hot partitions, and rebalance gaps that reorder your events.',
-      bn: 'Kafka শুধু partition-এর ভিতরে order দেয় — key selection, hot partition ও rebalance gap event reorder করে।',
+      en: 'Kafka orders within a partition only - key selection, hot partitions, and rebalance gaps that reorder your events.',
+      bn: 'Kafka শুধু partition-এর ভিতরে order দেয় - key selection, hot partition ও rebalance gap event reorder করে।',
     },
     tags: ['kafka', 'partitions', 'ordering', 'rebalance'],
     difficulty: 'advanced',
@@ -87,8 +87,8 @@ const topics: IndustryTopic[] = [
       bn: 'Consumer lag, autoscaling ও drain time',
     },
     summary: {
-      en: 'Lag in messages is not lag in minutes — measure drain rate, scale on backlog age, and stop adding workers past partition count.',
-      bn: 'message-এ lag মানে মিনিটে lag নয় — drain rate মাপুন, backlog age-এ scale করুন, partition count পেরিয়ে worker বাড়াবেন না।',
+      en: 'Lag in messages is not lag in minutes - measure drain rate, scale on backlog age, and stop adding workers past partition count.',
+      bn: 'message-এ lag মানে মিনিটে lag নয় - drain rate মাপুন, backlog age-এ scale করুন, partition count পেরিয়ে worker বাড়াবেন না।',
     },
     tags: ['kafka', 'lag', 'autoscaling', 'horizon', 'keda'],
     difficulty: 'intermediate',
@@ -110,7 +110,7 @@ const topics: IndustryTopic[] = [
     },
     summary: {
       en: 'Dedup keys, unique constraints, and state machines that make redelivery boring instead of double-charging a customer.',
-      bn: 'dedup key, unique constraint ও state machine redelivery-কে নিরীহ করে — double charge নয়।',
+      bn: 'dedup key, unique constraint ও state machine redelivery-কে নিরীহ করে - double charge নয়।',
     },
     tags: ['idempotency', 'dedup', 'consumers', 'redis', 'sql'],
     difficulty: 'intermediate',
@@ -132,7 +132,7 @@ const topics: IndustryTopic[] = [
     },
     summary: {
       en: 'One event, six subscribers, and the day a rebind doubled every downstream side effect.',
-      bn: 'একটা event, ছয়টা subscriber — একদিন rebind প্রতিটি downstream side effect দ্বিগুণ করে দিল।',
+      bn: 'একটা event, ছয়টা subscriber - একদিন rebind প্রতিটি downstream side effect দ্বিগুণ করে দিল।',
     },
     tags: ['fan-out', 'pubsub', 'duplicates', 'rabbitmq', 'consumer-groups'],
     difficulty: 'intermediate',
@@ -150,7 +150,7 @@ const topics: IndustryTopic[] = [
     },
     summary: {
       en: 'Delay queues, cron fan-out spikes, timezone drift, and why every job fires at :00 on the hour.',
-      bn: 'delay queue, cron fan-out spike, timezone drift — সব job কেন ঘণ্টার :00-তে fire করে।',
+      bn: 'delay queue, cron fan-out spike, timezone drift - সব job কেন ঘণ্টার :00-তে fire করে।',
     },
     tags: ['scheduling', 'delayed-jobs', 'laravel', 'redis', 'cron'],
     difficulty: 'intermediate',
@@ -164,7 +164,7 @@ const topics: IndustryTopic[] = [
     domain: 'messaging-async',
     titles: {
       en: 'Choosing between a queue and a stream',
-      bn: 'Queue না stream — কোনটা নেবেন',
+      bn: 'Queue না stream - কোনটা নেবেন',
     },
     summary: {
       en: 'Work distribution versus replayable log: retention, ordering, consumer count, and the migration cost of guessing wrong.',
@@ -189,8 +189,8 @@ const topics: IndustryTopic[] = [
       bn: 'At-least-once delivery ও বাস্তব side effect',
     },
     summary: {
-      en: 'Charges, emails, and webhooks cannot be rolled back — bracket every external call with dedup and a decision record.',
-      bn: 'charge, email, webhook rollback হয় না — প্রতিটি external call dedup ও decision record দিয়ে ঘিরুন।',
+      en: 'Charges, emails, and webhooks cannot be rolled back - bracket every external call with dedup and a decision record.',
+      bn: 'charge, email, webhook rollback হয় না - প্রতিটি external call dedup ও decision record দিয়ে ঘিরুন।',
     },
     tags: ['at-least-once', 'side-effects', 'payments', 'webhooks', 'stripe'],
     difficulty: 'advanced',

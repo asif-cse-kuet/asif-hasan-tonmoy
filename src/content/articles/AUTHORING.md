@@ -1,4 +1,4 @@
-# Article authoring spec — industry knowledge library
+# Article authoring spec - industry knowledge library
 
 Every topic in `src/content/industry-topics/topics/*.ts` should have two markdown files:
 
@@ -8,12 +8,12 @@ src/content/articles/industry/<slug>.bn.md
 ```
 
 They are loaded by `loadArticle(slug, locale)` and rendered by `ArticleRenderer.vue`
-(`marked` + Mermaid). No frontmatter — the page supplies the title, so start at `## `.
+(`marked` + Mermaid). No frontmatter - the page supplies the title, so start at `## `.
 
 ## Required structure
 
 ```md
-> **Scenario** — one or two sentences describing a concrete production situation.
+> **Scenario** - one or two sentences describing a concrete production situation.
 
 ## Why it matters
 3-5 bullets tying the failure to users, money, or on-call load.
@@ -55,7 +55,7 @@ Links to sibling topics using site-relative paths:
 - Use `flowchart LR`, `flowchart TD`, `sequenceDiagram`, or `stateDiagram-v2`.
 - Keep node labels short and quote any label containing punctuation:
   `A["Client (browser)"]`.
-- No `click`, no HTML labels, no external images — `securityLevel` is `strict`.
+- No `click`, no HTML labels, no external images - `securityLevel` is `strict`.
 
 ## Bengali version
 

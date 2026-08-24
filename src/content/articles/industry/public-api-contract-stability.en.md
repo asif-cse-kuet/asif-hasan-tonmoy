@@ -1,4 +1,4 @@
-> **Scenario** — A cleanup PR renames the response field `created` to `created_at` for consistency. It passes every internal test because every internal caller was updated in the same commit. Nine hours later, three integrators are down: one parsed the field positionally, one had a strict JSON schema validator, and one was using `created` as a dictionary key in a report that now silently writes `null`.
+> **Scenario** - A cleanup PR renames the response field `created` to `created_at` for consistency. It passes every internal test because every internal caller was updated in the same commit. Nine hours later, three integrators are down: one parsed the field positionally, one had a strict JSON schema validator, and one was using `created` as a dictionary key in a report that now silently writes `null`.
 
 ## Why it matters
 
@@ -54,7 +54,7 @@ sequenceDiagram
 ### 1. Make the contract a file, and diff it in CI
 
 ```yaml
-# openapi.yaml — the contract, committed and reviewed like code.
+# openapi.yaml - the contract, committed and reviewed like code.
 components:
   schemas:
     Order:
@@ -79,7 +79,7 @@ This converts a judgement call into a build failure. A removal, a type change, o
 ### 2. Decouple the wire shape from the database model
 
 ```php
-// app/Http/Resources/OrderResource.php — explicit, not reflective.
+// app/Http/Resources/OrderResource.php - explicit, not reflective.
 class OrderResource extends JsonResource
 {
     public function toArray($request): array
@@ -99,7 +99,7 @@ An explicit resource class means a database migration cannot change the API by a
 ### 3. Add consumer-driven contract tests
 
 ```ts
-// tests/contract/orders.spec.ts — asserts the promises, not the implementation.
+// tests/contract/orders.spec.ts - asserts the promises, not the implementation.
 import { describe, expect, it } from 'vitest'
 
 describe('GET /v1/orders/:id contract', () => {
@@ -195,7 +195,7 @@ flowchart LR
 
 ## Anti-patterns
 
-- Renaming fields "for consistency" in a cleanup PR — internal tidiness is not worth an external outage.
+- Renaming fields "for consistency" in a cleanup PR - internal tidiness is not worth an external outage.
 - Generating responses directly from ORM models, so any column change is an API change.
 - Marking an endpoint deprecated with no sunset date, which guarantees it lives forever.
 - Adding a new enum value to an existing field and calling it additive; strict clients reject unknown values.

@@ -1,4 +1,4 @@
-> **Scenario** — দুপুর ২:০২-এ একটি deploy নতুন pricing rule ছাড়ে। API সাথে সাথে নতুন দাম ফেরত দেয়, কিন্তু ৩০% user পরের চার ঘণ্টা পুরোনো দাম দেখে। Cache TTL ৩০০ সেকেন্ড, তাই চার ঘণ্টার stale read কোথা থেকে আসছে কেউ ব্যাখ্যা করতে পারে না।
+> **Scenario** - দুপুর ২:০২-এ একটি deploy নতুন pricing rule ছাড়ে। API সাথে সাথে নতুন দাম ফেরত দেয়, কিন্তু ৩০% user পরের চার ঘণ্টা পুরোনো দাম দেখে। Cache TTL ৩০০ সেকেন্ড, তাই চার ঘণ্টার stale read কোথা থেকে আসছে কেউ ব্যাখ্যা করতে পারে না।
 
 ## Why it matters
 
@@ -13,7 +13,7 @@
 |---|---|
 | Staleness duration | কনফিগার করা যেকোনো একক TTL-এর চেয়ে অনেক বেশি |
 | Distribution | কিছু user সাথে সাথে ঠিক, কিছু আটকে; CDN POP বা pod-এর সাথে correlate করে |
-| Hit rate | Incident-এর সময় অপরিবর্তিত — cache কাজ করছে, শুধু ভুল |
+| Hit rate | Incident-এর সময় অপরিবর্তিত - cache কাজ করছে, শুধু ভুল |
 | Purge-এর পর | Origin QPS ১০-৬০s-এর জন্য ২০-৫০x, p99 খাড়া উপরে |
 | Post-deploy | পুরোনো cached JSON থেকে আসা response-এ নতুন schema-র field অনুপস্থিত |
 | `Age` header | `max-age`-এর চেয়ে বড় মান, shared cache বা SWR ফাঁস করে |
@@ -23,7 +23,7 @@
 
 তিনটি স্বাধীন মেকানিজম একই user-visible উপসর্গ তৈরি করে।
 
-**Layer multiplication.** 3600s browser `max-age`-এর পিছনে 600s CDN TTL, তার পিছনে 300s application TTL — worst case ৪,৫০০s, ৩০০s নয়। প্রতিটি স্তর নিচের স্তর থেকে populate করতে পারে যা আগেই stale ছিল।
+**Layer multiplication.** 3600s browser `max-age`-এর পিছনে 600s CDN TTL, তার পিছনে 300s application TTL - worst case ৪,৫০০s, ৩০০s নয়। প্রতিটি স্তর নিচের স্তর থেকে populate করতে পারে যা আগেই stale ছিল।
 
 **Key skew.** Write path `product:1042` invalidate করে কিন্তু read path রাখে `product:1042:v2:en-GB:currency-EUR`। Purge সফল হয়, success রিপোর্ট করে, আর কিছুই মোছে না। এটিই সবচেয়ে সাধারণ invalidation bug।
 
@@ -176,7 +176,7 @@ flowchart TD
 
 - [ ] Grep প্রমাণ করে key-builder module-এর বাইরে কোনো cache key তৈরি হয় না।
 - [ ] মোট staleness budget নথিভুক্ত এবং প্রতিটি স্তরের TTL-এর যোগফল তার নিচে।
-- [ ] Integration test write, invalidate ও budget-এর মধ্যে fresh read assert করে — শুধু app cache নয়, CDN দিয়েও।
+- [ ] Integration test write, invalidate ও budget-এর মধ্যে fresh read assert করে - শুধু app cache নয়, CDN দিয়েও।
 - [ ] Peak-এ এক entity purge করলে origin QPS 2x-এর বেশি বাড়ে না (`proxy_cache_lock` বা single-flight প্রমাণিতভাবে চালু)।
 - [ ] `X-Cache-Status` ও `Age` expose করা ও POP অনুযায়ী graph করা।
 - [ ] Response shape বদলালে `CACHE_SCHEMA_VERSION` বাড়ে; না বাড়লে test fail করে।
@@ -184,7 +184,7 @@ flowchart TD
 
 ## Anti-patterns
 
-- Incident response হিসেবে `FLUSHALL` বা পুরো CDN purge — stale-read bug-এর বদলে origin outage কিনলেন।
+- Incident response হিসেবে `FLUSHALL` বা পুরো CDN purge - stale-read bug-এর বদলে origin outage কিনলেন।
 - Transaction-এর ভেতরে invalidate করা, যা নিশ্চিতভাবে pre-commit মান cache করে।
 - "আপাতত ঠিক করতে" সব কিছুতে `Cache-Control: no-cache`; origin খরচ ৩০x বাড়ে আর আসল bug পরের release পর্যন্ত টিকে থাকে।
 - Retry ছাড়া message bus-এ fire-and-forget invalidation; একটি message হারালে একটি key স্থায়ীভাবে stale।

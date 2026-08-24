@@ -1,10 +1,10 @@
-> **Scenario** — এক team বুধবার ১৫:০০-এ payments namespace-এর ৩০% pod terminate করে প্রথম "chaos day" চালায়। কোনো steady-state hypothesis নেই, abort criteria নেই, থামানোর feature flag নেই। এগারো মিনিট পর তাদের হাতে আসল Sev-1, ৪০ মিনিটের payment outage, আর leadership-এর তরফে chaos engineering-এ নিষেধাজ্ঞা।
+> **Scenario** - এক team বুধবার ১৫:০০-এ payments namespace-এর ৩০% pod terminate করে প্রথম "chaos day" চালায়। কোনো steady-state hypothesis নেই, abort criteria নেই, থামানোর feature flag নেই। এগারো মিনিট পর তাদের হাতে আসল Sev-1, ৪০ মিনিটের payment outage, আর leadership-এর তরফে chaos engineering-এ নিষেধাজ্ঞা।
 
 ## Why it matters
 
 - Chaos engineering শুধু controlled experiment হিসেবেই মূল্য দেয়। Hypothesis ও stop condition ছাড়া এটা ইচ্ছাকৃতভাবে ঘটানো outage থেকে আলাদা নয়।
 - Untested failure path-ই fail করে। ৮ মাসে কেউ চালায়নি এমন fallback কোডের কাজ করার সম্ভাবনা ৫০/৫০।
-- Finding-ই আসল ফল: "আমরা ধরে নিয়েছিলাম Redis timeout gracefully degrade করে, করে না" — এটা সবুজ dashboard-এর চেয়ে দামি।
+- Finding-ই আসল ফল: "আমরা ধরে নিয়েছিলাম Redis timeout gracefully degrade করে, করে না" - এটা সবুজ dashboard-এর চেয়ে দামি।
 - একটা খারাপভাবে চালানো experiment বছরের পর বছরের জন্য ভালো experiment চালানোর সাংগঠনিক অনুমতি কেড়ে নেয়।
 - Recovery time শুধু measure করেই জানা যায়, আর সেটা রবিবার ০৩:০০-র চেয়ে বুধবার ১৫:০০-তে জানা ভালো।
 
@@ -12,7 +12,7 @@
 
 | Signal | What you observe (যা chaos আগে ধরার কথা) |
 |---|---|
-| Unknown MTTR | "Primary DB failover হলে recover-এ কত সময়?" — কেউ উত্তর দিতে পারে না |
+| Unknown MTTR | "Primary DB failover হলে recover-এ কত সময়?" - কেউ উত্তর দিতে পারে না |
 | Stale runbooks | Runbook ছয় মাস আগে মুছে ফেলা dashboard দেখায় |
 | Untested fallback | ৯০ দিনে production log-এ ০ hit থাকা `catch` branch |
 | Hidden coupling | "Optional" cache, যার অনুপস্থিতিতে ১০০% error rate |
@@ -21,7 +21,7 @@
 
 ## How it breaks
 
-বিপজ্জনক pattern হলো instrumentation ছাড়া chaos। Steady state দেখতে না পারলে experiment deviation ঘটাল কি না বোঝা যায় না, আর কখন abort করতে হবে সেটাও ঠিক করা যায় না। দ্বিতীয় failure mode হলো blast radius যা আসলে bounded নয়: ৩০% pod মারা শোনায় সীমিত, যতক্ষণ না জানা যায় একই namespace-এ single-replica leader election sidecar থাকে, আর টিকে থাকা pod-এর connection pool পুনর্বণ্টিত load নিতে পারে না। Experiment আসল দুর্বলতা খুঁজে পায় — production-এ, পুরো customer impact নিয়ে সেটা ব্যবহার করে।
+বিপজ্জনক pattern হলো instrumentation ছাড়া chaos। Steady state দেখতে না পারলে experiment deviation ঘটাল কি না বোঝা যায় না, আর কখন abort করতে হবে সেটাও ঠিক করা যায় না। দ্বিতীয় failure mode হলো blast radius যা আসলে bounded নয়: ৩০% pod মারা শোনায় সীমিত, যতক্ষণ না জানা যায় একই namespace-এ single-replica leader election sidecar থাকে, আর টিকে থাকা pod-এর connection pool পুনর্বণ্টিত load নিতে পারে না। Experiment আসল দুর্বলতা খুঁজে পায় - production-এ, পুরো customer impact নিয়ে সেটা ব্যবহার করে।
 
 ```mermaid
 stateDiagram-v2
@@ -113,7 +113,7 @@ def run_experiment(exp, sli, inject, rollback):
             time.sleep(5)
         return {"result": "hypothesis_held"}
     finally:
-        rollback()  # abort, exception বা স্বাভাবিক শেষ — সব ক্ষেত্রেই চলে
+        rollback()  # abort, exception বা স্বাভাবিক শেষ - সব ক্ষেত্রেই চলে
 ```
 
 `finally` block optional নয়। Crash-এর পরেও fault রেখে দিতে পারে এমন experiment একটা মাইন।
@@ -124,7 +124,7 @@ Synthetic traffic-সহ staging দিয়ে শুরু, তারপর i
 
 ### 6. চালানোর খবর নয়, finding প্রকাশ করুন
 
-Deliverable হলো owner ও তারিখসহ দুর্বলতার তালিকা। "Hypothesis held"-ও একটা ফল — মানে fallback আজ কাজ করে, আর প্রমাণসহ সেটা বলা যায়।
+Deliverable হলো owner ও তারিখসহ দুর্বলতার তালিকা। "Hypothesis held"-ও একটা ফল - মানে fallback আজ কাজ করে, আর প্রমাণসহ সেটা বলা যায়।
 
 ## Target design
 

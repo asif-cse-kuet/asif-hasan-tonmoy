@@ -6,7 +6,7 @@ import { HERO_TECH } from '@/content/tech-stack'
 <template>
   <ul
     class="flex flex-wrap items-center gap-x-4 gap-y-2.5 text-mist/80 sm:gap-x-6"
-    aria-label="Core technologies"
+    aria-label="Stack, DevOps, monitoring, logging and metrics"
   >
     <li
       v-for="tech in HERO_TECH"

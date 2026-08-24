@@ -44,11 +44,11 @@ const messages = {
       chatView: 'Chat view',
       blogView: 'Blog view',
       readFull: 'Read full {lang}',
-      stubNotice: 'This topic is a stub — full article coming soon.',
-      partialNotice: 'Partial article — more depth in progress.',
+      stubNotice: 'This topic is a stub - full article coming soon.',
+      partialNotice: 'Partial article - more depth in progress.',
       deepCaseStudies: 'Deep case studies coming',
       educationalNote:
-        'Educational industry knowledge — not personal ownership claims.',
+        'Educational industry knowledge - not personal ownership claims.',
     },
     pages: {
       home: 'Home',
@@ -137,10 +137,10 @@ const messages = {
       chatView: 'চ্যাট ভিউ',
       blogView: 'ব্লগ ভিউ',
       readFull: 'সম্পূর্ণ {lang} পড়ুন',
-      stubNotice: 'এটি stub — সম্পূর্ণ নিবন্ধ শীঘ্রই আসছে।',
-      partialNotice: 'আংশিক নিবন্ধ — আরও গভীরতা চলছে।',
+      stubNotice: 'এটি stub - সম্পূর্ণ নিবন্ধ শীঘ্রই আসছে।',
+      partialNotice: 'আংশিক নিবন্ধ - আরও গভীরতা চলছে।',
       deepCaseStudies: 'গভীর case study শীঘ্রই আসছে',
-      educationalNote: 'শিক্ষামূলক ইন্ডাস্ট্রি জ্ঞান — ব্যক্তিগত দাবি নয়।',
+      educationalNote: 'শিক্ষামূলক ইন্ডাস্ট্রি জ্ঞান - ব্যক্তিগত দাবি নয়।',
     },
     pages: {
       home: 'হোম',

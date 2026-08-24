@@ -1,4 +1,4 @@
-> **Scenario** — Design system `v4.0.0` ship করে `<AppButton variant="primary">`-কে `variant="filled"` নাম দেয়। বারোটা product app এটা ব্যবহার করে। চারটা সেই সপ্তাহেই upgrade করে, ছয়টা `v3`-তে থাকে, আর দুটোর bundle-এ দুই version-ই ঢোকে কারণ একটা shared chart package `v3`-এর উপর নির্ভর করে। এক মাস ধরে button-এর রং না মেলার ticket আসে।
+> **Scenario** - Design system `v4.0.0` ship করে `<AppButton variant="primary">`-কে `variant="filled"` নাম দেয়। বারোটা product app এটা ব্যবহার করে। চারটা সেই সপ্তাহেই upgrade করে, ছয়টা `v3`-তে থাকে, আর দুটোর bundle-এ দুই version-ই ঢোকে কারণ একটা shared chart package `v3`-এর উপর নির্ভর করে। এক মাস ধরে button-এর রং না মেলার ticket আসে।
 
 ## Why it matters
 
@@ -20,7 +20,7 @@
 
 ## How it breaks
 
-Semver হলো *public surface* নিয়ে প্রতিশ্রুতি, অথচ অধিকাংশ design system সেই surface সংজ্ঞায়িতই করে না। বাস্তবে CSS class name, test যে DOM structure-এর উপর নির্ভর করে, slot name, default prop value, token value — সবই contract-এর অংশ। ফলে internal wrapper `div` rename করা "patch" সব জায়গায় snapshot test ভাঙে, আর সত্যিকারের breaking rename minor হিসেবে যায় কারণ টিম শুধু prop signature গোনে।
+Semver হলো *public surface* নিয়ে প্রতিশ্রুতি, অথচ অধিকাংশ design system সেই surface সংজ্ঞায়িতই করে না। বাস্তবে CSS class name, test যে DOM structure-এর উপর নির্ভর করে, slot name, default prop value, token value - সবই contract-এর অংশ। ফলে internal wrapper `div` rename করা "patch" সব জায়গায় snapshot test ভাঙে, আর সত্যিকারের breaking rename minor হিসেবে যায় কারণ টিম শুধু prop signature গোনে।
 
 ```mermaid
 flowchart TD
@@ -38,7 +38,7 @@ flowchart TD
 
 1. Public surface লিখিতভাবে সংজ্ঞায়িত নয়, তাই semver সিদ্ধান্ত অনুমান।
 2. Token ও component একসাথে version হয়, ফলে রঙের ছোট পরিবর্তনেও component major লাগে।
-3. Deprecation window নেই — নতুন prop আসার release-এই পুরোনোটা মুছে যায়।
+3. Deprecation window নেই - নতুন prop আসার release-এই পুরোনোটা মুছে যায়।
 4. Consumer exact version pin করে, তাই patched security fix কখনও পৌঁছায় না।
 5. Peer dependency range খুব সরু, ফলে duplicate install নিশ্চিত।
 6. Visual regression suite নেই, তাই অনিচ্ছাকৃত পরিবর্তন patch হিসেবে যায়।
@@ -47,12 +47,12 @@ flowchart TD
 
 ### 1. Contract লিখে ফেলুন
 
-স্পষ্টভাবে ঘোষণা করুন: props, events, slots, exported type, documented CSS custom property ও public part selector — এগুলোই contract। Internal DOM structure, class name ও file path নয়। README-তে প্রকাশ করুন এবং review-তে enforce করুন।
+স্পষ্টভাবে ঘোষণা করুন: props, events, slots, exported type, documented CSS custom property ও public part selector - এগুলোই contract। Internal DOM structure, class name ও file path নয়। README-তে প্রকাশ করুন এবং review-তে enforce করুন।
 
 ### 2. Package ভাগ করুন
 
 ```
-@acme/tokens      # colours, spacing, type scale — changes rarely
+@acme/tokens      # colours, spacing, type scale - changes rarely
 @acme/primitives  # unstyled behaviour: menu, dialog, combobox
 @acme/components  # styled Vue components built on both
 ```
@@ -65,7 +65,7 @@ Palette বদলাতে token `2.0.0`-তে যেতে পারে, compo
 // AppButton.vue
 const props = withDefaults(defineProps<{
   variant?: 'filled' | 'outline' | 'ghost'
-  /** @deprecated since 4.1 — use `variant="filled"`. Removed in 6.0. */
+  /** @deprecated since 4.1 - use `variant="filled"`. Removed in 6.0. */
   primary?: boolean
 }>(), { variant: 'outline' })
 

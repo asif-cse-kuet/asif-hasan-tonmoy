@@ -1,11 +1,11 @@
-> **Scenario** — The category API is cached at the edge with `max-age=60`. Every minute, p99 for that endpoint jumps from 12 ms to 840 ms as the edge revalidates against an origin in another region. During a 4-minute origin deploy, the edge has nothing to serve and the storefront shows an empty catalog to every visitor.
+> **Scenario** - The category API is cached at the edge with `max-age=60`. Every minute, p99 for that endpoint jumps from 12 ms to 840 ms as the edge revalidates against an origin in another region. During a 4-minute origin deploy, the edge has nothing to serve and the storefront shows an empty catalog to every visitor.
 
 ## Why it matters
 
 - Hard expiry couples user-facing latency to origin latency once per TTL, for the unlucky requests that arrive at the wrong moment.
 - The same mechanism turns an origin outage into a user-visible outage. The edge is holding a perfectly good copy and throwing it away because a timer expired.
 - Product teams respond to slow revalidation by raising `max-age`, trading freshness for latency when they could have had both.
-- For content where "60 seconds old" is indistinguishable from "current" — catalogs, article bodies, config blobs — paying full origin latency for freshness is pure waste.
+- For content where "60 seconds old" is indistinguishable from "current" - catalogs, article bodies, config blobs - paying full origin latency for freshness is pure waste.
 - Availability improvements here are cheap: two directives in a header, no application change.
 
 ## Symptoms
@@ -169,7 +169,7 @@ flowchart TD
 
 ## Anti-patterns
 
-- Setting `stale-while-revalidate` while the proxy lacks `proxy_cache_background_update on` — the directive is ignored and nothing changes.
+- Setting `stale-while-revalidate` while the proxy lacks `proxy_cache_background_update on` - the directive is ignored and nothing changes.
 - Using `stale-if-error` on write responses or anything user-specific.
 - Omitting `proxy_cache_lock`, so the background revalidation is actually 3,000 concurrent origin requests.
 - Raising `max-age` to hide revalidation latency rather than adding `stale-while-revalidate`.

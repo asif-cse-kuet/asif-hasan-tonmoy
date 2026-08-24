@@ -14,8 +14,8 @@ const { pick } = useLocaleText()
     :title="pick({ en: 'Tech stack & technical vocabulary', bn: 'টেক স্ট্যাক ও কৌশলগত পরিভাষা' })"
     :lead="
       pick({
-        en: 'Languages, frameworks, infrastructure, and system concepts I work with — listed plainly, without invented skill scores.',
-        bn: 'যে ভাষা, ফ্রেমওয়ার্ক, ইনফ্রা ও সিস্টেম ধারণা নিয়ে কাজ করি — বানানো স্কোর ছাড়াই সরাসরি তালিকা।',
+        en: 'Languages, frameworks, infrastructure, and system concepts I work with, listed plainly, without invented skill scores.',
+        bn: 'যে ভাষা, ফ্রেমওয়ার্ক, ইনফ্রা ও সিস্টেম ধারণা নিয়ে কাজ করি, বানানো স্কোর ছাড়াই সরাসরি তালিকা।',
       })
     "
   >

@@ -1,26 +1,26 @@
-> **Scenario** — Checkout latency dashboard সারা সন্ধ্যা flat 180 ms average দেখাচ্ছে। Support ticket বলছে payment page hang করছে। Average মিথ্যা নয়, কিন্তু অকেজো — p99 আছে 9.4 s-এ, আর যে 3% request timeout হয় তারা কোনো duration sample-ই emit করে না।
+> **Scenario** - Checkout latency dashboard সারা সন্ধ্যা flat 180 ms average দেখাচ্ছে। Support ticket বলছে payment page hang করছে। Average মিথ্যা নয়, কিন্তু অকেজো - p99 আছে 9.4 s-এ, আর যে 3% request timeout হয় তারা কোনো duration sample-ই emit করে না।
 
 ## Why it matters
 
 - Average latency সেই tail লুকায় যেখানে revenue থাকে: checkout-এ 2% timeout মানে পুরো এক শতাংশ conversion।
 - Error শুধু handler-এর 500-এ গোনা হলে client disconnect (`499`), upstream timeout ও panic error SLI-তে কখনো আসে না।
-- CPU দিয়ে saturation মাপলে আসল constraint বাদ পড়ে — connection pool, worker slot ও queue depth CPU-র বহু আগে saturate হয়।
+- CPU দিয়ে saturation মাপলে আসল constraint বাদ পড়ে - connection pool, worker slot ও queue depth CPU-র বহু আগে saturate হয়।
 - Traffic signal না থাকলে fix আর traffic collapse আলাদা করা যায় না: কেউ পৌঁছাতে না পারলেও error *rate* কমে।
-- নিচের সব artifact — SLO, burn-rate alert, capacity model — instrumentation-এর বাগ উত্তরাধিকার পায়। আগে signal ঠিক করুন।
+- নিচের সব artifact - SLO, burn-rate alert, capacity model - instrumentation-এর বাগ উত্তরাধিকার পায়। আগে signal ঠিক করুন।
 
 ## Symptoms
 
 | Signal | What you observe |
 | --- | --- |
 | Latency | Average flat ও healthy; user বলছে multi-second hang; `histogram_quantile` `NaN` দেয় বা top bucket-এ clamp করে |
-| Traffic | Request rate raw counter হিসেবে graph, শুধু বাড়ে — drop অদৃশ্য |
+| Traffic | Request rate raw counter হিসেবে graph, শুধু বাড়ে - drop অদৃশ্য |
 | Errors | Incident-এর মাঝেও error ratio প্রায় 0%, কারণ timeout metric increment-এর আগেই abort করে |
 | Saturation | CPU 35%, অথচ প্রতিটি request queue-তে; `nginx` `active` connection `worker_connections`-এ আটকে |
 | Buckets | 90% sample একটি bucket-এ, তাই quantile আসলে interpolated অনুমান |
 
 ## How it breaks
 
-তিনটি স্বতন্ত্র ভুল একসাথে জমা হয়। প্রথম, latency gauge বা mean-এর summary হিসেবে record হয়, তাই write time-এই distribution নষ্ট — আর ফেরানো যায় না। দ্বিতীয়, metric increment হয় handler return করার *পরে*, ফলে timeout, OOM বা client disconnect-এ মারা যাওয়া request চুপচাপ বাদ পড়ে — যে population মাপছেন সেটাই ঠিক সফল population। তৃতীয়, histogram bucket library-র default (`0.005 … 10`) থেকে আসে, যা service-এর আসল SLO boundary-র সাথে মেলে না; ফলে যে একটিমাত্র quantile দরকার সেটি দুই order of magnitude চওড়া bucket-এ interpolate হয়।
+তিনটি স্বতন্ত্র ভুল একসাথে জমা হয়। প্রথম, latency gauge বা mean-এর summary হিসেবে record হয়, তাই write time-এই distribution নষ্ট - আর ফেরানো যায় না। দ্বিতীয়, metric increment হয় handler return করার *পরে*, ফলে timeout, OOM বা client disconnect-এ মারা যাওয়া request চুপচাপ বাদ পড়ে - যে population মাপছেন সেটাই ঠিক সফল population। তৃতীয়, histogram bucket library-র default (`0.005 … 10`) থেকে আসে, যা service-এর আসল SLO boundary-র সাথে মেলে না; ফলে যে একটিমাত্র quantile দরকার সেটি দুই order of magnitude চওড়া bucket-এ interpolate হয়।
 
 ```mermaid
 flowchart TD
@@ -191,7 +191,7 @@ flowchart LR
 
 ## Anti-patterns
 
-- Error-budget burn-এর বদলে সরাসরি p99 latency-তে alert — প্রতিটি traffic spike page হয়ে যায়।
+- Error-budget burn-এর বদলে সরাসরি p99 latency-তে alert - প্রতিটি traffic spike page হয়ে যায়।
 - "Debug সহজ হবে" ভেবে histogram-এ `user_id`/`request_id` label যোগ করা; বদলে exemplar ব্যবহার করুন।
 - pod জুড়ে p99-কে `avg(p99)` হিসেবে হিসাব করা, যা কোনো কিছুরই quantile নয়।
 - Error body নিয়ে আসা 200-কে success ধরা, কারণ status code ঠিক ছিল।

@@ -1,11 +1,11 @@
-> **Scenario** — The primary region goes down at 14:02. The DNS provider health check flips `api.example.com` to the standby region at 14:03 and the record has a 60-second TTL. At 14:40, 8% of traffic — mostly one large enterprise customer and a fleet of mobile clients — is still hammering the dead IP.
+> **Scenario** - The primary region goes down at 14:02. The DNS provider health check flips `api.example.com` to the standby region at 14:03 and the record has a 60-second TTL. At 14:40, 8% of traffic - mostly one large enterprise customer and a fleet of mobile clients - is still hammering the dead IP.
 
 ## Why it matters
 
 - DNS is the failover mechanism most teams rely on and the one they control least. You publish a TTL; resolvers, stub libraries, and app runtimes decide what to honour.
 - A "60-second RTO" that is really 40 minutes turns a regional outage into a multi-hour SLA breach.
-- Clients pinned to a dead IP do not fail gracefully — they fill connection pools, exhaust retries, and generate support tickets long after the dashboard says "recovered".
-- Negative caching (SOA minimum) means a mistake — a deleted record, a typo — persists far past the positive TTL.
+- Clients pinned to a dead IP do not fail gracefully - they fill connection pools, exhaust retries, and generate support tickets long after the dashboard says "recovered".
+- Negative caching (SOA minimum) means a mistake - a deleted record, a typo - persists far past the positive TTL.
 - Low TTLs are not free: they multiply query volume and make your DNS provider a hard dependency on every cold connection.
 
 ## Symptoms
@@ -22,7 +22,7 @@
 
 ## How it breaks
 
-A published TTL is an upper bound request, not a guarantee. Three layers each add their own delay. Recursive resolvers cache the answer for the TTL, but many enforce a minimum (commonly 30–300s) and some corporate resolvers clamp aggressively upward. Stub resolvers and language runtimes cache again: the JVM historically cached successful lookups forever under the default security policy, and many HTTP clients resolve once when a connection pool is created and never re-resolve while connections stay alive. Finally, keepalive means even a perfect re-resolution changes nothing — an open connection to the dead IP is reused until it errors.
+A published TTL is an upper bound request, not a guarantee. Three layers each add their own delay. Recursive resolvers cache the answer for the TTL, but many enforce a minimum (commonly 30–300s) and some corporate resolvers clamp aggressively upward. Stub resolvers and language runtimes cache again: the JVM historically cached successful lookups forever under the default security policy, and many HTTP clients resolve once when a connection pool is created and never re-resolve while connections stay alive. Finally, keepalive means even a perfect re-resolution changes nothing - an open connection to the dead IP is reused until it errors.
 
 ```mermaid
 sequenceDiagram
@@ -94,7 +94,7 @@ location /api/ {
 }
 ```
 
-Using a variable in `proxy_pass` makes nginx re-resolve on the `resolver valid=` schedule instead of pinning the IP at config load. On the client side, set a max connection lifetime — for example `MaxConnLifetime: 60s` in a Go transport wrapper, or `keepAliveTimeout` plus a pool recycle in Node.
+Using a variable in `proxy_pass` makes nginx re-resolve on the `resolver valid=` schedule instead of pinning the IP at config load. On the client side, set a max connection lifetime - for example `MaxConnLifetime: 60s` in a Go transport wrapper, or `keepAliveTimeout` plus a pool recycle in Node.
 
 ### 4. Fix runtime caches explicitly
 

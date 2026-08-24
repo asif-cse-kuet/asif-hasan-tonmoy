@@ -1,12 +1,12 @@
-> **Scenario** — একটা checkout service আগে Postgres-এ `orders` row লেখে, তারপর Kafka-তে `order.created` publish করে। ৪০ সেকেন্ডের broker failover-এ ১,১৮০টা order database-এ commit হয় কিন্তু কখনো publish হয় না। Fulfilment ওগুলোর খবরই পায় না। দুদিন পর finance দেখে paid order আছে কিন্তু shipment নেই — আর কোন event হারিয়েছে কেউ বলতে পারে না, কারণ publish call-এর কোনো durable record ছিল না।
+> **Scenario** - একটা checkout service আগে Postgres-এ `orders` row লেখে, তারপর Kafka-তে `order.created` publish করে। ৪০ সেকেন্ডের broker failover-এ ১,১৮০টা order database-এ commit হয় কিন্তু কখনো publish হয় না। Fulfilment ওগুলোর খবরই পায় না। দুদিন পর finance দেখে paid order আছে কিন্তু shipment নেই - আর কোন event হারিয়েছে কেউ বলতে পারে না, কারণ publish call-এর কোনো durable record ছিল না।
 
 ## Why it matters
 
 - Database commit আর broker publish দুটো আলাদা system; এদের ঘিরে কোনো transaction নেই, তাই প্রতিটি "save then publish" একটা race যার loss window নিশ্চিত।
-- উল্টো failure আরও খারাপ: publish সফল, transaction rollback — downstream এমন order নিয়ে কাজ করে যেটা অস্তিত্বেই নেই।
+- উল্টো failure আরও খারাপ: publish সফল, transaction rollback - downstream এমন order নিয়ে কাজ করে যেটা অস্তিত্বেই নেই।
 - Recovery হাতে করা ও ধীর। "row আছে event নেই" মেলাতে প্রতি entity-র জন্য আলাদা script লিখতে হয়, তাও চাপের মধ্যে।
 - Request path-এ publish retry করলে broker latency user-facing p99-এ যোগ হয়, তবু process মরলে event হারায়।
-- Auditor ও finance-এর প্রমাণযোগ্য record দরকার — কী emit হয়েছে, কখন। fire-and-forget publish কোনোটাই দেয় না।
+- Auditor ও finance-এর প্রমাণযোগ্য record দরকার - কী emit হয়েছে, কখন। fire-and-forget publish কোনোটাই দেয় না।
 
 ## Symptoms
 
@@ -128,7 +128,7 @@ async function relayBatch(): Promise<number> {
 }
 ```
 
-Relay at-least-once: `sendBatch`-এর পর `UPDATE`-এর আগে process মরলে ওই event দুবার publish হবে। এটাই সঠিক ও প্রত্যাশিত — consumer `event_id`-তে dedup করবে।
+Relay at-least-once: `sendBatch`-এর পর `UPDATE`-এর আগে process মরলে ওই event দুবার publish হবে। এটাই সঠিক ও প্রত্যাশিত - consumer `event_id`-তে dedup করবে।
 
 ### 4. Or let CDC do the relay
 
@@ -144,7 +144,7 @@ transforms.outbox.route.by.field: aggregate
 transforms.outbox.table.field.event.key: aggregate_id
 ```
 
-খরচ: আরেকটা distributed system চালানো, replication slot monitoring, আর কঠোর নিয়ম — slot পিছিয়ে পড়লে WAL disk ভরে দেবে।
+খরচ: আরেকটা distributed system চালানো, replication slot monitoring, আর কঠোর নিয়ম - slot পিছিয়ে পড়লে WAL disk ভরে দেবে।
 
 ### 5. Prune and reconcile
 
@@ -184,11 +184,11 @@ flowchart LR
 
 ## Anti-patterns
 
-- "একসাথে রাখতে" transaction block-এর ভিতরে publish করা — broker call transactional নয় এবং lock ধরে রাখে।
+- "একসাথে রাখতে" transaction block-এর ভিতরে publish করা - broker call transactional নয় এবং lock ধরে রাখে।
 - publish-এ `published_at` mark না করে row delete করা, যা audit trail ধ্বংস করে ও debugging অসম্ভব করে।
 - কেউ partial index ফেলে দেওয়ায় relay পুরো table scan করা।
 - outbox-কে queue ভেবে relay-তে business logic রাখা; এটা transport, processor নয়।
-- "relay একবারই পাঠায়" ভেবে consumer-side dedup বাদ দেওয়া — পাঠায় না।
+- "relay একবারই পাঠায়" ভেবে consumer-side dedup বাদ দেওয়া - পাঠায় না।
 - outbox table অনন্তকাল বাড়তে দেওয়া, যতক্ষণ না autovacuum পিছিয়ে পড়ে ও partial index bloat করে।
 
 ## Related

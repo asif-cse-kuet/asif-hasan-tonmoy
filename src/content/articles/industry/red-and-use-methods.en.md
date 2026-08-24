@@ -1,4 +1,4 @@
-> **Scenario** — The API is returning 502s. Twenty minutes into the incident three engineers are arguing about whether Postgres CPU at 61% is "high". Nobody has looked at whether the connection pool is saturated — it is, at 100/100, with a 4-second median wait — because the dashboard has no saturation panel for pools.
+> **Scenario** - The API is returning 502s. Twenty minutes into the incident three engineers are arguing about whether Postgres CPU at 61% is "high". Nobody has looked at whether the connection pool is saturated - it is, at 100/100, with a 4-second median wait - because the dashboard has no saturation panel for pools.
 
 ## Why it matters
 
@@ -21,7 +21,7 @@
 
 ## How it breaks
 
-RED (Rate, Errors, Duration) is a *demand-side* view: it measures the work arriving and how well it is served. USE (Utilisation, Saturation, Errors) is a *supply-side* view of each resource. When only utilisation is measured, the classic failure is invisible: requests arrive faster than a bounded resource can serve them, so they wait in a queue. Wait time is latency, but the resource itself looks fine — 60% CPU, plenty of memory. Meanwhile the queue grows, the timeout budget is consumed by waiting rather than working, and the edge starts returning 502 while the application never sees an error at all.
+RED (Rate, Errors, Duration) is a *demand-side* view: it measures the work arriving and how well it is served. USE (Utilisation, Saturation, Errors) is a *supply-side* view of each resource. When only utilisation is measured, the classic failure is invisible: requests arrive faster than a bounded resource can serve them, so they wait in a queue. Wait time is latency, but the resource itself looks fine - 60% CPU, plenty of memory. Meanwhile the queue grows, the timeout budget is consumed by waiting rather than working, and the edge starts returning 502 while the application never sees an error at all.
 
 ```mermaid
 flowchart TD
@@ -81,7 +81,7 @@ export const poolSize = new Gauge({
 })
 export const poolWait = new Histogram({
   name: 'db_pool_wait_seconds',
-  help: 'Time spent waiting for a connection — this is saturation',
+  help: 'Time spent waiting for a connection - this is saturation',
   labelNames: ['pool'] as const,
   buckets: [0.001, 0.005, 0.01, 0.05, 0.1, 0.5, 1, 3, 10],
 })
@@ -122,11 +122,11 @@ groups:
         expr: sum by (queue) (worker_queue_depth)
 ```
 
-`node_load1 / cpu_count` above 1 means processes are waiting for CPU — that is saturation, distinct from utilisation.
+`node_load1 / cpu_count` above 1 means processes are waiting for CPU - that is saturation, distinct from utilisation.
 
 ### 4. Apply Little's Law to size the pool
 
-Little's Law: `L = λ × W`, concurrency equals arrival rate times service time. At 900 rps with a 40 ms query, required concurrency is `900 × 0.04 = 36` connections just to keep up, with no headroom. A pool of 100 should be ample — which tells you the real problem is service time drift, not pool size.
+Little's Law: `L = λ × W`, concurrency equals arrival rate times service time. At 900 rps with a 40 ms query, required concurrency is `900 × 0.04 = 36` connections just to keep up, with no headroom. A pool of 100 should be ample - which tells you the real problem is service time drift, not pool size.
 
 ```promql
 # Required concurrency, measured

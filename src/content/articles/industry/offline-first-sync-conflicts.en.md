@@ -1,4 +1,4 @@
-> **Scenario** — A field-inspection PWA lets technicians work in basements with no signal. One tech edits a report offline for three hours; a supervisor edits the same report from the web. On reconnect the outbox replays and last-write-wins hands the supervisor's twelve corrections to the void. Nobody notices for a week.
+> **Scenario** - A field-inspection PWA lets technicians work in basements with no signal. One tech edits a report offline for three hours; a supervisor edits the same report from the web. On reconnect the outbox replays and last-write-wins hands the supervisor's twelve corrections to the void. Nobody notices for a week.
 
 ## Why it matters
 
@@ -43,7 +43,7 @@ sequenceDiagram
 2. Last-write-wins keyed on device time rather than a server version or logical clock.
 3. No idempotency key, so a retried create becomes a second record.
 4. Outbox replays immediately and all at once, with no jitter or concurrency cap.
-5. A single failing mutation blocks the queue head forever — no dead-letter path.
+5. A single failing mutation blocks the queue head forever - no dead-letter path.
 6. Nothing prunes IndexedDB, so storage quota fills and writes start failing.
 
 ## How to solve it
@@ -51,7 +51,7 @@ sequenceDiagram
 ### 1. Persist an outbox with intent, not final state
 
 ```ts
-// db.ts — Dexie schema
+// db.ts - Dexie schema
 db.version(3).stores({
   outbox: '++seq, entityId, status, createdAt',
   entities: 'id, updatedAt',
@@ -162,7 +162,7 @@ flowchart LR
 
 ## Verification checklist
 
-- [ ] Edit offline, have another user edit the same record, reconnect — no field is lost silently.
+- [ ] Edit offline, have another user edit the same record, reconnect - no field is lost silently.
 - [ ] Replay the same outbox item twice; the server creates exactly one record.
 - [ ] Reconnect 50 simulated devices; write p99 stays within its SLO thanks to jitter.
 - [ ] Force a permanent 422 on one item; the rest of the queue still drains.

@@ -1,11 +1,11 @@
-> **Scenario** — A tenant disables a feature flag in the admin UI. The write lands in `eu-west-1`, the Redis key is deleted there, and the CDN object is purged. Forty minutes later, pods in `ap-south-1` are still serving the flag as enabled from a 60-second in-process cache that never received the invalidation, because the pub/sub message was published to the regional Redis, not the global one.
+> **Scenario** - A tenant disables a feature flag in the admin UI. The write lands in `eu-west-1`, the Redis key is deleted there, and the CDN object is purged. Forty minutes later, pods in `ap-south-1` are still serving the flag as enabled from a 60-second in-process cache that never received the invalidation, because the pub/sub message was published to the regional Redis, not the global one.
 
 ## Why it matters
 
 - Every additional cache layer is another copy of the truth with its own lifetime. Three layers means three independent staleness windows that compose, not overlap.
 - Feature flags, permissions, and pricing are the things teams cache most eagerly and the things where staleness is a correctness or security problem.
 - Invalidation delivered over an unreliable channel (fire-and-forget pub/sub) silently degrades: a subscriber that was disconnected for two seconds misses the message forever.
-- Cross-region invalidation is subject to the same partition arithmetic as the data itself. During a partition you either block writes or accept a stale read window — CAP does not exempt caches.
+- Cross-region invalidation is subject to the same partition arithmetic as the data itself. During a partition you either block writes or accept a stale read window - CAP does not exempt caches.
 - Debugging is brutal because behaviour depends on which pod and which region served the request.
 
 ## Symptoms
@@ -21,7 +21,7 @@
 
 ## How it breaks
 
-Pub/sub in Redis is at-most-once and has no backlog. If a subscriber is disconnected — a rolling deploy, a network blip, a failover — messages published during that window are gone. The pod comes back, resubscribes, and confidently serves stale data until its local TTL expires.
+Pub/sub in Redis is at-most-once and has no backlog. If a subscriber is disconnected - a rolling deploy, a network blip, a failover - messages published during that window are gone. The pod comes back, resubscribes, and confidently serves stale data until its local TTL expires.
 
 Layering compounds it. The browser holds a copy for `max-age`, the CDN for its own TTL, the regional Redis until invalidated, and the pod's in-process map for its own short TTL. A purge that reaches only the middle layers leaves the outermost and innermost serving the old value.
 
@@ -35,7 +35,7 @@ sequenceDiagram
     Ad->>DB: "UPDATE flag = off"
     Ad->>Reu: "DEL flag:beta"
     Ad->>Reu: "PUBLISH invalidate flag:beta"
-    Note over Rap: "Different Redis — never receives the message"
+    Note over Rap: "Different Redis - never receives the message"
     Pod->>Rap: "GET flag:beta"
     Rap-->>Pod: "on (stale)"
     Note over Pod: "L1 map caches 'on' for another 60s"
@@ -45,7 +45,7 @@ sequenceDiagram
 
 1. Invalidation published to a regional channel while readers subscribe elsewhere.
 2. Pub/sub used as a reliable transport despite being at-most-once with no replay.
-3. In-process L1 caches with no invalidation path at all — TTL is their only correction mechanism.
+3. In-process L1 caches with no invalidation path at all - TTL is their only correction mechanism.
 4. No version or generation counter, so a stale layer cannot detect that it is stale.
 5. Purge ordering not defined: the CDN is purged before the origin cache, so the CDN immediately refills with stale content.
 6. No end-to-end measurement of invalidation propagation time.
@@ -138,7 +138,7 @@ flowchart LR
 |--------|------|------|-------------|
 | TTL-only convergence | No invalidation infrastructure; cannot break | Staleness equals the sum of every layer's TTL | Low-stakes data with seconds-level tolerance |
 | Pub/sub invalidation | Near-instant, cheap | At-most-once; disconnected subscribers miss silently | Combined with a short TTL as a backstop |
-| Replayable stream | Survives disconnects; auditable | More moving parts, needs cursor management | Flags, permissions, pricing — anything correctness-critical |
+| Replayable stream | Survives disconnects; auditable | More moving parts, needs cursor management | Flags, permissions, pricing - anything correctness-critical |
 | Version gating | Layers self-detect staleness; no perfect delivery needed | Extra read per request unless the generation key is cached | Many layers, unreliable delivery |
 | Single global cache | One copy, trivially consistent | Cross-region latency on every read; single failure domain | Small deployments in one region |
 
@@ -147,7 +147,7 @@ flowchart LR
 - [ ] Flip a flag and measure time-to-effect in every region; record it as a metric, not an anecdote.
 - [ ] Kill a pod's Redis connection for 30 seconds, publish an invalidation, restore it, and confirm the pod catches up.
 - [ ] `redis-cli XLEN cache:invalidations` and per-consumer lag are on a dashboard.
-- [ ] Purge order is asserted by an integration test — CDN purge must be last.
+- [ ] Purge order is asserted by an integration test - CDN purge must be last.
 - [ ] Every cache layer's TTL is documented and their sum is under the stated consistency contract.
 - [ ] A synthetic checker reads the same key from each region every minute and alerts on divergence beyond the contract.
 - [ ] During a simulated cross-region partition, behaviour matches the documented degradation.

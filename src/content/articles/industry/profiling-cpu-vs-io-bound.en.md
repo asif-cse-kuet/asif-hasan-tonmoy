@@ -1,9 +1,9 @@
-> **Scenario** — An invoicing endpoint takes 480 ms. The team spends two weeks optimising a PDF layout loop because it dominates the CPU flamegraph. Latency drops to 465 ms. The flamegraph was right about CPU and wrong about the request: 410 of those 480 ms were spent blocked on a synchronous S3 upload that never appears in an on-CPU profile.
+> **Scenario** - An invoicing endpoint takes 480 ms. The team spends two weeks optimising a PDF layout loop because it dominates the CPU flamegraph. Latency drops to 465 ms. The flamegraph was right about CPU and wrong about the request: 410 of those 480 ms were spent blocked on a synchronous S3 upload that never appears in an on-CPU profile.
 
 ## Why it matters
 
 - On-CPU profilers only sample threads that are running. Time spent waiting is invisible, and most web requests are mostly waiting.
-- Optimising the wrong half is not neutral — it burns weeks of engineering and leaves the SLO unchanged.
+- Optimising the wrong half is not neutral - it burns weeks of engineering and leaves the SLO unchanged.
 - Knowing which half you are in changes every subsequent decision: pool sizes, concurrency model, instance type, autoscaling metric.
 - A wrong diagnosis often leads to scaling up (bigger CPUs) when the fix was scaling out or going async.
 - Profiling under real concurrency reveals contention that single-request profiling structurally cannot see.
@@ -12,7 +12,7 @@
 
 | Signal | What you observe |
 |---|---|
-| CPU utilisation vs latency | Latency high, CPU under 40% — you are IO-bound |
+| CPU utilisation vs latency | Latency high, CPU under 40% - you are IO-bound |
 | Flamegraph | One tall stack dominates, but total sampled time is far below request time |
 | Thread states | Many threads `WAITING` / `TIMED_WAITING`, few `RUNNABLE` |
 | `pidstat` output | Low `%usr`, non-trivial `%system`, high `%wait` |
@@ -28,13 +28,13 @@ Start with the arithmetic that distinguishes the two cases. For a single request
 - **on-CPU time** = 70 ms (what the profiler sampled)
 - **off-CPU time** = 480 − 70 = **410 ms**
 
-The CPU fraction is 70 / 480 = **14.6%**. An on-CPU flamegraph shows you the *shape* of 70 ms and says nothing about the other 410. If the PDF loop is 60% of that 70 ms — 42 ms — then eliminating it entirely saves 42 ms out of 480, an **8.75%** improvement. Two weeks bought 15 ms because 42 ms was the theoretical maximum and the loop was not fully removable.
+The CPU fraction is 70 / 480 = **14.6%**. An on-CPU flamegraph shows you the *shape* of 70 ms and says nothing about the other 410. If the PDF loop is 60% of that 70 ms - 42 ms - then eliminating it entirely saves 42 ms out of 480, an **8.75%** improvement. Two weeks bought 15 ms because 42 ms was the theoretical maximum and the loop was not fully removable.
 
 Meanwhile, the wait ratio tells you the concurrency you need. With 6 cores per pod and Goetz's formula:
 
 threads = cores × utilisation × (1 + wait/service) = 6 × 0.85 × (1 + 410/70) = 6 × 0.85 × 6.86 = **35 threads**
 
-The service was configured with 8. At 8 threads per pod, max throughput is 8 / 0.480 = **16.7 req/s per pod**, while the CPU could support 6 cores / 0.070 s = **85 req/s** if threads were not the constraint. The pod was running at 20% of its CPU-limited capacity, and the CPU graph — 14.6% of 6 cores × 16.7 req/s ≈ 20% — looked "fine".
+The service was configured with 8. At 8 threads per pod, max throughput is 8 / 0.480 = **16.7 req/s per pod**, while the CPU could support 6 cores / 0.070 s = **85 req/s** if threads were not the constraint. The pod was running at 20% of its CPU-limited capacity, and the CPU graph - 14.6% of 6 cores × 16.7 req/s ≈ 20% - looked "fine".
 
 That is the whole failure: a profiler that only sees 14.6% of the request, used to plan work on 100% of it.
 
@@ -121,7 +121,7 @@ PY
 ### 4. Instrument the gap so you never need a profiler again
 
 ```ts
-// src/tracing/spans.ts — a span around every boundary crossing
+// src/tracing/spans.ts - a span around every boundary crossing
 import { trace, SpanStatusCode } from '@opentelemetry/api'
 
 const tracer = trace.getTracer('invoicing')
@@ -157,7 +157,7 @@ return reply.code(202).send({ status: 'processing', jobId })
 // Request drops from 480ms to ~70ms. No PDF loop optimisation required.
 ```
 
-CPU-bound: reduce work per request (better algorithm, cache, precompute) or add cores — in that order.
+CPU-bound: reduce work per request (better algorithm, cache, precompute) or add cores - in that order.
 
 ## Target design
 

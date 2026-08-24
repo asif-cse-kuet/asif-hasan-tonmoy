@@ -1,4 +1,4 @@
-> **Scenario** — একজন support agent customer-কে "সহায়ক" একটা link পাঠাল। ওই link-এ agent-এর machine ইতিমধ্যে জানা একটা session identifier আছে। Customer login করার পর agent-এর browser customer-এর account-এর authenticated session ধরে বসে আছে — আর log-এ কিছুই অস্বাভাবিক দেখায় না।
+> **Scenario** - একজন support agent customer-কে "সহায়ক" একটা link পাঠাল। ওই link-এ agent-এর machine ইতিমধ্যে জানা একটা session identifier আছে। Customer login করার পর agent-এর browser customer-এর account-এর authenticated session ধরে বসে আছে - আর log-এ কিছুই অস্বাভাবিক দেখায় না।
 
 ## Why it matters
 
@@ -20,7 +20,7 @@
 
 ## How it breaks
 
-Fixation একটা *pre-authentication* attack: attacker একটা session identifier বসিয়ে দেয়, victim সেটাতেই authenticate করে, আর attacker এখন authenticated session share করছে। CSRF একটা *post-authentication* attack: browser নিজেই cookie জুড়ে দেয়, তাই অসম্পর্কিত page থেকে submit করা form-ও victim-এর session বহন করে। দুটোই এই সত্য ব্যবহার করে যে cookie হলো ambient authority — কে request শুরু করেছে তা নির্বিশেষে সেটা সঙ্গে যায়।
+Fixation একটা *pre-authentication* attack: attacker একটা session identifier বসিয়ে দেয়, victim সেটাতেই authenticate করে, আর attacker এখন authenticated session share করছে। CSRF একটা *post-authentication* attack: browser নিজেই cookie জুড়ে দেয়, তাই অসম্পর্কিত page থেকে submit করা form-ও victim-এর session বহন করে। দুটোই এই সত্য ব্যবহার করে যে cookie হলো ambient authority - কে request শুরু করেছে তা নির্বিশেষে সেটা সঙ্গে যায়।
 
 ```mermaid
 sequenceDiagram
@@ -114,7 +114,7 @@ await fetch('/api/invoices/9182/approve', {
 
 ### 4. দ্বিতীয় স্তর হিসেবে origin যাচাই করুন
 
-`SameSite` browser behaviour, server guarantee নয় — পুরনো client ও non-browser caller এটা মানে না। Cookie-authenticated write-এ server-side `Origin` header দেখুন:
+`SameSite` browser behaviour, server guarantee নয় - পুরনো client ও non-browser caller এটা মানে না। Cookie-authenticated write-এ server-side `Origin` header দেখুন:
 
 ```php
 $origin = $request->headers->get('Origin');

@@ -1,11 +1,11 @@
-> **Scenario** — An inventory service uses `SET stock_lock:sku123 <uuid> NX PX 5000` before decrementing stock. During a Redis failover, the replica is promoted before it has received the `SET`, a second worker acquires the same lock, and 60 units of a 40-unit SKU get sold.
+> **Scenario** - An inventory service uses `SET stock_lock:sku123 <uuid> NX PX 5000` before decrementing stock. During a Redis failover, the replica is promoted before it has received the `SET`, a second worker acquires the same lock, and 60 units of a 40-unit SKU get sold.
 
 ## Why it matters
 
 - A lock protects an invariant that money depends on: single stock decrement, one payment capture, one email send, one file rename. Two holders means overselling, double charges, or corrupted output.
-- Every practical distributed lock is a **lease** — it has a TTL. A lease guarantees mutual exclusion only if the holder cannot act after it expires, and no amount of TTL tuning can bound an arbitrary process pause.
+- Every practical distributed lock is a **lease** - it has a TTL. A lease guarantees mutual exclusion only if the holder cannot act after it expires, and no amount of TTL tuning can bound an arbitrary process pause.
 - Redis replication is asynchronous by default. A lock acquired on the primary and lost in a failover is not a bug in Redis; it is the documented behaviour of async replication, and single-instance Redlock-style locks inherit it.
-- The fix — fencing tokens checked by the protected resource — costs one column and one comparison, and it converts a correctness gamble into a guarantee.
+- The fix - fencing tokens checked by the protected resource - costs one column and one comparison, and it converts a correctness gamble into a guarantee.
 
 ## Symptoms
 
@@ -17,7 +17,7 @@
 | TTL vs work time | Job p99 duration exceeds the lock TTL for a small fraction of runs |
 | GC / throttle pauses | STW or cgroup throttle stalls at or above the TTL |
 | Failover correlation | Incidents cluster within 30s of a Redis or ZooKeeper failover event |
-| Unlock errors | `unlock of non-owned key` — proof that the lock expired mid-work |
+| Unlock errors | `unlock of non-owned key` - proof that the lock expired mid-work |
 
 ## How it breaks
 
@@ -25,7 +25,7 @@ Three independent failures, each sufficient on its own.
 
 **Async replication loses the lock.** Redis primary accepts `SET NX`, acknowledges, and dies before propagating to the replica. Sentinel promotes the replica, which has no record of the key. A second client acquires it immediately. Both clients believe they hold an exclusive lock, and neither is wrong given what it can observe.
 
-**Pause outlives the lease.** Client A holds a 5s lease, takes a 7s GC pause or gets CPU-throttled by its cgroup, the lease expires, B acquires, A resumes and writes. A has no way to know time passed — this is why checking `isLocked()` before the write does not help; the check and the write are not atomic with respect to the lease.
+**Pause outlives the lease.** Client A holds a 5s lease, takes a 7s GC pause or gets CPU-throttled by its cgroup, the lease expires, B acquires, A resumes and writes. A has no way to know time passed - this is why checking `isLocked()` before the write does not help; the check and the write are not atomic with respect to the lease.
 
 **Unlock deletes someone else's lock.** `DEL stock_lock:sku123` without verifying ownership will happily release the lock B is holding, cascading the problem to C.
 
@@ -158,7 +158,7 @@ Renewal reduces how often you hit the expiry; the fence token is what makes expi
 
 ### 5. Test the pause explicitly
 
-`SIGSTOP` the holder for 3x the TTL, `SIGCONT` it, and assert its next write is rejected. If it succeeds, you do not have a lock — you have a race with a good success rate.
+`SIGSTOP` the holder for 3x the TTL, `SIGCONT` it, and assert its next write is rejected. If it succeeds, you do not have a lock - you have a race with a good success rate.
 
 ## Target design
 
@@ -199,7 +199,7 @@ flowchart TD
 
 ## Anti-patterns
 
-- Raising the TTL until the duplicates stop — you have made the window rarer, not closed it.
+- Raising the TTL until the duplicates stop - you have made the window rarer, not closed it.
 - `DEL` to unlock, releasing whichever holder happens to be current.
 - Checking `isLocked()` immediately before the write and treating that as atomic.
 - Implementing Redlock across five Redis nodes to fix a problem that a fence token solves with one column.

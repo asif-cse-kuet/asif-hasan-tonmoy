@@ -1,4 +1,4 @@
-> **Scenario** — একটি currency conversion bug `daily_revenue` table-এর ৯০ দিন নষ্ট করেছে। ৯০টি partition-এর জন্য backfill DAG trigger করা হলো, তিনটি task warehouse timeout-এ fail করল, কেউ clear করে re-run দিল — এখন ১১ দিনের revenue প্রায় দ্বিগুণ, কারণ task replace-এর বদলে append করেছে।
+> **Scenario** - একটি currency conversion bug `daily_revenue` table-এর ৯০ দিন নষ্ট করেছে। ৯০টি partition-এর জন্য backfill DAG trigger করা হলো, তিনটি task warehouse timeout-এ fail করল, কেউ clear করে re-run দিল - এখন ১১ দিনের revenue প্রায় দ্বিগুণ, কারণ task replace-এর বদলে append করেছে।
 
 ## Why it matters
 
@@ -6,7 +6,7 @@
 - একটিমাত্র double-counted revenue সংখ্যার পরেই executive-রা warehouse-এর উপর আস্থা হারায়। সেই আস্থা ফেরাতে sprint নয়, quarter লাগে।
 - Backfill হলো pipeline-এর সবচেয়ে high-concurrency workload। Task repeat-safe না হলে প্রতিটি retry, প্রতিটি manual clear ও প্রতিটি parallel worker correctness risk।
 - On-call নিরাপদে কিছুই retry করতে পারে না। Runbook হয়ে যায় "pipeline owner-কে ঘুম থেকে তোলো", ৫ মিনিটের কাজ ৯০ মিনিটের escalation হয়।
-- Downstream model, feature store ও trained model — সবাই নষ্ট window খায়। একটি খারাপ backfill এমন model বানায় যার training label ভুল।
+- Downstream model, feature store ও trained model - সবাই নষ্ট window খায়। একটি খারাপ backfill এমন model বানায় যার training label ভুল।
 
 ## Symptoms
 
@@ -41,7 +41,7 @@ flowchart TD
 
 1. Write path-এ `INSERT`, কোনো natural key নেই, primary key নেই, delete-before-insert নেই।
 2. Delete predicate-এর partition boundary read query-র boundary থেকে ভিন্ন, তাই retry যা লেখে তার চেয়ে কম মোছে।
-3. "transaction rollback করবে" ধরে retry safe ভাবা — কিন্তু job chunk ধরে commit করে।
+3. "transaction rollback করবে" ধরে retry safe ভাবা - কিন্তু job chunk ধরে commit করে।
 4. Non-deterministic transformation: task-এ `NOW()`, `RANDOM()` বা unpinned dimension table, তাই re-run ভিন্ন value দেয়।
 5. Partition isolation ছাড়া concurrency: কয়েকটি task একই target row লেখে।
 6. Completion marker নেই, তাই "partition কখনও চলেনি" আর "চলেছে কিন্তু commit-এর পরে fail" আলাদা করা যায় না।
@@ -73,7 +73,7 @@ GROUP BY 1, 2;
 COMMIT;
 ```
 
-দুই statement-এ half-open interval এবং *একই* boundary — লক্ষ্য করুন। `BETWEEN` হলো এক-row overlap-এর ক্লাসিক উৎস।
+দুই statement-এ half-open interval এবং *একই* boundary - লক্ষ্য করুন। `BETWEEN` হলো এক-row overlap-এর ক্লাসিক উৎস।
 
 ### 2. অথবা আসল key-তে `MERGE` করুন
 
@@ -180,7 +180,7 @@ CREATE TABLE IF NOT EXISTS meta.partition_runs (
 );
 ```
 
-Ledger data না দেখেই উত্তর দেয় "কোন partition গুলো fixed code-এ rebuild হয়েছে?", আর প্রতি attempt-এর row-count history দেয় — doubling ধরার দ্রুততম উপায়।
+Ledger data না দেখেই উত্তর দেয় "কোন partition গুলো fixed code-এ rebuild হয়েছে?", আর প্রতি attempt-এর row-count history দেয় - doubling ধরার দ্রুততম উপায়।
 
 ### 6. Backfill throttle ও stage করুন
 
@@ -218,12 +218,12 @@ stateDiagram-v2
 - [ ] ৮টি partition parallel চালান; কোনো task-এর row অন্য task মোছেনি তা যাচাই করুন।
 - [ ] ২০২৪-এর একটি partition আজ re-run করুন; dimension value historical mapping মেলে, current নয়।
 - [ ] `SELECT partition_key, attempt, row_count FROM meta.partition_runs ORDER BY 1, 2`-এ attempt জুড়ে row count স্থির।
-- [ ] Transform-এ `NOW()`, `CURRENT_DATE`, `RANDOM()` ও unpinned `LIMIT` grep করুন — প্রতিটি হয় justified, নয় বাদ।
+- [ ] Transform-এ `NOW()`, `CURRENT_DATE`, `RANDOM()` ও unpinned `LIMIT` grep করুন - প্রতিটি হয় justified, নয় বাদ।
 - [ ] ৯০ partition backfill চলার সময় interactive query p95 SLO ছাড়ায় না।
 
 ## Anti-patterns
 
-- "নিরাপদ থাকার জন্য" backfill-এর আগে `TRUNCATE` — এটা repair window-এর বাইরের partition-ও মুছে দেয়।
+- "নিরাপদ থাকার জন্য" backfill-এর আগে `TRUNCATE` - এটা repair window-এর বাইরের partition-ও মুছে দেয়।
 - `INSERT ... ON CONFLICT DO NOTHING`-কে idempotency mechanism ভাবা, যখন conflict target এমন surrogate key যা প্রতি run-এ নতুন হয়।
 - পুরো ৯০ দিনের backfill এক transaction-এ মোড়া; ছয় ঘণ্টায় প্রথম failure-এ সব হারায়।
 - Duplicate এড়াতে task idempotent না করে `retries: 0` দেওয়া। এখন transient warehouse error-এও মানুষ লাগে।

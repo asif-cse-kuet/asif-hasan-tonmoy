@@ -1,10 +1,10 @@
-> **Scenario** — একটা subscription platform `dispatch()->delay(now()->addDays(3))` দিয়ে renewal reminder schedule করে। প্রতিটি reminder signup-এর সময় তৈরি হয়, আর signup অফিস সময়ে জড়ো হয়। সোমবার ০৯:০০ UTC-তে ২,৪০,০০০ delayed job একই মিনিটে due হয়ে যায়। Redis `zrangebyscore` সব ফেরত দেয়, worker সব তুলে নেয়, mailer API ১০০/s-এ rate-limit করে, আর retry storm queue backlog পাঁচ ঘণ্টায় নিয়ে যায়।
+> **Scenario** - একটা subscription platform `dispatch()->delay(now()->addDays(3))` দিয়ে renewal reminder schedule করে। প্রতিটি reminder signup-এর সময় তৈরি হয়, আর signup অফিস সময়ে জড়ো হয়। সোমবার ০৯:০০ UTC-তে ২,৪০,০০০ delayed job একই মিনিটে due হয়ে যায়। Redis `zrangebyscore` সব ফেরত দেয়, worker সব তুলে নেয়, mailer API ১০০/s-এ rate-limit করে, আর retry storm queue backlog পাঁচ ঘণ্টায় নিয়ে যায়।
 
 ## Why it matters
 
 - Delayed কাজ জমাট বাঁধে। "N দিন পরে" schedule করা যেকোনো কিছু N দিন আগের arrival distribution উত্তরাধিকার পায়, আর মানুষের traffic spiky।
 - ৪০টা service জুড়ে `0 * * * *` cron ঘণ্টার মাথায় প্রতিটি shared dependency-র ওপর synchronised thundering herd বানায়।
-- Delay implementation-এর guarantee আলাদা: Redis sorted set, RabbitMQ TTL+DLX, Kafka (native delay নেই), আর SQS (সর্বোচ্চ ১৫ মিনিট) — সবাই ভিন্নভাবে ভাঙে।
+- Delay implementation-এর guarantee আলাদা: Redis sorted set, RabbitMQ TTL+DLX, Kafka (native delay নেই), আর SQS (সর্বোচ্চ ১৫ মিনিট) - সবাই ভিন্নভাবে ভাঙে।
 - দীর্ঘ delay deploy-এর সঙ্গে খারাপভাবে মেশে: ৩০ দিন পরের job এমন code দিয়ে deserialise হতে হবে যা এখনো লেখা হয়নি।
 - Timezone ও DST handling বছরে দুবার নীরবে job দুবার চালায় বা বাদ দেয়।
 
@@ -44,7 +44,7 @@ sequenceDiagram
 2. `:00`-এ সারিবদ্ধ cron expression, যা অসম্পর্কিত service-দের shared dependency-র বিরুদ্ধে synchronise করে।
 3. worker pool আর rate-limited third party-র মাঝে কোনো rate limit নেই।
 4. দীর্ঘজীবী job-এ পুরো model object বা closure serialise করা, যা তাদের জন্মদাতা code-এর চেয়ে বেশি বাঁচে।
-5. mutex না থাকায় scheduler overlap — ধীর run পরের tick-এর সঙ্গে ধাক্কা খায়।
+5. mutex না থাকায় scheduler overlap - ধীর run পরের tick-এর সঙ্গে ধাক্কা খায়।
 6. schedule time local time-এ রাখা, তাই DST shift execution সরিয়ে দেয় বা duplicate করে।
 
 ## How to solve it

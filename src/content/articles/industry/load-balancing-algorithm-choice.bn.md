@@ -1,11 +1,11 @@
-> **Scenario** — default round robin সহ nginx-এর পিছনে ১২টি একই রকম API pod। peak-এ তিনটি pod ৯৫% CPU-তে চলছে, ৪০টি request queue-এ; চারটি pod ২০%-এর কাছে বসে আছে। p99 = 4.2s, p50 = 90ms। গড়ে কেউ overload নয়, আর autoscaler এমন pod যোগ করছে যেগুলো কাজে আসছে না।
+> **Scenario** - default round robin সহ nginx-এর পিছনে ১২টি একই রকম API pod। peak-এ তিনটি pod ৯৫% CPU-তে চলছে, ৪০টি request queue-এ; চারটি pod ২০%-এর কাছে বসে আছে। p99 = 4.2s, p50 = 90ms। গড়ে কেউ overload নয়, আর autoscaler এমন pod যোগ করছে যেগুলো কাজে আসছে না।
 
 ## Why it matters
 
 - load balancing tail latency ঠিক করে। request cost skewed হলে round robin পরের দামি request-টিও এমন backend-এ পাঠায় যে ইতিমধ্যে তিনটি চিবাচ্ছে।
 - খারাপ distribution দেখতে হুবহু capacity ঘাটতির মতো, তাই team scale out করে idle pod-এর বিল দেয় আর p99 ভাঙাই থাকে।
 - hash-based balancing স্থায়ী hot spot বানায়: এক বড় tenant এক backend-এ hash হয়, যত scale করুন তা সরে না।
-- algorithm বদলালে একসাথে cache locality, connection reuse আর session behaviour বদলায় — এটি কখনোই নিছক যান্ত্রিক switch নয়।
+- algorithm বদলালে একসাথে cache locality, connection reuse আর session behaviour বদলায় - এটি কখনোই নিছক যান্ত্রিক switch নয়।
 - partial failure-এ algorithm ঠিক করে slow backend *কম* traffic পাবে, নাকি দ্রুত fail করা backend naive least-connections-এ *বেশি* পাবে।
 
 ## Symptoms
@@ -22,9 +22,9 @@
 
 ## How it breaks
 
-round robin তখনই optimal যখন প্রতিটি request-এর খরচ প্রায় সমান। বাস্তব API bimodal: `GET /health` ২ms আর `POST /search` ৯০০ms একই upstream block দিয়ে যায়। round robin backend কতটা ব্যস্ত তা না দেখে slot বিলি করে, ফলে request একটি হতভাগ্য backend-এর in-flight কাজের পিছনে queue হয় আর পাশের backend বসে থাকে। এটি classic queueing behaviour — একই মোট utilisation-এ unbalanced system-এর waiting time balanced system-এর চেয়ে নাটকীয়ভাবে খারাপ।
+round robin তখনই optimal যখন প্রতিটি request-এর খরচ প্রায় সমান। বাস্তব API bimodal: `GET /health` ২ms আর `POST /search` ৯০০ms একই upstream block দিয়ে যায়। round robin backend কতটা ব্যস্ত তা না দেখে slot বিলি করে, ফলে request একটি হতভাগ্য backend-এর in-flight কাজের পিছনে queue হয় আর পাশের backend বসে থাকে। এটি classic queueing behaviour - একই মোট utilisation-এ unbalanced system-এর waiting time balanced system-এর চেয়ে নাটকীয়ভাবে খারাপ।
 
-`least_conn` এর বেশিরভাগ ঠিক করে: সবচেয়ে কম active connection থাকা backend-এ পাঠায়, যা busyness-এর live proxy। কিন্তু এর নিজস্ব failure mode আছে — যে backend *দ্রুত* fail করে তার active connection কম, তাই সে সবচেয়ে আকর্ষণীয় target হয়ে ওঠে। health check ছাড়া `least_conn` আনন্দে ভাঙা pod-এর দিকে firehose তাক করে।
+`least_conn` এর বেশিরভাগ ঠিক করে: সবচেয়ে কম active connection থাকা backend-এ পাঠায়, যা busyness-এর live proxy। কিন্তু এর নিজস্ব failure mode আছে - যে backend *দ্রুত* fail করে তার active connection কম, তাই সে সবচেয়ে আকর্ষণীয় target হয়ে ওঠে। health check ছাড়া `least_conn` আনন্দে ভাঙা pod-এর দিকে firehose তাক করে।
 
 ```mermaid
 flowchart TD
@@ -45,7 +45,7 @@ flowchart TD
 3. session stickiness-এর জন্য `ip_hash` বা `hash $arg_tenant`, ফলে বড় tenant-এর জন্য স্থায়ী hot backend।
 4. passive health check নেই (`max_fails` / `fail_timeout` default), তাই fail করা backend rotation-এ থেকে যায়।
 5. `least_conn`-এ দ্রুত-fail করা backend traffic টানছে।
-6. keepalive pool algorithm-এর সাথে মিশে যাচ্ছে — reused connection পরের request-এ balancer-এর সিদ্ধান্ত পাশ কাটায়।
+6. keepalive pool algorithm-এর সাথে মিশে যাচ্ছে - reused connection পরের request-এ balancer-এর সিদ্ধান্ত পাশ কাটায়।
 7. দীর্ঘজীবী connection (WebSocket, HTTP/2) শুধু connect time-এ balance হয়, তাই distribution ঘণ্টার পর ঘণ্টা জমে থাকে।
 
 ## How to solve it
@@ -65,7 +65,7 @@ awk -F'addr=' '{split($2,a," "); print a[1]}' /var/log/nginx/access.log \
 #  41205 10.2.4.13:8080   <- counts are even
 ```
 
-count সমান অথচ CPU অসমান — এটি cost skew-এর স্বাক্ষর, ভাঙা balancer-এর নয়।
+count সমান অথচ CPU অসমান - এটি cost skew-এর স্বাক্ষর, ভাঙা balancer-এর নয়।
 
 ### 2. আসল health check সহ `least_conn`-এ যান
 
@@ -84,7 +84,7 @@ upstream app_upstream {
 
 ### 3. দামি route-কে আলাদা pool দিন
 
-সবচেয়ে পরিষ্কার সমাধান সাধারণত algorithm নয় — isolation:
+সবচেয়ে পরিষ্কার সমাধান সাধারণত algorithm নয় - isolation:
 
 ```nginx
 upstream app_fast   { least_conn; server 10.2.4.11:8080; server 10.2.4.12:8080; keepalive 64; }
@@ -126,7 +126,7 @@ ss -ltn 'sport = :8080'
 # LISTEN 87     511          0.0.0.0:8080
 ```
 
-listening socket-এ শূন্য নয় এমন `Recv-Q` মানে ঠিক ওই pod-এ accept queue জমছে — imbalance-এর সরাসরি প্রমাণ।
+listening socket-এ শূন্য নয় এমন `Recv-Q` মানে ঠিক ওই pod-এ accept queue জমছে - imbalance-এর সরাসরি প্রমাণ।
 
 ## Target design
 
@@ -164,7 +164,7 @@ flowchart LR
 ## Anti-patterns
 
 - balancer bottleneck হলে p99 ঠিক করতে replica scale করা।
-- `max_fails` ছাড়া `least_conn` নেওয়া — সবচেয়ে দ্রুত failure সব traffic জেতে।
+- `max_fails` ছাড়া `least_conn` নেওয়া - সবচেয়ে দ্রুত failure সব traffic জেতে।
 - mobile-ভারী product-এ stickiness-এর জন্য `ip_hash`, যেখানে carrier NAT হাজার user এক IP-তে জড়ো করে।
 - WebSocket শুধু connect time-এ balance করা এবং deploy-এর পর কখনো rebalance না করা।
 - cache affinity-তে `$request_uri` স্বাভাবিক key হওয়া সত্ত্বেও `$remote_addr`-এ hash করা।

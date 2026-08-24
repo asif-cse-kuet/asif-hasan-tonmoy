@@ -1,4 +1,4 @@
-> **Scenario** — Tenant A-এর একজন support engineer একটি ticket খুলে tenant B-এর invoice দেখতে পান। Audit log-এ কিছুই ভুল মনে হয় না। Access token valid, signed ও unexpired ছিল — শুধু তার `tenant_id` claim এসেছিল এগারো মিনিট আগে ছেড়ে আসা এক session থেকে।
+> **Scenario** - Tenant A-এর একজন support engineer একটি ticket খুলে tenant B-এর invoice দেখতে পান। Audit log-এ কিছুই ভুল মনে হয় না। Access token valid, signed ও unexpired ছিল - শুধু তার `tenant_id` claim এসেছিল এগারো মিনিট আগে ছেড়ে আসা এক session থেকে।
 
 ## Why it matters
 
@@ -75,7 +75,7 @@ final class ResolveTenantContext
         $membership = $this->memberships->activeFor($userId, $tenantId);
 
         if ($membership === null) {
-            // 404, not 403 — do not confirm the tenant exists to a non-member.
+            // 404, not 403 - do not confirm the tenant exists to a non-member.
             abort(404);
         }
 
@@ -216,7 +216,7 @@ flowchart TD
 ## Anti-patterns
 
 - Refresh load কমাতে access-token TTL বাড়ানো; QPS-এর একটি rounding error-এর বিনিময়ে revocation gap প্রশস্ত করলেন।
-- "যাতে lookup করতে না হয়" বলে JWT-তে tenant রাখা — এটাই cross-tenant bug, আগেভাগে লিখে রাখা।
+- "যাতে lookup করতে না হয়" বলে JWT-তে tenant রাখা - এটাই cross-tenant bug, আগেভাগে লিখে রাখা।
 - প্রতিটি `invalid_grant`-কে theft ধরে সেই user-কে জোর করে logout করা যার দ্বিতীয় tab এক মুহূর্ত দেরিতে refresh করেছে।
 - পুরো permission set token-এ রেখে পরে আবিষ্কার করা যে cookie proxy-র 4KB header সীমা ছাড়িয়েছে।
 - Logout-এ cookie মুছে তাকে revocation বলা; refresh token তখনও ত্রিশ দিন valid।

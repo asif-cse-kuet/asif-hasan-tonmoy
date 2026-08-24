@@ -1,4 +1,4 @@
-> **Scenario** — Address-validation vendor ৮% call-এ 503 দিতে শুরু করে। Checkout-এর circuit breaker ৫টি consecutive failure-এর পর খুলে যায় এবং *সবকিছু* short-circuit করে — যে ৯২% সফল হতো সেগুলোসহ। চার মিনিটের মধ্যে cart service-এর breaker খোলে, তারপর storefront-এর। একটি আংশিক vendor degradation পুরো সাইটের outage হয়ে যায়।
+> **Scenario** - Address-validation vendor ৮% call-এ 503 দিতে শুরু করে। Checkout-এর circuit breaker ৫টি consecutive failure-এর পর খুলে যায় এবং *সবকিছু* short-circuit করে - যে ৯২% সফল হতো সেগুলোসহ। চার মিনিটের মধ্যে cart service-এর breaker খোলে, তারপর storefront-এর। একটি আংশিক vendor degradation পুরো সাইটের outage হয়ে যায়।
 
 ## Why it matters
 
@@ -12,7 +12,7 @@
 | Signal | What you observe |
 |---|---|
 | Error rate | Breaker খোলার মুহূর্তে এক ধাপে ৮% থেকে ১০০% |
-| Dependency metric | Vendor-এ outbound request rate প্রায় শূন্য — দেখে মনে হয় সেরে গেছে |
+| Dependency metric | Vendor-এ outbound request rate প্রায় শূন্য - দেখে মনে হয় সেরে গেছে |
 | Latency | তীব্রভাবে কমে; short-circuit করা call 1ms-এর কমে ফেরে |
 | Cascade timing | পরপর service-এর breaker ৩০-১২০s ব্যবধানে খোলে, upstream path আঁকে |
 | Recovery | Error rate দোলে: open, half-open, এক success, closed, সাথে সাথে আবার open |
@@ -60,7 +60,7 @@ sequenceDiagram
 type Criticality = 'required' | 'degradable'
 
 type BreakerConfig = {
-  key: string                    // "vendor:address:POST /v2/validate" — not just the host
+  key: string                    // "vendor:address:POST /v2/validate" - not just the host
   criticality: Criticality
   errorRateThreshold: number     // fraction, not consecutive failures
   minimumRequests: number        // never open on 3 requests out of 3
@@ -71,7 +71,7 @@ type BreakerConfig = {
 const ADDRESS_VALIDATE: BreakerConfig = {
   key: 'vendor:address:POST /v2/validate',
   criticality: 'degradable',     // checkout can proceed with an unvalidated address
-  errorRateThreshold: 0.5,       // NOT 0.05 — 8% failing is not a reason to stop trying
+  errorRateThreshold: 0.5,       // NOT 0.05 - 8% failing is not a reason to stop trying
   minimumRequests: 20,
   windowMs: 10_000,
   halfOpenPermits: 5,
@@ -99,7 +99,7 @@ final class AddressValidationClient
 }
 ```
 
-Downstream-এ `unverified` অবশ্যই order pipeline-এর সামলানো একটি বাস্তব state হতে হবে: order-কে asynchronous re-validation-এর জন্য flag করুন, কেনাকাটা আটকাবেন না। Fallback-এর নাম দিতে না পারলে dependency `required` — তার breaker নয়, timeout ও সৎ error দরকার।
+Downstream-এ `unverified` অবশ্যই order pipeline-এর সামলানো একটি বাস্তব state হতে হবে: order-কে asynchronous re-validation-এর জন্য flag করুন, কেনাকাটা আটকাবেন না। Fallback-এর নাম দিতে না পারলে dependency `required` - তার breaker নয়, timeout ও সৎ error দরকার।
 
 ### 3. সঠিক failure গুনুন
 
@@ -134,7 +134,7 @@ class RampingBreaker {
   }
 
   onProbeResult(ok: boolean) {
-    // Multiplicative decrease, additive increase — slow to trust, fast to give up.
+    // Multiplicative decrease, additive increase - slow to trust, fast to give up.
     this.admitFraction = ok
       ? Math.min(1, this.admitFraction + 0.05)
       : Math.max(0, this.admitFraction / 2)
@@ -202,7 +202,7 @@ flowchart TD
 ## Anti-patterns
 
 - Hostname প্রতি একটি breaker, ফলে সম্পর্কহীন endpoint-এর degradation সুস্থ endpoint-কেও নামিয়ে দেয়।
-- ৫% error rate-এ খোলা — dependency যত দ্রুত fail করে তার চেয়ে দ্রুত হাল ছেড়ে দেয় এমন system বানালেন।
+- ৫% error rate-এ খোলা - dependency যত দ্রুত fail করে তার চেয়ে দ্রুত হাল ছেড়ে দেয় এমন system বানালেন।
 - `CircuitOpenError` উপরে ছুড়ে দেওয়া, যা ঠিক এভাবেই স্থানীয় degradation-কে global outage বানায়।
 - প্রথম সফল probe-এই breaker পুরোপুরি বন্ধ করা, অর্ধ-সুস্থ vendor-এ আটকে রাখা ১০০% traffic পাঠানো।
 - খোলা breaker-এর *ভেতর দিয়ে* বাইরের wrapper-এ retry করা, যা breaker যে load সরাতে চেয়েছিল সেটাই ফিরিয়ে আনে।

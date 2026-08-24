@@ -1,4 +1,4 @@
-> **Scenario** — A customer taps "Pay 4,500 BDT" on a flaky 3G connection. Your API charges the card in 900ms, but the response never reaches the phone. The mobile client's HTTP layer retries the `POST /v1/charges` after a 5s timeout. The customer is charged twice, and your support queue learns about it before your dashboards do.
+> **Scenario** - A customer taps "Pay 4,500 BDT" on a flaky 3G connection. Your API charges the card in 900ms, but the response never reaches the phone. The mobile client's HTTP layer retries the `POST /v1/charges` after a 5s timeout. The customer is charged twice, and your support queue learns about it before your dashboards do.
 
 ## Why it matters
 
@@ -20,7 +20,7 @@
 
 ## How it breaks
 
-The classic failure is not that the server errors — it is that the server *succeeds* and the client never finds out. The client's only safe assumption is "unknown outcome", so it retries. If your handler treats every `POST` as a fresh intent, the retry creates a second row and a second capture on the processor.
+The classic failure is not that the server errors - it is that the server *succeeds* and the client never finds out. The client's only safe assumption is "unknown outcome", so it retries. If your handler treats every `POST` as a fresh intent, the retry creates a second row and a second capture on the processor.
 
 The second failure is subtler. Teams add a "check for a recent identical charge" guard, but two retries arriving 40ms apart both run the `SELECT` before either runs the `INSERT`. Without a unique index and a transaction, the guard is decoration.
 
@@ -81,7 +81,7 @@ CREATE TABLE idempotency_keys (
 CREATE INDEX idempotency_keys_expiry ON idempotency_keys (expires_at);
 ```
 
-The `UNIQUE (tenant_id, idem_key)` constraint — not the `SELECT` — is what actually prevents the double charge.
+The `UNIQUE (tenant_id, idem_key)` constraint - not the `SELECT` - is what actually prevents the double charge.
 
 ### 3. Laravel middleware
 
@@ -233,10 +233,10 @@ flowchart TD
 
 ## Anti-patterns
 
-- Deriving the key from the request body hash alone — two legitimate identical payments 30 seconds apart get silently merged.
+- Deriving the key from the request body hash alone - two legitimate identical payments 30 seconds apart get silently merged.
 - Writing the idempotency row *after* the processor call; a crash in between loses the dedup record entirely.
 - Returning `200` with an empty body on replay, so the client cannot get the charge ID.
-- Using the trace ID or request ID as the key — those change on every attempt.
+- Using the trace ID or request ID as the key - those change on every attempt.
 - Letting the key table grow forever and then discovering the index no longer fits in RAM during a sale.
 - Applying idempotency middleware to `GET` and `DELETE`, which are already idempotent, and paying the write cost for nothing.
 

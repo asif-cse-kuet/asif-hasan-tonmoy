@@ -1,11 +1,11 @@
-> **Scenario** — এক celebrity একটি product-এর link পোস্ট করেন। `product:88231` এখন সেকেন্ডে 140,000 GET পাচ্ছে। Redis Cluster-এ 12টি shard; এগারোটি 8% CPU-তে বসে আছে, আর ওই key-র মালিক shard একটি core saturate করে ফেলেছে — সেই shard-এর প্রতিটি অসম্পর্কিত key 200 ms-এ timeout করছে।
+> **Scenario** - এক celebrity একটি product-এর link পোস্ট করেন। `product:88231` এখন সেকেন্ডে 140,000 GET পাচ্ছে। Redis Cluster-এ 12টি shard; এগারোটি 8% CPU-তে বসে আছে, আর ওই key-র মালিক shard একটি core saturate করে ফেলেছে - সেই shard-এর প্রতিটি অসম্পর্কিত key 200 ms-এ timeout করছে।
 
 ## Why it matters
 
-- Redis shard-প্রতি command execution single-threaded। hot key core জুড়ে ছড়ায় না — এক core আটকে রাখে, আর shard যোগ করে কোনো লাভ হয় না।
+- Redis shard-প্রতি command execution single-threaded। hot key core জুড়ে ছড়ায় না - এক core আটকে রাখে, আর shard যোগ করে কোনো লাভ হয় না।
 - Blast radius হলো ওই slot-এর shard-এ সহাবস্থানকারী সবকিছু। viral key-র সাথে node ভাগ করার কারণে অসম্পর্কিত feature অবনত হয়।
 - Cluster autoscaling ব্যাপারটা খারাপ করে: node যোগ করলে slot পুনর্বণ্টন হয়, কিন্তু hot slot এখনো পুরোটাই এক node-এ পড়ে।
-- বড় value একে বাড়ায়। 140k QPS-এ 400 KB serialized object মানে 56 GB/s network — CPU-র আগেই NIC-এ ধাক্কা লাগে।
+- বড় value একে বাড়ায়। 140k QPS-এ 400 KB serialized object মানে 56 GB/s network - CPU-র আগেই NIC-এ ধাক্কা লাগে।
 - এই ঘটনা অননুমেয় ও স্বল্পস্থায়ী। মানুষ প্রতিক্রিয়া দেওয়ার আগেই traffic অন্য key-তে সরে যায়।
 
 ## Symptoms
@@ -21,7 +21,7 @@
 
 ## How it breaks
 
-Redis Cluster `CRC16(key) mod 16384` দিয়ে key-কে 16,384টি hash slot-এর একটিতে map করে, এবং প্রতিটি slot ঠিক একটি primary-তে থাকে। তাই একটি key = একটি slot = একটি node-এর একটি thread। Sharding একটি *distribution* ব্যবস্থা, *replication* নয় — এটি একটি key-র load ভাগ করতে পারে না।
+Redis Cluster `CRC16(key) mod 16384` দিয়ে key-কে 16,384টি hash slot-এর একটিতে map করে, এবং প্রতিটি slot ঠিক একটি primary-তে থাকে। তাই একটি key = একটি slot = একটি node-এর একটি thread। Sharding একটি *distribution* ব্যবস্থা, *replication* নয় - এটি একটি key-র load ভাগ করতে পারে না।
 
 Head-of-line blocking বাকিটা শেষ করে। hot node-এ command queue জমে; বড় value-র serialization event loop দখল করে; ওই node-এ key আছে এমন প্রতিটি client পেছনে অপেক্ষা করে।
 
@@ -37,7 +37,7 @@ flowchart TD
 
 ## Root causes
 
-1. একটি logical key = একটি slot = একটি thread — একক key-র জন্য কোনো horizontal path নেই।
+1. একটি logical key = একটি slot = একটি thread - একক key-র জন্য কোনো horizontal path নেই।
 2. Local L1 cache নেই, তাই একই bytes-এর জন্য প্রতিটি request network-এ যায়।
 3. Read replica থেকে serve হয় না, primary-ই একমাত্র উৎস।
 4. Value যথেষ্ট বড়, তাই serialization ও network প্রাধান্য পায়।
@@ -83,7 +83,7 @@ export async function writeHot(key: string, value: string, ttl: number) {
 }
 ```
 
-`{h0}`…`{h15}` hash tag Redis-কে কেবল brace-এর ভেতরের অংশ hash করতে বাধ্য করে, ফলে slot placement আপনার নিয়ন্ত্রণে। fan-out কেবল hot হিসেবে শনাক্ত key-তে করুন — প্রতিটি key-তে 16× write amplification কাম্য নয়।
+`{h0}`…`{h15}` hash tag Redis-কে কেবল brace-এর ভেতরের অংশ hash করতে বাধ্য করে, ফলে slot placement আপনার নিয়ন্ত্রণে। fan-out কেবল hot হিসেবে শনাক্ত key-তে করুন - প্রতিটি key-তে 16× write amplification কাম্য নয়।
 
 ### 3. Put a small L1 in front
 
@@ -159,7 +159,7 @@ flowchart LR
 
 ## Anti-patterns
 
-- hot key ঠিক করতে shard যোগ করা — slot ভাগ হয় না।
+- hot key ঠিক করতে shard যোগ করা - slot ভাগ হয় না।
 - ইতিমধ্যেই saturated node-এ `KEYS *` বা দীর্ঘ `MONITOR`।
 - ডিফল্টে প্রতিটি key fan-out করা, পুরো keyspace জুড়ে memory ও write cost গুণ করা।
 - 400 KB blob রেখে একটি field render করতে পুরোটা পড়া।

@@ -1,6 +1,6 @@
 import type { IndustryTopic } from '../topic-types'
 
-/** Product & platform engineering wave — decisions that compound over years. */
+/** Product & platform engineering wave - decisions that compound over years. */
 const topics: IndustryTopic[] = [
   {
     id: 'multi-tenancy-isolation-models',
@@ -11,8 +11,8 @@ const topics: IndustryTopic[] = [
       bn: 'Multi-tenancy isolation model',
     },
     summary: {
-      en: 'Shared table, schema-per-tenant, or database-per-tenant — the choice sets your migration cost, blast radius, and enterprise sales ceiling for the next five years.',
-      bn: 'Shared table, schema-per-tenant না database-per-tenant — এই সিদ্ধান্তই পরের পাঁচ বছরের migration খরচ, blast radius আর enterprise sales ceiling ঠিক করে দেয়।',
+      en: 'Shared table, schema-per-tenant, or database-per-tenant - the choice sets your migration cost, blast radius, and enterprise sales ceiling for the next five years.',
+      bn: 'Shared table, schema-per-tenant না database-per-tenant - এই সিদ্ধান্তই পরের পাঁচ বছরের migration খরচ, blast radius আর enterprise sales ceiling ঠিক করে দেয়।',
     },
     tags: ['multi-tenancy', 'isolation', 'saas', 'postgres', 'rls'],
     difficulty: 'advanced',
@@ -121,8 +121,8 @@ const topics: IndustryTopic[] = [
       bn: 'আফসোস ছাড়া build বনাম buy',
     },
     summary: {
-      en: 'The sticker price is the smallest term. Integration cost, exit cost, and the on-call hours a vendor removes are what actually decide — and most teams never write the numbers down.',
-      bn: 'Sticker price সবচেয়ে ছোট হিসাব। Integration cost, exit cost আর vendor যত on-call ঘণ্টা কমায় সেটাই আসল নির্ধারক — অথচ বেশিরভাগ দল সংখ্যাগুলো লিখেই রাখে না।',
+      en: 'The sticker price is the smallest term. Integration cost, exit cost, and the on-call hours a vendor removes are what actually decide - and most teams never write the numbers down.',
+      bn: 'Sticker price সবচেয়ে ছোট হিসাব। Integration cost, exit cost আর vendor যত on-call ঘণ্টা কমায় সেটাই আসল নির্ধারক - অথচ বেশিরভাগ দল সংখ্যাগুলো লিখেই রাখে না।',
     },
     tags: ['build-vs-buy', 'vendors', 'tco', 'lock-in', 'procurement'],
     difficulty: 'intermediate',

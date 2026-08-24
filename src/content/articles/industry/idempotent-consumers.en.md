@@ -1,4 +1,4 @@
-> **Scenario** — A Kafka consumer processes `subscription.renewed`, charges the card, and commits the offset. A 12-second GC pause exceeds `max.poll.interval.ms`, the broker evicts the member, a rebalance assigns the partition elsewhere, and the new owner replays from the last committed offset. 3,900 customers are charged twice. The broker did exactly what it promised; the consumer assumed exactly-once.
+> **Scenario** - A Kafka consumer processes `subscription.renewed`, charges the card, and commits the offset. A 12-second GC pause exceeds `max.poll.interval.ms`, the broker evicts the member, a rebalance assigns the partition elsewhere, and the new owner replays from the last committed offset. 3,900 customers are charged twice. The broker did exactly what it promised; the consumer assumed exactly-once.
 
 ## Why it matters
 
@@ -115,7 +115,7 @@ Stripe returns the original PaymentIntent for a repeated key within 24 hours. Re
 
 Some effects need no dedup table at all:
 
-- `UPDATE accounts SET status = 'active' WHERE id = ?` — setting a value is idempotent; incrementing is not.
+- `UPDATE accounts SET status = 'active' WHERE id = ?` - setting a value is idempotent; incrementing is not.
 - `INSERT ... ON CONFLICT DO NOTHING` with a natural key.
 - State machines guarded by the current state: `WHERE status = 'pending'`.
 
@@ -166,7 +166,7 @@ flowchart TD
 - `SELECT` then `INSERT` for the dedup check, which races between two workers on different partitions.
 - Deduping on a hash of the payload when the payload contains a timestamp or a producer-generated UUID.
 - Storing dedup keys only in memory, so every deploy resets the defence.
-- Committing the offset before doing the work to "avoid duplicates" — this converts duplicates into silent loss.
+- Committing the offset before doing the work to "avoid duplicates" - this converts duplicates into silent loss.
 - Assuming Kafka's `enable.idempotence` on the producer makes the consumer idempotent; it does not.
 - Using a 5-minute dedup TTL when DLQ replay can happen a week later.
 

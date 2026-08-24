@@ -1,10 +1,10 @@
-> **Scenario** — A one-character fix to a Vue component triggers a 14-minute CI build. The image is 1.2 GB, `npm ci` runs on every push, and the registry bill grew faster than traffic did.
+> **Scenario** - A one-character fix to a Vue component triggers a 14-minute CI build. The image is 1.2 GB, `npm ci` runs on every push, and the registry bill grew faster than traffic did.
 
 ## Why it matters
 
 - Build time is on the critical path of every hotfix. A 14-minute image build turns a 2-minute rollback into a 16-minute outage.
 - Large images slow every scale-up: a node without a warm cache must pull the full compressed image before the pod can start.
-- Each unnecessary layer carries build tooling, compilers, and package manager caches into production — more CVEs to triage, more attack surface.
+- Each unnecessary layer carries build tooling, compilers, and package manager caches into production - more CVEs to triage, more attack surface.
 - Registry storage and egress are billed per GB. Fifty pushes a day of a 1.2 GB image is real money.
 
 ## Symptoms
@@ -19,7 +19,7 @@
 
 ## How it breaks
 
-Docker builds a layer per instruction and reuses a cached layer only when that instruction *and every layer before it* are unchanged. `COPY . .` placed before dependency installation invalidates the cache on any file change, including `README.md`. Everything downstream — install, compile, prune — reruns.
+Docker builds a layer per instruction and reuses a cached layer only when that instruction *and every layer before it* are unchanged. `COPY . .` placed before dependency installation invalidates the cache on any file change, including `README.md`. Everything downstream - install, compile, prune - reruns.
 
 The second failure is that a single-stage build ships the builder. The compiler, dev dependencies, and package cache all live in the final image because they were created in the same filesystem layer.
 
@@ -139,7 +139,7 @@ flowchart LR
 
 ## Anti-patterns
 
-- Chaining every command into one giant `RUN` "to reduce layers" — you also delete every cache boundary.
+- Chaining every command into one giant `RUN` "to reduce layers" - you also delete every cache boundary.
 - `RUN npm cache clean` after installing, which shrinks the layer but not the cached ancestor layers.
 - Deleting files in a later layer and expecting the image to shrink; earlier layers still carry the bytes.
 - Tagging every build `:latest` and wondering which commit is running in production.

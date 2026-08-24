@@ -42,7 +42,7 @@ const filteredConcepts = computed(() => {
       :title="pick({ en: 'My Engineering Blog', bn: 'আমার ইঞ্জিনিয়ারিং ব্লগ' })"
       :subtitle="
         pick({
-          en: 'Open the tree on the left. Every topic is a failure mode, a design, and the code that holds it — written like internal docs, not a pitch deck.',
+          en: 'Open the tree on the left. Every topic is a failure mode, a design, and the code that holds it - written like internal docs, not a pitch deck.',
           bn: 'বাঁদিকের ট্রি খুলুন। প্রতিটি টপিক একটি ব্যর্থতা, একটি ডিজাইন, আর যে কোড সেটি ধরে রাখে।',
         })
       "

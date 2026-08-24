@@ -1,4 +1,4 @@
-> **পরিস্থিতি** — একটা সবুজ pipeline production-এ `app:v2.4` deploy করল। Image-টি deploy job-এ আবার build হয়েছিল এমন একটা branch থেকে যা CI চলার পর এগিয়ে গেছে, আর test suite exit 0 দিয়েছে কারণ মাস কয়েক আগে একটা flaky test unblock করতে `|| true` বসানো হয়েছিল।
+> **পরিস্থিতি** - একটা সবুজ pipeline production-এ `app:v2.4` deploy করল। Image-টি deploy job-এ আবার build হয়েছিল এমন একটা branch থেকে যা CI চলার পর এগিয়ে গেছে, আর test suite exit 0 দিয়েছে কারণ মাস কয়েক আগে একটা flaky test unblock করতে `|| true` বসানো হয়েছিল।
 
 ## কেন গুরুত্বপূর্ণ
 
@@ -19,7 +19,7 @@
 
 ## কীভাবে ভাঙে
 
-Pipeline দেখতে রৈখিক, কিন্তু মাঝখানে একটা ছেদ আছে। CI commit `abc123` build ও test করে। Deploy job আবার `main` checkout করে — এখন সেটা `def456` — পুনরায় build করে একই release tag দেয়। `def456` কখনো test হয়নি।
+Pipeline দেখতে রৈখিক, কিন্তু মাঝখানে একটা ছেদ আছে। CI commit `abc123` build ও test করে। Deploy job আবার `main` checkout করে - এখন সেটা `def456` - পুনরায় build করে একই release tag দেয়। `def456` কখনো test হয়নি।
 
 পাশাপাশি, যে test কখনো fail করে না সে কোনো gate হতে পারে না। `|| true` আর `continue-on-error` gate-কে log statement বানায়, আর শূন্য file মেলানো test suite এক সেকেন্ডেরও কমে সাফল্য জানায়।
 
@@ -95,7 +95,7 @@ jobs:
           kubectl rollout status deploy/api -n prod --timeout=10m
 ```
 
-Deploy step কোনো tag দেখে না — শুধু সেই digest যা test job যাচাই করেছে।
+Deploy step কোনো tag দেখে না - শুধু সেই digest যা test job যাচাই করেছে।
 
 ### ২. Gate বাধ্যতামূলক করুন
 

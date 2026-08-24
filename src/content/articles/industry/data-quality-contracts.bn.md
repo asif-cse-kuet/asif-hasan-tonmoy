@@ -1,11 +1,11 @@
-> **Scenario** — Checkout service একটি refactor ship করল যা guest order-এর জন্য `customer_email`-কে nullable বানায়। Data team-কে কেউ জানায়নি। তিন দিন পরে marketing segmentation job প্রতিটি cohort থেকে নীরবে ১৮% order বাদ দিয়েছে, আর একটি campaign ইতিমধ্যেই ভুল list-এ চলে গেছে।
+> **Scenario** - Checkout service একটি refactor ship করল যা guest order-এর জন্য `customer_email`-কে nullable বানায়। Data team-কে কেউ জানায়নি। তিন দিন পরে marketing segmentation job প্রতিটি cohort থেকে নীরবে ১৮% order বাদ দিয়েছে, আর একটি campaign ইতিমধ্যেই ভুল list-এ চলে গেছে।
 
 ## Why it matters
 
 - Producer feature ship করার স্বাভাবিক অংশ হিসেবেই schema বদলায়। Contract না থাকলে প্রতিটি producer deploy আপনার pipeline-এর input-এ একটি অঘোষিত পরিবর্তন।
 - Silent quality failure crash-এর চেয়ে খারাপ। Crash মিনিটেই কাউকে page করে; ৩% null-rate বৃদ্ধি সপ্তাহ ধরে জমা হয়, তারপর কেউ খেয়াল করে সংখ্যাটা অস্বাভাবিক।
 - খরচ ভুল team-এর ঘাড়ে পড়ে। Data team এমন service-এর কারণে incident debug করে যা তারা owner নয় এবং revert করতে পারে না।
-- Contract একটি unbounded surface ("এই table-এর যেকিছু বদলাতে পারে")-কে explicit ও testable করে — ছোট team-এর ডজন source সামলানোর একমাত্র উপায়।
+- Contract একটি unbounded surface ("এই table-এর যেকিছু বদলাতে পারে")-কে explicit ও testable করে - ছোট team-এর ডজন source সামলানোর একমাত্র উপায়।
 - Downstream ML আরও খারাপ করে: খারাপ row শুধু dashboard বিকৃত করে না, training label হয়ে model version জুড়ে টিকে থাকে।
 
 ## Symptoms
@@ -17,11 +17,11 @@
 | সবুজ DAG-এ freshness breach | Table-এর `MAX(updated_at)` ১৪ ঘণ্টা পুরনো, তবু প্রতিটি task সফল |
 | Cardinality explosion | Producer raw upstream code পাঠাতে শুরু করলে `status` enum-এ ৪০টি নতুন value |
 | Referential break | ২% `order.customer_id`-র জন্য `customers`-এ কোনো row নেই |
-| দেরিতে ধরা incident | Bug ধরে business user, কোনো check নয় — সাধারণত ৩–১০ দিন পরে |
+| দেরিতে ধরা incident | Bug ধরে business user, কোনো check নয় - সাধারণত ৩–১০ দিন পরে |
 
 ## How it breaks
 
-Pipeline-এর নিজের input সম্পর্কে কোনো মত নেই। Ingestion যা আসে গ্রহণ করে, staging cast করে, mart aggregate করে। `customer_email` null হলে cast সফল, aggregate সফল — শুধু segmentation job-এর `WHERE customer_email IS NOT NULL` filter উত্তর বদলে দেয়।
+Pipeline-এর নিজের input সম্পর্কে কোনো মত নেই। Ingestion যা আসে গ্রহণ করে, staging cast করে, mart aggregate করে। `customer_email` null হলে cast সফল, aggregate সফল - শুধু segmentation job-এর `WHERE customer_email IS NOT NULL` filter উত্তর বদলে দেয়।
 
 দ্বিতীয় failure mode: check আছে কিন্তু advisory। `dbt test` warning দেয়, CI job-এ `--warn-error` বন্ধ, প্রতি run-এ ৪০টি warning স্ক্রল করে যায়। যে warning সবসময় জ্বলে, সেটা noise থেকে আলাদা করা যায় না।
 
@@ -89,7 +89,7 @@ models:
               max_value: 100000000
 ```
 
-দুটি বিষয় জরুরি। `severity: error` মানে build fail হয়; warning কোনো contract নয়। `customer_email`-এর `where` clause *আসল* নিয়মটি encode করে (guest-এর email নেই), blanket `not_null` নয় — যেটা কেউ একদিন warning-এ নামিয়ে দেবে।
+দুটি বিষয় জরুরি। `severity: error` মানে build fail হয়; warning কোনো contract নয়। `customer_email`-এর `where` clause *আসল* নিয়মটি encode করে (guest-এর email নেই), blanket `not_null` নয় - যেটা কেউ একদিন warning-এ নামিয়ে দেবে।
 
 ### 2. Read নয়, write gate করুন
 
@@ -165,18 +165,18 @@ def fct_orders_contract_gate():
 fct_orders_contract_gate()
 ```
 
-Gate-এর পুরো উদ্দেশ্য: breach হলে আগের ভালো data জায়গায় থাকে। Consumer fresh-and-wrong নয়, stale-but-correct দেখে — আর এই choice SLA-তে স্পষ্ট থাকা উচিত।
+Gate-এর পুরো উদ্দেশ্য: breach হলে আগের ভালো data জায়গায় থাকে। Consumer fresh-and-wrong নয়, stale-but-correct দেখে - আর এই choice SLA-তে স্পষ্ট থাকা উচিত।
 
 ### 3. Blocking ও warning সচেতনভাবে আলাদা করুন
 
 | Dimension | Blocking | Warning |
 | --- | --- | --- |
-| Primary key uniqueness | হ্যাঁ | — |
-| Dimension-এ referential integrity | হ্যাঁ | — |
-| Enum membership | হ্যাঁ | — |
-| Null rate ৩০-দিনের baseline-এর ২× এর মধ্যে | — | হ্যাঁ |
-| Row volume ৭-দিনের median-এর ±৩০% | — | হ্যাঁ |
-| SLA-র বাইরে freshness | হ্যাঁ | — |
+| Primary key uniqueness | হ্যাঁ | - |
+| Dimension-এ referential integrity | হ্যাঁ | - |
+| Enum membership | হ্যাঁ | - |
+| Null rate ৩০-দিনের baseline-এর ২× এর মধ্যে | - | হ্যাঁ |
+| Row volume ৭-দিনের median-এর ±৩০% | - | হ্যাঁ |
+| SLA-র বাইরে freshness | হ্যাঁ | - |
 
 Warning-এর গন্তব্য ও owner থাকতে হবে, নাহলে সেটা তুলে দিন।
 
@@ -257,7 +257,7 @@ sequenceDiagram
 - শুধু mart test করা। তখন খারাপ row ইতিমধ্যেই aggregate হয়ে গেছে, raw evidence এক join দূরে।
 - Row-count check-কে correctness-এর proxy ধরা; schema change count একই রেখে value ভুল করতে পারে।
 - Contract শুধু data team-এর repo-তে রাখা, ফলে producer কখনও fail হতে দেখে না।
-- "expectation violated" নয়, "table changed"-এ alert দেওয়া — যা সবাইকে channel উপেক্ষা করতে শেখায়।
+- "expectation violated" নয়, "table changed"-এ alert দেওয়া - যা সবাইকে channel উপেক্ষা করতে শেখায়।
 - Consuming query-তে খারাপ row filter করা। এটা একটি dashboard ঠিক করে আর বাকিদের কাছে breach লুকায়।
 
 ## Related

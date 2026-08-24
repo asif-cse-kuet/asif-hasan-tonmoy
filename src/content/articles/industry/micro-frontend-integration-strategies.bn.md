@@ -1,8 +1,8 @@
-> **Scenario** — চারটি টিম একটাই Quasar admin shell-এ ship করে। Checkout টিম Vue 3.5 ও Pinia 2.2-তে upgrade করার পর shell-এর global toast কাজ করা বন্ধ করে দেয়, আর প্রতিটি remote-এ `inject()` `undefined` ফেরত দেয়। Shell-এ কিছুই বদলায়নি — page-এ এখন Vue-এর দুইটা copy আছে।
+> **Scenario** - চারটি টিম একটাই Quasar admin shell-এ ship করে। Checkout টিম Vue 3.5 ও Pinia 2.2-তে upgrade করার পর shell-এর global toast কাজ করা বন্ধ করে দেয়, আর প্রতিটি remote-এ `inject()` `undefined` ফেরত দেয়। Shell-এ কিছুই বদলায়নি - page-এ এখন Vue-এর দুইটা copy আছে।
 
 ## Why it matters
 
-- Framework-এর duplicate copy `provide/inject`, `app.config.globalProperties` এবং module-level singleton-নির্ভর প্রতিটি plugin ভেঙে দেয় — উপসর্গ দেখতে random component bug-এর মতো, integration fault-এর মতো নয়।
+- Framework-এর duplicate copy `provide/inject`, `app.config.globalProperties` এবং module-level singleton-নির্ভর প্রতিটি plugin ভেঙে দেয় - উপসর্গ দেখতে random component bug-এর মতো, integration fault-এর মতো নয়।
 - প্রতিটি duplicate runtime প্রায় ৪০–৬০ KB gzipped যোগ করে। তিনটা remote নিজের Vue + Pinia + Quasar বহন করলে 4G median device-এ LCP ২.৫ সেকেন্ড ছাড়িয়ে যেতে পারে।
 - Independent deploy-ই micro-frontend-এর মূল উদ্দেশ্য। Remote upgrade-এর জন্য coordinated shell release লাগলে আপনি complexity tax দিলেন, autonomy পেলেন না।
 - Runtime integration failure নীরব: remote-এর `remoteEntry.js` 404 দেয়, shell একটা খালি `<div>` render করে, আর কোনো exception boundary পার না হওয়ায় error tracking কিছুই দেখে না।
@@ -38,7 +38,7 @@ flowchart TD
 
 1. `shared` config-এ `vue`, `vue-router`, `pinia`, `quasar`-এর জন্য `singleton: true` নেই।
 2. Minor upgrade-এর পর repo-গুলোর semver range আর intersect করে না, তাই federation বৈধভাবেই দুই version load করে।
-3. Shell ও remote-এর contract implicit — props ও event untyped object হিসেবে যায়, কোনো versioned interface নেই।
+3. Shell ও remote-এর contract implicit - props ও event untyped object হিসেবে যায়, কোনো versioned interface নেই।
 4. Remote scoped বা layer-isolated style-এর বদলে global CSS ship করে।
 5. `remoteEntry.js` fail করলে কোনো fallback path নেই, তাই CDN blip মানেই blank page।
 6. Injected contract-এর বদলে remote সরাসরি shell-এর Pinia store import করে shared state নেয়।
@@ -47,12 +47,12 @@ flowchart TD
 
 ### 1. Integration model সচেতনভাবে বাছুন
 
-Build-time package (npm workspace) এক runtime ও এক bundle দেয় — টিমগুলো এক cadence-এ deploy করলে এটাই নিন। Runtime federation independent deploy দেয়, বিনিময়ে share-scope discipline চায়। Iframe শক্ত isolation দেয়, শুধু untrusted বা legacy code-এর জন্যই সঠিক উত্তর।
+Build-time package (npm workspace) এক runtime ও এক bundle দেয় - টিমগুলো এক cadence-এ deploy করলে এটাই নিন। Runtime federation independent deploy দেয়, বিনিময়ে share-scope discipline চায়। Iframe শক্ত isolation দেয়, শুধু untrusted বা legacy code-এর জন্যই সঠিক উত্তর।
 
 ### 2. Vite federation config-এ singleton lock করুন
 
 ```ts
-// vite.config.ts — remote
+// vite.config.ts - remote
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import federation from '@originjs/vite-plugin-federation'
@@ -77,7 +77,7 @@ export default defineConfig({
 })
 ```
 
-Drift যেন production নয়, build fail করে — CI guard যোগ করুন:
+Drift যেন production নয়, build fail করে - CI guard যোগ করুন:
 
 ```bash
 # fail if more than one Vue is resolved in the workspace
@@ -174,7 +174,7 @@ flowchart LR
 
 - `vue` shared করে `singleton` না দেওয়া, কারণ "dev-এ তো কাজ করছিল"।
 - Injected contract-এর বদলে remote থেকে সরাসরি shell-এর Pinia store import করা।
-- Integration API হিসেবে `window` global ব্যবহার — untyped, untestable, version করা অসম্ভব।
+- Integration API হিসেবে `window` global ব্যবহার - untyped, untestable, version করা অসম্ভব।
 - প্রতিটি remote-কে shell-এর exact version-এ pin করা, যা আবার lockstep deploy ফিরিয়ে আনে।
 - Exception না উঠায় failed `remoteEntry` fetch-কে non-event ধরে নেওয়া।
 

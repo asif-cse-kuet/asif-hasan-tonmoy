@@ -1,11 +1,11 @@
-> **Scenario** — এক support agent detail drawer-এ customer-এর নাম বদলান। পিছনের list এখনও পুরোনো নাম দেখায়, header breadcrumb নতুন নাম দেখায়, আর hard refresh করলে ঠিক হয়ে যায়। তিনটা Pinia store একই customer object-এর তিনটা copy রাখে, আপডেট হয়েছে শুধু একটা।
+> **Scenario** - এক support agent detail drawer-এ customer-এর নাম বদলান। পিছনের list এখনও পুরোনো নাম দেখায়, header breadcrumb নতুন নাম দেখায়, আর hard refresh করলে ঠিক হয়ে যায়। তিনটা Pinia store একই customer object-এর তিনটা copy রাখে, আপডেট হয়েছে শুধু একটা।
 
 ## Why it matters
 
 - Duplicate entity এমন "অসম্ভব" বাগ তৈরি করে যা কেবল নির্দিষ্ট navigation order-এ reproduce হয়, তাই QA পেরিয়ে রাত ২টায় on-call engineer-এর কাছে পৌঁছায়।
 - Server entity cache করা প্রতিটি store আসলে unmanaged cache। TTL বা invalidation rule ছাড়া অন্য tab, অন্য user বা webhook row বদলানোর মুহূর্তেই drift করে।
 - Store sprawl bundle ও mental model দুটোই ফোলায়। ৪০টা store-এর app-এ প্রতিটা mount-এ fetch করলে প্রতি navigation-এ সহজেই ১৫+ duplicate request যায়।
-- সরল সমাধান — প্রতি route change-এ সব refetch — correctness bug-কে INP regression বানায়, কারণ JSON parse ও re-render main thread-কে ২০০ ms target ছাড়িয়ে block করে।
+- সরল সমাধান - প্রতি route change-এ সব refetch - correctness bug-কে INP regression বানায়, কারণ JSON parse ও re-render main thread-কে ২০০ ms target ছাড়িয়ে block করে।
 
 ## Symptoms
 
@@ -38,7 +38,7 @@ flowchart TD
 
 1. Server cache ও client state একই store-এ মেশানো, lifetime বা ownership-এ কোনো পার্থক্য নেই।
 2. Entity id দিয়ে normalise না করে nested array-তে রাখা, তাই এক row অনেক জায়গায় থাকে।
-3. Invalidation contract নেই — mutation local state আপডেট করে, তার উপর নির্ভরশীল query invalidate করে না।
+3. Invalidation contract নেই - mutation local state আপডেট করে, তার উপর নির্ভরশীল query invalidate করে না।
 4. Store `onMounted`-এ dedupe ছাড়া fetch করে, তাই concurrent component duplicate request পাঠায়।
 5. Derived data `computed` না হয়ে state-এ copy হয়, ফলে আলাদাভাবে stale হয়।
 6. Cache entry কখনও evict হয় না, আর tab-এর মধ্যে কিছু reconcile করে না।
@@ -50,7 +50,7 @@ flowchart TD
 Client state হলো যা কেবল browser জানে: modal open, selected tab, draft text, filter chip। Server cache হলো API-র মালিকানাধীন কিছুর local replica। Client state Pinia-তে; server cache key, TTL ও invalidation rule-সহ query layer-এর পিছনে।
 
 ```ts
-// stores/ui.ts — client state only
+// stores/ui.ts - client state only
 export const useUiStore = defineStore('ui', () => {
   const drawerOpen = ref(false)
   const activeFilters = ref<string[]>([])
@@ -112,7 +112,7 @@ async function renameCustomer(id: string, name: string) {
 
 ### 5. Cache bound করুন
 
-প্রতিটি key-তে `staleTime` (সাথে সাথে serve, background-এ refetch) ও `gcTime` (evict) দিন। Admin UI-তে ব্যবহারিক শুরু: `staleTime: 30_000`, `gcTime: 5 * 60_000`। Entity map cap করুন — ~২০০০ row-এর উপরে least-recently-used entry evict করুন, যাতে দীর্ঘ session heap অসীম না বাড়ায়।
+প্রতিটি key-তে `staleTime` (সাথে সাথে serve, background-এ refetch) ও `gcTime` (evict) দিন। Admin UI-তে ব্যবহারিক শুরু: `staleTime: 30_000`, `gcTime: 5 * 60_000`। Entity map cap করুন - ~২০০০ row-এর উপরে least-recently-used entry evict করুন, যাতে দীর্ঘ session heap অসীম না বাড়ায়।
 
 ### 6. Tab-এর মধ্যে reconcile করুন
 

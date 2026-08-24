@@ -1,11 +1,11 @@
-> **Scenario** — category API edge-এ `max-age=60` দিয়ে cache করা। প্রতি মিনিটে ওই endpoint-এর p99 12 ms থেকে 840 ms-এ লাফায়, কারণ edge অন্য region-এর origin-এ revalidate করে। 4 মিনিটের origin deploy-এর সময় edge-এর কাছে দেওয়ার কিছু থাকে না, প্রতিটি visitor খালি catalog দেখে।
+> **Scenario** - category API edge-এ `max-age=60` দিয়ে cache করা। প্রতি মিনিটে ওই endpoint-এর p99 12 ms থেকে 840 ms-এ লাফায়, কারণ edge অন্য region-এর origin-এ revalidate করে। 4 মিনিটের origin deploy-এর সময় edge-এর কাছে দেওয়ার কিছু থাকে না, প্রতিটি visitor খালি catalog দেখে।
 
 ## Why it matters
 
-- Hard expiry প্রতি TTL-এ একবার user-facing latency-কে origin latency-র সাথে বেঁধে ফেলে — ভুল মুহূর্তে আসা দুর্ভাগা request-দের জন্য।
+- Hard expiry প্রতি TTL-এ একবার user-facing latency-কে origin latency-র সাথে বেঁধে ফেলে - ভুল মুহূর্তে আসা দুর্ভাগা request-দের জন্য।
 - একই ব্যবস্থা origin outage-কে user-visible outage বানায়। edge-এর হাতে একদম ভালো copy আছে, শুধু timer শেষ হয়েছে বলে সে তা ফেলে দিচ্ছে।
-- ধীর revalidation-এর জবাবে product দল `max-age` বাড়ায়, latency-র জন্য freshness বিক্রি করে — অথচ দুটোই পাওয়া যেত।
-- যে content-এ "60 সেকেন্ড পুরনো" আর "এখনকার" আলাদা করা যায় না — catalog, article body, config blob — সেখানে freshness-এর জন্য পুরো origin latency দেওয়া নিছক অপচয়।
+- ধীর revalidation-এর জবাবে product দল `max-age` বাড়ায়, latency-র জন্য freshness বিক্রি করে - অথচ দুটোই পাওয়া যেত।
+- যে content-এ "60 সেকেন্ড পুরনো" আর "এখনকার" আলাদা করা যায় না - catalog, article body, config blob - সেখানে freshness-এর জন্য পুরো origin latency দেওয়া নিছক অপচয়।
 - এখানে availability উন্নতি সস্তা: header-এ দুটি directive, application পরিবর্তন নেই।
 
 ## Symptoms
@@ -21,9 +21,9 @@
 
 ## How it breaks
 
-`max-age` একটি খাড়া প্রান্ত সংজ্ঞায়িত করে। তার আগে cached object origin স্পর্শ ছাড়াই serve হয়; এক সেকেন্ড পরে সেই object *অব্যবহারযোগ্য* এবং request পুরো origin fetch-এ আটকে যায়। "এটা একটু পুরনো কিন্তু চলবে, refresh করার সময় ব্যবহার করো" — এমন মধ্যবর্তী অবস্থা নেই।
+`max-age` একটি খাড়া প্রান্ত সংজ্ঞায়িত করে। তার আগে cached object origin স্পর্শ ছাড়াই serve হয়; এক সেকেন্ড পরে সেই object *অব্যবহারযোগ্য* এবং request পুরো origin fetch-এ আটকে যায়। "এটা একটু পুরনো কিন্তু চলবে, refresh করার সময় ব্যবহার করো" - এমন মধ্যবর্তী অবস্থা নেই।
 
-আরও খারাপ, সব client একসাথে ওই প্রান্তে পৌঁছায়, তাই revalidation একটি নয় — origin round trip-এর সময় যত request আসে ততগুলো। আর ওই মুহূর্তে origin down থাকলে proxy-র কাছে object আছে কিন্তু serve করার অনুমতি নেই, তাই সে 5xx ফেরায়।
+আরও খারাপ, সব client একসাথে ওই প্রান্তে পৌঁছায়, তাই revalidation একটি নয় - origin round trip-এর সময় যত request আসে ততগুলো। আর ওই মুহূর্তে origin down থাকলে proxy-র কাছে object আছে কিন্তু serve করার অনুমতি নেই, তাই সে 5xx ফেরায়।
 
 ```mermaid
 stateDiagram-v2
@@ -38,7 +38,7 @@ stateDiagram-v2
 ## Root causes
 
 1. `Cache-Control`-এ শুধু `max-age`, `stale-while-revalidate` বা `stale-if-error` নেই।
-2. "fresh হতেই হবে" আর "শিগগিরই refresh হওয়া উচিত" — এ দুইয়ের পার্থক্য নেই।
+2. "fresh হতেই হবে" আর "শিগগিরই refresh হওয়া উচিত" - এ দুইয়ের পার্থক্য নেই।
 3. Revalidation background-এ নয়, request path-এ ঘটে।
 4. upstream error-এ stale serve করার জন্য proxy configure করা নেই।
 5. request collapsing নেই, তাই পুরো revalidation wave origin-এ পৌঁছায়।
@@ -169,7 +169,7 @@ flowchart TD
 
 ## Anti-patterns
 
-- proxy-তে `proxy_cache_background_update on` না রেখে `stale-while-revalidate` সেট করা — directive উপেক্ষিত হয়, কিছুই বদলায় না।
+- proxy-তে `proxy_cache_background_update on` না রেখে `stale-while-revalidate` সেট করা - directive উপেক্ষিত হয়, কিছুই বদলায় না।
 - write response বা user-specific কিছুতে `stale-if-error` ব্যবহার।
 - `proxy_cache_lock` বাদ দেওয়া, ফলে background revalidation আসলে 3,000 concurrent origin request।
 - `stale-while-revalidate` যোগ না করে revalidation latency লুকাতে `max-age` বাড়ানো।

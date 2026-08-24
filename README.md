@@ -1,4 +1,4 @@
-# Asif Hasan Tonmoy — Portfolio
+# Asif Hasan Tonmoy - Portfolio
 
 Vue 3 personal site: Fullstack AI Engineer · System / Software Architect · Marketing Consultant.
 
@@ -20,7 +20,7 @@ subjects get their own pages, because they keep growing:
 | `/` | Hero, coding profiles, proof metrics, expertise, tech stack, portfolio, experience timeline, research, competitive programming, services, about, contact |
 | `/marketing` | Marketing consultancy with its own timeline, channel stack, and campaign proof |
 | `/problems/solved` | Critical problems solved first-hand, with detail pages |
-| `/systems` | Engineering systems & system design guide — 15 domains, bilingual topic articles, core concept atlas |
+| `/systems` | Engineering systems & system design guide - 15 domains, bilingual topic articles, core concept atlas |
 
 Old standalone routes (`/engineering`, `/about`, `/coding`, `/problems/industry`, …)
 redirect into the new structure.
@@ -39,7 +39,7 @@ npm run build          # regenerates public/sitemap.xml, then type-checks and bu
 
 ## Adding knowledge-library content
 
-1. Add topics to `src/content/industry-topics/topics/<domain>.ts` — each file
+1. Add topics to `src/content/industry-topics/topics/<domain>.ts` - each file
    default-exports an `IndustryTopic[]` and is picked up automatically.
 2. Write `src/content/articles/industry/<slug>.en.md` and `<slug>.bn.md` following
    `src/content/articles/AUTHORING.md`.

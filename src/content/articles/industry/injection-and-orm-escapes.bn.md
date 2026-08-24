@@ -1,4 +1,4 @@
-> **Scenario** — একটা reporting screen user-কে যেকোনো column-এ sort ও saved query দিয়ে filter করতে দেয়। সব জায়গায় ORM ব্যবহার হয়েছে, তাই team threat model-এ injection-কে "not applicable" লিখেছিল। Sort parameter `orderByRaw()`-এ concatenate হয়, আর scanner এগারো মিনিটে সেটা খুঁজে বের করে।
+> **Scenario** - একটা reporting screen user-কে যেকোনো column-এ sort ও saved query দিয়ে filter করতে দেয়। সব জায়গায় ORM ব্যবহার হয়েছে, তাই team threat model-এ injection-কে "not applicable" লিখেছিল। Sort parameter `orderByRaw()`-এ concatenate হয়, আর scanner এগারো মিনিটে সেটা খুঁজে বের করে।
 
 ## Why it matters
 
@@ -20,7 +20,7 @@
 
 ## How it breaks
 
-Prepared statement code ও data আলাদা করে — placeholder bind হয়, তাই driver user input-কে কখনো SQL হিসেবে parse করে না। প্রতিটি raw helper এটা উল্টে দেয়: string আগে SQL হিসেবে compile হয়, তারপর placeholder bind হয়। Identifier আরও খারাপ, কারণ `ORDER BY ?` বৈধ SQL নয়, তাই developer concatenate করে। একবার fragment concatenate হলে parser ওই জায়গায় subquery, union ও comment মেনে নেয়, যেখানে ORM কোনো রক্ষা দেয় না।
+Prepared statement code ও data আলাদা করে - placeholder bind হয়, তাই driver user input-কে কখনো SQL হিসেবে parse করে না। প্রতিটি raw helper এটা উল্টে দেয়: string আগে SQL হিসেবে compile হয়, তারপর placeholder bind হয়। Identifier আরও খারাপ, কারণ `ORDER BY ?` বৈধ SQL নয়, তাই developer concatenate করে। একবার fragment concatenate হলে parser ওই জায়গায় subquery, union ও comment মেনে নেয়, যেখানে ORM কোনো রক্ষা দেয় না।
 
 ```mermaid
 flowchart TD
@@ -56,7 +56,7 @@ $rows = DB::select('SELECT id FROM users WHERE email = ?', [$request->email]);
 Invoice::whereRaw('amount_cents > :floor', ['floor' => $request->integer('floor')])->get();
 ```
 
-### 2. Identifier allowlist করুন — কখনো bind নয়
+### 2. Identifier allowlist করুন - কখনো bind নয়
 
 ```php
 final class ReportSort
@@ -123,7 +123,7 @@ Least privilege "প্রতিটি table পড়া"-কে "তিনট�
 'debug' => (bool) env('APP_DEBUG', false),
 ```
 
-SQLSTATE ও statement log pipeline-এ পাঠান, client-কে generic 500 দিন, আর exception type-এ alert দিন — SQL syntax error-এর spike মানে সক্রিয় probe।
+SQLSTATE ও statement log pipeline-এ পাঠান, client-কে generic 500 দিন, আর exception type-এ alert দিন - SQL syntax error-এর spike মানে সক্রিয় probe।
 
 ## Target design
 
@@ -156,7 +156,7 @@ flowchart LR
 - [ ] `sort=id);--` ধরনের input পাঠিয়ে 422 আসে, database error নয়।
 - [ ] Production generic 500 দেয়, SQLSTATE text ছাড়া।
 - [ ] Application database role `DROP`, `CREATE` বা credential table পড়তে পারে না।
-- [ ] অজানা sort key default column-এ ফিরে আসে — এমন test আছে।
+- [ ] অজানা sort key default column-এ ফিরে আসে - এমন test আছে।
 - [ ] SQL-error rate alert আছে ও drill-এ অন্তত একবার fire করেছে।
 
 ## Anti-patterns

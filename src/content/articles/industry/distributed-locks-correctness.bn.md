@@ -1,11 +1,11 @@
-> **Scenario** — একটি inventory service stock কমানোর আগে `SET stock_lock:sku123 <uuid> NX PX 5000` ব্যবহার করে। Redis failover-এর সময় `SET` পৌঁছানোর আগেই replica promote হয়, দ্বিতীয় worker একই lock নেয়, আর ৪০ ইউনিটের SKU-র ৬০ ইউনিট বিক্রি হয়ে যায়।
+> **Scenario** - একটি inventory service stock কমানোর আগে `SET stock_lock:sku123 <uuid> NX PX 5000` ব্যবহার করে। Redis failover-এর সময় `SET` পৌঁছানোর আগেই replica promote হয়, দ্বিতীয় worker একই lock নেয়, আর ৪০ ইউনিটের SKU-র ৬০ ইউনিট বিক্রি হয়ে যায়।
 
 ## Why it matters
 
 - Lock এমন invariant রক্ষা করে যার সাথে টাকা জড়িত: একবার stock decrement, একবার payment capture, একবার email পাঠানো, একবার file rename। দুই holder মানে overselling, double charge, বা নষ্ট output।
-- বাস্তবের প্রতিটি distributed lock আসলে **lease** — তার TTL আছে। Lease শুধু তখনই mutual exclusion দেয় যখন holder expire-এর পর কাজ করতে পারে না, আর কোনো TTL tuning যেকোনো দীর্ঘ process pause বাঁধতে পারে না।
+- বাস্তবের প্রতিটি distributed lock আসলে **lease** - তার TTL আছে। Lease শুধু তখনই mutual exclusion দেয় যখন holder expire-এর পর কাজ করতে পারে না, আর কোনো TTL tuning যেকোনো দীর্ঘ process pause বাঁধতে পারে না।
 - Redis replication default-এ asynchronous। Primary-তে নেওয়া lock failover-এ হারানো Redis-এর bug নয়; এটা async replication-এর documented আচরণ, আর single-instance Redlock ধরনের lock সেটাই উত্তরাধিকার পায়।
-- সমাধান — protected resource-এর যাচাই করা fencing token — এক column আর এক তুলনার খরচে correctness-এর জুয়াকে guarantee-তে বদলে দেয়।
+- সমাধান - protected resource-এর যাচাই করা fencing token - এক column আর এক তুলনার খরচে correctness-এর জুয়াকে guarantee-তে বদলে দেয়।
 
 ## Symptoms
 
@@ -17,7 +17,7 @@
 | TTL vs work time | সামান্য অংশ run-এ job p99 duration lock TTL ছাড়ায় |
 | GC / throttle pause | STW বা cgroup throttle stall TTL-এর সমান বা বেশি |
 | Failover correlation | Redis বা ZooKeeper failover-এর ৩০s-এর মধ্যে incident জমে |
-| Unlock error | `unlock of non-owned key` — প্রমাণ যে কাজের মাঝেই lock expire হয়েছে |
+| Unlock error | `unlock of non-owned key` - প্রমাণ যে কাজের মাঝেই lock expire হয়েছে |
 
 ## How it breaks
 
@@ -25,7 +25,7 @@
 
 **Async replication lock হারায়।** Redis primary `SET NX` নেয়, ack করে, আর replica-তে পাঠানোর আগেই মরে। Sentinel replica promote করে, যার কাছে key-র কোনো রেকর্ড নেই। দ্বিতীয় client সাথে সাথেই সেটা নেয়। দুই client-ই নিজেকে exclusive holder ভাবে, আর যা তারা দেখতে পায় তার ভিত্তিতে কেউ ভুলও নয়।
 
-**Pause lease-কে ছাপিয়ে যায়।** Client A ৫s lease ধরে, ৭s GC pause খায় বা cgroup-এ CPU-throttled হয়, lease expire হয়, B নেয়, A ফিরে এসে লেখে। A-র জানার উপায় নেই সময় পেরিয়েছে — এ কারণেই write-এর আগে `isLocked()` দেখা কাজ করে না; check আর write lease-এর সাপেক্ষে atomic নয়।
+**Pause lease-কে ছাপিয়ে যায়।** Client A ৫s lease ধরে, ৭s GC pause খায় বা cgroup-এ CPU-throttled হয়, lease expire হয়, B নেয়, A ফিরে এসে লেখে। A-র জানার উপায় নেই সময় পেরিয়েছে - এ কারণেই write-এর আগে `isLocked()` দেখা কাজ করে না; check আর write lease-এর সাপেক্ষে atomic নয়।
 
 **Unlock অন্যের lock মুছে দেয়।** ownership যাচাই না করে `DEL stock_lock:sku123` করলে B-র ধরা lock খুশিমনে ছেড়ে দেবে, আর সমস্যা C-তে গড়াবে।
 
@@ -81,7 +81,7 @@ RETURNING dedup_key;
 
 ### 2. Lock দরকার হলে সেটা fenced lease বানান
 
-Lock-এর সাথে monotonically increasing token নিন, আর resource ছোট token reject করুক। etcd revision দেয়; ZooKeeper `czxid` দেয়; Redis-এ আলাদা counter-এ `INCR` ব্যবহার করতে পারেন — শর্ত হলো counter-কে lock-এর মতোই durable হতে হবে।
+Lock-এর সাথে monotonically increasing token নিন, আর resource ছোট token reject করুক। etcd revision দেয়; ZooKeeper `czxid` দেয়; Redis-এ আলাদা counter-এ `INCR` ব্যবহার করতে পারেন - শর্ত হলো counter-কে lock-এর মতোই durable হতে হবে।
 
 ```ts
 type FencedLease = { key: string; owner: string; token: bigint; ttlMs: number }
@@ -158,7 +158,7 @@ Renewal expire-এ পৌঁছানোর হার কমায়; expire-�
 
 ### 5. Pause স্পষ্টভাবে test করুন
 
-Holder-কে TTL-এর ৩x সময় `SIGSTOP` করে `SIGCONT` করুন, আর নিশ্চিত করুন তার পরের write reject হয়। সফল হলে আপনার lock নেই — ভালো success rate-এর একটি race আছে।
+Holder-কে TTL-এর ৩x সময় `SIGSTOP` করে `SIGCONT` করুন, আর নিশ্চিত করুন তার পরের write reject হয়। সফল হলে আপনার lock নেই - ভালো success rate-এর একটি race আছে।
 
 ## Target design
 
@@ -199,7 +199,7 @@ flowchart TD
 
 ## Anti-patterns
 
-- duplicate থামা পর্যন্ত TTL বাড়ানো — জানালা বিরল করেছেন, বন্ধ করেননি।
+- duplicate থামা পর্যন্ত TTL বাড়ানো - জানালা বিরল করেছেন, বন্ধ করেননি।
 - Unlock-এ `DEL`, যা তখনকার যেকোনো holder-কে ছেড়ে দেয়।
 - write-এর ঠিক আগে `isLocked()` দেখে সেটাকে atomic ধরা।
 - এক column-এর fence token যে সমস্যা মেটায়, তার জন্য পাঁচ Redis node-এ Redlock বানানো।

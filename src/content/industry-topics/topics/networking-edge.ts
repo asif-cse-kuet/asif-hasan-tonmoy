@@ -1,6 +1,6 @@
 import type { IndustryTopic } from '../topic-types'
 
-/** Networking & edge wave — reverse proxies, transport behaviour, DNS, and edge defence. */
+/** Networking & edge wave - reverse proxies, transport behaviour, DNS, and edge defence. */
 const topics: IndustryTopic[] = [
   {
     id: 'reverse-proxy-buffering-and-timeouts',
@@ -56,7 +56,7 @@ const topics: IndustryTopic[] = [
     },
     summary: {
       en: 'Resolver caches, negative TTLs, and JVM/library pinning mean a 60s TTL can still strand traffic for an hour.',
-      bn: 'resolver cache, negative TTL, JVM/library pinning — 60s TTL-ও এক ঘণ্টা traffic আটকে রাখতে পারে।',
+      bn: 'resolver cache, negative TTL, JVM/library pinning - 60s TTL-ও এক ঘণ্টা traffic আটকে রাখতে পারে।',
     },
     tags: ['dns', 'ttl', 'failover', 'resolvers', 'health-checks'],
     difficulty: 'intermediate',
@@ -96,7 +96,7 @@ const topics: IndustryTopic[] = [
     },
     summary: {
       en: 'Upgrade headers, 60-second idle kills, buffering that eats frames, and why reconnect storms are a proxy config bug.',
-      bn: 'Upgrade header, ৬০ সেকেন্ডে idle kill, frame গিলে ফেলা buffering — reconnect storm আসলে proxy config বাগ।',
+      bn: 'Upgrade header, ৬০ সেকেন্ডে idle kill, frame গিলে ফেলা buffering - reconnect storm আসলে proxy config বাগ।',
     },
     tags: ['websocket', 'nginx', 'upgrade', 'idle-timeout', 'realtime'],
     difficulty: 'intermediate',
@@ -118,7 +118,7 @@ const topics: IndustryTopic[] = [
     },
     summary: {
       en: 'Missing `proxy_http_version 1.1` silently rebuilds a TCP+TLS connection per request and burns ports and CPU.',
-      bn: '`proxy_http_version 1.1` না থাকলে প্রতি request-এ TCP+TLS নতুন করে তৈরি হয় — port ও CPU পোড়ে।',
+      bn: '`proxy_http_version 1.1` না থাকলে প্রতি request-এ TCP+TLS নতুন করে তৈরি হয় - port ও CPU পোড়ে।',
     },
     tags: ['keepalive', 'tcp', 'nginx', 'upstream', 'time-wait'],
     difficulty: 'intermediate',
@@ -184,7 +184,7 @@ const topics: IndustryTopic[] = [
     },
     summary: {
       en: 'BGP anycast, GeoDNS, and why the "nearest" PoP is chosen by resolver topology, not by your users.',
-      bn: 'BGP anycast, GeoDNS — "nearest" PoP user নয়, resolver topology ঠিক করে কেন।',
+      bn: 'BGP anycast, GeoDNS - "nearest" PoP user নয়, resolver topology ঠিক করে কেন।',
     },
     tags: ['anycast', 'bgp', 'geodns', 'edge', 'multi-region'],
     difficulty: 'advanced',
@@ -202,7 +202,7 @@ const topics: IndustryTopic[] = [
     },
     summary: {
       en: 'Token buckets at the edge, NAT-shared IPs, burst tuning, and telling an attack apart from a marketing email.',
-      bn: 'edge-এ token bucket, NAT-shared IP, burst tuning — attack আর marketing email আলাদা করা।',
+      bn: 'edge-এ token bucket, NAT-shared IP, burst tuning - attack আর marketing email আলাদা করা।',
     },
     tags: ['rate-limiting', 'ddos', 'nginx', 'waf', 'edge'],
     difficulty: 'intermediate',

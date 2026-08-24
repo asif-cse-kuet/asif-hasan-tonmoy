@@ -1,8 +1,8 @@
-> **Scenario** — একটা marketing site আর logged-in dashboard একই Vue SPA ভাগ করে। Field data দেখায় public pricing page-এ LCP ৪.৩ সেকেন্ড, কারণ দর্শক কোনো text আঁকার আগেই ৯০০ KB dashboard code নামায়। টিমের প্রস্তাবিত সমাধান "সব জায়গায় SSR", যা কখনও না বদলানো page-এর critical path-এ Node render বসিয়ে দেবে।
+> **Scenario** - একটা marketing site আর logged-in dashboard একই Vue SPA ভাগ করে। Field data দেখায় public pricing page-এ LCP ৪.৩ সেকেন্ড, কারণ দর্শক কোনো text আঁকার আগেই ৯০০ KB dashboard code নামায়। টিমের প্রস্তাবিত সমাধান "সব জায়গায় SSR", যা কখনও না বদলানো page-এর critical path-এ Node render বসিয়ে দেবে।
 
 ## Why it matters
 
-- Rendering strategy LCP-র মেঝে ঠিক করে। Client-rendered page JS download, parse ও data fetch না হওয়া পর্যন্ত content আঁকতে পারে না — prerendered page এই তিনটা serial ধাপ পুরোপুরি এড়ায়।
+- Rendering strategy LCP-র মেঝে ঠিক করে। Client-rendered page JS download, parse ও data fetch না হওয়া পর্যন্ত content আঁকতে পারে না - prerendered page এই তিনটা serial ধাপ পুরোপুরি এড়ায়।
 - Search ও social crawler JS-rendered content ভিন্নভাবে দেখে। Client rendering-নির্ভর public page নিয়মিতই crawler-এর প্রত্যাশিত meta ও content হারায়।
 - SSR খরচ আপনার server-এ সরায়। ৮০ ms CPU-তে render হওয়া page সেকেন্ডে ৫০০ request-এ ৪০ core headroom চায়, সাথে cache strategy ও cache expire হলে stampede guard।
 - Hydration-এই INP নষ্ট হয়। ৯০০ KB hydration JS পাঠানো পূর্ণ server-rendered page দেখতে দ্রুত কিন্তু সাড়া দেয় ধীরে, যা user-এর কাছে সৎ spinner-এর চেয়েও খারাপ।

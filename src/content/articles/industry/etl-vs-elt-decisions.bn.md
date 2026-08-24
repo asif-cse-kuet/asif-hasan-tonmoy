@@ -1,11 +1,11 @@
-> **Scenario** — Finance জানাল গত quarter-এর region-wise revenue ভুল। `country_code` থেকে region map করার transformation ছয় সপ্তাহ আগে একটি Python ETL job-এর ভিতরে চলেছিল, শুধু aggregated result লিখেছিল, raw payload কখনও land করা হয়নি। পুরনো বা নতুন — কোনো সংখ্যাই এখন reproduce করা যাচ্ছে না।
+> **Scenario** - Finance জানাল গত quarter-এর region-wise revenue ভুল। `country_code` থেকে region map করার transformation ছয় সপ্তাহ আগে একটি Python ETL job-এর ভিতরে চলেছিল, শুধু aggregated result লিখেছিল, raw payload কখনও land করা হয়নি। পুরনো বা নতুন - কোনো সংখ্যাই এখন reproduce করা যাচ্ছে না।
 
 ## Why it matters
 
-- load-এর আগে transform হলে source আসলে কী বলেছিল তার একমাত্র প্রমাণ raw record — আর সেটাই ফেলে দেওয়া হয়েছে। প্রতিটি audit তখন archaeology।
+- load-এর আগে transform হলে source আসলে কী বলেছিল তার একমাত্র প্রমাণ raw record - আর সেটাই ফেলে দেওয়া হয়েছে। প্রতিটি audit তখন archaeology।
 - ছয় সপ্তাহের history re-run করতে ELT-তে একটি SQL statement লাগে, ETL-তে পুরো pipeline redeploy। এই পার্থক্যই ২০ মিনিটের fix আর দুই দিনের incident-এর মধ্যে দূরত্ব।
 - Warehouse compute metered। প্রতি `dbt run`-এ ৪ TB table full scan করা naive ELT $900/month bill-কে $9,000 বানায়, invoice আসার আগে কেউ টের পায় না।
-- On-call load transformation boundary অনুসরণ করে: ETL failure Python ও Airflow-এর owner data engineer-কে page করে; ELT failure SQL model owner-কে — যিনি প্রায়ই pager-বিহীন analyst।
+- On-call load transformation boundary অনুসরণ করে: ETL failure Python ও Airflow-এর owner data engineer-কে page করে; ELT failure SQL model owner-কে - যিনি প্রায়ই pager-বিহীন analyst।
 - Compliance deletion request প্রতিটি copy-তে পৌঁছাতে হবে। load-এর আগে বেশি stage মানে personal data-র বেশি undocumented intermediate copy।
 
 ## Symptoms
@@ -14,7 +14,7 @@
 | --- | --- |
 | Unreproducible history | metric definition বদলাল, পুরনো value recompute করার raw layer নেই |
 | Warehouse spend spike | তিনটি model যোগ করার পরে `dbt run` ৮ মিনিট থেকে ৭০ মিনিট, প্রতিবার full-refresh |
-| Silent column loss | নতুন field API payload-এ আছে কিন্তু warehouse-এ নেই — ETL mapper unknown key drop করে |
+| Silent column loss | নতুন field API payload-এ আছে কিন্তু warehouse-এ নেই - ETL mapper unknown key drop করে |
 | Long fix latency | "region mapping বদলাও" মানে code review + deploy + backfill, এক model edit নয় |
 | Duplicated logic | একই `is_active` rule Python job, dbt model ও BI tool-এ, তিনটি ভিন্ন উত্তর দেয় |
 
@@ -39,8 +39,8 @@ flowchart LR
 
 1. Durable landing zone-এর আগে transformation logic বসানো, ফলে raw input কখনও persist হয় না।
 2. ingestion (bytes সরানো) ও modelling (অর্থ দেওয়া) আলাদা না করা।
-3. ELT model incremental-এর বদলে `table` materialisation ও full refresh, ফলে cost নতুন data নয় — history-র সঙ্গে বাড়ে।
-4. Business rule extraction script, warehouse model ও BI semantic layer — তিন জায়গায় duplicate।
+3. ELT model incremental-এর বদলে `table` materialisation ও full refresh, ফলে cost নতুন data নয় - history-র সঙ্গে বাড়ে।
+4. Business rule extraction script, warehouse model ও BI semantic layer - তিন জায়গায় duplicate।
 5. Column-level lineage নেই, তাই upstream rename কোন dashboard ভাঙবে তা trace করা যায় না।
 6. Schema-on-write ingestion যা unexpected field reject বা drop করে, পরে inspect করার জন্য land করে না।
 
@@ -91,7 +91,7 @@ CREATE TABLE IF NOT EXISTS raw.orders_events (
 ) PARTITION BY RANGE (ingested_at);
 ```
 
-`record_hash` primary key হলে একই batch আবার land করা no-op — ingestion task retry হলে ঠিক এটাই চাই।
+`record_hash` primary key হলে একই batch আবার land করা no-op - ingestion task retry হলে ঠিক এটাই চাই।
 
 ### 3. Warehouse-এ incremental transform করুন
 
@@ -160,7 +160,7 @@ flowchart TD
 
 - [ ] ৬০ দিন আগের একটি random dashboard সংখ্যা নিন, শুধু `raw.*` থেকে reproduce করুন।
 - [ ] সম্পন্ন partition-এর ingestion task দুবার চালান; `raw.*`-এ row count বদলায় না।
-- [ ] সাধারণ দিনে `dbt run` শুধু নতুন partition scan করে — wall clock নয়, query history-তে bytes scanned দেখুন।
+- [ ] সাধারণ দিনে `dbt run` শুধু নতুন partition scan করে - wall clock নয়, query history-তে bytes scanned দেখুন।
 - [ ] staging fixture-এ unknown `country_code` দিন; `unmapped` test build fail করে।
 - [ ] প্রতিটি business rule ঠিক একটি model-এ আছে; repo-তে rule name grep করুন।
 - [ ] `raw.payload` থেকে প্রতিটি mart column পর্যন্ত column-level lineage catalog tool-এ resolve হয়।
@@ -169,7 +169,7 @@ flowchart TD
 ## Anti-patterns
 
 - "raw layer পরে যোগ করব।" Raw layer শুধু ইতিমধ্যে land করা data-র জন্য কাজে আসে; পরে যোগ করলে history ফেরে না।
-- incremental logic ঝামেলার বলে সবখানে full-refresh materialisation — bill আসা পর্যন্ত।
+- incremental logic ঝামেলার বলে সবখানে full-refresh materialisation - bill আসা পর্যন্ত।
 - schema পরিষ্কার রাখার নামে ingestion layer-এ unknown JSON key drop করা।
 - দ্রুত হবে বলে BI tool-এ business rule লেখা, ফলে `active_user`-এর চতুর্থ definition তৈরি।
 - `dbt test` warning-কে informational ভাবা; যে warning কেউ পড়ে না, সেটা contract নয়।

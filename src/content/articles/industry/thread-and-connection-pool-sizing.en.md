@@ -1,8 +1,8 @@
-> **Scenario** — A Laravel API times out under load. Someone raises `pm.max_children` from 40 to 200 and the database pool from 20 to 200. Throughput drops from 900 to 340 req/s, p99 goes from 800 ms to 9 s, and Postgres starts logging `FATAL: sorry, too many clients already`. The pool got bigger and everything got worse.
+> **Scenario** - A Laravel API times out under load. Someone raises `pm.max_children` from 40 to 200 and the database pool from 20 to 200. Throughput drops from 900 to 340 req/s, p99 goes from 800 ms to 9 s, and Postgres starts logging `FATAL: sorry, too many clients already`. The pool got bigger and everything got worse.
 
 ## Why it matters
 
-- A pool is a queue with a bouncer. Making it bigger does not add capacity — it just lets more work in to fight over the same CPU and disk.
+- A pool is a queue with a bouncer. Making it bigger does not add capacity - it just lets more work in to fight over the same CPU and disk.
 - The counter-intuitive result is well documented: a 10-connection pool often beats a 100-connection pool on the same hardware, at every percentile.
 - Oversized pools push queueing from a bounded, observable place into the database, where it is expensive and hard to see.
 - Every pool boundary in the request path multiplies. 200 app workers × 5 connections each is 1,000 connections to a database that can serve 300.
@@ -16,7 +16,7 @@
 | `pg_stat_activity` | Hundreds of rows, most `idle in transaction` or `active` with tiny queries |
 | DB CPU | 100% with high context-switch rate |
 | App thread dump | Threads blocked in `getConnection()` |
-| Latency | p50 fine, p99 seconds — queueing, not work |
+| Latency | p50 fine, p99 seconds - queueing, not work |
 | DB logs | `too many clients`, connection storms after deploys |
 | Memory | Each connection costs 5-10 MB of DB work_mem plus backend |
 
@@ -30,9 +30,9 @@ For 8 cores and SSD (treat as 1-2 effective spindles): (8 × 2) + 1 = **17 conne
 
 Why does 200 hurt? Because of the service-time inflation from context switching and lock contention. Suppose each query needs 4 ms of pure CPU. With 17 connections on 8 cores, each query completes in roughly 4 ms × (17/8) = 8.5 ms of wall time and the server does 8/0.004 = **2,000 queries/s**.
 
-With 200 connections, the server still does 2,000 queries/s of *work* at best — the CPU did not change — but each query now waits behind 200/8 = 25 peers: 4 ms × 25 = **100 ms** wall time. Worse, context switching and buffer-pool thrash cut effective throughput to maybe 1,400 queries/s. Little's Law confirms the outcome: L = λW = 1,400 × 0.100 = **140 in flight**, so 60 of the 200 connections sit blocked, and the app's own worker pool fills behind them.
+With 200 connections, the server still does 2,000 queries/s of *work* at best - the CPU did not change - but each query now waits behind 200/8 = 25 peers: 4 ms × 25 = **100 ms** wall time. Worse, context switching and buffer-pool thrash cut effective throughput to maybe 1,400 queries/s. Little's Law confirms the outcome: L = λW = 1,400 × 0.100 = **140 in flight**, so 60 of the 200 connections sit blocked, and the app's own worker pool fills behind them.
 
-Now the app side. Laravel with `pm.max_children = 200` and each request holding one DB connection means the app *asks* for 200 concurrent connections. Postgres `max_connections = 100`. The 101st request gets `FATAL: too many clients` — a hard error, not a queue. So the app converts a latency problem into an error-rate problem.
+Now the app side. Laravel with `pm.max_children = 200` and each request holding one DB connection means the app *asks* for 200 concurrent connections. Postgres `max_connections = 100`. The 101st request gets `FATAL: too many clients` - a hard error, not a queue. So the app converts a latency problem into an error-rate problem.
 
 ```mermaid
 flowchart TD
@@ -80,7 +80,7 @@ print(thread_pool(cores=4, util=0.85, wait_ms=34, cpu_ms=6))   # 22.6 -> 22 thre
 # DB server: 8 cores, SSD
 print(db_pool(cores=8, spindles=1))                            # 17 connections
 
-# Fleet arithmetic — this is the check people skip
+# Fleet arithmetic - this is the check people skip
 pods, conns_per_pod, db_max = 15, 4, 100
 print(f"fleet connections = {pods * conns_per_pod} (limit {db_max})")   # 60 of 100
 ```
@@ -97,7 +97,7 @@ Transaction-mode pooling lets 600 client connections share 20 server connections
 app = host=10.0.2.10 port=5432 dbname=app
 
 [pgbouncer]
-pool_mode = transaction        ; not session — session mode defeats the purpose
+pool_mode = transaction        ; not session - session mode defeats the purpose
 max_client_conn = 2000         ; what the app fleet may open
 default_pool_size = 20         ; what the database actually sees
 reserve_pool_size = 5
@@ -112,7 +112,7 @@ With `pool_mode = transaction`, session-level features (advisory locks held acro
 
 ```php
 <?php
-// config/database.php — Laravel / PDO
+// config/database.php - Laravel / PDO
 return [
     'connections' => [
         'pgsql' => [
@@ -133,7 +133,7 @@ return [
 ```
 
 ```ini
-; php-fpm pool.d/app.conf — 22 workers, matching the thread formula
+; php-fpm pool.d/app.conf - 22 workers, matching the thread formula
 pm = static
 pm.max_children = 22
 pm.max_requests = 500
@@ -215,7 +215,7 @@ flowchart LR
 
 ## Anti-patterns
 
-- Raising the pool because requests are timing out — this is the reflex that causes the outage.
+- Raising the pool because requests are timing out - this is the reflex that causes the outage.
 - Using the same number for worker threads and database connections.
 - Setting the pool to `max_connections` so "nothing is wasted".
 - Holding a database connection while making an outbound HTTP call.

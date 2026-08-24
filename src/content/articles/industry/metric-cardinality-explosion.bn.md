@@ -1,4 +1,4 @@
-> **Scenario** — শুক্রবারের release-এ request counter-এ `customer_email` label যোগ হলো, "যাতে support নিজেই দেখতে পারে"। সোমবার নাগাদ Prometheus pod প্রতি নয় মিনিটে OOM-kill হচ্ছে, `head_series` 1.2 M থেকে 34 M, আর প্রতিটি dashboard timeout করছে — যেগুলো দিয়ে diagnose করবেন সেগুলোসহ।
+> **Scenario** - শুক্রবারের release-এ request counter-এ `customer_email` label যোগ হলো, "যাতে support নিজেই দেখতে পারে"। সোমবার নাগাদ Prometheus pod প্রতি নয় মিনিটে OOM-kill হচ্ছে, `head_series` 1.2 M থেকে 34 M, আর প্রতিটি dashboard timeout করছে - যেগুলো দিয়ে diagnose করবেন সেগুলোসহ।
 
 ## Why it matters
 
@@ -6,7 +6,7 @@
 - Metrics backend পড়ে গেলে ঠিক incident-এর মুহূর্তেই alerting হারান।
 - Query latency touched series-এর সাথে বাড়ে, তাই 300 ms-এ load হওয়া p99 panel 40 s নেয়।
 - Managed backend series বা datapoint ধরে bill করে; একটি unbounded label মাসে পাঁচ অঙ্ক যোগ করতে পারে।
-- Remote-write queue জমে যায়, ফলে historical data-তে gap — postmortem অপ্রমাণযোগ্য।
+- Remote-write queue জমে যায়, ফলে historical data-তে gap - postmortem অপ্রমাণযোগ্য।
 
 ## Symptoms
 
@@ -21,7 +21,7 @@
 
 ## How it breaks
 
-প্রতিটি unique label-value combination আলাদা time series — প্রত্যেকের নিজের in-memory index entry ও chunk buffer। `route` (40 মান) ও `status` (6 মান)-যুক্ত counter মানে 240 series — সমস্যা নেই। `user_id` (500,000 মান) যোগ করলে সম্ভাব্য series 12 কোটি। Raw count-এর চেয়ে churn খারাপ: যে label-এর মান নিরন্তর বদলায় — HorizontalPodAutoscaler-এর pod name, `session_id`, প্রতি commit-এ version string — তারা অবিরাম নতুন series বানায়। Head block সেগুলো বয়স হওয়া পর্যন্ত রাখে, তাই memory চালায় *ঘণ্টায় তৈরি হওয়া series*, concurrent traffic নয়।
+প্রতিটি unique label-value combination আলাদা time series - প্রত্যেকের নিজের in-memory index entry ও chunk buffer। `route` (40 মান) ও `status` (6 মান)-যুক্ত counter মানে 240 series - সমস্যা নেই। `user_id` (500,000 মান) যোগ করলে সম্ভাব্য series 12 কোটি। Raw count-এর চেয়ে churn খারাপ: যে label-এর মান নিরন্তর বদলায় - HorizontalPodAutoscaler-এর pod name, `session_id`, প্রতি commit-এ version string - তারা অবিরাম নতুন series বানায়। Head block সেগুলো বয়স হওয়া পর্যন্ত রাখে, তাই memory চালায় *ঘণ্টায় তৈরি হওয়া series*, concurrent traffic নয়।
 
 ```mermaid
 flowchart TD
@@ -42,7 +42,7 @@ flowchart TD
 1. Unbounded identifier label হিসেবে: user, session, request, order, email, ID-সহ URL path।
 2. Error message বা exception text label value হিসেবে ব্যবহার।
 3. উচ্চ churn-এর ephemeral workload-এ pod/container/instance label ধরে রাখা।
-4. অনেক bucket-এর histogram কয়েকটি label দিয়ে গুণ — bucket-ও series।
+4. অনেক bucket-এর histogram কয়েকটি label দিয়ে গুণ - bucket-ও series।
 5. Per-target `sample_limit` নেই, তাই একটি খারাপ exporter পুরো server নামিয়ে দেয়।
 6. Series budget-এর মালিক নেই, তাই বৃদ্ধি ধরা পড়ে শুধু OOM reaper-এর হাতে।
 
@@ -57,7 +57,7 @@ topk(20, count by (__name__)({__name__=~".+"}))
 # Which label is doing the damage on a suspect metric
 count(count by (user_id) (http_server_requests_total))
 
-# Series created per hour — churn, not volume
+# Series created per hour - churn, not volume
 sum(rate(prometheus_tsdb_head_series_created_total[1h])) * 3600
 ```
 
@@ -201,7 +201,7 @@ flowchart LR
 - Production debug-এর জন্য "অস্থায়ীভাবে" label যোগ করে release-এ রেখে দেওয়া।
 - Route template-এর বদলে raw HTTP path label হিসেবে ব্যবহার।
 - সমাধান হিসেবে Prometheus memory limit বাড়ানো, যা failure এক সপ্তাহ পেছায়।
-- `status_code` raw integer label ও `status_class` দুটোই রাখা — কোনো লাভ ছাড়াই series দ্বিগুণ।
+- `status_code` raw integer label ও `status_class` দুটোই রাখা - কোনো লাভ ছাড়াই series দ্বিগুণ।
 - প্রতিটি application metric-এ git SHA বসানো, যা প্রতি deploy-এ পূর্ণ churn নিশ্চিত করে।
 
 ## Related

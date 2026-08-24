@@ -1,8 +1,8 @@
-> **Scenario** — একটি Laravel API load-এ timeout করছে। কেউ `pm.max_children` 40 থেকে 200 আর database pool 20 থেকে 200 করল। Throughput 900 থেকে 340 req/s-এ নামল, p99 800 ms থেকে 9 s হল, আর Postgres `FATAL: sorry, too many clients already` log করতে শুরু করল। Pool বড় হল, সব খারাপ হল।
+> **Scenario** - একটি Laravel API load-এ timeout করছে। কেউ `pm.max_children` 40 থেকে 200 আর database pool 20 থেকে 200 করল। Throughput 900 থেকে 340 req/s-এ নামল, p99 800 ms থেকে 9 s হল, আর Postgres `FATAL: sorry, too many clients already` log করতে শুরু করল। Pool বড় হল, সব খারাপ হল।
 
 ## Why it matters
 
-- Pool হল bouncer-সহ একটা queue। বড় করা capacity যোগ করে না — শুধু একই CPU ও disk-এর জন্য বেশি কাজকে ভিতরে ঢুকতে দেয়।
+- Pool হল bouncer-সহ একটা queue। বড় করা capacity যোগ করে না - শুধু একই CPU ও disk-এর জন্য বেশি কাজকে ভিতরে ঢুকতে দেয়।
 - বিপরীত-অন্তর্দৃষ্টি ফলাফলটি সুপ্রমাণিত: একই hardware-এ 10-connection pool প্রায়ই 100-connection pool-কে প্রতিটি percentile-এ হারায়।
 - বড় pool queueing-কে bounded, observable জায়গা থেকে database-এ ঠেলে দেয়, যেখানে তা দামি ও অদৃশ্য।
 - Request path-এর প্রতিটি pool boundary গুণ হয়। 200 app worker × 5 connection = 1,000 connection, এমন database-এ যা 300 সামলাতে পারে।
@@ -16,7 +16,7 @@
 | `pg_stat_activity` | শত শত row, বেশিরভাগ `idle in transaction` বা ছোট query-তে `active` |
 | DB CPU | 100%, সাথে উঁচু context-switch rate |
 | App thread dump | thread গুলো `getConnection()`-এ blocked |
-| Latency | p50 ঠিক, p99 সেকেন্ডে — queueing, কাজ নয় |
+| Latency | p50 ঠিক, p99 সেকেন্ডে - queueing, কাজ নয় |
 | DB log | `too many clients`, deploy-এর পর connection storm |
 | Memory | প্রতি connection-এ 5-10 MB work_mem + backend খরচ |
 
@@ -30,9 +30,9 @@
 
 200 ক্ষতি করে কেন? Context switching ও lock contention থেকে আসা service-time inflation-এর কারণে। ধরুন প্রতিটি query-র 4 ms খাঁটি CPU দরকার। 8 core-এ 17 connection হলে প্রতিটি query মোটামুটি 4 ms × (17/8) = 8.5 ms wall time-এ শেষ হয়, আর server করে 8/0.004 = **2,000 query/s**।
 
-200 connection-এ server সেরা ক্ষেত্রেও 2,000 query/s *কাজ* করে — CPU বদলায়নি — কিন্তু প্রতিটি query এখন 200/8 = 25 জনের পিছনে অপেক্ষা করে: 4 ms × 25 = **100 ms** wall time। আরও খারাপ, context switching ও buffer-pool thrash effective throughput 1,400 query/s-এ নামায়। Little's Law ফলাফল নিশ্চিত করে: L = λW = 1,400 × 0.100 = **140 in flight**, তাই 200-এর মধ্যে 60 connection blocked বসে থাকে, আর app-এর নিজের worker pool তাদের পিছনে ভরে যায়।
+200 connection-এ server সেরা ক্ষেত্রেও 2,000 query/s *কাজ* করে - CPU বদলায়নি - কিন্তু প্রতিটি query এখন 200/8 = 25 জনের পিছনে অপেক্ষা করে: 4 ms × 25 = **100 ms** wall time। আরও খারাপ, context switching ও buffer-pool thrash effective throughput 1,400 query/s-এ নামায়। Little's Law ফলাফল নিশ্চিত করে: L = λW = 1,400 × 0.100 = **140 in flight**, তাই 200-এর মধ্যে 60 connection blocked বসে থাকে, আর app-এর নিজের worker pool তাদের পিছনে ভরে যায়।
 
-এখন app side। Laravel-এ `pm.max_children = 200` আর প্রতি request একটি DB connection ধরলে app *চায়* 200 concurrent connection। Postgres-এ `max_connections = 100`। 101তম request পায় `FATAL: too many clients` — hard error, queue নয়। ফলে app latency সমস্যাকে error-rate সমস্যায় রূপান্তর করে।
+এখন app side। Laravel-এ `pm.max_children = 200` আর প্রতি request একটি DB connection ধরলে app *চায়* 200 concurrent connection। Postgres-এ `max_connections = 100`। 101তম request পায় `FATAL: too many clients` - hard error, queue নয়। ফলে app latency সমস্যাকে error-rate সমস্যায় রূপান্তর করে।
 
 ```mermaid
 flowchart TD
@@ -80,7 +80,7 @@ print(thread_pool(cores=4, util=0.85, wait_ms=34, cpu_ms=6))   # 22.6 -> 22 thre
 # DB server: 8 core, SSD
 print(db_pool(cores=8, spindles=1))                            # 17 connection
 
-# Fleet হিসাব — এই check-টাই সবাই বাদ দেয়
+# Fleet হিসাব - এই check-টাই সবাই বাদ দেয়
 pods, conns_per_pod, db_max = 15, 4, 100
 print(f"fleet connections = {pods * conns_per_pod} (limit {db_max})")   # 100-এর মধ্যে 60
 ```
@@ -97,7 +97,7 @@ Transaction-mode pooling 600 client connection-কে 20 server connection ভ�
 app = host=10.0.2.10 port=5432 dbname=app
 
 [pgbouncer]
-pool_mode = transaction        ; session নয় — session mode উদ্দেশ্যই নষ্ট করে
+pool_mode = transaction        ; session নয় - session mode উদ্দেশ্যই নষ্ট করে
 max_client_conn = 2000         ; app fleet যত খুলতে পারে
 default_pool_size = 20         ; database আসলে যত দেখে
 reserve_pool_size = 5
@@ -112,7 +112,7 @@ query_wait_timeout = 5         ; চিরকাল queue নয়, দ্র�
 
 ```php
 <?php
-// config/database.php — Laravel / PDO
+// config/database.php - Laravel / PDO
 return [
     'connections' => [
         'pgsql' => [
@@ -133,7 +133,7 @@ return [
 ```
 
 ```ini
-; php-fpm pool.d/app.conf — 22 worker, thread formula মিলিয়ে
+; php-fpm pool.d/app.conf - 22 worker, thread formula মিলিয়ে
 pm = static
 pm.max_children = 22
 pm.max_requests = 500
@@ -215,7 +215,7 @@ flowchart LR
 
 ## Anti-patterns
 
-- Request timeout হচ্ছে বলে pool বাড়ানো — এই reflex-ই outage বানায়।
+- Request timeout হচ্ছে বলে pool বাড়ানো - এই reflex-ই outage বানায়।
 - Worker thread ও database connection-এ একই সংখ্যা ব্যবহার করা।
 - "কিছু নষ্ট না হয়" বলে pool-কে `max_connections`-এ সেট করা।
 - Outbound HTTP call করার সময় database connection ধরে রাখা।

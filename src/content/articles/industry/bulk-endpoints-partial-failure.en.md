@@ -1,4 +1,4 @@
-> **Scenario** — A partner posts 500 orders to `POST /v1/orders/bulk`. Seven fail validation, one hits a duplicate SKU constraint, and the rest succeed. Your handler wraps everything in one transaction, so all 500 roll back and you return `422` with a single error message. The partner retries the identical batch four times, hits the same seven rows, and eventually calls support to ask why none of their 493 valid orders exist.
+> **Scenario** - A partner posts 500 orders to `POST /v1/orders/bulk`. Seven fail validation, one hits a duplicate SKU constraint, and the rest succeed. Your handler wraps everything in one transaction, so all 500 roll back and you return `422` with a single error message. The partner retries the identical batch four times, hits the same seven rows, and eventually calls support to ask why none of their 493 valid orders exist.
 
 ## Why it matters
 
@@ -58,7 +58,7 @@ sequenceDiagram
 | `atomic` | `201` or `422` | All items applied, or none. Client fixes and resends everything. |
 | `partial` (default) | `207 Multi-Status` | Each item has its own status; client retries only failures. |
 
-`207 Multi-Status` comes from WebDAV but is widely used for exactly this. The important part is not the number — it is that it is *not* `200`, so a client checking `res.ok` alone is forced to look closer.
+`207 Multi-Status` comes from WebDAV but is widely used for exactly this. The important part is not the number - it is that it is *not* `200`, so a client checking `res.ok` alone is forced to look closer.
 
 ### 2. Require a client reference per item
 

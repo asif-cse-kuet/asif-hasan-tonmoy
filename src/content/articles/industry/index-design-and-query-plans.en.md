@@ -1,4 +1,4 @@
-> **Scenario** — An order search endpoint was fine at 200 k rows and takes 4.2 s at 30 M. `EXPLAIN ANALYZE` shows a sequential scan filtering 30 M rows to return 20 — because the only index starts with `status`, which has four distinct values, and the query filters on `tenant_id` and sorts by `created_at`.
+> **Scenario** - An order search endpoint was fine at 200 k rows and takes 4.2 s at 30 M. `EXPLAIN ANALYZE` shows a sequential scan filtering 30 M rows to return 20 - because the only index starts with `status`, which has four distinct values, and the query filters on `tenant_id` and sorts by `created_at`.
 
 ## Why it matters
 
@@ -6,7 +6,7 @@
 - Missing indexes hold connections longer, so one slow query pattern drains the pool and takes down unrelated endpoints.
 - Redundant indexes are not free: every extra index slows `INSERT`/`UPDATE`, inflates the buffer pool, and lengthens backups and migrations.
 - Plans flip. A query that used an index for a year can switch to a sequential scan after statistics drift or data growth crosses a cost threshold.
-- It is the cheapest fix available — usually one DDL statement, no architecture change.
+- It is the cheapest fix available - usually one DDL statement, no architecture change.
 
 ## Symptoms
 
@@ -23,7 +23,7 @@
 
 A B-tree index is only usable from its leading column onward. An index on `(status, tenant_id, created_at)` cannot efficiently serve `WHERE tenant_id = ?` because the planner would have to scan every `status` value. This is why *column order* matters more than which columns are present.
 
-Two secondary failures follow. First, a low-selectivity leading column (`status`, `is_active`, `deleted_at`) means an index scan still visits millions of rows, so the planner reasonably chooses a sequential scan instead. Second, when the sort column is not the trailing index column, the database must materialise and sort the whole result set — which spills to disk once it exceeds `work_mem`.
+Two secondary failures follow. First, a low-selectivity leading column (`status`, `is_active`, `deleted_at`) means an index scan still visits millions of rows, so the planner reasonably chooses a sequential scan instead. Second, when the sort column is not the trailing index column, the database must materialise and sort the whole result set - which spills to disk once it exceeds `work_mem`.
 
 Wrapping a column in a function (`WHERE lower(email) = ?`, `WHERE DATE(created_at) = ?`) disables the index entirely unless a matching expression index exists.
 
@@ -42,7 +42,7 @@ flowchart TD
 ## Root causes
 
 1. Leading index column chosen by intuition instead of by the query's equality predicates.
-2. Low-selectivity leading columns — an index on a boolean rarely helps.
+2. Low-selectivity leading columns - an index on a boolean rarely helps.
 3. Sort column absent from the index, forcing an explicit sort of a large intermediate result.
 4. Functions or implicit casts on the indexed column (`varchar` column compared to an integer parameter).
 5. Stale statistics after a bulk load, so the planner's row estimates are orders of magnitude off.
@@ -107,7 +107,7 @@ Limit  (cost=0.56..8.71 rows=20 width=24) (actual time=0.038..0.061 rows=20 loop
 Execution Time: 0.092 ms
 ```
 
-`Index Only Scan` with `Heap Fetches: 0` means the index answered the query without touching the table — that is what `INCLUDE` bought. MySQL has no `INCLUDE`; append the column to the key instead: `(tenant_id, created_at, total_cents)`.
+`Index Only Scan` with `Heap Fetches: 0` means the index answered the query without touching the table - that is what `INCLUDE` bought. MySQL has no `INCLUDE`; append the column to the key instead: `(tenant_id, created_at, total_cents)`.
 
 ### 3. Use partial indexes for skewed predicates
 

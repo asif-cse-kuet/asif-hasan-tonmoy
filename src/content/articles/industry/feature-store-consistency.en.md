@@ -1,9 +1,9 @@
-> **Scenario** — A fraud model scores 0.91 AUC offline and 0.68 in production. The offline training set computed `txn_count_7d` from a warehouse table with the full week of data; the online serving path reads a Redis key refreshed every 30 minutes by a job that has been silently failing for nine days.
+> **Scenario** - A fraud model scores 0.91 AUC offline and 0.68 in production. The offline training set computed `txn_count_7d` from a warehouse table with the full week of data; the online serving path reads a Redis key refreshed every 30 minutes by a job that has been silently failing for nine days.
 
 ## Why it matters
 
 - Offline/online divergence is invisible to unit tests and CI. The model, the code, and the schema are all "correct"; only the values differ.
-- A stale or wrongly-computed feature does not error — it produces a confident wrong prediction. For fraud, that is money; for ranking, that is engagement; for a triage classifier, that is a mislabelled ticket.
+- A stale or wrongly-computed feature does not error - it produces a confident wrong prediction. For fraud, that is money; for ranking, that is engagement; for a triage classifier, that is a mislabelled ticket.
 - Point-in-time leakage inflates offline metrics, so the team ships a model that was never as good as the dashboard claimed. Every subsequent experiment is measured against a fantasy baseline.
 - Two implementations of the same feature means two on-call owners and two places to fix a definition change. Definitions drift within weeks.
 - Debugging a bad prediction requires reconstructing the exact feature vector at request time. Without logged feature values, that reconstruction is guesswork.
@@ -55,7 +55,7 @@ flowchart LR
 Define the transform once and generate both paths from it. Even without a full feature-store product, a single SQL expression referenced by both jobs beats two hand-written implementations.
 
 ```sql
--- features/txn_count_7d.sql — the ONLY definition
+-- features/txn_count_7d.sql - the ONLY definition
 SELECT
   t.user_id,
   t.as_of_ts,

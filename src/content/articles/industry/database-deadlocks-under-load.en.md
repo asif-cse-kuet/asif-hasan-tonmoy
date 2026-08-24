@@ -1,9 +1,9 @@
-> **Scenario** — Checkout works fine all week. On Friday at 20:00 the traffic doubles and MySQL starts logging `ERROR 1213: Deadlock found when trying to get lock`. Roughly 0.4% of orders fail, the retry wrapper fires, and support reports customers charged twice for the same cart.
+> **Scenario** - Checkout works fine all week. On Friday at 20:00 the traffic doubles and MySQL starts logging `ERROR 1213: Deadlock found when trying to get lock`. Roughly 0.4% of orders fail, the retry wrapper fires, and support reports customers charged twice for the same cart.
 
 ## Why it matters
 
 - Deadlocks scale super-linearly with concurrency. Doubling traffic can multiply deadlock rate by four or more, so the failure appears exactly when revenue is highest.
-- The database resolves them correctly — it kills one transaction — but the *application's* response is usually a naive retry. If the transaction had side effects outside the database (a payment capture, an email), the retry duplicates them.
+- The database resolves them correctly - it kills one transaction - but the *application's* response is usually a naive retry. If the transaction had side effects outside the database (a payment capture, an email), the retry duplicates them.
 - Deadlock victims are chosen by the engine, not by importance. A 40ms payment write loses to a 3-second reporting query as often as not.
 - The stack trace points at the statement that *waited*, not the transaction that took the conflicting lock first. Teams spend hours optimising the wrong query.
 
@@ -13,7 +13,7 @@
 |---|---|
 | Error code | MySQL `1213` / Postgres `40P01 deadlock detected`, in bursts, not steadily |
 | Correlation | Deadlock rate tracks concurrent-transaction count, not request count |
-| Duration | Each victim waits the full detection interval — Postgres `deadlock_timeout` defaults to 1s |
+| Duration | Each victim waits the full detection interval - Postgres `deadlock_timeout` defaults to 1s |
 | Lock waits | `SELECT ... FOR UPDATE` on rows that "should not" conflict |
 | Gap locks (MySQL) | Deadlocks on ranges nobody inserted into, under `REPEATABLE READ` |
 | Retries | Retry succeeds, but a downstream side effect fires twice |
@@ -45,7 +45,7 @@ sequenceDiagram
 
 ## Root causes
 
-1. Two code paths update the same tables in different order — usually one written by a different team.
+1. Two code paths update the same tables in different order - usually one written by a different team.
 2. Long transactions that hold locks across a network call, so the lock window is 400ms instead of 4ms.
 3. Missing or unusable index causing a full scan to lock rows it does not need.
 4. `REPEATABLE READ` gap locks on inserts into a range covered by another transaction's range scan.
@@ -56,7 +56,7 @@ sequenceDiagram
 
 ### 1. Impose a global lock order
 
-The cheapest structural fix. Pick a canonical ordering — alphabetical by table, then ascending by primary key — and enforce it everywhere.
+The cheapest structural fix. Pick a canonical ordering - alphabetical by table, then ascending by primary key - and enforce it everywhere.
 
 ```php
 // Laravel: always lock in a deterministic order, never in the order the caller happened to pass.
@@ -173,7 +173,7 @@ flowchart LR
 
 | Option | Pros | Cons | Choose when |
 |---|---|---|---|
-| Global lock ordering | Eliminates the cycle entirely; no runtime cost | Requires discipline across every team and code path | Always — this is the baseline |
+| Global lock ordering | Eliminates the cycle entirely; no runtime cost | Requires discipline across every team and code path | Always - this is the baseline |
 | `READ COMMITTED` instead of `REPEATABLE READ` | No gap locks; far fewer MySQL deadlocks | Non-repeatable reads; some replication setups need row-based binlog | Insert-heavy OLTP with short transactions |
 | Optimistic concurrency (version column) | No locks held at all; scales with cores | Conflicts surface as retries at high contention | Low-conflict entities, read-mostly workloads |
 | Serialize via a queue partitioned by key | Zero contention by construction | Adds latency and an operational component | Hot rows: one SKU, one account, one seat map |
@@ -191,7 +191,7 @@ flowchart LR
 
 ## Anti-patterns
 
-- Raising `innodb_lock_wait_timeout` — you are not preventing deadlocks, you are making each one hold a connection longer.
+- Raising `innodb_lock_wait_timeout` - you are not preventing deadlocks, you are making each one hold a connection longer.
 - Retrying forever with a fixed 100ms delay; the two victims resynchronise and deadlock again on the same schedule.
 - Wrapping the whole HTTP handler in a transaction "for safety", which turns every slow dependency into a lock.
 - Adding `LOCK TABLES` to make the problem go away, converting a 0.4% error rate into a global throughput ceiling.

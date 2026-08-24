@@ -1,9 +1,9 @@
-> **পরিস্থিতি** — Redis-এ ৩০ সেকেন্ডের hiccup হলো। প্রতিটি pod-এর `/health` Redis check করে, সব liveness probe fail করে, আর Kubernetes একসাথে পুরো fleet restart করে। ৩০ সেকেন্ডের dependency blip ৬ মিনিটের পূর্ণ outage হয়ে যায়।
+> **পরিস্থিতি** - Redis-এ ৩০ সেকেন্ডের hiccup হলো। প্রতিটি pod-এর `/health` Redis check করে, সব liveness probe fail করে, আর Kubernetes একসাথে পুরো fleet restart করে। ৩০ সেকেন্ডের dependency blip ৬ মিনিটের পূর্ণ outage হয়ে যায়।
 
 ## কেন গুরুত্বপূর্ণ
 
 - Cluster-এ একমাত্র liveness probe-ই চলমান process মারার অনুমতি পায়। ভুল liveness মানে স্বয়ংক্রিয় outage generator।
-- Readiness Endpoints-এর সদস্যপদ নিয়ন্ত্রণ করে, তাই মিথ্যা readiness এমন pod-এ traffic পাঠায় যে serve করতে পারে না — load balancer সেই 502 আপনার নামেই লিখবে।
+- Readiness Endpoints-এর সদস্যপদ নিয়ন্ত্রণ করে, তাই মিথ্যা readiness এমন pod-এ traffic পাঠায় যে serve করতে পারে না - load balancer সেই 502 আপনার নামেই লিখবে।
 - ধীরে start হওয়া app (JVM warmup, migration, cache priming) startup probe ছাড়া restart loop-এ মারা যায়, আর `CrashLoopBackOff` আসল কারণ লুকিয়ে ফেলে।
 - Probe design-ই ঠিক করে rolling update অদৃশ্য থাকবে নাকি পাঁচ মিনিটের error spike হবে।
 
@@ -19,7 +19,7 @@
 
 ## কীভাবে ভাঙে
 
-মূল ভুল হলো liveness আর readiness একই handler-এ পাঠানো, আর সেই handler-এ downstream dependency check করা। Liveness-এর উত্তর দেওয়া উচিত "এই process কি আটকে গেছে?" — শুধু process নিয়েই প্রশ্ন। Readiness উত্তর দেয় "এখন কি traffic নেব?" — সেটাতে dependency বিবেচনা করা যায়।
+মূল ভুল হলো liveness আর readiness একই handler-এ পাঠানো, আর সেই handler-এ downstream dependency check করা। Liveness-এর উত্তর দেওয়া উচিত "এই process কি আটকে গেছে?" - শুধু process নিয়েই প্রশ্ন। Readiness উত্তর দেয় "এখন কি traffic নেব?" - সেটাতে dependency বিবেচনা করা যায়।
 
 দুটোই Redis check করলে একটা blip প্রতিটি pod-কে unready করে (degraded mode অসম্ভব হলে যা ঠিক) *এবং* প্রতিটি pod মেরে ফেলে (যা কখনোই ঠিক নয়)। Restart Redis সারায় না; শুধু warm cache ও connection pool ফেলে দিয়ে reconnect-এর stampede তৈরি করে।
 
@@ -40,9 +40,9 @@ sequenceDiagram
 ## মূল কারণ
 
 1. Liveness ও readiness একই endpoint ব্যবহার করে যা external dependency check করে।
-2. Startup probe নেই, তাই `initialDelaySeconds`-কে worst-case boot ঢাকতে হয় — হয় খুব ছোট নয়তো অকারণে বড়।
+2. Startup probe নেই, তাই `initialDelaySeconds`-কে worst-case boot ঢাকতে হয় - হয় খুব ছোট নয়তো অকারণে বড়।
 3. `failureThreshold: 1` আর ১ সেকেন্ড timeout, ফলে একটা GC pause-ই মৃত্যু হিসেবে গণ্য।
-4. Probe endpoint user traffic-এর একই thread pool-এ চলে, তাই saturation-এর সময়েই probe fail করে — ঠিক যখন restart সবচেয়ে ক্ষতিকর।
+4. Probe endpoint user traffic-এর একই thread pool-এ চলে, তাই saturation-এর সময়েই probe fail করে - ঠিক যখন restart সবচেয়ে ক্ষতিকর।
 5. `preStop` hook বা grace period নেই, তাই Endpoints থেকে সরানো আর SIGTERM-এর মধ্যে race হয়।
 
 ## কীভাবে সমাধান করবেন
@@ -50,7 +50,7 @@ sequenceDiagram
 ### ১. তিনটি endpoint আলাদা করুন
 
 ```ts
-// Express / Node example — no dependency calls in /livez
+// Express / Node example - no dependency calls in /livez
 app.get('/livez', (_req, res) => res.status(200).send('ok'))
 
 app.get('/readyz', async (_req, res) => {
@@ -84,7 +84,7 @@ readinessProbe:
   successThreshold: 1
 ```
 
-Startup probe চলাকালীন liveness ও readiness স্থগিত থাকে — ধীর boot-এর জন্য ঠিক এটাই দরকার।
+Startup probe চলাকালীন liveness ও readiness স্থগিত থাকে - ধীর boot-এর জন্য ঠিক এটাই দরকার।
 
 ### ৩. মৃত্যুর আগে drain করুন
 
@@ -139,7 +139,7 @@ flowchart LR
 
 ## Anti-pattern
 
-- `failureThreshold` ৩০ করে restart loop "ঠিক" করা — এটা ঘুরিয়ে liveness বন্ধ করারই নামান্তর।
+- `failureThreshold` ৩০ করে restart loop "ঠিক" করা - এটা ঘুরিয়ে liveness বন্ধ করারই নামান্তর।
 - Readiness-এ প্রতিটি downstream service check করা, ফলে একটা flaky third-party API পুরো Endpoints তালিকা খালি করে দেয়।
 - ২০০ pod-এ প্রতি ৫ সেকেন্ডে চলা probe-এ ব্যয়বহুল query (`SELECT count(*)`) চালানো।
 - HTTP service-এ TCP probe ব্যবহার: app request route করার অনেক আগেই socket accept করে।

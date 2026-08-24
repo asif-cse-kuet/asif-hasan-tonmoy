@@ -1,10 +1,10 @@
-> **Scenario** — An avatar upload accepts anything the browser labels `image/png` and stores it under `public/uploads/` using the original filename. A file named `../avatars/../../index.php` lands outside the intended directory, and the web server is happy to execute anything ending in `.php`.
+> **Scenario** - An avatar upload accepts anything the browser labels `image/png` and stores it under `public/uploads/` using the original filename. A file named `../avatars/../../index.php` lands outside the intended directory, and the web server is happy to execute anything ending in `.php`.
 
 ## Why it matters
 
 - An upload endpoint moves attacker-controlled bytes onto your infrastructure. If those bytes can be executed or served as HTML, it is remote code execution or stored XSS.
 - Uploads are shared surfaces: the same file is read by a thumbnailer, an antivirus hook, an export job, and a CDN. A malicious file gets several chances.
-- Unbounded uploads are also an availability problem — disk exhaustion and image-bomb decompression take down healthy nodes.
+- Unbounded uploads are also an availability problem - disk exhaustion and image-bomb decompression take down healthy nodes.
 - Files persist. A vulnerability introduced today is still reachable in the bucket years later, long after the endpoint is rewritten.
 
 ## Symptoms
@@ -20,7 +20,7 @@
 
 ## How it breaks
 
-Two assumptions fail together. The declared content type is just a header the client chose, and the filename is just a string the client chose. If the server derives the storage path from the name and the handler from the extension, the client has effectively chosen where the bytes go and how they will be interpreted. Everything downstream — nginx, the image library, the browser — then does exactly what it is configured to do.
+Two assumptions fail together. The declared content type is just a header the client chose, and the filename is just a string the client chose. If the server derives the storage path from the name and the handler from the extension, the client has effectively chosen where the bytes go and how they will be interpreted. Everything downstream - nginx, the image library, the browser - then does exactly what it is configured to do.
 
 ```mermaid
 flowchart TD

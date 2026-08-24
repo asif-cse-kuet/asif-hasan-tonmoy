@@ -1,4 +1,4 @@
-> **Scenario** — A collaborative document editor stores edits with `updated_at = NOW()` from the writing app server and resolves conflicts by last-write-wins. One server's clock is 4.2 seconds ahead after a failed NTP sync. For an hour, every edit from the other three servers is silently discarded as "older".
+> **Scenario** - A collaborative document editor stores edits with `updated_at = NOW()` from the writing app server and resolves conflicts by last-write-wins. One server's clock is 4.2 seconds ahead after a failed NTP sync. For an hour, every edit from the other three servers is silently discarded as "older".
 
 ## Why it matters
 
@@ -21,7 +21,7 @@
 
 ## How it breaks
 
-There are two independent clocks on every machine and using the wrong one is the whole bug. `CLOCK_REALTIME` (`Date.now()`, `time.time()`, `NOW()`) tracks civil time and is *adjusted* — it can jump forward or backwards. `CLOCK_MONOTONIC` (`performance.now()`, `time.monotonic()`, `clock_gettime`) only moves forward but has no meaning across machines.
+There are two independent clocks on every machine and using the wrong one is the whole bug. `CLOCK_REALTIME` (`Date.now()`, `time.time()`, `NOW()`) tracks civil time and is *adjusted* - it can jump forward or backwards. `CLOCK_MONOTONIC` (`performance.now()`, `time.monotonic()`, `clock_gettime`) only moves forward but has no meaning across machines.
 
 The failure follows from a simple fact: you cannot compare `CLOCK_REALTIME` values from two machines and get a happens-before relationship. Even with good NTP, offset is typically ±1-10ms in a datacenter and ±100ms across the internet. With a broken sync it can be seconds. Two writes 50ms apart in real time can carry timestamps in the wrong order, and last-write-wins will discard the newer one forever.
 
@@ -53,7 +53,7 @@ sequenceDiagram
 
 ## How to solve it
 
-### 1. Never resolve conflicts with wall clocks — use a logical clock
+### 1. Never resolve conflicts with wall clocks - use a logical clock
 
 A hybrid logical clock (HLC) keeps a physical component for human readability and a logical counter that guarantees monotonicity and causality even when the wall clock is wrong.
 
@@ -123,7 +123,7 @@ deadline_budget_ms = 800  # the callee starts its own monotonic timer
 
 ### 3. Generate ordering timestamps in one place
 
-If you must use physical time for ordering, take it from a single authority — the database — so all comparisons share one clock.
+If you must use physical time for ordering, take it from a single authority - the database - so all comparisons share one clock.
 
 ```sql
 -- Server clocks never touch the ordering column.
@@ -144,7 +144,7 @@ Returning a conflict is strictly better than last-write-wins: the user can be sh
 ### 4. Fix and monitor the time infrastructure
 
 ```conf
-# /etc/chrony/chrony.conf — cloud instances should use the hypervisor clock source.
+# /etc/chrony/chrony.conf - cloud instances should use the hypervisor clock source.
 server 169.254.169.123 prefer iburst minpoll 4 maxpoll 4   # AWS Time Sync Service
 pool time.cloudflare.com iburst maxsources 4               # independent backup
 makestep 1.0 3        # allow big steps only during the first 3 updates after boot
@@ -205,7 +205,7 @@ flowchart TD
 
 ## Anti-patterns
 
-- Adding a "grace period" of a few seconds to timestamp comparisons — this hides small skew and does nothing for large skew.
+- Adding a "grace period" of a few seconds to timestamp comparisons - this hides small skew and does nothing for large skew.
 - Running NTP against a single upstream with no alerting, then trusting the timestamps for correctness.
 - Mixing application-generated and database-generated timestamps in the same ordering column.
 - Using `Date.now()` deltas to enforce rate limits, then debugging a burst that got through during an NTP step.

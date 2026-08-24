@@ -1,4 +1,4 @@
-> **Scenario** — The checkout page hangs for 30 seconds and then shows a generic error. Tracing shows the browser gave up at 15s, but the API gateway waited 30s for `orders`, which waited 30s for `inventory`, which waited 30s for a vendor call. Every hop used the framework default. Nobody was wrong locally; the system was wrong globally.
+> **Scenario** - The checkout page hangs for 30 seconds and then shows a generic error. Tracing shows the browser gave up at 15s, but the API gateway waited 30s for `orders`, which waited 30s for `inventory`, which waited 30s for a vendor call. Every hop used the framework default. Nobody was wrong locally; the system was wrong globally.
 
 ## Why it matters
 
@@ -20,7 +20,7 @@
 
 ## How it breaks
 
-Each service configures its timeout in isolation, usually copying the framework default. Timeouts then *add* along the call chain instead of dividing a shared budget. The deepest hop is given as much time as the whole request, so the entry point always gives up first — and it gives up while every downstream hop is still holding resources.
+Each service configures its timeout in isolation, usually copying the framework default. Timeouts then *add* along the call chain instead of dividing a shared budget. The deepest hop is given as much time as the whole request, so the entry point always gives up first - and it gives up while every downstream hop is still holding resources.
 
 The second-order effect is worse. When the gateway abandons the request, the connection is closed, but the downstream request is not cancelled. Inventory keeps holding its row lock, the vendor call keeps running, and the retry the client just issued starts a *second* copy of all that work.
 
@@ -210,7 +210,7 @@ flowchart LR
 
 ## Anti-patterns
 
-- Raising every timeout when a dependency gets slow — the queue just gets longer and the user still leaves.
+- Raising every timeout when a dependency gets slow - the queue just gets longer and the user still leaves.
 - One global `HTTP_TIMEOUT=30` env var shared by health checks, batch jobs, and interactive requests.
 - Treating connect timeout and read timeout as the same knob; connect should be under 300ms even when read is 3s.
 - Adding retries without subtracting them from the budget, so worst case becomes `timeout × (retries + 1)`.

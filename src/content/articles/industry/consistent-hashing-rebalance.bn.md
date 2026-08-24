@@ -1,10 +1,10 @@
-> **Scenario** — ১২-node Redis cache routing-এ `crc32(key) % 12` ব্যবহার করে। Traffic বাড়ায় একজন engineer চারটি node যোগ করেন, আর এক deploy-এ hit rate ৯৪% থেকে ৭%-এ নামে। পেছনের database স্বাভাবিকের ১৩x read load নেয় আর সাইট ৪০ মিনিট down থাকে।
+> **Scenario** - ১২-node Redis cache routing-এ `crc32(key) % 12` ব্যবহার করে। Traffic বাড়ায় একজন engineer চারটি node যোগ করেন, আর এক deploy-এ hit rate ৯৪% থেকে ৭%-এ নামে। পেছনের database স্বাভাবিকের ১৩x read load নেয় আর সাইট ৪০ মিনিট down থাকে।
 
 ## Why it matters
 
-- Modulo hashing-এ `N`-node ring-এ একটি node যোগ করলে প্রায় `(N-1)/N` key remap হয় — N=12-এ ৯২%। প্রতিটি remap করা key একটি cache miss, আর প্রতিটি miss একটি অপরিকল্পিত database query।
+- Modulo hashing-এ `N`-node ring-এ একটি node যোগ করলে প্রায় `(N-1)/N` key remap হয় - N=12-এ ৯২%। প্রতিটি remap করা key একটি cache miss, আর প্রতিটি miss একটি অপরিকল্পিত database query।
 - Consistent hashing সেটা প্রায় `1/N`-এ বাঁধে, তবে শুধু virtual node কনফিগার করা থাকলে; প্রতি node-এ একটি token হলে steady state-এও ৪০%+ load imbalance স্বাভাবিক।
-- Rebalance বিনামূল্যে নয়। ২০০MB/s-এ ৪০০GB shard নতুন node-এ stream করতে ~৩৩ মিনিট বাড়তি disk ও network load লাগে — সেই cluster-এই, যেটা ইতিমধ্যে capacity সীমায় বলে scale করছেন।
+- Rebalance বিনামূল্যে নয়। ২০০MB/s-এ ৪০০GB shard নতুন node-এ stream করতে ~৩৩ মিনিট বাড়তি disk ও network load লাগে - সেই cluster-এই, যেটা ইতিমধ্যে capacity সীমায় বলে scale করছেন।
 - Hot key ring-কে পুরো উপেক্ষা করে: ring যত ভালোই balanced হোক, একটি celebrity key একটি node-এ hash হয়।
 
 ## Symptoms
@@ -12,9 +12,9 @@
 | Signal | What you observe |
 |---|---|
 | Cache hit rate | topology change-এর সাথে সাথেই >৯০% থেকে এক অঙ্কে পতন |
-| Origin load | database QPS `1/hit_rate` গুণ বাড়ে — ৯৪% hit rate পূর্ণ miss-এ ১৬x load |
+| Origin load | database QPS `1/hit_rate` গুণ বাড়ে - ৯৪% hit rate পূর্ণ miss-এ ১৬x load |
 | Per-node keyspace | `redis-cli --cluster info`-এ কিছু node-এ mean-এর ৩-৫x key |
-| Per-node CPU | এক node ৯৫%-এ আটকে, বাকিরা ২০%-এ — hot key বা খারাপ token distribution |
+| Per-node CPU | এক node ৯৫%-এ আটকে, বাকিরা ২০%-এ - hot key বা খারাপ token distribution |
 | Rebalance duration | ঘণ্টার হিসাব; `MIGRATING`/`IMPORTING` slot আটকে, `CLUSTER COUNTKEYSINSLOT` নড়ে না |
 | Client errors | `MOVED`/`ASK` redirect storm, বা migration window-এ timeout |
 | Tail latency | rebalance-এ p99 দ্বিগুণ, কারণ migration foreground traffic-এর সাথে প্রতিযোগিতা করে |
@@ -25,7 +25,7 @@
 
 **Modulo cliff.** `hash(key) % N` প্রতিটি key-র জায়গা `N`-এর সাথে বেঁধে দেয়। `N` বদলান, প্রায় সব key সরে যায়। ক্রমশ অবনতি নেই: config নামার মুহূর্তেই পুরো cache যুক্তিগতভাবে ঠান্ডা। Database কোনো warm-up ছাড়াই পূর্ণ working-set read rate দেখে, যা সাধারণত provisioned মানের ১০-২০x।
 
-**Ring imbalance ও hot key.** Consistent hashing node-গুলোকে ৩২-বিট বা ৬৪-বিট ring-এ বিন্দুতে বসায় আর প্রতিটি key ঘড়ির কাঁটার দিকে পরের node-কে দেয়। প্রতি node-এ একটি বিন্দু হলে বিন্দুর ফাঁকগুলো exponentially distributed — সবচেয়ে বড় ফাঁক সাধারণত mean-এর ৩-৪x, তাই এক node ৩-৪x key ধরে। Virtual node (প্রতি physical node-এ ১০০-২৫৬ token) standard deviation কয়েক শতাংশে নামায়। কিন্তু নিখুঁত ring-ও ৪০% traffic পাওয়া একটি key-কে সাহায্য করতে পারে না; ring *key* বিতরণ করে, *request* নয়।
+**Ring imbalance ও hot key.** Consistent hashing node-গুলোকে ৩২-বিট বা ৬৪-বিট ring-এ বিন্দুতে বসায় আর প্রতিটি key ঘড়ির কাঁটার দিকে পরের node-কে দেয়। প্রতি node-এ একটি বিন্দু হলে বিন্দুর ফাঁকগুলো exponentially distributed - সবচেয়ে বড় ফাঁক সাধারণত mean-এর ৩-৪x, তাই এক node ৩-৪x key ধরে। Virtual node (প্রতি physical node-এ ১০০-২৫৬ token) standard deviation কয়েক শতাংশে নামায়। কিন্তু নিখুঁত ring-ও ৪০% traffic পাওয়া একটি key-কে সাহায্য করতে পারে না; ring *key* বিতরণ করে, *request* নয়।
 
 ```mermaid
 flowchart TD
@@ -122,7 +122,7 @@ for BATCH in $(seq 1 64); do
 done
 ```
 
-Cassandra/ScyllaDB-তে সমতুল্য knob হলো `nodetool setstreamthroughput 200` (MB/s) — NIC ক্ষমতার ৩০-৪০%-এ বাঁধুন যাতে foreground read তার latency budget রাখতে পারে।
+Cassandra/ScyllaDB-তে সমতুল্য knob হলো `nodetool setstreamthroughput 200` (MB/s) - NIC ক্ষমতার ৩০-৪০%-এ বাঁধুন যাতে foreground read তার latency budget রাখতে পারে।
 
 ### 3. Miss coalesce করুন, যাতে cold shard origin-এ stampede করতে না পারে
 
@@ -205,7 +205,7 @@ flowchart LR
 - [ ] Steady state-এ per-node key count ও CPU mean-এর ১৫%-এর মধ্যে।
 - [ ] `redis-cli --hotkeys` output review করা; কোনো একক key তার node-এর ops-এর ১০% ছাড়ায় না।
 - [ ] Staging-এ rebalance rehearsal-এ foreground p99 ২০%-এর কম বাড়ে।
-- [ ] Cache miss path coalesced — এক cold key-তে ৫,০০০ concurrent request-এর load test-এ একটি origin query হয়।
+- [ ] Cache miss path coalesced - এক cold key-তে ৫,০০০ concurrent request-এর load test-এ একটি origin query হয়।
 - [ ] TTL jittered; expiry histogram-এ গোল সংখ্যার spike নেই।
 - [ ] Origin-এ steady-state নয়, সবচেয়ে খারাপ বাস্তবসম্মত miss rate-এর জন্য documented headroom আছে।
 

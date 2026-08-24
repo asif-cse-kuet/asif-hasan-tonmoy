@@ -1,4 +1,4 @@
-> **Scenario** — A Friday release adds a `customer_email` label to a request counter "so support can self-serve". By Monday the Prometheus pod is being OOM-killed every nine minutes, `head_series` has gone from 1.2 M to 34 M, and every dashboard times out — including the ones you need to diagnose it.
+> **Scenario** - A Friday release adds a `customer_email` label to a request counter "so support can self-serve". By Monday the Prometheus pod is being OOM-killed every nine minutes, `head_series` has gone from 1.2 M to 34 M, and every dashboard times out - including the ones you need to diagnose it.
 
 ## Why it matters
 
@@ -21,7 +21,7 @@
 
 ## How it breaks
 
-Every unique combination of label values is a separate time series, each with its own in-memory index entry and chunk buffer. A counter with `route` (40 values) and `status` (6 values) is 240 series — fine. Add `user_id` (500,000 values) and it is 120 million potential series. Churn is worse than raw count: labels whose values change constantly, such as pod names on a HorizontalPodAutoscaler, `session_id`, or a version string on every commit, create new series continuously. The head block keeps them until they age out, so memory is driven by *series created per hour*, not by concurrent traffic.
+Every unique combination of label values is a separate time series, each with its own in-memory index entry and chunk buffer. A counter with `route` (40 values) and `status` (6 values) is 240 series - fine. Add `user_id` (500,000 values) and it is 120 million potential series. Churn is worse than raw count: labels whose values change constantly, such as pod names on a HorizontalPodAutoscaler, `session_id`, or a version string on every commit, create new series continuously. The head block keeps them until they age out, so memory is driven by *series created per hour*, not by concurrent traffic.
 
 ```mermaid
 flowchart TD
@@ -42,7 +42,7 @@ flowchart TD
 1. Unbounded identifiers used as labels: user, session, request, order, email, URL path with IDs.
 2. Error messages or exception text used as a label value.
 3. Pod, container, or instance labels retained for ephemeral workloads with high churn.
-4. Histograms with many buckets multiplied by several labels — buckets are series too.
+4. Histograms with many buckets multiplied by several labels - buckets are series too.
 5. No per-target `sample_limit`, so one bad exporter can take down the whole server.
 6. Nobody owns a series budget, so growth is discovered only by the OOM reaper.
 
@@ -57,7 +57,7 @@ topk(20, count by (__name__)({__name__=~".+"}))
 # Which label is doing the damage on a suspect metric
 count(count by (user_id) (http_server_requests_total))
 
-# Series created per hour — churn, not volume
+# Series created per hour - churn, not volume
 sum(rate(prometheus_tsdb_head_series_created_total[1h])) * 3600
 ```
 

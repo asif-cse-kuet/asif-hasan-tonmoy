@@ -1,11 +1,11 @@
-> **Scenario** — A checkout API holds steady at 1,200 req/s with a 40 ms mean latency. Marketing runs a push notification, arrival rate jumps to 2,000 req/s, and within nine seconds the service is returning 504s even though CPU never crosses 55%. Nothing is "slow" — the service simply cannot hold that many requests at once.
+> **Scenario** - A checkout API holds steady at 1,200 req/s with a 40 ms mean latency. Marketing runs a push notification, arrival rate jumps to 2,000 req/s, and within nine seconds the service is returning 504s even though CPU never crosses 55%. Nothing is "slow" - the service simply cannot hold that many requests at once.
 
 ## Why it matters
 
 - Capacity incidents are almost never CPU incidents. They are **concurrency** incidents, and concurrency is the quantity nobody graphs.
 - Little's Law is the only arithmetic that connects the three numbers your stakeholders each care about: throughput (product), latency (users), and instance count (finance).
 - Without it, autoscaling rules are guesses. Teams scale on CPU and get paged while CPU sits at half.
-- Every pool in the stack — threads, DB connections, HTTP clients, worker slots — is a concurrency limit. If you cannot compute required concurrency, you cannot size any of them.
+- Every pool in the stack - threads, DB connections, HTTP clients, worker slots - is a concurrency limit. If you cannot compute required concurrency, you cannot size any of them.
 - It gives you a pre-incident answer to "how much traffic can we take?" instead of a post-incident retro.
 
 ## Symptoms
@@ -29,7 +29,7 @@ Work the checkout API through it. At the healthy baseline, λ = 1,200 req/s and 
 
 L = 1,200 × 0.040 = **48 concurrent requests**
 
-The service runs 8 pods with a 16-slot worker pool each: 128 slots. Forty-eight of 128 used — 37% occupancy. Everything is fine, and CPU at 55% agrees.
+The service runs 8 pods with a 16-slot worker pool each: 128 slots. Forty-eight of 128 used - 37% occupancy. Everything is fine, and CPU at 55% agrees.
 
 Now λ becomes 2,000 req/s. If latency held, required concurrency would be:
 
@@ -37,7 +37,7 @@ L = 2,000 × 0.040 = **80 concurrent requests**
 
 Still under 128. So why the 504s? Because W does not hold. Utilisation ρ = λ / (capacity). Capacity per pod is slots / service time = 16 / 0.040 = 400 req/s, so 8 pods serve 3,200 req/s at *theoretical* saturation. At 2,000 req/s, ρ = 2,000 / 3,200 = 0.625. For an M/M/c-ish system, queueing delay scales roughly with 1/(1 − ρ). Going from ρ = 0.375 to ρ = 0.625 multiplies the queueing component by (1 − 0.375)/(1 − 0.625) = 0.625/0.375 = **1.67×**.
 
-That alone is survivable. The killer is the feedback loop: W rises, so L = λW rises, so more slots are held, so ρ rises further. Once one downstream dependency adds 30 ms, W = 0.070 s and L = 2,000 × 0.070 = **140 concurrent requests** — above the 128 slots. The pool is exhausted, new arrivals queue outside it, the client's 1 s timeout fires, and the client retries, which raises λ again.
+That alone is survivable. The killer is the feedback loop: W rises, so L = λW rises, so more slots are held, so ρ rises further. Once one downstream dependency adds 30 ms, W = 0.070 s and L = 2,000 × 0.070 = **140 concurrent requests** - above the 128 slots. The pool is exhausted, new arrivals queue outside it, the client's 1 s timeout fires, and the client retries, which raises λ again.
 
 ```mermaid
 flowchart TD
@@ -109,14 +109,14 @@ avg_over_time(http_requests_in_flight[5m])
 * rate(http_request_seconds_sum[5m]) / rate(http_request_seconds_count[5m])
 ```
 
-If they diverge by more than ~10%, you have work happening outside the instrumented span — usually queueing in the accept backlog.
+If they diverge by more than ~10%, you have work happening outside the instrumented span - usually queueing in the accept backlog.
 
 ### 2. Compute the pool size you actually need
 
 Do the arithmetic explicitly, with a target utilisation, not at 100%.
 
 ```python
-# capacity.py — run this before you pick a pool size
+# capacity.py - run this before you pick a pool size
 def required_slots(rps: float, latency_s: float, target_rho: float = 0.6) -> float:
     """L = lambda * W, divided by the utilisation you are willing to run at."""
     return (rps * latency_s) / target_rho
@@ -137,7 +137,7 @@ Fifteen pods, not eight. The number was knowable before the push notification we
 Unbounded queueing converts a throughput problem into a total outage. Make the limit explicit.
 
 ```nginx
-# nginx.conf — bounded admission in front of the app
+# nginx.conf - bounded admission in front of the app
 limit_conn_zone $server_name zone=appconn:10m;
 
 upstream checkout {
@@ -156,7 +156,7 @@ server {
 }
 ```
 
-Rejecting the 241st request in 2 ms is strictly better than accepting it and timing out at 1,000 ms — the client learns faster and holds no slot.
+Rejecting the 241st request in 2 ms is strictly better than accepting it and timing out at 1,000 ms - the client learns faster and holds no slot.
 
 ### 4. Scale on concurrency, not CPU
 
@@ -224,7 +224,7 @@ flowchart LR
 
 - Raising the worker pool to "fix" timeouts, which raises W and makes the tail worse.
 - Planning capacity with mean latency when p95 is 2-3× the mean.
-- Treating a socket backlog as free buffering — it is unbounded queue delay with no visibility.
+- Treating a socket backlog as free buffering - it is unbounded queue delay with no visibility.
 - Adding retries without a retry budget, so λ grows fastest exactly when you need it to shrink.
 - Reporting headroom as "CPU is only 55%" for a service that never was CPU-bound.
 - Running the autoscaler at a 90% concurrency target, leaving no room for the scale-up delay.

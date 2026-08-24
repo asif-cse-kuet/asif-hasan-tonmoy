@@ -1,10 +1,10 @@
-> **Scenario** — Kubernetes-এর পেছনের তিন-node etcd cluster প্রতি ৪০ সেকেন্ডে `leader changed` log করছে। API server write-এ timeout করছে, controller reconcile থামিয়েছে, আর flap-এর মাঝে `etcdctl endpoint health` তিন member-কেই healthy বলছে।
+> **Scenario** - Kubernetes-এর পেছনের তিন-node etcd cluster প্রতি ৪০ সেকেন্ডে `leader changed` log করছে। API server write-এ timeout করছে, controller reconcile থামিয়েছে, আর flap-এর মাঝে `etcdctl endpoint health` তিন member-কেই healthy বলছে।
 
 ## Why it matters
 
-- etcd, Consul, CockroachDB, TiKV আর বেশিরভাগ Kafka KRaft deployment-এর control plane হলো Raft। এটা degrade করলে উপরের কিছুই এগোতে পারে না — deploy, service discovery, lease সব একসাথে আটকে যায়।
-- প্রতিটি write majority node-এর `fsync`-এ সীমাবদ্ধ। যে disk-এর p99 fsync ৮০ms, সেটা প্রতি key-তে সেকেন্ডে প্রায় ১২টি sequential commit-এ cluster আটকে দেয় — যত core যোগ করুন।
-- paper-এর safety guarantee ঠিক থাকে; operational failure mode থাকে যেখানে paper ইচ্ছাকৃতভাবে খোলা রেখেছে — snapshot, log compaction, membership change, timeout tuning।
+- etcd, Consul, CockroachDB, TiKV আর বেশিরভাগ Kafka KRaft deployment-এর control plane হলো Raft। এটা degrade করলে উপরের কিছুই এগোতে পারে না - deploy, service discovery, lease সব একসাথে আটকে যায়।
+- প্রতিটি write majority node-এর `fsync`-এ সীমাবদ্ধ। যে disk-এর p99 fsync ৮০ms, সেটা প্রতি key-তে সেকেন্ডে প্রায় ১২টি sequential commit-এ cluster আটকে দেয় - যত core যোগ করুন।
+- paper-এর safety guarantee ঠিক থাকে; operational failure mode থাকে যেখানে paper ইচ্ছাকৃতভাবে খোলা রেখেছে - snapshot, log compaction, membership change, timeout tuning।
 - যে cluster ক্রমাগত নতুন leader নির্বাচন করে, health check-এ তার availability ১০০%, user-এর কাছে ০%।
 
 ## Symptoms
@@ -21,11 +21,11 @@
 
 ## How it breaks
 
-Election timeout একটি বাজি: সুস্থ leader এর মধ্যেই heartbeat পাঠাতে পারবে। etcd-র default ১০০ms heartbeat interval আর ১,০০০ms election timeout — LAN-এর জন্য মাপা। তিনটি জিনিস এই বাজি ভাঙে।
+Election timeout একটি বাজি: সুস্থ leader এর মধ্যেই heartbeat পাঠাতে পারবে। etcd-র default ১০০ms heartbeat interval আর ১,০০০ms election timeout - LAN-এর জন্য মাপা। তিনটি জিনিস এই বাজি ভাঙে।
 
 প্রথমত, **fsync latency leader-এর নিজের append আটকে দেয়।** Raft leader quorum-এ গণনার আগে entry স্থানীয়ভাবে persist করতে বাধ্য। kubelet-এর log-এর সাথে শেয়ার করা EBS gp2 volume-এ p99 fsync ৩০০ms হতে পারে। leader heartbeat মিস করে network খারাপ বলে নয়, syscall-এ আটকে থাকার কারণে।
 
-দ্বিতীয়ত, **snapshot transfer heartbeat path-কে starve করে।** Follower leader-এর compacted log-এর পিছনে পড়ে গেলে leader পুরো snapshot পাঠাতে বাধ্য — busy Kubernetes cluster-এ ৮০০MB object। সেই transfer একই peer connection ব্যবহার করলে আর bandwidth limit না থাকলে *অন্য* follower-এর heartbeat তার পেছনে queue হয়।
+দ্বিতীয়ত, **snapshot transfer heartbeat path-কে starve করে।** Follower leader-এর compacted log-এর পিছনে পড়ে গেলে leader পুরো snapshot পাঠাতে বাধ্য - busy Kubernetes cluster-এ ৮০০MB object। সেই transfer একই peer connection ব্যবহার করলে আর bandwidth limit না থাকলে *অন্য* follower-এর heartbeat তার পেছনে queue হয়।
 
 তৃতীয়ত, **flapping নিজেকেই জোরদার করে।** প্রতিটি election অন্তত এক election timeout unavailability খরচ করে, তারপর নতুন leader-এর প্রতি follower-এর জন্য cold `nextIndex` থাকে আর log আবার probe করে। write backlog থাকলে নতুন leader সাথে সাথেই পিছিয়ে পড়ে, heartbeat মিস করে, পরের election হারায়।
 
@@ -70,7 +70,7 @@ fio --name=wal --rw=write --bs=2300 --size=64m --ioengine=sync \
 lsblk -o NAME,MOUNTPOINT,MODEL | grep -E 'etcd|containerd'
 ```
 
-p99 ২৫ms-এর উপরে হলে কোনো timeout tuning cluster বাঁচাবে না — অন্য কিছু ছোঁয়ার আগে WAL-কে আলাদা NVMe device-এ সরান (`--wal-dir=/mnt/etcd-wal`)।
+p99 ২৫ms-এর উপরে হলে কোনো timeout tuning cluster বাঁচাবে না - অন্য কিছু ছোঁয়ার আগে WAL-কে আলাদা NVMe device-এ সরান (`--wal-dir=/mnt/etcd-wal`)।
 
 ### 2. Timeout মাপা RTT অনুযায়ী দিন, default অনুযায়ী নয়
 
@@ -118,7 +118,7 @@ etcdctl endpoint status -w table   # confirm RAFT INDEX within a few hundred of 
 etcdctl member promote <member-id>
 ```
 
-Learner mode মূল paper-এ না থাকা সবচেয়ে দরকারি operational feature — "নতুন member quorum নামিয়ে দেয়" failure পুরোপুরি সরিয়ে দেয়।
+Learner mode মূল paper-এ না থাকা সবচেয়ে দরকারি operational feature - "নতুন member quorum নামিয়ে দেয়" failure পুরোপুরি সরিয়ে দেয়।
 
 ### 5. যেখানে নিরাপদ, consensus-এর দাম না দিয়ে read করুন
 
@@ -175,7 +175,7 @@ flowchart TD
 
 ## Anti-patterns
 
-- "availability বাড়াতে" ৭ member করা — প্রতিটি write ধীর আর প্রতিটি election কঠিন করে ফেলেছেন।
+- "availability বাড়াতে" ৭ member করা - প্রতিটি write ধীর আর প্রতিটি election কঠিন করে ফেলেছেন।
 - fsync p99 ২০০ms থাকা অবস্থায় দ্রুত detection-এর জন্য election timeout কমানো।
 - container image বা application log-এর একই disk-এ etcd চালানো।
 - flapping-এর সময় member লুপে restart করা; প্রতিটি restart আরেকটি election ও log probe ডাকে।

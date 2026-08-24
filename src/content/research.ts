@@ -49,14 +49,14 @@ export const RESEARCH_PUBLICATIONS: ResearchPublication[] = [
       },
     ],
     abstract: {
-      en: 'Proposes TransMentalNet-6 — a transformer-based architecture tuned for severely imbalanced Bengali mental health sign classification across 12 disorder categories on 27,031 samples.',
-      bn: 'TransMentalNet-6 প্রস্তাব করে — ২৭,০৩১ নমুনায় ১২টি disorder ক্যাটাগরিতে severely imbalanced বাংলা মানসিক স্বাস্থ্য চিহ্ন শ্রেণীবিভাগের জন্য টিউন করা ট্রান্সফরমার-ভিত্তিক আর্কিটেকচার।',
+      en: 'Proposes TransMentalNet-6, a transformer architecture tuned for severely imbalanced Bengali mental health sign classification across 12 disorder categories on 27,031 samples.',
+      bn: 'TransMentalNet-6 প্রস্তাব করে - ২৭,০৩১ নমুনায় ১২টি disorder ক্যাটাগরিতে severely imbalanced বাংলা মানসিক স্বাস্থ্য চিহ্ন শ্রেণীবিভাগের জন্য টিউন করা ট্রান্সফরমার-ভিত্তিক আর্কিটেকচার।',
     },
     tags: ['nlp', 'bengali', 'mental-health', 'transformers', 'imbalanced-classification'],
   },
 ]
 
 export const THESIS_LINEAGE: LocaleText = {
-  en: 'KUET CSE thesis (2018–2023) → ICCIT 2025 publication — bridging academic NLP research to production AI engineering.',
-  bn: 'KUET CSE থিসিস (২০১৮–২০২৩) → ICCIT 2025 প্রকাশনা — একাডেমিক NLP গবেষণা থেকে প্রোডাকশন AI ইঞ্জিনিয়ারিংয়ে সেতু।',
+  en: 'KUET CSE thesis (2018–2023) to ICCIT 2025 publication: academic NLP research carried into production AI pipelines.',
+  bn: 'KUET CSE থিসিস (২০১৮–২০২৩) থেকে ICCIT 2025 প্রকাশনা: একাডেমিক NLP গবেষণা প্রোডাকশন AI পাইপলাইনে নিয়ে যাওয়া।',
 }

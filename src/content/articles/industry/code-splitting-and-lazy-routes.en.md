@@ -1,9 +1,9 @@
-> **Scenario** — Every route in the Vue router is `() => import(...)`, yet the initial bundle is 1.4 MB gzipped and LCP on a mid-tier Android over 4G sits at 4.1 s. The report route's charting library ended up in the entry chunk because a shared `formatters.ts` re-exports it.
+> **Scenario** - Every route in the Vue router is `() => import(...)`, yet the initial bundle is 1.4 MB gzipped and LCP on a mid-tier Android over 4G sits at 4.1 s. The report route's charting library ended up in the entry chunk because a shared `formatters.ts` re-exports it.
 
 ## Why it matters
 
 - Lazy routes are not free: a shared module imported by both the entry and a lazy route gets hoisted into a common chunk that loads immediately. The split exists on paper only.
-- Request waterfalls cost more than bytes. Entry chunk, then route chunk, then a dynamic component inside it, is three serial round trips — roughly 300–600 ms of pure latency on mobile.
+- Request waterfalls cost more than bytes. Entry chunk, then route chunk, then a dynamic component inside it, is three serial round trips - roughly 300–600 ms of pure latency on mobile.
 - LCP under 2.5 s and INP under 200 ms are the field thresholds users and search ranking care about. A 1.4 MB entry chunk costs 500–900 ms of parse and compile alone on a mid-tier phone.
 - Over-splitting is the opposite failure: 200 chunks of 3 KB each add HTTP overhead and defeat compression.
 
@@ -36,7 +36,7 @@ flowchart TD
 ## Root causes
 
 1. Barrel files pull unrelated heavy modules into the entry graph.
-2. Route-level splitting only — no split for heavy leaf components like editors, charts, or maps.
+2. Route-level splitting only - no split for heavy leaf components like editors, charts, or maps.
 3. Eagerly imported polyfills and locale data for every language the app supports.
 4. No `manualChunks` strategy, so vendor code is either one giant chunk or scattered duplicates.
 5. Lazy components render without reserved space, so CLS spikes on arrival.
@@ -58,7 +58,7 @@ Sort by gzipped size and look for anything in the entry chunk that only one rout
 Import the leaf module directly:
 
 ```ts
-// before — pulls the whole barrel graph
+// before - pulls the whole barrel graph
 import { formatCurrency } from '@/utils'
 // after
 import { formatCurrency } from '@/utils/currency'

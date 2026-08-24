@@ -1,4 +1,4 @@
-> **Scenario** — Six months into an OpenTelemetry rollout, 84% of traces contain exactly one span. The gateway starts a trace, the Laravel API continues it, and then the notification service — which calls an HTTP client built before the rollout — starts a brand new trace ID. Every slow checkout looks like a fast gateway call followed by nothing.
+> **Scenario** - Six months into an OpenTelemetry rollout, 84% of traces contain exactly one span. The gateway starts a trace, the Laravel API continues it, and then the notification service - which calls an HTTP client built before the rollout - starts a brand new trace ID. Every slow checkout looks like a fast gateway call followed by nothing.
 
 ## Why it matters
 
@@ -21,7 +21,7 @@
 
 ## How it breaks
 
-W3C trace context travels in a `traceparent` header: `00-<32 hex trace id>-<16 hex span id>-01`. Any component that constructs an outbound request without copying that header ends the trace. The usual offenders are hand-rolled HTTP clients, message publishers that only serialise a domain payload, and load balancers or proxies configured to strip unknown headers. Worse, the downstream service still *starts* a span, so the data looks healthy in volume terms — you have plenty of spans, just no trees. Meanwhile head-based sampling decides at the root, before latency is known, so the 0.3% of requests taking 9 seconds are dropped with the same probability as everything else.
+W3C trace context travels in a `traceparent` header: `00-<32 hex trace id>-<16 hex span id>-01`. Any component that constructs an outbound request without copying that header ends the trace. The usual offenders are hand-rolled HTTP clients, message publishers that only serialise a domain payload, and load balancers or proxies configured to strip unknown headers. Worse, the downstream service still *starts* a span, so the data looks healthy in volume terms - you have plenty of spans, just no trees. Meanwhile head-based sampling decides at the root, before latency is known, so the 0.3% of requests taking 9 seconds are dropped with the same probability as everything else.
 
 ```mermaid
 sequenceDiagram
@@ -174,7 +174,7 @@ location /api/ {
 ### 6. Alert on trace health itself
 
 ```promql
-# Fraction of traces that never got a child span — propagation regression detector.
+# Fraction of traces that never got a child span - propagation regression detector.
 sum(rate(otelcol_processor_tail_sampling_sampling_trace_dropped_too_early[10m]))
 /
 sum(rate(otelcol_receiver_accepted_spans[10m]))

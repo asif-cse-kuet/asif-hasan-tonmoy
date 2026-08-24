@@ -1,6 +1,6 @@
 import type { IndustryTopic } from '../topic-types'
 
-/** Caching & CDN wave — cache layer failure modes from origin to edge. */
+/** Caching & CDN wave - cache layer failure modes from origin to edge. */
 const topics: IndustryTopic[] = [
   {
     id: 'cache-stampede-prevention',
@@ -11,8 +11,8 @@ const topics: IndustryTopic[] = [
       bn: 'lock ও early refresh দিয়ে cache stampede প্রতিরোধ',
     },
     summary: {
-      en: 'One hot key expires and every request hits the origin at once — single-flight locks, probabilistic early expiry, and stale serving keep the database alive.',
-      bn: 'একটি hot key expire হলেই সব request একসাথে origin-এ যায় — single-flight lock, probabilistic early expiry ও stale serving database বাঁচায়।',
+      en: 'One hot key expires and every request hits the origin at once - single-flight locks, probabilistic early expiry, and stale serving keep the database alive.',
+      bn: 'একটি hot key expire হলেই সব request একসাথে origin-এ যায় - single-flight lock, probabilistic early expiry ও stale serving database বাঁচায়।',
     },
     tags: ['cache', 'stampede', 'redis', 'locking', 'thundering-herd'],
     difficulty: 'intermediate',
@@ -29,8 +29,8 @@ const topics: IndustryTopic[] = [
       bn: 'Cache-aside vs write-through vs write-behind',
     },
     summary: {
-      en: 'Three write paths with three different staleness and data-loss profiles — and the race that makes cache-aside serve a value the database never had.',
-      bn: 'তিনটি write path, তিন রকম staleness ও data-loss profile — এবং যে race cache-aside-কে database-এ কখনো না থাকা value serve করায়।',
+      en: 'Three write paths with three different staleness and data-loss profiles - and the race that makes cache-aside serve a value the database never had.',
+      bn: 'তিনটি write path, তিন রকম staleness ও data-loss profile - এবং যে race cache-aside-কে database-এ কখনো না থাকা value serve করায়।',
     },
     tags: ['cache-aside', 'write-through', 'write-behind', 'consistency'],
     difficulty: 'intermediate',
@@ -47,8 +47,8 @@ const topics: IndustryTopic[] = [
       bn: 'cache fleet-এর জন্য TTL ও jitter design',
     },
     summary: {
-      en: 'Round-number TTLs set during a deploy expire together forever — how to pick a TTL from your tolerance for staleness and spread expiry across the window.',
-      bn: 'deploy-এ সেট করা round-number TTL চিরকাল একসাথে expire হয় — staleness tolerance থেকে TTL বাছাই ও expiry ছড়িয়ে দেওয়ার উপায়।',
+      en: 'Round-number TTLs set during a deploy expire together forever - how to pick a TTL from your tolerance for staleness and spread expiry across the window.',
+      bn: 'deploy-এ সেট করা round-number TTL চিরকাল একসাথে expire হয় - staleness tolerance থেকে TTL বাছাই ও expiry ছড়িয়ে দেওয়ার উপায়।',
     },
     tags: ['ttl', 'jitter', 'expiry', 'redis'],
     difficulty: 'intermediate',
@@ -65,8 +65,8 @@ const topics: IndustryTopic[] = [
       bn: 'null ও 404 result-এর negative caching',
     },
     summary: {
-      en: 'Misses that are never cached become an unbounded origin load channel — and a scanning attack surface. Cache the absence, but with a shorter TTL.',
-      bn: 'যে miss কখনো cache হয় না তা unbounded origin load channel ও scanning attack surface — absence cache করুন, তবে ছোট TTL দিয়ে।',
+      en: 'Misses that are never cached become an unbounded origin load channel - and a scanning attack surface. Cache the absence, but with a shorter TTL.',
+      bn: 'যে miss কখনো cache হয় না তা unbounded origin load channel ও scanning attack surface - absence cache করুন, তবে ছোট TTL দিয়ে।',
     },
     tags: ['negative-caching', 'null-cache', 'bloom-filter', 'penetration'],
     difficulty: 'intermediate',
@@ -83,8 +83,8 @@ const topics: IndustryTopic[] = [
       bn: 'CDN cache key normalization ও hit ratio',
     },
     summary: {
-      en: 'Tracking query strings, sloppy Vary headers, and cookies fragment one object into thousands of variants — hit ratio collapses and the origin pays.',
-      bn: 'tracking query string, ঢিলেঢালা Vary header ও cookie একটি object-কে হাজারো variant-এ ভাঙে — hit ratio পড়ে যায়, origin দাম দেয়।',
+      en: 'Tracking query strings, sloppy Vary headers, and cookies fragment one object into thousands of variants - hit ratio collapses and the origin pays.',
+      bn: 'tracking query string, ঢিলেঢালা Vary header ও cookie একটি object-কে হাজারো variant-এ ভাঙে - hit ratio পড়ে যায়, origin দাম দেয়।',
     },
     tags: ['cdn', 'cache-key', 'vary', 'hit-ratio', 'nginx'],
     difficulty: 'intermediate',
@@ -101,8 +101,8 @@ const topics: IndustryTopic[] = [
       bn: 'stale-while-revalidate ও stale-if-error pattern',
     },
     summary: {
-      en: 'Serving slightly old bytes instantly beats serving fresh bytes in 900 ms — and stale-if-error turns an origin outage into a cosmetic problem.',
-      bn: '900 ms-এ fresh bytes দেওয়ার চেয়ে সামান্য পুরনো bytes তৎক্ষণাৎ দেওয়া ভালো — stale-if-error origin outage-কে cosmetic সমস্যায় নামায়।',
+      en: 'Serving slightly old bytes instantly beats serving fresh bytes in 900 ms - and stale-if-error turns an origin outage into a cosmetic problem.',
+      bn: '900 ms-এ fresh bytes দেওয়ার চেয়ে সামান্য পুরনো bytes তৎক্ষণাৎ দেওয়া ভালো - stale-if-error origin outage-কে cosmetic সমস্যায় নামায়।',
     },
     tags: ['swr', 'cache-control', 'cdn', 'availability'],
     difficulty: 'intermediate',
@@ -119,8 +119,8 @@ const topics: IndustryTopic[] = [
       bn: 'region জুড়ে distributed cache consistency',
     },
     summary: {
-      en: 'Local in-process caches, a regional Redis, and a CDN each hold a different version of the truth — invalidation ordering decides who sees ghosts.',
-      bn: 'local in-process cache, regional Redis ও CDN — প্রত্যেকে ভিন্ন version ধরে রাখে; invalidation ordering ঠিক করে কে ghost দেখবে।',
+      en: 'Local in-process caches, a regional Redis, and a CDN each hold a different version of the truth - invalidation ordering decides who sees ghosts.',
+      bn: 'local in-process cache, regional Redis ও CDN - প্রত্যেকে ভিন্ন version ধরে রাখে; invalidation ordering ঠিক করে কে ghost দেখবে।',
     },
     tags: ['consistency', 'invalidation', 'multi-region', 'redis', 'pubsub'],
     difficulty: 'advanced',
@@ -137,8 +137,8 @@ const topics: IndustryTopic[] = [
       bn: 'Redis hot key sharding ও client-side caching',
     },
     summary: {
-      en: 'A single viral key pins one shard to 100% CPU while the rest of the cluster idles — key splitting, replica fanout, and a small local L1.',
-      bn: 'একটি viral key এক shard-কে 100% CPU-তে আটকায়, বাকি cluster বসে থাকে — key splitting, replica fanout ও ছোট local L1।',
+      en: 'A single viral key pins one shard to 100% CPU while the rest of the cluster idles - key splitting, replica fanout, and a small local L1.',
+      bn: 'একটি viral key এক shard-কে 100% CPU-তে আটকায়, বাকি cluster বসে থাকে - key splitting, replica fanout ও ছোট local L1।',
     },
     tags: ['redis', 'hot-key', 'sharding', 'cluster', 'hotspot'],
     difficulty: 'advanced',
@@ -173,8 +173,8 @@ const topics: IndustryTopic[] = [
       bn: 'leak ছাড়াই personalized content edge-এ cache করা',
     },
     summary: {
-      en: 'One missing Cache-Control: private and user A gets user B’s dashboard from the shared edge — segment keys, ESI holes, and client-side hydration instead.',
-      bn: 'একটি Cache-Control: private বাদ পড়লেই shared edge থেকে user A পায় user B-র dashboard — বদলে segment key, ESI hole ও client-side hydration।',
+      en: 'One missing Cache-Control: private and user A gets user B’s dashboard from the shared edge - segment keys, ESI holes, and client-side hydration instead.',
+      bn: 'একটি Cache-Control: private বাদ পড়লেই shared edge থেকে user A পায় user B-র dashboard - বদলে segment key, ESI hole ও client-side hydration।',
     },
     tags: ['cdn', 'personalization', 'privacy', 'vary', 'esi'],
     difficulty: 'advanced',
@@ -191,8 +191,8 @@ const topics: IndustryTopic[] = [
       bn: 'deploy-পরবর্তী cache warming ও cold-start collapse',
     },
     summary: {
-      en: 'A key-prefix version bump empties the cache at peak traffic and the database falls over 40 seconds later — warm before you shift traffic.',
-      bn: 'peak traffic-এ key-prefix version bump cache খালি করে, 40 সেকেন্ড পর database পড়ে যায় — traffic shift-এর আগে warm করুন।',
+      en: 'A key-prefix version bump empties the cache at peak traffic and the database falls over 40 seconds later - warm before you shift traffic.',
+      bn: 'peak traffic-এ key-prefix version bump cache খালি করে, 40 সেকেন্ড পর database পড়ে যায় - traffic shift-এর আগে warm করুন।',
     },
     tags: ['cache-warming', 'deploy', 'cold-start', 'canary'],
     difficulty: 'intermediate',

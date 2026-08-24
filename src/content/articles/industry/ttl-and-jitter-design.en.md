@@ -1,4 +1,4 @@
-> **Scenario** — A deploy at 03:00 warms 120,000 product keys with `SETEX product:{id} 3600`. Every hour after that, at :00 exactly, the database sees a 90-second CPU spike as all 120,000 keys expire in the same second. Nobody connects the hourly spike to the deploy for three weeks.
+> **Scenario** - A deploy at 03:00 warms 120,000 product keys with `SETEX product:{id} 3600`. Every hour after that, at :00 exactly, the database sees a 90-second CPU spike as all 120,000 keys expire in the same second. Nobody connects the hourly spike to the deploy for three weeks.
 
 ## Why it matters
 
@@ -86,7 +86,7 @@ final class JitteredCache
 }
 ```
 
-With ±15% on a 3,600 s base, expiries spread across an 1,080-second window. The 120,000-key spike becomes roughly 111 misses per second — ordinary traffic.
+With ±15% on a 3,600 s base, expiries spread across an 1,080-second window. The 120,000-key spike becomes roughly 111 misses per second - ordinary traffic.
 
 ### 3. Separate logical freshness from physical TTL
 
@@ -122,7 +122,7 @@ location /api/products/ {
 }
 ```
 
-Prefer emitting a jittered `max-age` from the application — it is the only place that knows the per-object tolerance.
+Prefer emitting a jittered `max-age` from the application - it is the only place that knows the per-object tolerance.
 
 ### 5. Jitter the refresh schedule too
 
@@ -146,7 +146,7 @@ flowchart LR
 | Option | Pros | Cons | Choose when |
 |--------|------|------|-------------|
 | Fixed TTL, no jitter | Trivially predictable; easy to reason about staleness | Synchronized expiry storms after any bulk write | Tiny keyspaces where a simultaneous miss is harmless |
-| Proportional jitter | Smooth miss rate; one-line change | Staleness bound becomes a range, not a number | Almost always — this is the default |
+| Proportional jitter | Smooth miss rate; one-line change | Staleness bound becomes a range, not a number | Almost always - this is the default |
 | Long physical TTL + logical freshness | No key is ever absent; stale serving possible | Two timestamps to reason about; more memory held | Recomputation is expensive and staleness is tolerable |
 | Very short TTL | Freshness without invalidation plumbing | Continuous origin load; cache barely helps | Cheap origin queries or rapidly changing data |
 | No TTL, event-driven only | Perfect hit ratio, no expiry spikes | A missed event means permanently wrong data | You own every writer and have a reliable change stream |
@@ -164,7 +164,7 @@ flowchart LR
 
 - A single `CACHE_TTL=3600` environment variable used by every keyspace in the codebase.
 - Jitter added only at the application layer while a warm script still uses the raw base TTL.
-- Additive jitter of ±30 seconds on a 24-hour TTL — the spread is meaningless at that scale.
+- Additive jitter of ±30 seconds on a 24-hour TTL - the spread is meaningless at that scale.
 - Raising the TTL after a stampede, which delays and enlarges the next one.
 - Refreshing all keys from a single cron at `0 * * * *`.
 - Treating `stale-while-revalidate` as a substitute for jitter; it helps latency but the origin still sees the synchronized revalidation wave.

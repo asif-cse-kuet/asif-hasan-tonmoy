@@ -1,10 +1,10 @@
-> **পরিস্থিতি** — একটা রুটিন node pool upgrade বারোটা node drain করল। Checkout error rate এগারো মিনিট ধরে ৪%-এ উঠল, ৩০০টা background job হারিয়ে গেল। কেউ কিছু deploy করেনি; শুধু cluster upgrade-ই incident ঘটিয়েছে।
+> **পরিস্থিতি** - একটা রুটিন node pool upgrade বারোটা node drain করল। Checkout error rate এগারো মিনিট ধরে ৪%-এ উঠল, ৩০০টা background job হারিয়ে গেল। কেউ কিছু deploy করেনি; শুধু cluster upgrade-ই incident ঘটিয়েছে।
 
 ## কেন গুরুত্বপূর্ণ
 
 - Node upgrade, spot reclaim ও autoscaler scale-down *রুটিন* ঘটনা। Drain কষ্ট দিলে আপনার সাপ্তাহিক outage নির্ধারিত সূচিতেই আছে।
 - Kubernetes SIGTERM পাঠিয়ে `terminationGracePeriodSeconds` অপেক্ষা করে, তারপর SIGKILL করে। SIGTERM উপেক্ষা করা app ওই মুহূর্তে প্রতিটি in-flight request হারায়।
-- Endpoint সরানো আর process shutdown সমান্তরাল, ধারাবাহিক নয় — `preStop` delay ছাড়া proxy বন্ধ হতে থাকা socket-এ traffic পাঠাতেই থাকে।
+- Endpoint সরানো আর process shutdown সমান্তরাল, ধারাবাহিক নয় - `preStop` delay ছাড়া proxy বন্ধ হতে থাকা socket-এ traffic পাঠাতেই থাকে।
 - PodDisruptionBudget না থাকলে drain একসাথে service-এর সব replica নিতে পারে; ভুল PDB আবার cluster upgrade অনির্দিষ্টকাল আটকে রাখে।
 
 ## লক্ষণ
@@ -21,7 +21,7 @@
 
 Eviction একসাথে দুটি ঘড়ি চালায়। API pod-কে Endpoints থেকে সরায়, আর kubelet PID 1-এ SIGTERM পাঠায়। কেউ কারো জন্য অপেক্ষা করে না। kube-proxy ও ingress controller-এর converge হতে এক সেকেন্ড বা বেশি লাগে, তাই app বন্ধ হতে শুরু করার পরও traffic আসতে থাকে।
 
-Process যদি SIGTERM উপেক্ষাও করে — shell wrapper-এ খুব সাধারণ, যেখানে PID 1 হলো `/bin/sh -c` এবং signal forward করে না — তাহলে কিছুই graceful ভাবে বন্ধ হয় না। Container grace period শেষ না হওয়া পর্যন্ত চলে, তারপর request-এর মাঝপথেই মারা যায়।
+Process যদি SIGTERM উপেক্ষাও করে - shell wrapper-এ খুব সাধারণ, যেখানে PID 1 হলো `/bin/sh -c` এবং signal forward করে না - তাহলে কিছুই graceful ভাবে বন্ধ হয় না। Container grace period শেষ না হওয়া পর্যন্ত চলে, তারপর request-এর মাঝপথেই মারা যায়।
 
 ```mermaid
 sequenceDiagram
@@ -95,7 +95,7 @@ spec:
     matchLabels: { app: api }
 ```
 
-Scalable Deployment-এ `maxUnavailable`, আর quorum system-এ `minAvailable` ব্যবহার করুন (যেমন ৩-node etcd বা Redis cluster-এ `minAvailable: 2`)। `minAvailable`-কে কখনো `replicas`-এর সমান করবেন না — তাতে প্রতিটি node upgrade আটকে যায়।
+Scalable Deployment-এ `maxUnavailable`, আর quorum system-এ `minAvailable` ব্যবহার করুন (যেমন ৩-node etcd বা Redis cluster-এ `minAvailable: 2`)। `minAvailable`-কে কখনো `replicas`-এর সমান করবেন না - তাতে প্রতিটি node upgrade আটকে যায়।
 
 ### ৪. Replica ছড়িয়ে দিন যেন এক node একক ব্যর্থতাবিন্দু না হয়
 
@@ -153,7 +153,7 @@ flowchart LR
 - Entrypoint-কে `sh -c "npm start"`-এ মুড়ে signal delivery হারানো।
 - Deploy দ্রুত দেখাতে `terminationGracePeriodSeconds: 5` দেওয়া।
 - ৩-replica Deployment-এ `minAvailable: 3` দিয়ে upgrade আটকে গেলে pod force-delete করা।
-- App এখনো SIGTERM উপেক্ষা করলেও শুধু `preStop`-এর উপর ভরসা করা — আপনি SIGKILL পিছিয়েছেন, data loss নয়।
+- App এখনো SIGTERM উপেক্ষা করলেও শুধু `preStop`-এর উপর ভরসা করা - আপনি SIGKILL পিছিয়েছেন, data loss নয়।
 - Scheduler-এ spread constraint না থাকায় এক service-এর সব replica এক node-এ চালানো।
 
 ## সম্পর্কিত

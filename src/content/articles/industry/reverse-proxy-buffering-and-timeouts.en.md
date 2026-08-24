@@ -1,4 +1,4 @@
-> **Scenario** — A report export that used to finish in 40 seconds starts returning `504 Gateway Time-out` at exactly 60 seconds. The application log shows the same request completing successfully in 71 seconds. Nobody deployed application code; someone moved the service behind a new nginx tier.
+> **Scenario** - A report export that used to finish in 40 seconds starts returning `504 Gateway Time-out` at exactly 60 seconds. The application log shows the same request completing successfully in 71 seconds. Nobody deployed application code; someone moved the service behind a new nginx tier.
 
 ## Why it matters
 
@@ -12,7 +12,7 @@
 
 | Signal | What you observe |
 | --- | --- |
-| Latency histogram | A hard wall at exactly 60.0s or 30.0s — a cliff, not a tail |
+| Latency histogram | A hard wall at exactly 60.0s or 30.0s - a cliff, not a tail |
 | nginx `error.log` | `upstream timed out (110: Connection timed out) while reading response header from upstream` |
 | `$upstream_response_time` | Larger than `$request_time`, or `-` when the connection was cut |
 | Backend access log | `200 OK` in 71s for a request the user saw fail |
@@ -22,7 +22,7 @@
 
 ## How it breaks
 
-nginx applies four independent timers to a proxied request: `proxy_connect_timeout` (TCP handshake to upstream, default 60s), `proxy_send_timeout` (gap between successive writes to upstream), `proxy_read_timeout` (gap between successive **reads** from upstream, default 60s) and `send_timeout` (gap between writes to the client). The one that bites is `proxy_read_timeout`, and the trap is that it is not a total-request budget — it is an idle-gap budget. A backend that emits a keepalive byte every 10s can run for an hour. A backend that thinks silently for 61s and then answers is killed.
+nginx applies four independent timers to a proxied request: `proxy_connect_timeout` (TCP handshake to upstream, default 60s), `proxy_send_timeout` (gap between successive writes to upstream), `proxy_read_timeout` (gap between successive **reads** from upstream, default 60s) and `send_timeout` (gap between writes to the client). The one that bites is `proxy_read_timeout`, and the trap is that it is not a total-request budget - it is an idle-gap budget. A backend that emits a keepalive byte every 10s can run for an hour. A backend that thinks silently for 61s and then answers is killed.
 
 Buffering compounds it. With `proxy_buffering on` (the default) nginx reads the whole response into `proxy_buffers`, spills past that into a temp file, and only then writes to the client. That protects the backend from slow clients, but it destroys streaming and puts the disk on the request path.
 
@@ -44,7 +44,7 @@ sequenceDiagram
 ## Root causes
 
 1. `proxy_read_timeout` left at the 60s default while the backend has a 120s work budget.
-2. Budgets not nested — client 30s, edge 60s, app 120s — so layers disagree on who gives up first.
+2. Budgets not nested - client 30s, edge 60s, app 120s - so layers disagree on who gives up first.
 3. `proxy_buffering on` for endpoints that must stream, making TTFB equal total time.
 4. `proxy_buffers` sized below the p95 response, pushing every large response through `proxy_temp` on disk.
 5. `proxy_request_buffering on` with large uploads, so the backend only sees a body after the full upload lands on proxy disk.
@@ -135,7 +135,7 @@ log_format upstreamlog '$remote_addr $status rt=$request_time '
 access_log /var/log/nginx/access.log upstreamlog;
 ```
 
-`$upstream_header_time` separates "backend is thinking" from "backend is streaming slowly" — the most useful distinction in this class of incident.
+`$upstream_header_time` separates "backend is thinking" from "backend is streaming slowly" - the most useful distinction in this class of incident.
 
 ### 7. Move genuinely long work off the request path
 
@@ -176,7 +176,7 @@ flowchart LR
 
 ## Anti-patterns
 
-- Setting `proxy_read_timeout 3600s` globally so nothing ever times out — dead upstreams then hold connections for an hour.
+- Setting `proxy_read_timeout 3600s` globally so nothing ever times out - dead upstreams then hold connections for an hour.
 - Raising the proxy timeout without raising the client timeout, so users abort and retry into an already-loaded backend.
 - Turning `proxy_buffering off` server-wide to fix one SSE endpoint.
 - Adding client retries for a non-idempotent POST that timed out at the proxy.

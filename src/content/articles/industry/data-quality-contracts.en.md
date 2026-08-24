@@ -1,4 +1,4 @@
-> **Scenario** — The checkout service ships a refactor that makes `customer_email` nullable for guest orders. Nobody told the data team. Three days later the marketing segmentation job has silently dropped 18% of orders from every cohort, and a campaign has already gone out to the wrong list.
+> **Scenario** - The checkout service ships a refactor that makes `customer_email` nullable for guest orders. Nobody told the data team. Three days later the marketing segmentation job has silently dropped 18% of orders from every cohort, and a campaign has already gone out to the wrong list.
 
 ## Why it matters
 
@@ -171,12 +171,12 @@ The whole point of the gate is that a breach leaves the previous good data in pl
 
 | Dimension | Blocking | Warning |
 | --- | --- | --- |
-| Uniqueness of the primary key | yes | — |
-| Referential integrity to a dimension | yes | — |
-| Enum membership | yes | — |
-| Null rate within 2× the 30-day baseline | — | yes |
-| Row volume within ±30% of the 7-day median | — | yes |
-| Freshness beyond the SLA | yes | — |
+| Uniqueness of the primary key | yes | - |
+| Referential integrity to a dimension | yes | - |
+| Enum membership | yes | - |
+| Null rate within 2× the 30-day baseline | - | yes |
+| Row volume within ±30% of the 7-day median | - | yes |
+| Freshness beyond the SLA | yes | - |
 
 Warnings must have a destination and an owner, otherwise demote them out of existence.
 
