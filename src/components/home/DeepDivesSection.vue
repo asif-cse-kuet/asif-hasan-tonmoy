@@ -66,7 +66,7 @@ const cards = computed(() => [
         class="surface-card group flex flex-col p-6 no-underline transition-colors hover:border-accent/50"
       >
         <div class="flex items-baseline justify-between gap-3">
-          <span class="text-[0.7rem] font-semibold uppercase tracking-[0.18em] text-accent-soft">
+          <span class="text-[0.75rem] font-semibold uppercase tracking-[0.18em] text-accent-soft">
             {{ card.kicker }}
           </span>
           <span class="font-display text-2xl font-bold text-glow">{{ card.count }}</span>

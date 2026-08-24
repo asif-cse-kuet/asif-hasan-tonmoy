@@ -44,7 +44,7 @@ const { pick } = useLocaleText()
           </span>
           <span class="min-w-0">
             <span class="block truncate text-sm font-semibold text-paper">{{ link.label }}</span>
-            <span v-if="link.handle" class="block truncate text-[0.7rem] text-mist/70">
+            <span v-if="link.handle" class="block truncate text-[0.75rem] text-mist/70">
               {{ link.handle }}
             </span>
           </span>

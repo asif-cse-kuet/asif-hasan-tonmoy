@@ -38,7 +38,11 @@ const monogram = computed(() =>
   <span
     v-else
     class="brand-monogram"
-    :style="{ width: `${size}px`, height: `${size}px` }"
+    :style="{
+      width: `${size}px`,
+      height: `${size}px`,
+      fontSize: `${Math.max(9, Math.round(size * 0.52))}px`,
+    }"
     aria-hidden="true"
   >
     {{ monogram }}
@@ -58,9 +62,8 @@ const monogram = computed(() =>
   flex-shrink: 0;
   border-radius: 0.25rem;
   border: 1px solid currentColor;
-  font-size: 0.5rem;
   font-weight: 700;
-  letter-spacing: 0.02em;
+  letter-spacing: -0.02em;
   line-height: 1;
 }
 </style>

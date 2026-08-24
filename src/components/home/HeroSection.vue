@@ -15,7 +15,7 @@ const { pick } = useLocaleText()
     <HeroDecor />
 
     <div class="page-wrap relative z-10">
-      <p class="text-[0.7rem] font-semibold uppercase tracking-[0.18em] text-glow sm:text-sm">
+      <p class="text-[0.75rem] font-semibold uppercase tracking-[0.18em] text-glow sm:text-sm">
         {{ pick(PROFILE.brandLine) }}
       </p>
 
@@ -49,7 +49,7 @@ const { pick } = useLocaleText()
       </div>
 
       <div class="mt-9">
-        <p class="mb-2.5 text-[0.7rem] font-semibold uppercase tracking-[0.18em] text-mist/70">
+        <p class="mb-2.5 text-[0.75rem] font-semibold uppercase tracking-[0.18em] text-mist/70">
           {{ pick({ en: 'Profiles & coding platforms', bn: 'প্রোফাইল ও কোডিং প্ল্যাটফর্ম' }) }}
         </p>
         <ProfileLinksStrip />

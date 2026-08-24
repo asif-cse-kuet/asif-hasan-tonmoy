@@ -17,7 +17,7 @@ import { PRIMARY_LINKS } from '@/content/profile'
         </span>
         <span class="leading-tight">
           <span class="block text-sm font-semibold text-paper">{{ link.label }}</span>
-          <span v-if="link.handle" class="block text-[0.7rem] text-mist/80">{{ link.handle }}</span>
+          <span v-if="link.handle" class="block text-[0.75rem] text-mist/80">{{ link.handle }}</span>
         </span>
       </a>
     </li>

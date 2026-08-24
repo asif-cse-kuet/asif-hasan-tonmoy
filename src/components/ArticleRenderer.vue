@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { marked } from 'marked'
+import { Marked } from 'marked'
 import { computed, nextTick, onMounted, ref, watch } from 'vue'
 
 const props = defineProps<{ markdown: string }>()
@@ -7,20 +7,16 @@ const props = defineProps<{ markdown: string }>()
 const root = ref<HTMLElement | null>(null)
 
 /** Mermaid fences become placeholders so we can render them after mount. */
-const html = computed(() => {
-  const renderer = new marked.Renderer()
-  const baseCode = renderer.code.bind(renderer)
-
-  renderer.code = (token) => {
-    if (token.lang === 'mermaid') {
-      const encoded = encodeURIComponent(token.text)
-      return `<div class="mermaid-host" data-graph="${encoded}"></div>`
-    }
-    return baseCode(token)
-  }
-
-  return marked.parse(props.markdown, { renderer, gfm: true, breaks: false }) as string
+const md = new Marked({ gfm: true, breaks: false }).use({
+  renderer: {
+    code(token) {
+      if (token.lang !== 'mermaid') return false
+      return `<div class="mermaid-host" data-graph="${encodeURIComponent(token.text)}"></div>`
+    },
+  },
 })
+
+const html = computed(() => md.parse(props.markdown, { async: false }))
 
 let mermaidReady: Promise<typeof import('mermaid').default> | null = null
 

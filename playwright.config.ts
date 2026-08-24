@@ -50,6 +50,15 @@ export default defineConfig({
       use: {
         ...devices['Desktop Chrome'],
       },
+      testIgnore: /mobile\.spec\.ts/,
+    },
+    {
+      name: 'mobile',
+      use: {
+        // Chromium-based so a single browser download covers both projects.
+        ...devices['Pixel 7'],
+      },
+      testMatch: /mobile\.spec\.ts/,
     },
   ],
 

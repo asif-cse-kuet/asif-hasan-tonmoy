@@ -52,7 +52,7 @@ onBeforeUnmount(() => observer?.disconnect())
         <li v-for="section in sections" :key="section.id" class="shrink-0">
           <a
             :href="`#${section.id}`"
-            class="block rounded px-3 py-1.5 text-xs font-semibold uppercase tracking-wide no-underline transition-colors sm:text-[0.7rem]"
+            class="block rounded px-3 py-1.5 text-xs font-semibold uppercase tracking-wide no-underline transition-colors"
             :class="active === section.id ? 'text-accent-soft' : 'text-mist/70 hover:text-paper'"
           >
             {{ section.label }}

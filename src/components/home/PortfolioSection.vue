@@ -69,7 +69,7 @@ const visible = computed(() => {
             {{ pick(project.titles) }}
           </h3>
           <span
-            class="shrink-0 rounded border border-steel/60 px-1.5 py-0.5 text-[0.65rem] uppercase tracking-wide text-mist/70"
+            class="shrink-0 rounded border border-steel/60 px-1.5 py-0.5 text-[0.75rem] uppercase tracking-wide text-mist/70"
           >
             {{ project.tier }}
           </span>
@@ -81,7 +81,7 @@ const visible = computed(() => {
           <li
             v-for="tech in project.stack"
             :key="tech"
-            class="flex items-center gap-1 rounded border border-steel/60 bg-ink/40 px-2 py-1 text-[0.7rem] text-paper/85"
+            class="flex items-center gap-1 rounded border border-steel/60 bg-ink/40 px-2 py-1 text-[0.75rem] text-paper/85"
           >
             <span class="text-mist"><BrandIcon :name="tech" :slug="resolveTechIcon(tech)" :size="12" /></span>
             {{ tech }}

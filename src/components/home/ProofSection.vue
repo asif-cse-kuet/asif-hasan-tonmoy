@@ -20,7 +20,7 @@ const { pick } = useLocaleText()
           <dt class="font-display text-2xl font-bold text-glow sm:text-3xl">{{ metric.value }}</dt>
           <dd class="mt-1 text-xs leading-snug text-mist sm:text-sm">
             {{ pick(metric.label) }}
-            <span v-if="metric.source" class="block text-[0.65rem] text-mist/60">
+            <span v-if="metric.source" class="block text-[0.75rem] text-mist/60">
               {{ metric.source }}
             </span>
           </dd>

@@ -62,7 +62,7 @@ const entries = computed(() => EXPERIENCE.filter((entry) => !MARKETING_ONLY.has(
             <li
               v-for="tag in entry.tags"
               :key="tag"
-              class="rounded border border-steel/60 px-2 py-0.5 text-[0.7rem] text-mist/80"
+              class="rounded border border-steel/60 px-2 py-0.5 text-[0.75rem] text-mist/80"
             >
               {{ tag }}
             </li>

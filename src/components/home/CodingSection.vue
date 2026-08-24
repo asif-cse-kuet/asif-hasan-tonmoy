@@ -56,7 +56,7 @@ const ICONS: Record<string, string | null> = {
         <p class="mt-2 text-sm leading-relaxed text-mist">{{ pick(repo.description) }}</p>
         <p
           v-if="repo.language"
-          class="mt-3 flex items-center gap-1.5 text-[0.7rem] uppercase tracking-wide text-mist/70"
+          class="mt-3 flex items-center gap-1.5 text-[0.75rem] uppercase tracking-wide text-mist/70"
         >
           <BrandIcon :name="repo.language" :slug="resolveTechIcon(repo.language)" :size="12" />
           {{ repo.language }}

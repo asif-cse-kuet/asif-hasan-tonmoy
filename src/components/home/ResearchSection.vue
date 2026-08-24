@@ -33,7 +33,7 @@ const { pick } = useLocaleText()
       <dl class="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-4">
         <div v-for="metric in paper.metrics" :key="metric.label.en" class="rounded-md bg-ink/50 px-3 py-2.5">
           <dt class="font-display text-lg font-bold text-glow">{{ metric.value }}</dt>
-          <dd class="text-[0.7rem] leading-snug text-mist/80">{{ pick(metric.label) }}</dd>
+          <dd class="text-[0.75rem] leading-snug text-mist/80">{{ pick(metric.label) }}</dd>
         </div>
       </dl>
 
