@@ -1,39 +1,77 @@
 <script setup lang="ts">
+import { computed, ref } from 'vue'
 import { RouterLink } from 'vue-router'
-import { useI18n } from 'vue-i18n'
 
 import PageHero from '@/components/PageHero.vue'
+import ProblemCard from '@/components/problems/ProblemCard.vue'
+import ProblemFilters from '@/components/problems/ProblemFilters.vue'
 import { useLocaleText } from '@/composables/useLocaleText'
-import { SOLVED_PROBLEMS } from '@/content/solved-problems'
+import { getAllProblemTags, SOLVED_PROBLEMS } from '@/content/solved-problems'
 
-const { t } = useI18n()
 const { pick } = useLocaleText()
+
+const query = ref('')
+const activeTag = ref<string | null>(null)
+const tags = getAllProblemTags()
+
+const filtered = computed(() => {
+  const q = query.value.trim().toLowerCase()
+  return SOLVED_PROBLEMS.filter((problem) => {
+    if (activeTag.value && !problem.tags.includes(activeTag.value)) return false
+    if (!q) return true
+    const haystack = [
+      problem.slug,
+      ...problem.tags,
+      ...problem.stack,
+      problem.titles.en,
+      problem.titles.bn,
+      problem.summary.en,
+      problem.summary.bn,
+    ]
+      .join(' ')
+      .toLowerCase()
+    return haystack.includes(q)
+  })
+})
 </script>
 
 <template>
   <div class="page-wrap py-10">
-    <PageHero :title="t('pages.solvedProblems')" />
+    <PageHero
+      :title="pick({ en: 'Problems I personally solved', bn: 'আমি ব্যক্তিগতভাবে সমাধান করা সমস্যা' })"
+      :subtitle="
+        pick({
+          en: 'Real production and project issues — not hypotheticals. Each entry covers context, diagnosis, fix, and measurable impact.',
+          bn: 'আসল production ও project issue — hypothetical নয়। প্রতিটিতে context, diagnosis, fix ও measurable impact।',
+        })
+      "
+    />
 
-    <div class="grid gap-4 md:grid-cols-2">
+    <ProblemFilters v-model:query="query" v-model:active-tag="activeTag" :tags="tags" />
+
+    <p class="mt-4 text-sm text-mist">
+      {{ filtered.length }} / {{ SOLVED_PROBLEMS.length }}
+      {{ pick({ en: 'problems shown', bn: 'টি সমস্যা দেখানো হচ্ছে' }) }}
+    </p>
+
+    <div class="mt-6 grid gap-4 md:grid-cols-2">
       <RouterLink
-        v-for="problem in SOLVED_PROBLEMS"
+        v-for="problem in filtered"
         :key="problem.slug"
         :to="`/problems/solved/${problem.slug}`"
-        class="surface-card block p-5 no-underline hover:border-glow/40"
+        class="block no-underline"
       >
-        <h3 class="font-display text-lg text-paper">{{ pick(problem.titles) }}</h3>
-        <p class="mt-2 text-sm text-mist">{{ pick(problem.summary) }}</p>
-        <div class="mt-3 flex flex-wrap gap-2">
-          <span
-            v-for="tag in problem.tags.slice(0, 4)"
-            :key="tag"
-            class="rounded bg-steel/40 px-2 py-0.5 text-xs text-mist"
-          >
-            {{ tag }}
-          </span>
-        </div>
+        <ProblemCard :problem="problem" />
       </RouterLink>
     </div>
+
+    <p v-if="filtered.length === 0" class="mt-8 text-mist">
+      {{ pick({ en: 'No problems match your filters.', bn: 'ফিল্টারে কোনো সমস্যা মেলেনি।' }) }}
+    </p>
+
+    <RouterLink to="/" class="btn-ghost mt-10 inline-flex min-h-11">
+      {{ pick({ en: '← Back to home', bn: '← হোমে ফিরুন' }) }}
+    </RouterLink>
   </div>
 </template>
 

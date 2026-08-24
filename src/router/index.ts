@@ -1,142 +1,88 @@
-import { createRouter, createWebHistory } from 'vue-router'
+import { createRouter, createWebHistory, type RouteRecordRaw } from 'vue-router'
+
+/**
+ * IA: the landing page carries the full profile. Only three subjects get their own
+ * pages because they keep growing: marketing, solved problems, and the system design guide.
+ */
+const routes: RouteRecordRaw[] = [
+  {
+    path: '/',
+    name: 'home',
+    component: () => import('@/views/HomeView.vue'),
+  },
+  {
+    path: '/marketing',
+    name: 'marketing',
+    component: () => import('@/views/MarketingView.vue'),
+  },
+  {
+    path: '/problems/solved',
+    name: 'solved-problems',
+    component: () => import('@/views/SolvedProblemsView.vue'),
+  },
+  {
+    path: '/problems/solved/:slug',
+    name: 'solved-detail',
+    component: () => import('@/views/SolvedProblemDetailView.vue'),
+  },
+  {
+    path: '/systems',
+    name: 'systems',
+    component: () => import('@/views/SystemsView.vue'),
+  },
+  {
+    path: '/systems/concepts/:slug',
+    name: 'system-concept',
+    component: () => import('@/views/SystemConceptView.vue'),
+  },
+  {
+    path: '/systems/:domain',
+    name: 'systems-domain',
+    component: () => import('@/views/SystemsDomainView.vue'),
+  },
+  {
+    path: '/systems/:domain/:slug',
+    name: 'systems-topic',
+    component: () => import('@/views/SystemsTopicView.vue'),
+  },
+  // Legacy standalone pages now live as sections on the landing page.
+  { path: '/engineering', redirect: '/#expertise' },
+  { path: '/architecture', redirect: '/#expertise' },
+  { path: '/ai', redirect: '/#expertise' },
+  { path: '/devops', redirect: '/#expertise' },
+  { path: '/observability', redirect: '/#expertise' },
+  { path: '/work', redirect: '/#work' },
+  { path: '/work/:slug', redirect: '/#work' },
+  { path: '/lab', redirect: '/#work' },
+  { path: '/coding', redirect: '/#coding' },
+  { path: '/experience', redirect: '/#experience' },
+  { path: '/teaching', redirect: '/#about' },
+  { path: '/research', redirect: '/#research' },
+  { path: '/services', redirect: '/#services' },
+  { path: '/about', redirect: '/#about' },
+  { path: '/contact', redirect: '/#contact' },
+  { path: '/links', redirect: '/#contact' },
+  { path: '/legacy', redirect: '/marketing' },
+  { path: '/problems', redirect: '/problems/solved' },
+  { path: '/problems/industry', redirect: '/systems' },
+  { path: '/problems/industry/:domain', redirect: (to) => `/systems/${to.params.domain}` },
+  {
+    path: '/problems/industry/:domain/:slug',
+    redirect: (to) => `/systems/${to.params.domain}/${to.params.slug}`,
+  },
+  { path: '/:pathMatch(.*)*', redirect: '/' },
+]
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
-  scrollBehavior() {
+  scrollBehavior(to, _from, savedPosition) {
+    if (to.hash) {
+      return { el: to.hash, top: 96, behavior: 'smooth' }
+    }
+    if (savedPosition) return savedPosition
     return { top: 0 }
   },
-  routes: [
-    {
-      path: '/',
-      name: 'home',
-      component: () => import('@/views/HomeView.vue'),
-    },
-    {
-      path: '/engineering',
-      name: 'engineering',
-      component: () => import('@/views/EngineeringView.vue'),
-    },
-    {
-      path: '/architecture',
-      name: 'architecture',
-      component: () => import('@/views/ArchitectureView.vue'),
-    },
-    {
-      path: '/ai',
-      name: 'ai',
-      component: () => import('@/views/AiView.vue'),
-    },
-    {
-      path: '/devops',
-      name: 'devops',
-      component: () => import('@/views/DevopsView.vue'),
-    },
-    {
-      path: '/observability',
-      name: 'observability',
-      component: () => import('@/views/ObservabilityView.vue'),
-    },
-    {
-      path: '/marketing',
-      name: 'marketing',
-      component: () => import('@/views/MarketingView.vue'),
-    },
-    {
-      path: '/work',
-      name: 'work',
-      component: () => import('@/views/WorkView.vue'),
-    },
-    {
-      path: '/work/:slug',
-      name: 'work-detail',
-      component: () => import('@/views/WorkDetailView.vue'),
-    },
-    {
-      path: '/lab',
-      name: 'lab',
-      component: () => import('@/views/LabView.vue'),
-    },
-    {
-      path: '/coding',
-      name: 'coding',
-      component: () => import('@/views/CodingView.vue'),
-    },
-    {
-      path: '/experience',
-      name: 'experience',
-      component: () => import('@/views/ExperienceView.vue'),
-    },
-    {
-      path: '/teaching',
-      name: 'teaching',
-      component: () => import('@/views/TeachingView.vue'),
-    },
-    {
-      path: '/research',
-      name: 'research',
-      component: () => import('@/views/ResearchView.vue'),
-    },
-    {
-      path: '/problems/solved',
-      name: 'solved-problems',
-      component: () => import('@/views/SolvedProblemsView.vue'),
-    },
-    {
-      path: '/problems/solved/:slug',
-      name: 'solved-detail',
-      component: () => import('@/views/SolvedProblemDetailView.vue'),
-    },
-    {
-      path: '/problems/industry',
-      name: 'industry-hub',
-      component: () => import('@/views/IndustryHubView.vue'),
-    },
-    {
-      path: '/problems/industry/:domain',
-      name: 'industry-domain',
-      component: () => import('@/views/IndustryDomainView.vue'),
-    },
-    {
-      path: '/problems/industry/:domain/:slug',
-      name: 'industry-topic',
-      component: () => import('@/views/IndustryTopicView.vue'),
-    },
-    {
-      path: '/systems',
-      name: 'systems',
-      component: () => import('@/views/SystemsView.vue'),
-    },
-    {
-      path: '/systems/:slug',
-      name: 'system-detail',
-      component: () => import('@/views/SystemDetailView.vue'),
-    },
-    {
-      path: '/services',
-      name: 'services',
-      component: () => import('@/views/ServicesView.vue'),
-    },
-    {
-      path: '/about',
-      name: 'about',
-      component: () => import('@/views/AboutView.vue'),
-    },
-    {
-      path: '/contact',
-      name: 'contact',
-      component: () => import('@/views/ContactView.vue'),
-    },
-    {
-      path: '/links',
-      name: 'links',
-      component: () => import('@/views/LinksView.vue'),
-    },
-    {
-      path: '/legacy',
-      name: 'legacy',
-      component: () => import('@/views/LegacyView.vue'),
-    },
-  ],
+  routes,
 })
 
 export default router

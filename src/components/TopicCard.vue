@@ -14,7 +14,7 @@ const { pick } = useLocaleText()
 
 <template>
   <RouterLink
-    :to="`/problems/industry/${domainSlug}/${topic.slug}`"
+    :to="`/systems/${domainSlug}/${topic.slug}`"
     class="surface-card block p-5 no-underline transition-colors hover:border-glow/50"
   >
     <div class="flex flex-wrap items-start justify-between gap-2">

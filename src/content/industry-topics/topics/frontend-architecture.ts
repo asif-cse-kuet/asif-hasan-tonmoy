@@ -1,0 +1,205 @@
+import type { IndustryTopic } from '../topic-types'
+
+/** Frontend architecture wave — micro-frontends, state, rendering, performance, a11y. */
+const topics: IndustryTopic[] = [
+  {
+    id: 'micro-frontend-integration-strategies',
+    slug: 'micro-frontend-integration-strategies',
+    domain: 'frontend-architecture',
+    titles: {
+      en: 'Micro-frontend integration strategies',
+      bn: 'Micro-frontend integration strategy',
+    },
+    summary: {
+      en: 'Build-time packages, module federation, or iframes — and the shared-singleton bugs each one hides.',
+      bn: 'build-time package, module federation নাকি iframe — প্রতিটির লুকানো shared-singleton বাগ।',
+    },
+    tags: ['micro-frontends', 'module-federation', 'vite', 'integration'],
+    difficulty: 'advanced',
+    status: 'full',
+    related: ['micro-packaging-modules', 'design-system-versioning', 'code-splitting-and-lazy-routes'],
+    systemsLinks: ['feature-flags'],
+  },
+  {
+    id: 'frontend-state-management-at-scale',
+    slug: 'frontend-state-management-at-scale',
+    domain: 'frontend-architecture',
+    titles: {
+      en: 'Frontend state management at scale',
+      bn: 'scale-এ frontend state management',
+    },
+    summary: {
+      en: 'Server cache vs client state, Pinia store sprawl, and the stale-data bugs nobody can reproduce.',
+      bn: 'server cache vs client state, Pinia store sprawl, আর যে stale-data বাগ কেউ reproduce করতে পারে না।',
+    },
+    tags: ['pinia', 'state', 'vue', 'caching', 'normalization'],
+    difficulty: 'advanced',
+    status: 'full',
+    related: ['optimistic-ui-and-rollback', 'offline-first-sync-conflicts', 'websocket-state-at-scale'],
+    systemsLinks: [],
+  },
+  {
+    id: 'design-system-versioning',
+    slug: 'design-system-versioning',
+    domain: 'frontend-architecture',
+    titles: {
+      en: 'Design system versioning without lockstep',
+      bn: 'lockstep ছাড়া design system versioning',
+    },
+    summary: {
+      en: 'Semver for components, token drift, and shipping breaking changes to twelve apps at once.',
+      bn: 'component-এর semver, token drift, একসাথে বারোটা app-এ breaking change পাঠানো।',
+    },
+    tags: ['design-system', 'semver', 'design-tokens', 'monorepo'],
+    difficulty: 'intermediate',
+    status: 'full',
+    related: ['micro-frontend-integration-strategies', 'accessibility-in-component-systems'],
+    systemsLinks: ['feature-flags'],
+  },
+  {
+    id: 'code-splitting-and-lazy-routes',
+    slug: 'code-splitting-and-lazy-routes',
+    domain: 'frontend-architecture',
+    titles: {
+      en: 'Code splitting and lazy route boundaries',
+      bn: 'Code splitting ও lazy route boundary',
+    },
+    summary: {
+      en: 'Why lazy routes still ship the whole app, waterfall chunks, and prefetch that actually helps LCP.',
+      bn: 'lazy route তবু পুরো app কেন পাঠায়, waterfall chunk, আর যে prefetch সত্যিই LCP কমায়।',
+    },
+    tags: ['vite', 'code-splitting', 'routing', 'bundles', 'prefetch'],
+    difficulty: 'intermediate',
+    status: 'full',
+    related: ['frontend-performance-budgets', 'rendering-strategy-selection', 'micro-packaging-modules'],
+    systemsLinks: [],
+  },
+  {
+    id: 'optimistic-ui-and-rollback',
+    slug: 'optimistic-ui-and-rollback',
+    domain: 'frontend-architecture',
+    titles: {
+      en: 'Optimistic UI and safe rollback',
+      bn: 'Optimistic UI ও নিরাপদ rollback',
+    },
+    summary: {
+      en: 'Applying mutations before the server answers — and undoing them without losing the user’s next three edits.',
+      bn: 'server উত্তর দেওয়ার আগে mutation apply — user-এর পরের তিনটা edit না হারিয়ে undo।',
+    },
+    tags: ['optimistic-ui', 'rollback', 'pinia', 'mutations', 'ux'],
+    difficulty: 'intermediate',
+    status: 'full',
+    related: ['frontend-state-management-at-scale', 'offline-first-sync-conflicts'],
+    systemsLinks: ['idempotency-keys'],
+  },
+  {
+    id: 'offline-first-sync-conflicts',
+    slug: 'offline-first-sync-conflicts',
+    domain: 'frontend-architecture',
+    titles: {
+      en: 'Offline-first sync and conflict resolution',
+      bn: 'Offline-first sync ও conflict resolution',
+    },
+    summary: {
+      en: 'Outbox queues in IndexedDB, last-write-wins data loss, and merge strategies users can understand.',
+      bn: 'IndexedDB-তে outbox queue, last-write-wins data loss, user বুঝতে পারে এমন merge strategy।',
+    },
+    tags: ['offline-first', 'indexeddb', 'sync', 'conflicts', 'crdt'],
+    difficulty: 'advanced',
+    status: 'full',
+    related: ['optimistic-ui-and-rollback', 'realtime-ui-reconnection-handling'],
+    systemsLinks: ['idempotency-keys', 'clock-skew'],
+  },
+  {
+    id: 'form-validation-architecture',
+    slug: 'form-validation-architecture',
+    domain: 'frontend-architecture',
+    titles: {
+      en: 'Form validation architecture',
+      bn: 'Form validation architecture',
+    },
+    summary: {
+      en: 'One schema for client and server, async rules that race, and error surfaces screen readers can find.',
+      bn: 'client ও server-এ এক schema, race করা async rule, screen reader খুঁজে পায় এমন error surface।',
+    },
+    tags: ['forms', 'validation', 'zod', 'accessibility', 'vue'],
+    difficulty: 'intermediate',
+    status: 'full',
+    related: ['frontend-state-management-at-scale', 'accessibility-in-component-systems'],
+    systemsLinks: [],
+  },
+  {
+    id: 'rendering-strategy-selection',
+    slug: 'rendering-strategy-selection',
+    domain: 'frontend-architecture',
+    titles: {
+      en: 'Choosing a rendering strategy',
+      bn: 'Rendering strategy বেছে নেওয়া',
+    },
+    summary: {
+      en: 'CSR, SSR, SSG, and islands — matching route economics to LCP targets instead of framework fashion.',
+      bn: 'CSR, SSR, SSG, islands — framework fashion নয়, route economics-কে LCP target-এর সাথে মেলানো।',
+    },
+    tags: ['ssr', 'ssg', 'hydration', 'core-web-vitals', 'islands'],
+    difficulty: 'intermediate',
+    status: 'full',
+    related: ['code-splitting-and-lazy-routes', 'frontend-performance-budgets'],
+    systemsLinks: ['cache-stampede'],
+  },
+  {
+    id: 'accessibility-in-component-systems',
+    slug: 'accessibility-in-component-systems',
+    domain: 'frontend-architecture',
+    titles: {
+      en: 'Accessibility in shared component systems',
+      bn: 'shared component system-এ accessibility',
+    },
+    summary: {
+      en: 'Focus traps, ARIA contracts, and why a11y regressions scale as fast as the component that carries them.',
+      bn: 'focus trap, ARIA contract, আর a11y regression component-এর মতোই দ্রুত ছড়ায় কেন।',
+    },
+    tags: ['accessibility', 'aria', 'wcag', 'components', 'focus-management'],
+    difficulty: 'intermediate',
+    status: 'full',
+    related: ['design-system-versioning', 'form-validation-architecture'],
+    systemsLinks: [],
+  },
+  {
+    id: 'frontend-performance-budgets',
+    slug: 'frontend-performance-budgets',
+    domain: 'frontend-architecture',
+    titles: {
+      en: 'Frontend performance budgets that hold',
+      bn: 'টিকে থাকা frontend performance budget',
+    },
+    summary: {
+      en: 'Byte and Core Web Vitals budgets enforced in CI, plus field RUM to catch what lab tests miss.',
+      bn: 'CI-তে enforce করা byte ও Core Web Vitals budget, আর lab test যা miss করে তা ধরতে field RUM।',
+    },
+    tags: ['performance', 'core-web-vitals', 'budgets', 'ci', 'rum'],
+    difficulty: 'intermediate',
+    status: 'full',
+    related: ['code-splitting-and-lazy-routes', 'rendering-strategy-selection'],
+    systemsLinks: ['golden-signals'],
+  },
+  {
+    id: 'realtime-ui-reconnection-handling',
+    slug: 'realtime-ui-reconnection-handling',
+    domain: 'frontend-architecture',
+    titles: {
+      en: 'Realtime UI reconnection handling',
+      bn: 'Realtime UI reconnection handling',
+    },
+    summary: {
+      en: 'Backoff with jitter, resume cursors, and the snapshot fallback when the gap is too wide to replay.',
+      bn: 'jitter-সহ backoff, resume cursor, gap বেশি হলে snapshot fallback।',
+    },
+    tags: ['websocket', 'reconnect', 'realtime', 'resync', 'backoff'],
+    difficulty: 'advanced',
+    status: 'full',
+    related: ['websocket-state-at-scale', 'offline-first-sync-conflicts'],
+    systemsLinks: ['backpressure', 'thundering-herd'],
+  },
+]
+
+export default topics

@@ -1,0 +1,205 @@
+import type { IndustryTopic } from '../topic-types'
+
+/** Distributed systems & consensus wave. */
+const topics: IndustryTopic[] = [
+  {
+    id: 'pacelc-latency-consistency',
+    slug: 'pacelc-latency-consistency',
+    domain: 'distributed-systems',
+    titles: {
+      en: 'PACELC: the latency price of consistency',
+      bn: 'PACELC — consistency-র latency মূল্য',
+    },
+    summary: {
+      en: 'CAP only describes the partition case; PACELC names the choice you make on every normal request. Else-Latency versus Else-Consistency is the knob that decides your p99.',
+      bn: 'CAP শুধু partition-এর সময়ের কথা বলে; PACELC প্রতিটি স্বাভাবিক request-এর সিদ্ধান্তকে নাম দেয়। Else-Latency vs Else-Consistency আপনার p99 ঠিক করে।',
+    },
+    tags: ['pacelc', 'cap', 'consistency', 'latency', 'replication'],
+    difficulty: 'advanced',
+    status: 'full',
+    related: ['cap-theorem-tradeoffs', 'quorum-read-write-tuning', 'eventual-consistency-user-experience'],
+    systemsLinks: ['cap-theorem', 'multi-region'],
+  },
+  {
+    id: 'consensus-raft-in-practice',
+    slug: 'consensus-raft-in-practice',
+    domain: 'distributed-systems',
+    titles: {
+      en: 'Raft in practice: what the paper leaves out',
+      bn: 'বাস্তবে Raft — paper যা বলে না',
+    },
+    summary: {
+      en: 'Log replication is the easy half; snapshots, membership changes, and disk fsync latency are what page you at 2am. Raft is safe by design and slow by configuration.',
+      bn: 'Log replication সহজ অংশ; snapshot, membership change আর disk fsync latency-ই রাত ২টায় page করে। Raft ডিজাইনে safe, configuration-এ ধীর।',
+    },
+    tags: ['raft', 'consensus', 'replication', 'etcd', 'quorum'],
+    difficulty: 'advanced',
+    status: 'full',
+    related: ['leader-election-failure-modes', 'quorum-read-write-tuning', 'split-brain-recovery'],
+    systemsLinks: ['split-brain'],
+  },
+  {
+    id: 'leader-election-failure-modes',
+    slug: 'leader-election-failure-modes',
+    domain: 'distributed-systems',
+    titles: {
+      en: 'Leader election failure modes',
+      bn: 'Leader election-এর failure mode',
+    },
+    summary: {
+      en: 'Flapping leaders, zombie primaries, and elections that never converge because the timeout is tuned for a LAN. Every re-election is a small outage you chose to accept.',
+      bn: 'Flapping leader, zombie primary, LAN-এর জন্য tune করা timeout-এ কখনো converge না করা election। প্রতিটি re-election আপনার মেনে নেওয়া ছোট outage।',
+    },
+    tags: ['leader-election', 'consensus', 'fencing', 'timeouts'],
+    difficulty: 'advanced',
+    status: 'full',
+    related: ['consensus-raft-in-practice', 'split-brain-recovery', 'gossip-and-membership-protocols'],
+    systemsLinks: ['split-brain'],
+  },
+  {
+    id: 'clock-skew-and-event-ordering',
+    slug: 'clock-skew-and-event-ordering',
+    domain: 'distributed-systems',
+    titles: {
+      en: 'Clock skew and event ordering',
+      bn: 'Clock skew ও event ordering',
+    },
+    summary: {
+      en: 'Wall clocks jump backwards, NTP steps by seconds, and last-write-wins silently deletes paid work. Logical clocks buy you ordering that survives a bad time server.',
+      bn: 'Wall clock পিছিয়ে যায়, NTP সেকেন্ড ধরে step করে, আর last-write-wins চুপচাপ কাজ মুছে দেয়। Logical clock খারাপ time server-এও ordering টিকিয়ে রাখে।',
+    },
+    tags: ['clocks', 'ntp', 'ordering', 'hlc', 'lww'],
+    difficulty: 'advanced',
+    status: 'full',
+    related: ['distributed-locks-correctness', 'consensus-raft-in-practice', 'eventual-consistency-user-experience'],
+    systemsLinks: ['clock-skew'],
+  },
+  {
+    id: 'consistent-hashing-rebalance',
+    slug: 'consistent-hashing-rebalance',
+    domain: 'distributed-systems',
+    titles: {
+      en: 'Consistent hashing and safe rebalancing',
+      bn: 'Consistent hashing ও নিরাপদ rebalance',
+    },
+    summary: {
+      en: 'Naive modulo hashing moves every key when one node joins; consistent hashing moves 1/N — but only if your virtual node count and rebalance rate are tuned. Hot keys ignore the ring entirely.',
+      bn: 'Naive modulo hashing এক node যোগ হলেই সব key সরায়; consistent hashing সরায় 1/N — যদি virtual node আর rebalance rate ঠিক থাকে। Hot key ring-কে পুরো উপেক্ষা করে।',
+    },
+    tags: ['consistent-hashing', 'sharding', 'rebalance', 'hot-keys'],
+    difficulty: 'intermediate',
+    status: 'full',
+    related: ['quorum-read-write-tuning', 'thundering-herd-on-recovery', 'gossip-and-membership-protocols'],
+    systemsLinks: ['hotspot-keys', 'cache-stampede'],
+  },
+  {
+    id: 'quorum-read-write-tuning',
+    slug: 'quorum-read-write-tuning',
+    domain: 'distributed-systems',
+    titles: {
+      en: 'Tuning quorum reads and writes',
+      bn: 'Quorum read ও write tuning',
+    },
+    summary: {
+      en: 'R + W > N is necessary but not sufficient: sloppy quorums, hinted handoff, and read repair all bend the guarantee. The tuning decides whether a single slow replica owns your tail latency.',
+      bn: 'R + W > N দরকার কিন্তু যথেষ্ট নয়: sloppy quorum, hinted handoff, read repair সবই guarantee বাঁকায়। Tuning ঠিক করে একটি ধীর replica আপনার tail latency দখল করবে কি না।',
+    },
+    tags: ['quorum', 'replication', 'consistency', 'tail-latency'],
+    difficulty: 'advanced',
+    status: 'full',
+    related: ['pacelc-latency-consistency', 'eventual-consistency-user-experience', 'consensus-raft-in-practice'],
+    systemsLinks: ['cap-theorem'],
+  },
+  {
+    id: 'distributed-locks-correctness',
+    slug: 'distributed-locks-correctness',
+    domain: 'distributed-systems',
+    titles: {
+      en: 'Distributed locks that are actually correct',
+      bn: 'সত্যিকারের সঠিক distributed lock',
+    },
+    summary: {
+      en: 'A lock with a TTL is a lease, and a lease plus a GC pause equals two holders. Fencing tokens, not longer timeouts, are what make mutual exclusion safe.',
+      bn: 'TTL সহ lock আসলে lease, আর lease + GC pause মানে দুইজন holder। নিরাপদ mutual exclusion আসে fencing token থেকে, বড় timeout থেকে নয়।',
+    },
+    tags: ['locks', 'leases', 'fencing', 'redis', 'idempotency'],
+    difficulty: 'advanced',
+    status: 'full',
+    related: ['clock-skew-and-event-ordering', 'consensus-raft-in-practice', 'two-phase-commit-vs-saga'],
+    systemsLinks: ['idempotency-keys'],
+  },
+  {
+    id: 'two-phase-commit-vs-saga',
+    slug: 'two-phase-commit-vs-saga',
+    domain: 'distributed-systems',
+    titles: {
+      en: 'Two-phase commit versus sagas',
+      bn: 'Two-phase commit vs saga',
+    },
+    summary: {
+      en: '2PC gives you atomicity and a coordinator that can freeze every participant; sagas give you availability and the obligation to write compensations. Most teams need sagas plus an outbox.',
+      bn: '2PC atomicity দেয় আর সাথে এমন coordinator যা সব participant জমিয়ে দিতে পারে; saga availability দেয় আর compensation লেখার দায়িত্ব। বেশিরভাগ দলের দরকার saga + outbox।',
+    },
+    tags: ['2pc', 'saga', 'transactions', 'compensation', 'outbox'],
+    difficulty: 'advanced',
+    status: 'full',
+    related: ['distributed-locks-correctness', 'eventual-consistency-user-experience', 'quorum-read-write-tuning'],
+    systemsLinks: ['saga-pattern', 'outbox-pattern'],
+  },
+  {
+    id: 'gossip-and-membership-protocols',
+    slug: 'gossip-and-membership-protocols',
+    domain: 'distributed-systems',
+    titles: {
+      en: 'Gossip and membership protocols',
+      bn: 'Gossip ও membership protocol',
+    },
+    summary: {
+      en: 'SWIM-style gossip converges in O(log N) rounds and costs you false failure detections under CPU saturation. Membership flapping is usually a load problem wearing a network costume.',
+      bn: 'SWIM ধরনের gossip O(log N) round-এ converge করে, বিনিময়ে CPU saturation-এ false failure detection দেয়। Membership flapping সাধারণত network-এর পোশাক পরা load সমস্যা।',
+    },
+    tags: ['gossip', 'swim', 'membership', 'failure-detection'],
+    difficulty: 'advanced',
+    status: 'full',
+    related: ['leader-election-failure-modes', 'consistent-hashing-rebalance', 'split-brain-recovery'],
+    systemsLinks: ['split-brain'],
+  },
+  {
+    id: 'eventual-consistency-user-experience',
+    slug: 'eventual-consistency-user-experience',
+    domain: 'distributed-systems',
+    titles: {
+      en: 'Designing UX for eventual consistency',
+      bn: 'Eventual consistency-র জন্য UX ডিজাইন',
+    },
+    summary: {
+      en: 'Users do not file bugs about replication lag; they file bugs about the comment they just posted disappearing. Read-your-writes is a product requirement, not a database feature.',
+      bn: 'User replication lag নিয়ে bug করে না; সদ্য post করা comment হারিয়ে গেলে bug করে। Read-your-writes একটি product requirement, database feature নয়।',
+    },
+    tags: ['eventual-consistency', 'read-your-writes', 'ux', 'replication-lag'],
+    difficulty: 'intermediate',
+    status: 'full',
+    related: ['quorum-read-write-tuning', 'pacelc-latency-consistency', 'clock-skew-and-event-ordering'],
+    systemsLinks: ['cap-theorem'],
+  },
+  {
+    id: 'thundering-herd-on-recovery',
+    slug: 'thundering-herd-on-recovery',
+    domain: 'distributed-systems',
+    titles: {
+      en: 'Thundering herd on recovery',
+      bn: 'Recovery-তে thundering herd',
+    },
+    summary: {
+      en: 'The cluster comes back, 40,000 clients reconnect in the same 200ms window, and you fail again with a cold cache. Recovery needs its own capacity plan and its own jitter.',
+      bn: 'Cluster ফিরে আসে, ৪০,০০০ client একই ২০০ms-এ reconnect করে, আর cold cache নিয়ে আবার fail করেন। Recovery-র নিজের capacity plan আর নিজের jitter দরকার।',
+    },
+    tags: ['thundering-herd', 'recovery', 'jitter', 'load-shedding', 'cold-cache'],
+    difficulty: 'intermediate',
+    status: 'full',
+    related: ['consistent-hashing-rebalance', 'leader-election-failure-modes', 'gossip-and-membership-protocols'],
+    systemsLinks: ['thundering-herd', 'cache-stampede'],
+  },
+]
+
+export default topics

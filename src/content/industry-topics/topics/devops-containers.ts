@@ -1,0 +1,205 @@
+import type { IndustryTopic } from '../topic-types'
+
+/** DevOps, containers & Kubernetes wave — build, ship, and roll back safely. */
+const topics: IndustryTopic[] = [
+  {
+    id: 'docker-image-layer-optimization',
+    slug: 'docker-image-layer-optimization',
+    domain: 'devops-containers',
+    titles: {
+      en: 'Docker image layer optimization',
+      bn: 'Docker image layer optimization',
+    },
+    summary: {
+      en: 'Why a one-line code change rebuilds 900 MB, and how layer order, multi-stage builds, and cache mounts fix it.',
+      bn: 'এক লাইন কোড বদলালে কেন ৯০০ MB rebuild হয়, এবং layer order, multi-stage build ও cache mount কীভাবে ঠিক করে।',
+    },
+    tags: ['docker', 'build-cache', 'multi-stage', 'image-size', 'ci'],
+    difficulty: 'intermediate',
+    status: 'full',
+    related: ['ci-cd-pipeline-safety-gates', 'sidecar-and-init-container-patterns'],
+    systemsLinks: [],
+  },
+  {
+    id: 'kubernetes-probes-done-right',
+    slug: 'kubernetes-probes-done-right',
+    domain: 'devops-containers',
+    titles: {
+      en: 'Kubernetes probes done right',
+      bn: 'Kubernetes probe ঠিকভাবে করা',
+    },
+    summary: {
+      en: 'Liveness that restarts healthy pods, readiness that lies, and the startup probe most teams forget.',
+      bn: 'liveness সুস্থ pod restart করে, readiness মিথ্যা বলে, আর startup probe বেশিরভাগ টিম ভুলে যায়।',
+    },
+    tags: ['kubernetes', 'probes', 'health-checks', 'rollouts'],
+    difficulty: 'intermediate',
+    status: 'full',
+    related: ['k8s-rollout-failure-modes', 'node-draining-and-disruption-budgets'],
+    systemsLinks: ['golden-signals', 'blue-green-canary'],
+  },
+  {
+    id: 'oom-and-resource-limits',
+    slug: 'oom-and-resource-limits',
+    domain: 'devops-containers',
+    titles: {
+      en: 'OOMKilled and resource limits',
+      bn: 'OOMKilled ও resource limit',
+    },
+    summary: {
+      en: 'Exit code 137, cgroup-blind runtimes, and CPU throttling that looks exactly like a slow database.',
+      bn: 'exit code 137, cgroup না-দেখা runtime, আর CPU throttling যা দেখতে ঠিক slow database-এর মতো।',
+    },
+    tags: ['kubernetes', 'oom', 'cgroups', 'limits', 'capacity'],
+    difficulty: 'intermediate',
+    status: 'full',
+    related: ['autoscaling-on-the-right-signal', 'kubernetes-probes-done-right'],
+    systemsLinks: ['golden-signals', 'littles-law'],
+  },
+  {
+    id: 'blue-green-vs-canary-releases',
+    slug: 'blue-green-vs-canary-releases',
+    domain: 'devops-containers',
+    titles: {
+      en: 'Blue-green vs canary releases',
+      bn: 'Blue-green vs canary release',
+    },
+    summary: {
+      en: 'Instant cutover versus gradual exposure — which one your database schema and error budget can actually afford.',
+      bn: 'instant cutover vs gradual exposure — আপনার database schema ও error budget আসলে কোনটা afford করে।',
+    },
+    tags: ['deploy', 'canary', 'blue-green', 'traffic-shifting', 'kubernetes'],
+    difficulty: 'intermediate',
+    status: 'full',
+    related: ['rollback-vs-forward-fix', 'k8s-rollout-failure-modes'],
+    systemsLinks: ['blue-green-canary', 'feature-flags'],
+  },
+  {
+    id: 'secrets-and-config-in-kubernetes',
+    slug: 'secrets-and-config-in-kubernetes',
+    domain: 'devops-containers',
+    titles: {
+      en: 'Secrets and config in Kubernetes',
+      bn: 'Kubernetes-এ secret ও config',
+    },
+    summary: {
+      en: 'base64 is not encryption, ConfigMap edits do not restart pods, and rotation without a rollout changes nothing.',
+      bn: 'base64 encryption নয়, ConfigMap edit pod restart করে না, rollout ছাড়া rotation কিছুই বদলায় না।',
+    },
+    tags: ['kubernetes', 'secrets', 'configmap', 'rotation', 'security'],
+    difficulty: 'intermediate',
+    status: 'full',
+    related: ['ci-cd-pipeline-safety-gates', 'migrations-in-the-deploy-pipeline'],
+    systemsLinks: ['feature-flags'],
+  },
+  {
+    id: 'autoscaling-on-the-right-signal',
+    slug: 'autoscaling-on-the-right-signal',
+    domain: 'devops-containers',
+    titles: {
+      en: 'Autoscaling on the right signal',
+      bn: 'সঠিক signal-এ autoscaling',
+    },
+    summary: {
+      en: 'CPU is a proxy, not a symptom — scaling on queue depth, concurrency, and latency instead.',
+      bn: 'CPU একটা proxy, symptom নয় — বরং queue depth, concurrency ও latency দেখে scale করা।',
+    },
+    tags: ['kubernetes', 'hpa', 'autoscaling', 'keda', 'capacity'],
+    difficulty: 'advanced',
+    status: 'full',
+    related: ['oom-and-resource-limits', 'node-draining-and-disruption-budgets'],
+    systemsLinks: ['littles-law', 'backpressure'],
+  },
+  {
+    id: 'ci-cd-pipeline-safety-gates',
+    slug: 'ci-cd-pipeline-safety-gates',
+    domain: 'devops-containers',
+    titles: {
+      en: 'CI/CD pipeline safety gates',
+      bn: 'CI/CD pipeline-এ safety gate',
+    },
+    summary: {
+      en: 'Mutable tags, skipped tests, and the green pipeline that shipped an untested commit to production.',
+      bn: 'mutable tag, skip করা test, আর সবুজ pipeline যা untested commit production-এ পাঠিয়েছে।',
+    },
+    tags: ['ci-cd', 'pipelines', 'supply-chain', 'digests', 'gates'],
+    difficulty: 'intermediate',
+    status: 'full',
+    related: ['docker-image-layer-optimization', 'migrations-in-the-deploy-pipeline'],
+    systemsLinks: ['feature-flags', 'blue-green-canary'],
+  },
+  {
+    id: 'migrations-in-the-deploy-pipeline',
+    slug: 'migrations-in-the-deploy-pipeline',
+    domain: 'devops-containers',
+    titles: {
+      en: 'Database migrations in the deploy pipeline',
+      bn: 'Deploy pipeline-এ database migration',
+    },
+    summary: {
+      en: 'Expand and contract, advisory locks, and why a rolling update means old and new code query the same schema.',
+      bn: 'expand-contract, advisory lock, আর rolling update-এ পুরনো ও নতুন কোড একই schema-তে query করে কেন।',
+    },
+    tags: ['migrations', 'deploy', 'schema', 'expand-contract', 'kubernetes'],
+    difficulty: 'advanced',
+    status: 'full',
+    related: ['rollback-vs-forward-fix', 'blue-green-vs-canary-releases'],
+    systemsLinks: ['feature-flags'],
+  },
+  {
+    id: 'node-draining-and-disruption-budgets',
+    slug: 'node-draining-and-disruption-budgets',
+    domain: 'devops-containers',
+    titles: {
+      en: 'Node draining and disruption budgets',
+      bn: 'Node draining ও disruption budget',
+    },
+    summary: {
+      en: 'SIGTERM ignored, connections cut mid-request, and a PodDisruptionBudget that either blocks upgrades or protects nothing.',
+      bn: 'SIGTERM উপেক্ষিত, request-এর মাঝপথে connection কাটা, আর PDB যা হয় upgrade আটকায় নয়তো কিছুই বাঁচায় না।',
+    },
+    tags: ['kubernetes', 'pdb', 'drain', 'graceful-shutdown', 'sigterm'],
+    difficulty: 'advanced',
+    status: 'full',
+    related: ['kubernetes-probes-done-right', 'autoscaling-on-the-right-signal'],
+    systemsLinks: ['chaos-engineering', 'golden-signals'],
+  },
+  {
+    id: 'sidecar-and-init-container-patterns',
+    slug: 'sidecar-and-init-container-patterns',
+    domain: 'devops-containers',
+    titles: {
+      en: 'Sidecar and init container patterns',
+      bn: 'Sidecar ও init container pattern',
+    },
+    summary: {
+      en: 'Jobs that never finish, apps that start before the proxy is ready, and native sidecars that fix both.',
+      bn: 'কখনো শেষ না হওয়া Job, proxy ready হওয়ার আগেই চালু হওয়া app, আর native sidecar যা দুটোই ঠিক করে।',
+    },
+    tags: ['kubernetes', 'sidecar', 'init-containers', 'service-mesh', 'pods'],
+    difficulty: 'advanced',
+    status: 'full',
+    related: ['kubernetes-probes-done-right', 'docker-image-layer-optimization'],
+    systemsLinks: [],
+  },
+  {
+    id: 'rollback-vs-forward-fix',
+    slug: 'rollback-vs-forward-fix',
+    domain: 'devops-containers',
+    titles: {
+      en: 'Rollback versus forward fix',
+      bn: 'Rollback vs forward fix',
+    },
+    summary: {
+      en: 'A decision rule for 2am: when the previous image is safe, when it is not, and how to make rollback the default.',
+      bn: 'রাত ২টার সিদ্ধান্তের নিয়ম: আগের image কখন নিরাপদ, কখন নয়, আর rollback-কে default বানানোর উপায়।',
+    },
+    tags: ['incident-response', 'rollback', 'deploy', 'runbook', 'kubernetes'],
+    difficulty: 'intermediate',
+    status: 'full',
+    related: ['migrations-in-the-deploy-pipeline', 'blue-green-vs-canary-releases'],
+    systemsLinks: ['blue-green-canary', 'feature-flags'],
+  },
+]
+
+export default topics

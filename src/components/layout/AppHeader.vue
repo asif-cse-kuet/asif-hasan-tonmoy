@@ -1,117 +1,77 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { computed } from 'vue'
 import { RouterLink, useRoute } from 'vue-router'
 
 import LangToggle from '@/components/LangToggle.vue'
+import { useLocaleText } from '@/composables/useLocaleText'
 import { PROFILE } from '@/content/profile'
 import { useUiStore } from '@/stores/ui'
 
 const ui = useUiStore()
 const route = useRoute()
-const problemsOpen = ref(false)
+const { pick } = useLocaleText()
 
-const primaryLinks = [
-  { to: '/engineering', labelKey: 'nav.engineering' },
-  { to: '/architecture', labelKey: 'nav.architecture' },
-  { to: '/ai', labelKey: 'nav.ai' },
-  { to: '/marketing', labelKey: 'nav.marketing' },
-  { to: '/work', labelKey: 'nav.work' },
-  { to: '/lab', labelKey: 'nav.lab' },
-  { to: '/systems', labelKey: 'nav.systems' },
-  { to: '/contact', labelKey: 'nav.contact' },
-]
-
-const problemLinks = [
-  { to: '/problems/solved', labelKey: 'nav.solved' },
-  { to: '/problems/industry', labelKey: 'nav.industry' },
-]
-
-function isActive(path: string) {
-  return route.path === path || route.path.startsWith(`${path}/`)
+type NavItem = {
+  label: string
+  hash?: string
+  to?: string
 }
 
-function closeMobile() {
-  ui.closeMobileNav()
-  problemsOpen.value = false
+const items = computed<NavItem[]>(() => [
+  { label: pick({ en: 'Expertise', bn: 'দক্ষতা' }), hash: '#expertise' },
+  { label: pick({ en: 'Work', bn: 'কাজ' }), hash: '#work' },
+  { label: pick({ en: 'Experience', bn: 'অভিজ্ঞতা' }), hash: '#experience' },
+  { label: pick({ en: 'Problems solved', bn: 'সমাধান করা সমস্যা' }), to: '/problems/solved' },
+  { label: pick({ en: 'System design', bn: 'সিস্টেম ডিজাইন' }), to: '/systems' },
+  { label: pick({ en: 'Marketing', bn: 'মার্কেটিং' }), to: '/marketing' },
+])
+
+function target(item: NavItem) {
+  return item.to ?? { path: '/', hash: item.hash }
+}
+
+function isActive(item: NavItem) {
+  if (!item.to) return false
+  return route.path === item.to || route.path.startsWith(`${item.to}/`)
 }
 </script>
 
 <template>
   <header class="sticky top-0 z-50 border-b border-steel/60 bg-ink/90 backdrop-blur-md">
-    <div class="page-wrap flex items-center justify-between gap-4 py-4">
+    <div class="page-wrap flex items-center justify-between gap-3 py-3">
       <RouterLink
         to="/"
-        class="font-display text-lg font-semibold tracking-tight text-paper no-underline hover:text-glow sm:text-xl"
-        @click="closeMobile"
+        class="min-w-0 font-display text-base font-semibold tracking-tight text-paper no-underline hover:text-glow sm:text-lg"
+        @click="ui.closeMobileNav()"
       >
-        {{ PROFILE.name }}
+        <span class="block truncate">{{ PROFILE.name }}</span>
       </RouterLink>
 
-      <nav class="hidden items-center gap-1 lg:flex" aria-label="Main">
+      <nav class="hidden items-center gap-0.5 lg:flex" aria-label="Main">
         <RouterLink
-          v-for="link in primaryLinks.slice(0, 4)"
-          :key="link.to"
-          :to="link.to"
+          v-for="item in items"
+          :key="item.label"
+          :to="target(item)"
           class="rounded px-2.5 py-1.5 text-sm font-medium no-underline transition-colors"
-          :class="isActive(link.to) ? 'text-glow' : 'text-mist hover:text-paper'"
+          :class="isActive(item) ? 'text-glow' : 'text-mist hover:text-paper'"
         >
-          {{ $t(link.labelKey) }}
-        </RouterLink>
-
-        <RouterLink
-          v-for="link in primaryLinks.slice(4, 7)"
-          :key="link.to"
-          :to="link.to"
-          class="rounded px-2.5 py-1.5 text-sm font-medium no-underline transition-colors"
-          :class="isActive(link.to) ? 'text-glow' : 'text-mist hover:text-paper'"
-        >
-          {{ $t(link.labelKey) }}
-        </RouterLink>
-
-        <div class="relative" @mouseleave="problemsOpen = false">
-          <button
-            type="button"
-            class="rounded px-2.5 py-1.5 text-sm font-medium transition-colors"
-            :class="route.path.startsWith('/problems') ? 'text-glow' : 'text-mist hover:text-paper'"
-            aria-haspopup="true"
-            :aria-expanded="problemsOpen"
-            @mouseenter="problemsOpen = true"
-            @click="problemsOpen = !problemsOpen"
-          >
-            {{ $t('nav.problems') }} ▾
-          </button>
-          <div
-            v-show="problemsOpen"
-            class="absolute left-0 top-full z-50 mt-1 min-w-[11rem] rounded-md border border-steel/80 bg-ink-soft py-1 shadow-lg"
-          >
-            <RouterLink
-              v-for="link in problemLinks"
-              :key="link.to"
-              :to="link.to"
-              class="block px-4 py-2 text-sm no-underline hover:bg-steel/40"
-              :class="isActive(link.to) ? 'text-glow' : 'text-mist'"
-              @click="problemsOpen = false"
-            >
-              {{ $t(link.labelKey) }}
-            </RouterLink>
-          </div>
-        </div>
-
-        <RouterLink
-          :to="primaryLinks[7]!.to"
-          class="rounded px-2.5 py-1.5 text-sm font-medium no-underline transition-colors"
-          :class="isActive(primaryLinks[7]!.to) ? 'text-glow' : 'text-mist hover:text-paper'"
-        >
-          {{ $t(primaryLinks[7]!.labelKey) }}
+          {{ item.label }}
         </RouterLink>
       </nav>
 
-      <div class="flex items-center gap-3">
-        <LangToggle class="hidden sm:inline-flex" />
+      <div class="flex shrink-0 items-center gap-2">
+        <LangToggle />
+        <RouterLink
+          :to="{ path: '/', hash: '#contact' }"
+          class="hidden rounded-md bg-accent px-3.5 py-1.5 text-sm font-semibold text-paper no-underline hover:bg-accent-soft hover:text-ink sm:inline-block"
+        >
+          {{ pick({ en: 'Hire me', bn: 'নিয়োগ' }) }}
+        </RouterLink>
         <button
           type="button"
           class="rounded border border-steel px-3 py-1.5 text-sm text-paper lg:hidden"
           :aria-expanded="ui.mobileNavOpen"
+          aria-controls="mobile-nav"
           @click="ui.toggleMobileNav()"
         >
           {{ ui.mobileNavOpen ? $t('nav.close') : $t('nav.menu') }}
@@ -121,32 +81,27 @@ function closeMobile() {
 
     <nav
       v-if="ui.mobileNavOpen"
+      id="mobile-nav"
       class="border-t border-steel/60 bg-ink-soft lg:hidden"
       aria-label="Mobile"
     >
-      <div class="page-wrap flex flex-col gap-1 py-4">
+      <div class="page-wrap flex flex-col gap-1 py-3">
         <RouterLink
-          v-for="link in primaryLinks"
-          :key="link.to"
-          :to="link.to"
-          class="rounded px-3 py-2 text-sm no-underline hover:bg-steel/30"
-          @click="closeMobile"
+          v-for="item in items"
+          :key="item.label"
+          :to="target(item)"
+          class="rounded px-3 py-2.5 text-sm no-underline hover:bg-steel/30"
+          @click="ui.closeMobileNav()"
         >
-          {{ $t(link.labelKey) }}
+          {{ item.label }}
         </RouterLink>
-        <p class="px-3 pt-2 text-xs uppercase tracking-wide text-mist">{{ $t('nav.problems') }}</p>
         <RouterLink
-          v-for="link in problemLinks"
-          :key="link.to"
-          :to="link.to"
-          class="rounded px-3 py-2 pl-6 text-sm no-underline hover:bg-steel/30"
-          @click="closeMobile"
+          :to="{ path: '/', hash: '#contact' }"
+          class="mt-1 rounded bg-accent px-3 py-2.5 text-center text-sm font-semibold text-paper no-underline"
+          @click="ui.closeMobileNav()"
         >
-          {{ $t(link.labelKey) }}
+          {{ pick({ en: 'Hire me', bn: 'নিয়োগ' }) }}
         </RouterLink>
-        <div class="px-3 pt-3">
-          <LangToggle />
-        </div>
       </div>
     </nav>
   </header>

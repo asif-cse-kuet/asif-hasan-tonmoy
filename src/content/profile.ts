@@ -5,6 +5,11 @@ export type ProfileLink = {
   label: string
   url: string
   kind: 'github' | 'linkedin' | 'upwork' | 'coding' | 'site' | 'email' | 'other'
+  /** simple-icons slug; null renders a monogram chip */
+  icon?: string | null
+  handle?: string
+  /** show in the hero link strip */
+  primary?: boolean
 }
 
 export type ProofMetric = {
@@ -43,64 +48,103 @@ export const PROFILE_LINKS: ProfileLink[] = [
   {
     id: 'github',
     label: 'GitHub',
+    handle: 'asif-cse-kuet',
     url: 'https://github.com/asif-cse-kuet',
     kind: 'github',
+    icon: 'github',
+    primary: true,
+  },
+  {
+    id: 'codeforces',
+    label: 'Codeforces',
+    handle: 'asif.hasan.tonmoy',
+    url: 'https://codeforces.com/profile/asif.hasan.tonmoy',
+    kind: 'coding',
+    icon: 'codeforces',
+    primary: true,
+  },
+  {
+    id: 'leetcode',
+    label: 'LeetCode',
+    handle: 'noooob_bot',
+    url: 'https://leetcode.com/u/noooob_bot/',
+    kind: 'coding',
+    icon: 'leetcode',
+    primary: true,
+  },
+  {
+    id: 'hackerrank',
+    label: 'HackerRank',
+    handle: 'asifhasantonmoy1',
+    url: 'https://www.hackerrank.com/asifhasantonmoy1',
+    kind: 'coding',
+    icon: 'hackerrank',
+    primary: true,
   },
   {
     id: 'linkedin',
     label: 'LinkedIn',
+    handle: 'asif-hasan-tonmoy',
     url: 'https://www.linkedin.com/in/asif-hasan-tonmoy/',
     kind: 'linkedin',
+    icon: null,
+    primary: true,
   },
   {
     id: 'upwork',
     label: 'Upwork',
+    handle: 'Top Rated',
     url: 'https://www.upwork.com/freelancers/~01a37597d55b982d60',
     kind: 'upwork',
+    icon: 'upwork',
+    primary: true,
+  },
+  {
+    id: 'gitlab',
+    label: 'GitLab',
+    url: 'https://gitlab.com/',
+    kind: 'other',
+    icon: 'gitlab',
   },
   {
     id: 'upwork-direct',
     label: 'Work with me (Upwork)',
     url: 'https://www.upwork.com/workwith/asifhasantonmoy',
     kind: 'upwork',
-  },
-  {
-    id: 'codeforces',
-    label: 'Codeforces',
-    url: 'https://codeforces.com/profile/asif.hasan.tonmoy',
-    kind: 'coding',
-  },
-  {
-    id: 'hackerrank',
-    label: 'HackerRank',
-    url: 'https://www.hackerrank.com/asifhasantonmoy1',
-    kind: 'coding',
-  },
-  {
-    id: 'leetcode',
-    label: 'LeetCode',
-    url: 'https://leetcode.com/u/noooob_bot/',
-    kind: 'coding',
+    icon: 'upwork',
   },
   {
     id: 'google-site',
-    label: 'Legacy Google Site',
+    label: 'Legacy marketing site',
     url: 'https://sites.google.com/view/asifhasan/home',
     kind: 'site',
+    icon: null,
   },
   {
     id: 'tree-explorer',
-    label: 'Tree Explorer',
+    label: 'Tree Explorer (live demo)',
     url: 'https://tree-explorer-coral.vercel.app/',
     kind: 'site',
+    icon: 'vercel',
+  },
+  {
+    id: 'research-doi',
+    label: 'ICCIT 2025 paper (DOI)',
+    url: 'https://doi.org/10.1109/ICCIT68739.2025.11490477',
+    kind: 'other',
+    icon: null,
   },
   {
     id: 'email',
     label: 'Email',
+    handle: 'asifhasan.cse75@gmail.com',
     url: 'mailto:asifhasan.cse75@gmail.com',
     kind: 'email',
+    icon: null,
   },
 ]
+
+export const PRIMARY_LINKS = PROFILE_LINKS.filter((link) => link.primary)
 
 export const PROOF_METRICS: ProofMetric[] = [
   {

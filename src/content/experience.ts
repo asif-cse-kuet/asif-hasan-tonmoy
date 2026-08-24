@@ -45,7 +45,7 @@ export const EXPERIENCE: ExperienceEntry[] = [
       en: 'Programming Instructor',
       bn: 'প্রোগ্রামিং ইন্সট্রাক্টর',
     },
-    period: '2023 – 2024',
+    period: 'Aug 2023 – Nov 2024',
     highlights: [
       {
         en: 'Taught JavaScript, Python, and C++ to students — bridging algorithms to practical engineering.',
@@ -112,19 +112,19 @@ export const EXPERIENCE: ExperienceEntry[] = [
   },
   {
     id: 'tribus',
-    organization: 'Tribus Technology',
+    organization: 'Tribus Limited',
     role: {
-      en: 'Software Developer',
-      bn: 'সফটওয়্যার ডেভেলপার',
+      en: 'Marketing Executive',
+      bn: 'মার্কেটিং এক্সিকিউটিভ',
     },
-    period: '2018 – 2019',
+    period: 'Apr 2018 – Jun 2019',
     highlights: [
       {
-        en: 'Early-career product engineering and client-facing delivery.',
-        bn: 'প্রারম্ভিক ক্যারিয়ারে প্রোডাক্ট ইঞ্জিনিয়ারিং ও ক্লায়েন্ট-মুখী ডেলিভারি।',
+        en: 'Growth and automation campaigns for 8–10 international clients across SEO, brand, and audience growth.',
+        bn: '৮–১০টি আন্তর্জাতিক ক্লায়েন্টের জন্য SEO, ব্র্যান্ড ও অডিয়েন্স গ্রোথ ক্যাম্পেইন।',
       },
     ],
-    tags: ['software', 'early-career'],
+    tags: ['marketing', 'seo', 'early-career'],
   },
   {
     id: 'shabash-fakibaj',

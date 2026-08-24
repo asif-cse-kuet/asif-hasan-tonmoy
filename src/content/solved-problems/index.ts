@@ -540,3 +540,20 @@ export function getSolvedProblemBySlug(slug: string): SolvedProblem | undefined 
 export function getSolvedProblemsByTag(tag: string): SolvedProblem[] {
   return SOLVED_PROBLEMS.filter((item) => item.tags.includes(tag))
 }
+
+export function getAllProblemTags(): string[] {
+  const tags = new Set<string>()
+  for (const problem of SOLVED_PROBLEMS) {
+    for (const tag of problem.tags) tags.add(tag)
+  }
+  return [...tags].sort()
+}
+
+export function getAdjacentProblems(slug: string) {
+  const index = SOLVED_PROBLEMS.findIndex((p) => p.slug === slug)
+  if (index === -1) return { prev: undefined, next: undefined }
+  return {
+    prev: index > 0 ? SOLVED_PROBLEMS[index - 1] : undefined,
+    next: index < SOLVED_PROBLEMS.length - 1 ? SOLVED_PROBLEMS[index + 1] : undefined,
+  }
+}

@@ -1,0 +1,205 @@
+import type { IndustryTopic } from '../topic-types'
+
+/** Auth, security & tenancy wave — identity mistakes that turn into incidents. */
+const topics: IndustryTopic[] = [
+  {
+    id: 'rbac-vs-abac-modeling',
+    slug: 'rbac-vs-abac-modeling',
+    domain: 'auth-security',
+    titles: {
+      en: 'RBAC vs ABAC authorization modeling',
+      bn: 'RBAC vs ABAC authorization modeling',
+    },
+    summary: {
+      en: 'Role explosion, attribute policies, and where the authorization decision actually belongs in the request path.',
+      bn: 'role explosion, attribute policy, request path-এ authorization decision আসলে কোথায় থাকা উচিত।',
+    },
+    tags: ['rbac', 'abac', 'authorization', 'policy', 'laravel'],
+    difficulty: 'intermediate',
+    status: 'full',
+    related: ['multi-tenant-authorization-leaks', 'audit-logging-for-compliance'],
+    systemsLinks: ['feature-flags'],
+  },
+  {
+    id: 'jwt-revocation-problem',
+    slug: 'jwt-revocation-problem',
+    domain: 'auth-security',
+    titles: {
+      en: 'The JWT revocation problem',
+      bn: 'JWT revocation-এর সমস্যা',
+    },
+    summary: {
+      en: 'Stateless tokens cannot be un-issued — denylists, short TTLs, and token versioning that actually log a user out.',
+      bn: 'stateless token ফেরত নেওয়া যায় না — denylist, short TTL, token versioning যা সত্যিই logout করায়।',
+    },
+    tags: ['jwt', 'tokens', 'revocation', 'sessions'],
+    difficulty: 'intermediate',
+    status: 'full',
+    related: ['oauth-token-lifecycle', 'session-fixation-and-csrf'],
+    systemsLinks: ['cache-stampede', 'rate-limiting'],
+  },
+  {
+    id: 'session-fixation-and-csrf',
+    slug: 'session-fixation-and-csrf',
+    domain: 'auth-security',
+    titles: {
+      en: 'Session fixation and CSRF defence',
+      bn: 'Session fixation ও CSRF প্রতিরোধ',
+    },
+    summary: {
+      en: 'Why session IDs must rotate at every privilege change, and what SameSite does not protect.',
+      bn: 'প্রতি privilege change-এ session ID rotate করা লাগে কেন, আর SameSite কী রক্ষা করে না।',
+    },
+    tags: ['csrf', 'sessions', 'cookies', 'samesite'],
+    difficulty: 'intermediate',
+    status: 'full',
+    related: ['jwt-revocation-problem', 'oauth-token-lifecycle'],
+    systemsLinks: ['rate-limiting'],
+  },
+  {
+    id: 'multi-tenant-authorization-leaks',
+    slug: 'multi-tenant-authorization-leaks',
+    domain: 'auth-security',
+    titles: {
+      en: 'Multi-tenant authorization leaks',
+      bn: 'Multi-tenant authorization leak',
+    },
+    summary: {
+      en: 'One forgotten where-clause exposes another customer — scoping at the boundary instead of per query.',
+      bn: 'একটা ভুলে যাওয়া where-clause অন্য customer-কে খুলে দেয় — per query নয়, boundary-তে scoping।',
+    },
+    tags: ['tenancy', 'idor', 'authorization', 'sql', 'laravel'],
+    difficulty: 'advanced',
+    status: 'full',
+    related: ['rbac-vs-abac-modeling', 'oauth-token-lifecycle'],
+    systemsLinks: ['feature-flags'],
+  },
+  {
+    id: 'secrets-management-and-rotation',
+    slug: 'secrets-management-and-rotation',
+    domain: 'auth-security',
+    titles: {
+      en: 'Secrets management and zero-downtime rotation',
+      bn: 'Secrets management ও zero-downtime rotation',
+    },
+    summary: {
+      en: 'Dual-key windows, leaked credentials in build logs, and rotation drills you run before the breach.',
+      bn: 'dual-key window, build log-এ leak হওয়া credential, breach-এর আগেই rotation drill।',
+    },
+    tags: ['secrets', 'rotation', 'kms', 'devops'],
+    difficulty: 'advanced',
+    status: 'full',
+    related: ['jwt-revocation-problem', 'audit-logging-for-compliance'],
+    systemsLinks: ['blue-green-canary', 'chaos-engineering'],
+  },
+  {
+    id: 'password-reset-flow-attacks',
+    slug: 'password-reset-flow-attacks',
+    domain: 'auth-security',
+    titles: {
+      en: 'Password reset flow attacks',
+      bn: 'Password reset flow-এ আক্রমণ',
+    },
+    summary: {
+      en: 'Host header poisoning, token reuse, and enumeration — the account takeover path nobody load-tests.',
+      bn: 'host header poisoning, token reuse, enumeration — account takeover-এর যে path কেউ load-test করে না।',
+    },
+    tags: ['password-reset', 'account-takeover', 'tokens', 'email'],
+    difficulty: 'intermediate',
+    status: 'full',
+    related: ['mfa-and-account-recovery-tradeoffs', 'session-fixation-and-csrf'],
+    systemsLinks: ['rate-limiting', 'idempotency-keys'],
+  },
+  {
+    id: 'injection-and-orm-escapes',
+    slug: 'injection-and-orm-escapes',
+    domain: 'auth-security',
+    titles: {
+      en: 'Injection through ORM escape hatches',
+      bn: 'ORM escape hatch দিয়ে injection',
+    },
+    summary: {
+      en: 'Raw expressions, dynamic order-by, and JSON paths — the places a query builder stops protecting you.',
+      bn: 'raw expression, dynamic order-by, JSON path — query builder যেখানে আর রক্ষা করে না।',
+    },
+    tags: ['sql-injection', 'orm', 'parameterisation', 'owasp'],
+    difficulty: 'intermediate',
+    status: 'full',
+    related: ['multi-tenant-authorization-leaks', 'ssrf-and-internal-metadata'],
+    systemsLinks: [],
+  },
+  {
+    id: 'file-upload-security',
+    slug: 'file-upload-security',
+    domain: 'auth-security',
+    titles: {
+      en: 'File upload security boundaries',
+      bn: 'File upload-এর security boundary',
+    },
+    summary: {
+      en: 'Content-type lies, path traversal, and why user files must never live on an executable path.',
+      bn: 'content-type মিথ্যা বলে, path traversal, user file কখনো executable path-এ রাখা যায় না কেন।',
+    },
+    tags: ['uploads', 'storage', 'mime', 'owasp'],
+    difficulty: 'intermediate',
+    status: 'full',
+    related: ['ssrf-and-internal-metadata', 'injection-and-orm-escapes'],
+    systemsLinks: ['message-queues'],
+  },
+  {
+    id: 'ssrf-and-internal-metadata',
+    slug: 'ssrf-and-internal-metadata',
+    domain: 'auth-security',
+    titles: {
+      en: 'SSRF and internal metadata exposure',
+      bn: 'SSRF ও internal metadata exposure',
+    },
+    summary: {
+      en: 'Any URL a user supplies becomes your outbound request — allowlists, DNS pinning, and egress proxies.',
+      bn: 'user-এর দেওয়া যেকোনো URL আপনার outbound request হয়ে যায় — allowlist, DNS pinning, egress proxy।',
+    },
+    tags: ['ssrf', 'egress', 'metadata', 'webhooks', 'owasp'],
+    difficulty: 'advanced',
+    status: 'full',
+    related: ['file-upload-security', 'secrets-management-and-rotation'],
+    systemsLinks: [],
+  },
+  {
+    id: 'audit-logging-for-compliance',
+    slug: 'audit-logging-for-compliance',
+    domain: 'auth-security',
+    titles: {
+      en: 'Audit logging that survives compliance review',
+      bn: 'Compliance review টেকে এমন audit logging',
+    },
+    summary: {
+      en: 'Append-only trails, actor attribution through async jobs, and retention that answers "who changed this?".',
+      bn: 'append-only trail, async job-এও actor attribution, retention যা "কে বদলেছে?" উত্তর দেয়।',
+    },
+    tags: ['audit', 'compliance', 'observability', 'retention'],
+    difficulty: 'intermediate',
+    status: 'full',
+    related: ['rbac-vs-abac-modeling', 'multi-tenant-authorization-leaks'],
+    systemsLinks: ['outbox-pattern', 'golden-signals'],
+  },
+  {
+    id: 'mfa-and-account-recovery-tradeoffs',
+    slug: 'mfa-and-account-recovery-tradeoffs',
+    domain: 'auth-security',
+    titles: {
+      en: 'MFA and account recovery tradeoffs',
+      bn: 'MFA ও account recovery tradeoff',
+    },
+    summary: {
+      en: 'Your recovery path is your real security level — TOTP, WebAuthn, and the support-desk bypass.',
+      bn: 'recovery path-ই আসল security level — TOTP, WebAuthn, আর support-desk bypass।',
+    },
+    tags: ['mfa', 'totp', 'webauthn', 'recovery'],
+    difficulty: 'intermediate',
+    status: 'full',
+    related: ['password-reset-flow-attacks', 'session-fixation-and-csrf'],
+    systemsLinks: ['rate-limiting'],
+  },
+]
+
+export default topics
