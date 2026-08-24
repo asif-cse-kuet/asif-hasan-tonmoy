@@ -24,21 +24,21 @@ const cards = computed(() => [
   {
     to: '/systems',
     kicker: pick({ en: 'Knowledge library', bn: 'জ্ঞান ভাণ্ডার' }),
-    title: pick({ en: 'Engineering systems & system design guide', bn: 'ইঞ্জিনিয়ারিং সিস্টেম ও সিস্টেম ডিজাইন গাইড' }),
+    title: pick({ en: 'My Engineering Blog', bn: 'আমার ইঞ্জিনিয়ারিং ব্লগ' }),
     body: pick({
-      en: 'An educational atlas of industry-critical scenarios and advanced system design concepts, readable in English or Bengali.',
-      bn: 'ইন্ডাস্ট্রি-ক্রিটিক্যাল দৃশ্যপট ও অ্যাডভান্সড সিস্টেম ডিজাইন ধারণার শিক্ষামূলক অ্যাটলাস — ইংরেজি বা বাংলায় পড়ুন।',
+      en: 'A documentation-style library of industry-critical failures and the designs that survive them — English and Bengali.',
+      bn: 'ইন্ডাস্ট্রি-ক্রিটিক্যাল ব্যর্থতা ও যে ডিজাইনগুলো টিকে থাকে — ডকুমেন্টেশন স্টাইলে, ইংরেজি ও বাংলায়।',
     }),
     count: `${TOPICS.length}+`,
     countLabel: pick({ en: 'topics', bn: 'টপিক' }),
   },
   {
     to: '/marketing',
-    kicker: pick({ en: 'Growth', bn: 'গ্রোথ' }),
-    title: pick({ en: 'Marketing consultant', bn: 'মার্কেটিং কনসালট্যান্ট' }),
+    kicker: pick({ en: 'Software to business', bn: 'সফটওয়্যার থেকে ব্যবসা' }),
+    title: pick({ en: 'Hire both chairs in one person', bn: 'দুই আসন একজনের মধ্যে' }),
     body: pick({
-      en: '8+ years, 50+ clients, 70+ social growth wins — with its own timeline, channel stack, and proof.',
-      bn: '৮+ বছর, ৫০+ ক্লায়েন্ট, ৭০+ সোশ্যাল গ্রোথ সাফল্য — নিজস্ব টাইমলাইন, চ্যানেল স্ট্যাক ও প্রমাণ সহ।',
+      en: 'Eight years running demand for 50+ owners, now shipping the software those funnels depend on. Tech Lead, Marketing Director, or both — without a translation layer.',
+      bn: '৮ বছর ৫০+ মালিকের চাহিদা চালিয়ে, এখন সেই ফানেল যে সফটওয়্যার চালায় সেটাই শিপ করি। টেক লিড, মার্কেটিং ডিরেক্টর, বা দুই আসন — অনুবাদক ছাড়া।',
     }),
     count: '50+',
     countLabel: pick({ en: 'clients', bn: 'ক্লায়েন্ট' }),

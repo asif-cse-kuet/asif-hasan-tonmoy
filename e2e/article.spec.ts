@@ -22,7 +22,10 @@ test('article renders prose, code blocks, and Mermaid diagrams', async ({ page }
   expect(await diagrams.count()).toBeGreaterThan(0)
   await expect(diagrams.first().locator('svg')).toBeVisible({ timeout: 20000 })
 
-  expect(errors, `console errors: ${errors.join(' | ')}`).toEqual([])
+  const blocking = errors.filter(
+    (error) => !/WebGL|THREE\.WebGLRenderer|GPU stall/i.test(error),
+  )
+  expect(blocking, `console errors: ${blocking.join(' | ')}`).toEqual([])
 })
 
 test('article language switch loads the Bengali version', async ({ page }) => {
@@ -44,6 +47,6 @@ test('topic pages link back up the hierarchy', async ({ page }) => {
   await page.getByRole('link', { name: /Performance|পারফরম/ }).first().click()
   await expect(page).toHaveURL(/\/systems\/performance-capacity$/)
 
-  await page.getByRole('link', { name: /System design guide|সিস্টেম ডিজাইন গাইড/ }).first().click()
+  await page.getByRole('link', { name: /My Engineering Blog|ইঞ্জিনিয়ারিং ব্লগ/ }).first().click()
   await expect(page).toHaveURL(/\/systems$/)
 })

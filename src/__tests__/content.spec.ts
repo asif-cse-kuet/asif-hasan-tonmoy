@@ -103,8 +103,8 @@ describe('tech stack presentation', () => {
 })
 
 describe('capabilities', () => {
-  it('covers five practice areas with keyword clusters', () => {
-    expect(CAPABILITIES.length).toBe(5)
+  it('covers six practice areas with keyword clusters', () => {
+    expect(CAPABILITIES.length).toBe(6)
     for (const capability of CAPABILITIES) {
       expect(capability.clusters.length).toBeGreaterThanOrEqual(2)
       for (const cluster of capability.clusters) {

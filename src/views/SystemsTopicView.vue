@@ -69,10 +69,10 @@ watch(currentLocale, (locale) => {
 </script>
 
 <template>
-  <div class="page-wrap py-8 sm:py-10">
+  <div class="py-2 sm:py-4">
     <nav class="mb-5 flex flex-wrap items-center gap-2 text-sm text-mist/70">
       <RouterLink to="/systems" class="no-underline hover:text-glow">
-        {{ pick({ en: 'System design guide', bn: 'সিস্টেম ডিজাইন গাইড' }) }}
+        {{ pick({ en: 'My Engineering Blog', bn: 'ইঞ্জিনিয়ারিং ব্লগ' }) }}
       </RouterLink>
       <span aria-hidden="true">/</span>
       <RouterLink :to="`/systems/${domainSlug}`" class="text-glow no-underline">

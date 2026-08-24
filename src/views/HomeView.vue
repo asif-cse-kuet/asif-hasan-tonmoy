@@ -9,14 +9,12 @@ import HeroSection from '@/components/home/HeroSection.vue'
 import PortfolioSection from '@/components/home/PortfolioSection.vue'
 import ProofSection from '@/components/home/ProofSection.vue'
 import ResearchSection from '@/components/home/ResearchSection.vue'
-import SectionNav from '@/components/home/SectionNav.vue'
 import ServicesSection from '@/components/home/ServicesSection.vue'
 import TechStackSection from '@/components/home/TechStackSection.vue'
 </script>
 
 <template>
   <HeroSection />
-  <SectionNav />
   <ProofSection />
   <CapabilitiesSection />
   <TechStackSection />

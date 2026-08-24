@@ -11,16 +11,17 @@ const { pick } = useLocaleText()
   <SectionShell
     id="contact"
     :eyebrow="pick({ en: 'Contact', bn: 'যোগাযোগ' })"
-    :title="pick({ en: 'Let’s talk', bn: 'কথা বলি' })"
+    :title="pick({ en: 'Reach me today', bn: 'আজই যোগাযোগ করুন' })"
     :lead="
       pick({
-        en: 'Fastest route is email. Every link below is a public profile you can verify.',
-        bn: 'দ্রুততম পথ ইমেইল। নিচের প্রতিটি লিংক যাচাইযোগ্য পাবলিক প্রোফাইল।',
+        en: 'Call, email, or Upwork. I answer like an owner — with a next step, not a brochure.',
+        bn: 'কল, ইমেইল বা Upwork। পরবর্তী ধাপ দিয়ে উত্তর — ব্রোশার নয়।',
       })
     "
   >
     <div class="flex flex-wrap gap-3">
-      <a :href="`mailto:${PROFILE.email}`" class="btn-primary">{{ PROFILE.email }}</a>
+      <a :href="PROFILE.telHref" class="btn-primary">{{ pick({ en: 'Call', bn: 'কল' }) }} {{ PROFILE.phone }}</a>
+      <a :href="`mailto:${PROFILE.email}`" class="btn-ghost">{{ PROFILE.email }}</a>
       <a
         href="https://www.upwork.com/workwith/asifhasantonmoy"
         target="_blank"

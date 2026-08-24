@@ -17,6 +17,7 @@ describe('App', () => {
     const wrapper = mount(App, {
       global: {
         plugins: [createPinia(), router, i18n],
+        stubs: { SiteAtmosphere: true },
       },
     })
 

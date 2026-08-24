@@ -146,19 +146,6 @@ readinessProbe:
 
 Container limit-এর অন্তত 25% heap-এর বাইরে রাখুন। Metaspace, thread stack, direct byte buffer ও JIT code cache সবই ওখানে থাকে, আর kernel-এর কাছে "heap নয়" বলে কোনো ছাড় নেই।
 
-## Target design
-
-```mermaid
-flowchart LR
-  R["Request"] --> S["Streaming serialiser (2 KB garbage)"]
-  S --> C["Byte-array cache, weight-bounded"]
-  C --> Z["ZGC generational, Xmx 3g in a 4Gi limit"]
-  Z --> P["Pause target under 5 ms"]
-  Z --> M["Metrics: pause seconds + allocation rate"]
-  M --> A["Alert: pause time over 1 percent of wall clock"]
-  P --> H["Readiness timeout 3s, never trips on GC"]
-```
-
 ### 5. Pause-কে শুধু GC log নয়, SLO-তে দৃশ্যমান করুন
 
 ```promql
@@ -170,6 +157,19 @@ sum(rate(jvm_gc_pause_seconds_sum[5m])) by (pod) > 0.01
 
 # Allocation rate, leading indicator
 rate(jvm_memory_allocated_bytes_total[5m])
+```
+
+## Target design
+
+```mermaid
+flowchart LR
+  R["Request"] --> S["Streaming serialiser (2 KB garbage)"]
+  S --> C["Byte-array cache, weight-bounded"]
+  C --> Z["ZGC generational, Xmx 3g in a 4Gi limit"]
+  Z --> P["Pause target under 5 ms"]
+  Z --> M["Metrics: pause seconds + allocation rate"]
+  M --> A["Alert: pause time over 1 percent of wall clock"]
+  P --> H["Readiness timeout 3s, never trips on GC"]
 ```
 
 ## Tradeoffs

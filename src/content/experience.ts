@@ -16,8 +16,8 @@ export const EXPERIENCE: ExperienceEntry[] = [
     id: 'proficient-is',
     organization: 'Proficient Information System',
     role: {
-      en: 'Junior Software Engineer',
-      bn: 'জুনিয়র সফটওয়্যার ইঞ্জিনিয়ার',
+      en: 'Software Engineer',
+      bn: 'সফটওয়্যার ইঞ্জিনিয়ার',
     },
     period: 'Nov 2024 – Present',
     location: { en: 'Dhaka, Bangladesh', bn: 'ঢাকা, বাংলাদেশ' },

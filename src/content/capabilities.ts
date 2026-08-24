@@ -281,6 +281,61 @@ export const CAPABILITIES: Capability[] = [
       },
     ],
   },
+  {
+    id: 'software-to-business',
+    titles: { en: 'Software to business', bn: 'সফটওয়্যার থেকে ব্যবসা' },
+    headline: {
+      en: 'I do not bolt marketing onto engineering. I already ran demand for 50+ brands, so the product I ship is the product a market can find.',
+      bn: 'ইঞ্জিনিয়ারিংয়ের ওপর মার্কেটিং জোড়া লাগাই না। ৫০+ ব্র্যান্ডের চাহিদা আমি চালিয়েছি — তাই যে পণ্য শিপ করি, বাজার সেটা খুঁজে পায়।',
+    },
+    clusters: [
+      {
+        titles: { en: 'Demand systems', bn: 'চাহিদা সিস্টেম' },
+        items: [
+          'Multi-channel growth ops',
+          'SEO as a product surface',
+          'Social compounding (IG / Pinterest)',
+          'Funnel wiring to real events',
+          'Content that sells the feature',
+          'Brand positioning for operators',
+          'Paid vs organic allocation',
+          'Lifecycle / email loops',
+        ],
+      },
+      {
+        titles: { en: 'Owner language', bn: 'মালিকের ভাষা' },
+        items: [
+          'CAC vs payback, not vanity views',
+          'Roadmaps that protect revenue',
+          'Tech Lead + Marketing Director seat',
+          'Vendor-proof API storytelling',
+          'Launch narratives engineers can keep',
+          'Pricing pages that match the codebase',
+          'Board-ready incident language',
+          'Hiring briefs that do not split the room',
+        ],
+      },
+      {
+        titles: { en: 'Proof already in market', bn: 'বাজারে থাকা প্রমাণ' },
+        items: [
+          '50+ consulting clients',
+          '1,700+ billed Upwork hours',
+          '70+ social growth wins',
+          'Roasty 1.5M views',
+          'Jennifer 3.8M views',
+          'ReneeRoaming 6.6M views',
+          'Head of Marketing track record',
+          'Cozy Cottage Tech Lead + growth',
+        ],
+      },
+    ],
+    proof: [
+      {
+        en: 'Owners hiring a Tech Lead usually still need a Marketing Director. I already sat in both chairs — Cozy Cottage, Enterprising Society, and 50+ independent retainers.',
+        bn: 'টেক লিড নিয়োগ করলেও মার্কেটিং ডিরেক্টর লাগে। আমি দুই আসনেই বসেছি — Cozy Cottage, Enterprising Society, এবং ৫০+ ইন্ডিপেন্ডেন্ট রিটেইনার।',
+      },
+    ],
+  },
 ]
 
 export type ServicePitch = {
@@ -294,44 +349,68 @@ export type ServicePitch = {
 export const SERVICE_PITCHES: ServicePitch[] = [
   {
     id: 'build',
-    titles: { en: 'Build', bn: 'তৈরি' },
+    titles: { en: 'Ship the product', bn: 'পণ্য শিপ করুন' },
     outcome: {
-      en: 'Turn a manual process or an idea into a working system.',
-      bn: 'ম্যানুয়াল প্রক্রিয়া বা আইডিয়াকে কার্যকর সিস্টেমে রূপ দেওয়া।',
+      en: 'A founder walks in with a messy process. They walk out with a system their team actually uses.',
+      bn: 'একজন ফাউন্ডার এলোমানা প্রক্রিয়া নিয়ে আসেন। বেরোনোর সময় টিম যে সিস্টেম ব্যবহার করে সেটি হাতে থাকে।',
     },
     bullets: [
-      { en: 'Web applications & dashboards', bn: 'ওয়েব অ্যাপ্লিকেশন ও ড্যাশবোর্ড' },
-      { en: 'REST APIs & integrations', bn: 'REST API ও ইন্টিগ্রেশন' },
-      { en: 'Internal tools & admin panels', bn: 'ইন্টারনাল টুল ও অ্যাডমিন প্যানেল' },
-      { en: 'AI features (RAG, assistants)', bn: 'এআই ফিচার (RAG, অ্যাসিস্ট্যান্ট)' },
+      { en: 'Customer-facing apps, admin desks, and internal tools', bn: 'কাস্টমার অ্যাপ, অ্যাডমিন ডেস্ক ও ইন্টারনাল টুল' },
+      { en: 'APIs that other vendors can plug into without a war room', bn: 'অন্য ভেন্ডর সহজে প্লাগ করতে পারে এমন API' },
+      { en: 'AI features that cite their sources — not chat for chat’s sake', bn: 'উৎসসহ এআই ফিচার — শুধু চ্যাট নয়' },
     ],
   },
   {
     id: 'improve',
-    titles: { en: 'Improve', bn: 'উন্নয়ন' },
+    titles: { en: 'Take the Tech Lead seat', bn: 'টেক লিডের আসন' },
     outcome: {
-      en: 'Make the thing you already have faster, safer, and cheaper to run.',
-      bn: 'বিদ্যমান সিস্টেমকে দ্রুত, নিরাপদ ও সাশ্রয়ী করা।',
+      en: 'You keep the company. I keep the architecture honest, the pager quiet, and the roadmap real.',
+      bn: 'কোম্পানি আপনার। আর্কিটেকচার, পেজার ও রোডম্যাপ আমি সৎ রাখি।',
     },
     bullets: [
-      { en: 'Performance & database tuning', bn: 'পারফরম্যান্স ও ডেটাবেস টিউনিং' },
-      { en: 'Architecture review & roadmap', bn: 'আর্কিটেকচার রিভিউ ও রোডম্যাপ' },
-      { en: 'Observability & alerting setup', bn: 'পর্যবেক্ষণ ও অ্যালার্টিং সেটআপ' },
-      { en: 'Refactoring & technical debt', bn: 'রিফ্যাক্টরিং ও টেকনিক্যাল ডেট' },
+      { en: 'Latency, data, and failure modes before they become a board slide', bn: 'লেটেন্সি, ডেটা ও ব্যর্থতা — বোর্ড স্লাইড হওয়ার আগে' },
+      { en: 'A team that ships in slices, not in hero weekends', bn: 'হিরো উইকএন্ড নয়, স্লাইসে শিপ করা টিম' },
+      { en: 'Observability that tells an owner what broke, in one screen', bn: 'এক স্ক্রিনে কী ভাঙল বলে দেয় এমন পর্যবেক্ষণ' },
     ],
   },
   {
     id: 'grow',
-    titles: { en: 'Grow', bn: 'বৃদ্ধি' },
+    titles: { en: 'Sit as Growth / Marketing Director', bn: 'গ্রোথ / মার্কেটিং ডিরেক্টর' },
     outcome: {
-      en: 'Get the product in front of the right people, repeatedly.',
-      bn: 'সঠিক মানুষের কাছে পণ্য বারবার পৌঁছে দেওয়া।',
+      en: 'The same person who understands the codebase also knows which channel actually pays for it.',
+      bn: 'যিনি কোডবেস বোঝেন তিনিই জানেন কোন চ্যানেল আসলে বিল তোলে।',
     },
     bullets: [
-      { en: 'SEO & content systems', bn: 'SEO ও কনটেন্ট সিস্টেম' },
-      { en: 'Social growth strategy', bn: 'সোশ্যাল গ্রোথ কৌশল' },
-      { en: 'Paid & organic funnels', bn: 'পেইড ও অর্গানিক ফানেল' },
-      { en: 'Analytics & ROI reporting', bn: 'অ্যানালিটিকস ও ROI রিপোর্টিং' },
+      { en: 'Funnels wired to real product events, not vanity dashboards', bn: 'ভ্যানিটি ড্যাশবোর্ড নয়, আসল প্রোডাক্ট ইভেন্টে বাঁধা ফানেল' },
+      { en: 'SEO, social, and paid as one system — 50+ brands of scar tissue', bn: 'SEO, সোশ্যাল ও পেইড এক সিস্টেম — ৫০+ ব্র্যান্ডের অভিজ্ঞতা' },
+      { en: 'A growth engine that engineering can actually operate', bn: 'ইঞ্জিনিয়ারিং যে গ্রোথ ইঞ্জিন চালাতে পারে' },
     ],
+  },
+]
+
+export const HIRE_SEATS = [
+  {
+    id: 'tech-lead',
+    titles: { en: 'Tech Lead', bn: 'টেক লিড' },
+    pitch: {
+      en: 'Own delivery end to end: architecture calls, code quality, and the quiet production hours.',
+      bn: 'ডেলিভারি এন্ড-টু-এন্ড: আর্কিটেকচার, কোড কোয়ালিটি ও শান্ত প্রোডাকশন।',
+    },
+  },
+  {
+    id: 'marketing-director',
+    titles: { en: 'Marketing Director', bn: 'মার্কেটিং ডিরেক্টর' },
+    pitch: {
+      en: 'Own the story, the channels, and the number that lands in the bank — not the number that lands in a screenshot.',
+      bn: 'গল্প, চ্যানেল ও ব্যাংকে আসা সংখ্যা — স্ক্রিনশটের সংখ্যা নয়।',
+    },
+  },
+  {
+    id: 'both',
+    titles: { en: 'Both chairs at once', bn: 'দুই আসন একসাথে' },
+    pitch: {
+      en: 'The rare seat: someone who will not let engineering ship a product the market cannot find, or marketing promise a product engineering cannot keep.',
+      bn: 'দুর্লভ আসন: ইঞ্জিনিয়ারিং এমন পণ্য শিপ করবে না যা বাজার খুঁজে পাবে না, মার্কেটিং এমন প্রতিশ্রুতি দেবে না যা ইঞ্জিনিয়ারিং রাখতে পারবে না।',
+    },
   },
 ]

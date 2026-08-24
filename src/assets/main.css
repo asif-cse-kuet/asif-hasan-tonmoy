@@ -3,14 +3,14 @@
 @theme {
   --font-display: "Cormorant Garamond", Georgia, serif;
   --font-sans: "Source Sans 3", system-ui, sans-serif;
-  --color-ink: #0c1219;
-  --color-ink-soft: #1a2330;
-  --color-steel: #2a3a4d;
-  --color-mist: #c5d0dc;
-  --color-paper: #e8eef4;
-  --color-accent: #c45c26;
-  --color-accent-soft: #e8a87c;
-  --color-glow: #3d7ea6;
+  --color-ink: #100c0a;
+  --color-ink-soft: #1c1612;
+  --color-steel: #3d322c;
+  --color-mist: #d5c9bc;
+  --color-paper: #f4ece4;
+  --color-accent: #e25d2a;
+  --color-accent-soft: #f0a06a;
+  --color-glow: #3cb8a4;
 }
 
 @layer base {
@@ -32,10 +32,10 @@
     font-family: var(--font-sans);
     line-height: 1.6;
     background-image:
-      radial-gradient(ellipse 80% 50% at 20% -10%, rgb(61 126 166 / 0.18), transparent 55%),
-      radial-gradient(ellipse 60% 40% at 90% 10%, rgb(42 58 77 / 0.35), transparent 50%),
-      radial-gradient(ellipse 70% 50% at 50% 100%, rgb(26 35 48 / 0.6), transparent 60%),
-      linear-gradient(180deg, var(--color-ink) 0%, var(--color-ink-soft) 45%, var(--color-ink) 100%);
+      radial-gradient(ellipse 70% 45% at 12% -8%, rgb(226 93 42 / 0.16), transparent 55%),
+      radial-gradient(ellipse 55% 40% at 92% 8%, rgb(60 184 164 / 0.14), transparent 50%),
+      radial-gradient(ellipse 80% 50% at 50% 110%, rgb(28 22 18 / 0.9), transparent 60%),
+      linear-gradient(180deg, #140f0c 0%, #100c0a 48%, #0c1412 100%);
     background-attachment: fixed;
   }
 
@@ -313,6 +313,7 @@
   .mermaid-host svg {
     max-width: 100%;
     height: auto;
+    min-height: 8rem;
   }
 
   .mermaid-fallback {

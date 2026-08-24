@@ -37,13 +37,13 @@ const filteredConcepts = computed(() => {
 </script>
 
 <template>
-  <div class="page-wrap py-10">
+  <div class="py-2">
     <PageHero
-      :title="pick({ en: 'Engineering Systems & System Design Guide', bn: 'Engineering Systems ও System Design Guide' })"
+      :title="pick({ en: 'My Engineering Blog', bn: 'আমার ইঞ্জিনিয়ারিং ব্লগ' })"
       :subtitle="
         pick({
-          en: 'Industry knowledge library — distributed systems, storage, caching, messaging, and more. Educational reference, not claims of personal ownership.',
-          bn: 'Industry knowledge library — distributed systems, storage, caching, messaging আরও। শিক্ষামূলক রেফারেন্স, ব্যক্তিগত ownership claim নয়।',
+          en: 'Open the tree on the left. Every topic is a failure mode, a design, and the code that holds it — written like internal docs, not a pitch deck.',
+          bn: 'বাঁদিকের ট্রি খুলুন। প্রতিটি টপিক একটি ব্যর্থতা, একটি ডিজাইন, আর যে কোড সেটি ধরে রাখে।',
         })
       "
     />

@@ -19,11 +19,11 @@ type NavItem = {
 
 const items = computed<NavItem[]>(() => [
   { label: pick({ en: 'Expertise', bn: 'দক্ষতা' }), hash: '#expertise' },
-  { label: pick({ en: 'Work', bn: 'কাজ' }), hash: '#work' },
+  { label: pick({ en: 'Projects', bn: 'প্রজেক্ট' }), hash: '#projects' },
   { label: pick({ en: 'Experience', bn: 'অভিজ্ঞতা' }), hash: '#experience' },
-  { label: pick({ en: 'Problems solved', bn: 'সমাধান করা সমস্যা' }), to: '/problems/solved' },
-  { label: pick({ en: 'System design', bn: 'সিস্টেম ডিজাইন' }), to: '/systems' },
-  { label: pick({ en: 'Marketing', bn: 'মার্কেটিং' }), to: '/marketing' },
+  { label: pick({ en: 'Problems solved', bn: 'সমাধান' }), to: '/problems/solved' },
+  { label: pick({ en: 'My Engineering Blog', bn: 'ইঞ্জিনিয়ারিং ব্লগ' }), to: '/systems' },
+  { label: pick({ en: 'Software to business', bn: 'সফটওয়্যার থেকে ব্যবসা' }), to: '/marketing' },
 ])
 
 function target(item: NavItem) {
@@ -37,22 +37,23 @@ function isActive(item: NavItem) {
 </script>
 
 <template>
-  <header class="sticky top-0 z-50 border-b border-steel/60 bg-ink/90 backdrop-blur-md">
+  <header class="sticky top-0 z-50 border-b border-steel/50 bg-ink/80 backdrop-blur-md">
     <div class="page-wrap flex items-center justify-between gap-3 py-3">
       <RouterLink
         to="/"
         class="min-w-0 font-display text-base font-semibold tracking-tight text-paper no-underline hover:text-glow sm:text-lg"
         @click="ui.closeMobileNav()"
       >
-        <span class="block truncate">{{ PROFILE.name }}</span>
+        <span class="hidden truncate sm:block">{{ PROFILE.name }}</span>
+        <span class="sm:hidden">AHT</span>
       </RouterLink>
 
-      <nav class="hidden items-center gap-0.5 lg:flex" aria-label="Main">
+      <nav class="hidden items-center lg:flex" aria-label="Main">
         <RouterLink
           v-for="item in items"
           :key="item.label"
           :to="target(item)"
-          class="rounded px-2.5 py-1.5 text-sm font-medium no-underline transition-colors"
+          class="rounded px-2 py-1.5 text-[0.8rem] font-medium no-underline transition-colors lg:text-sm"
           :class="isActive(item) ? 'text-glow' : 'text-mist hover:text-paper'"
         >
           {{ item.label }}
@@ -61,6 +62,12 @@ function isActive(item: NavItem) {
 
       <div class="flex shrink-0 items-center gap-2">
         <LangToggle />
+        <a
+          :href="PROFILE.telHref"
+          class="hidden rounded-md border border-steel px-3 py-1.5 text-sm font-semibold text-paper no-underline hover:border-glow hover:text-glow md:inline-block"
+        >
+          {{ pick({ en: 'Call', bn: 'কল' }) }}
+        </a>
         <RouterLink
           :to="{ path: '/', hash: '#contact' }"
           class="hidden rounded-md bg-accent px-3.5 py-1.5 text-sm font-semibold text-paper no-underline hover:bg-accent-soft hover:text-ink sm:inline-block"
@@ -95,6 +102,13 @@ function isActive(item: NavItem) {
         >
           {{ item.label }}
         </RouterLink>
+        <a
+          :href="PROFILE.telHref"
+          class="rounded px-3 py-2.5 text-sm no-underline hover:bg-steel/30"
+          @click="ui.closeMobileNav()"
+        >
+          {{ pick({ en: 'Call me', bn: 'কল করুন' }) }} · {{ PROFILE.phone }}
+        </a>
         <RouterLink
           :to="{ path: '/', hash: '#contact' }"
           class="mt-1 rounded bg-accent px-3 py-2.5 text-center text-sm font-semibold text-paper no-underline"

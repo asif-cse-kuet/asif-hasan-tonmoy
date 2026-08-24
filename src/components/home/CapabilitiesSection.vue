@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 
+import SkillMark from '@/components/SkillMark.vue'
 import SectionShell from '@/components/home/SectionShell.vue'
 import { useLocaleText } from '@/composables/useLocaleText'
 import { CAPABILITIES } from '@/content/capabilities'
@@ -13,11 +14,11 @@ const activeId = ref(CAPABILITIES[0]?.id ?? '')
   <SectionShell
     id="expertise"
     :eyebrow="pick({ en: 'Depth', bn: 'গভীরতা' })"
-    :title="pick({ en: 'Engineering expertise', bn: 'ইঞ্জিনিয়ারিং দক্ষতা' })"
+    :title="pick({ en: 'How I actually work a problem', bn: 'একটা সমস্যা আমি কীভাবে ভাঙি' })"
     :lead="
       pick({
-        en: 'Five practice areas, from shipping features to designing systems that survive failure.',
-        bn: 'পাঁচটি ক্ষেত্র — ফিচার শিপ করা থেকে ব্যর্থতা সহ্য করা সিস্টেম ডিজাইন পর্যন্ত।',
+        en: 'Six rooms I sit in. Each chip is a craft mark, not a score — click a room, read the language I use there.',
+        bn: 'ছয়টি ঘর। প্রতিটি চিপ একটি ক্রাফট মার্ক, স্কোর নয়।',
       })
     "
   >
@@ -54,14 +55,14 @@ const activeId = ref(CAPABILITIES[0]?.id ?? '')
             <h3 class="text-xs font-semibold uppercase tracking-[0.14em] text-glow">
               {{ pick(cluster.titles) }}
             </h3>
-            <ul class="mt-3 space-y-1.5">
+            <ul class="mt-3 grid grid-cols-1 gap-2">
               <li
                 v-for="item in cluster.items"
                 :key="item"
-                class="flex gap-2 text-sm text-mist"
+                class="flex items-center gap-2 rounded-md border border-steel/40 bg-ink/30 px-2.5 py-1.5 text-sm text-paper/90"
               >
-                <span class="mt-1.5 h-1 w-1 shrink-0 rounded-full bg-accent" />
-                {{ item }}
+                <SkillMark :label="item" />
+                <span>{{ item }}</span>
               </li>
             </ul>
           </div>

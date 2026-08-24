@@ -66,13 +66,11 @@ test('body copy stays readable at mobile sizes', async ({ page }) => {
   expect(tooSmall).toEqual([])
 })
 
-test('in-page section nav scrolls horizontally without breaking layout', async ({ page }) => {
+test('mobile menu is the only extra nav', async ({ page }) => {
   await page.goto('/')
-  const nav = page.getByLabel('Page sections')
-  await expect(nav).toBeVisible()
-
-  const box = await nav.boundingBox()
-  expect(box?.width ?? 0).toBeLessThanOrEqual(page.viewportSize()?.width ?? 0)
+  await expect(page.getByLabel('Page sections')).toHaveCount(0)
+  const toggle = page.getByRole('button', { name: /Menu|মেনু/i })
+  await expect(toggle).toBeVisible()
 })
 
 test('article pages keep diagrams and code blocks inside the viewport', async ({ page }) => {

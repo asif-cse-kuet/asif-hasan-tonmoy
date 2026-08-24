@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import SectionShell from '@/components/home/SectionShell.vue'
 import { useLocaleText } from '@/composables/useLocaleText'
-import { SERVICE_PITCHES } from '@/content/capabilities'
+import { HIRE_SEATS, SERVICE_PITCHES } from '@/content/capabilities'
 import { PROFILE } from '@/content/profile'
 
 const { pick } = useLocaleText()
@@ -11,11 +11,11 @@ const { pick } = useLocaleText()
   <SectionShell
     id="services"
     :eyebrow="pick({ en: 'For founders & hiring teams', bn: 'ফাউন্ডার ও হায়ারিং টিমের জন্য' })"
-    :title="pick({ en: 'What I can do for you', bn: 'আমি আপনার জন্য কী করতে পারি' })"
+    :title="pick({ en: 'Three seats. One hire.', bn: 'তিন আসন। এক নিয়োগ।' })"
     :lead="
       pick({
-        en: 'Plain-language outcomes — no jargon required to understand what you get.',
-        bn: 'সরল ভাষায় ফলাফল — বোঝার জন্য কোনো কঠিন পরিভাষা লাগবে না।',
+        en: 'Owners usually split Tech Lead and Marketing Director across two people who then argue. I already speak both dialects.',
+        bn: 'মালিকরা সাধারণত টেক লিড ও মার্কেটিং ডিরেক্টর দুইজনে ভাগ করেন, তারপর তারা তর্ক করেন। আমি দুই ভাষাই বলি।',
       })
     "
   >
@@ -40,9 +40,16 @@ const { pick } = useLocaleText()
       </article>
     </div>
 
+    <div class="mt-8 grid gap-4 md:grid-cols-3">
+      <article v-for="seat in HIRE_SEATS" :key="seat.id" class="rounded-lg border border-glow/30 bg-glow/10 p-5">
+        <h3 class="font-display text-lg font-semibold text-glow">{{ pick(seat.titles) }}</h3>
+        <p class="mt-2 text-sm text-paper/90">{{ pick(seat.pitch) }}</p>
+      </article>
+    </div>
+
     <div class="mt-6 flex flex-wrap gap-3">
-      <a :href="`mailto:${PROFILE.email}`" class="btn-primary">
-        {{ pick({ en: 'Start a conversation', bn: 'আলোচনা শুরু করুন' }) }}
+      <a :href="PROFILE.telHref" class="btn-primary">
+        {{ pick({ en: 'Call now', bn: 'এখনই কল' }) }} · {{ PROFILE.phone }}
       </a>
       <a
         href="https://www.upwork.com/workwith/asifhasantonmoy"

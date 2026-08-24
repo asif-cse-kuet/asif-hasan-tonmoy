@@ -21,8 +21,8 @@ const facts = [
   {
     label: { en: 'Availability', bn: 'উপলভ্যতা' },
     value: {
-      en: 'Open to senior engineering, architecture, and AI roles — plus selective consulting.',
-      bn: 'সিনিয়র ইঞ্জিনিয়ারিং, আর্কিটেকচার ও এআই ভূমিকার জন্য উন্মুক্ত — সাথে নির্বাচিত কনসাল্টিং।',
+      en: 'Open to Tech Lead, architecture, and Marketing Director seats — together as one hire, or either chair on its own.',
+      bn: 'টেক লিড, আর্কিটেকচার ও মার্কেটিং ডিরেক্টর আসনের জন্য উন্মুক্ত — একসাথে এক নিয়োগ, অথবা যেকোনো একটি আসন।',
     },
   },
 ]

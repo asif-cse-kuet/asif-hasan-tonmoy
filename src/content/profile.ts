@@ -26,10 +26,12 @@ export const PROFILE = {
     bn: 'ফুলস্ট্যাক এআই ইঞ্জিনিয়ার · সিস্টেম / সফটওয়্যার আর্কিটেক্ট · মার্কেটিং কনসালট্যান্ট',
   } satisfies LocaleText,
   tagline: {
-    en: 'I design systems, ship software & AI products, and build the growth engines that make them win.',
-    bn: 'আমি সিস্টেম ডিজাইন করি, সফটওয়্যার ও এআই পণ্য বানাই, এবং সেগুলোকে জয়ী করতে গ্রোথ ইঞ্জিন তৈরি করি।',
+    en: 'I architect the product, then I architect the demand — one person who can sit in both rooms.',
+    bn: 'আমি পণ্যের আর্কিটেকচার করি, তারপর চাহিদারও — দুই ঘরেই বসতে পারা একজন মানুষ।',
   } satisfies LocaleText,
   email: 'asifhasan.cse75@gmail.com',
+  phone: '+880 1937-181793',
+  telHref: 'tel:+8801937181793',
   location: {
     en: 'Dhaka, Bangladesh',
     bn: 'ঢাকা, বাংলাদেশ',
@@ -39,8 +41,8 @@ export const PROFILE = {
     bn: 'খুলনা প্রকৌশল ও প্রযুক্তি বিশ্ববিদ্যালয় (কুয়েট) — CSE, ২০১৮–২০২৩',
   } satisfies LocaleText,
   shortBio: {
-    en: 'Engineer-architect who ships production Vue/Laravel systems, publishes Bengali NLP research, and has spent 8+ years growing brands for 50+ clients worldwide.',
-    bn: 'প্রোডাকশন Vue/Laravel সিস্টেম বানান, বাংলা NLP গবেষণা প্রকাশ করেন, এবং ৮+ বছরে ৫০+ আন্তর্জাতিক ক্লায়েন্টের ব্র্যান্ড বৃদ্ধি করেছেন।',
+    en: 'KUET CSE. Ships production Vue/Laravel systems, publishes Bengali NLP research, and spent 8+ years growing 50+ brands — so a Tech Lead hire already thinks like a Marketing Director.',
+    bn: 'কুয়েট CSE। প্রোডাকশন Vue/Laravel সিস্টেম শিপ করেন, বাংলা NLP গবেষণা প্রকাশ করেন, এবং ৮+ বছরে ৫০+ ব্র্যান্ড বাড়িয়েছেন — তাই একজন Tech Lead ইতিমধ্যে Marketing Director-এর মতো ভাবেন।',
   } satisfies LocaleText,
 } as const
 

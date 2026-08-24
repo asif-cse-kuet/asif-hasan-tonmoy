@@ -31,9 +31,9 @@ const relatedLinks = computed(() => {
 </script>
 
 <template>
-  <div class="page-wrap py-10">
+  <div class="py-2">
     <RouterLink to="/systems" class="text-sm text-glow">
-      {{ pick({ en: '← System design guide', bn: '← System design guide' }) }}
+      {{ pick({ en: '← My Engineering Blog', bn: '← ইঞ্জিনিয়ারিং ব্লগ' }) }}
     </RouterLink>
 
     <template v-if="concept">

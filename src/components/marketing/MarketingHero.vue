@@ -5,7 +5,6 @@ import { UPWORK_METRICS } from '@/content/marketing-seed'
 const { pick } = useLocaleText()
 
 const hireUrl = UPWORK_METRICS.hireUrl
-const email = 'mailto:asifhasan.cse75@gmail.com'
 </script>
 
 <template>
@@ -16,13 +15,13 @@ const email = 'mailto:asifhasan.cse75@gmail.com'
       {{ UPWORK_METRICS.status }}
     </span>
     <h1 class="font-display text-3xl font-semibold tracking-tight text-paper sm:text-4xl lg:text-5xl">
-      {{ pick({ en: 'Marketing Strategist & Growth Consultant', bn: 'মার্কেটিং স্ট্রategist ও Growth Consultant' }) }}
+      {{ pick({ en: 'Software to business expertise', bn: 'সফটওয়্যার থেকে ব্যবসা — দক্ষতা' }) }}
     </h1>
     <p class="mt-3 max-w-3xl text-lg text-mist">
       {{
         pick({
-          en: '8+ years helping business owners grow through social, funnels, and measurable campaigns — 50+ clients across North America and Australia.',
-          bn: '৮+ বছর social, funnel ও measurable campaign-এ business owner-দের growth — North America ও Australia-এ ৫০+ client।',
+          en: 'I do not “also do marketing.” I spent 8+ years as the growth operator for 50+ owners — then I started shipping the software those funnels depend on. Put me in as Tech Lead, Marketing Director, or both chairs at once.',
+          bn: 'আমি “মার্কেটিংও করি” বলি না। ৮+ বছর ৫০+ মালিকের গ্রোথ অপারেটর ছিলাম — তারপর সেই ফানেল যে সফটওয়্যার চালায় সেটাই শিপ করি। টেক লিড, মার্কেটিং ডিরেক্টর, বা দুই আসনই দিন।',
         })
       }}
     </p>
@@ -33,10 +32,10 @@ const email = 'mailto:asifhasan.cse75@gmail.com'
         rel="noopener noreferrer"
         class="btn-primary min-h-11 text-center"
       >
-        {{ pick({ en: 'Hire on Upwork', bn: 'Upwork-এ hire করুন' }) }}
+        {{ pick({ en: 'Give me both chairs', bn: 'দুই আসনই দিন' }) }}
       </a>
-      <a :href="email" class="btn-ghost min-h-11 text-center">
-        {{ pick({ en: 'Email me', bn: 'ইমেইল করুন' }) }}
+      <a href="tel:+8801937181793" class="btn-ghost min-h-11 text-center">
+        {{ pick({ en: 'Call +880 1937-181793', bn: 'কল +৮৮০ ১৯৩৭-১৮১৭৯৩' }) }}
       </a>
     </div>
   </header>

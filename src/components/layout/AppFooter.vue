@@ -11,8 +11,8 @@ const { pick } = useLocaleText()
 const pages = computed(() => [
   { to: '/', label: pick({ en: 'Home', bn: 'হোম' }) },
   { to: '/problems/solved', label: pick({ en: 'Problems solved', bn: 'সমাধান করা সমস্যা' }) },
-  { to: '/systems', label: pick({ en: 'System design guide', bn: 'সিস্টেম ডিজাইন গাইড' }) },
-  { to: '/marketing', label: pick({ en: 'Marketing', bn: 'মার্কেটিং' }) },
+  { to: '/systems', label: pick({ en: 'My Engineering Blog', bn: 'ইঞ্জিনিয়ারিং ব্লগ' }) },
+  { to: '/marketing', label: pick({ en: 'Software to business', bn: 'সফটওয়্যার থেকে ব্যবসা' }) },
 ])
 </script>
 
@@ -23,6 +23,9 @@ const pages = computed(() => [
         <div>
           <p class="font-display text-lg font-semibold text-paper">{{ PROFILE.name }}</p>
           <p class="mt-1.5 max-w-sm text-sm text-mist">{{ pick(PROFILE.brandLine) }}</p>
+          <a :href="PROFILE.telHref" class="mt-3 mr-4 inline-block text-sm font-semibold">
+            {{ PROFILE.phone }}
+          </a>
           <a :href="`mailto:${PROFILE.email}`" class="mt-3 inline-block text-sm font-semibold">
             {{ PROFILE.email }}
           </a>

@@ -3,10 +3,7 @@ import { defineStore } from 'pinia'
 
 export const useUiStore = defineStore('ui', () => {
   const mobileNavOpen = ref(false)
-
-  function openMobileNav() {
-    mobileNavOpen.value = true
-  }
+  const blogNavOpen = ref(false)
 
   function closeMobileNav() {
     mobileNavOpen.value = false
@@ -16,5 +13,20 @@ export const useUiStore = defineStore('ui', () => {
     mobileNavOpen.value = !mobileNavOpen.value
   }
 
-  return { mobileNavOpen, openMobileNav, closeMobileNav, toggleMobileNav }
+  function closeBlogNav() {
+    blogNavOpen.value = false
+  }
+
+  function toggleBlogNav() {
+    blogNavOpen.value = !blogNavOpen.value
+  }
+
+  return {
+    mobileNavOpen,
+    blogNavOpen,
+    closeMobileNav,
+    toggleMobileNav,
+    closeBlogNav,
+    toggleBlogNav,
+  }
 })

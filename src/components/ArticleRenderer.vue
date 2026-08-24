@@ -29,13 +29,13 @@ function loadMermaid() {
         securityLevel: 'strict',
         fontFamily: '"Source Sans 3", system-ui, sans-serif',
         themeVariables: {
-          background: '#0c1219',
-          primaryColor: '#1a2330',
-          primaryTextColor: '#e8eef4',
-          primaryBorderColor: '#3d7ea6',
-          lineColor: '#c5d0dc',
-          secondaryColor: '#2a3a4d',
-          tertiaryColor: '#1a2330',
+          background: '#100c0a',
+          primaryColor: '#1c1612',
+          primaryTextColor: '#f4ece4',
+          primaryBorderColor: '#3cb8a4',
+          lineColor: '#d5c9bc',
+          secondaryColor: '#3d322c',
+          tertiaryColor: '#1c1612',
           fontSize: '14px',
         },
       })
@@ -56,15 +56,26 @@ async function renderDiagrams() {
     if (!source) continue
     host.removeAttribute('data-graph')
     try {
-      const { svg } = await mermaid.render(`diagram-${Date.now()}-${index++}`, source)
+      const id = `mmd-${index}-${Math.random().toString(36).slice(2, 8)}`
+      index += 1
+      const { svg } = await Promise.race([
+        mermaid.render(id, source),
+        new Promise<never>((_, reject) => {
+          window.setTimeout(() => reject(new Error('diagram timed out')), 8000)
+        }),
+      ])
       host.innerHTML = svg
-    } catch {
-      host.innerHTML = `<pre class="mermaid-fallback">${source.replace(/[<>&]/g, (c) => ({ '<': '&lt;', '>': '&gt;', '&': '&amp;' })[c] ?? c)}</pre>`
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'diagram failed'
+      host.innerHTML = `<pre class="mermaid-fallback">${message}\n${source.replace(/[<>&]/g, (c) => ({ '<': '&lt;', '>': '&gt;', '&': '&amp;' })[c] ?? c)}</pre>`
     }
   }
 }
 
-onMounted(renderDiagrams)
+onMounted(async () => {
+  await nextTick()
+  await renderDiagrams()
+})
 watch(html, async () => {
   await nextTick()
   await renderDiagrams()

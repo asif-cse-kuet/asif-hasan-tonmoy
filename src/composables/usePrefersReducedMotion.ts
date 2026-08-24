@@ -10,6 +10,7 @@ export function usePrefersReducedMotion() {
   }
 
   onMounted(() => {
+    if (typeof window.matchMedia !== 'function') return
     media = window.matchMedia('(prefers-reduced-motion: reduce)')
     update()
     media.addEventListener('change', update)

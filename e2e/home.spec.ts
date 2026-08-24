@@ -8,7 +8,7 @@ test('landing page carries the full profile', async ({ page }) => {
     'proof',
     'expertise',
     'stack',
-    'work',
+    'projects',
     'experience',
     'research',
     'coding',
@@ -31,12 +31,12 @@ test('coding platform links appear near the top with handles', async ({ page }) 
 })
 
 test('portfolio section lists projects and filters', async ({ page }) => {
-  await page.goto('/#work')
-  const section = page.locator('#work')
+  await page.goto('/#projects')
+  const section = page.locator('#projects')
   await expect(section.getByRole('heading', { level: 2 })).toBeVisible()
   await expect(section.locator('article').first()).toBeVisible()
   await section.getByRole('button', { name: /All|সব/ }).click()
-  await expect(section.locator('article')).toHaveCount(18)
+  await expect(section.locator('article')).toHaveCount(20)
 })
 
 test('the three dedicated pages render', async ({ page }) => {
@@ -65,12 +65,18 @@ test('solved problem detail deep-links', async ({ page }) => {
   await expect(page.getByRole('heading', { level: 1 })).toBeVisible()
 })
 
-test('system design guide drills into a domain and topic', async ({ page }) => {
+test('engineering blog tree lists domains', async ({ page }) => {
   await page.goto('/systems')
-  const domain = page.locator('a[href^="/systems/"]').first()
-  await expect(domain).toBeVisible()
-  await domain.click()
-  await expect(page).toHaveURL(/\/systems\/.+/)
+  await expect(page.getByRole('heading', { level: 1 })).toContainText(/Engineering Blog|ইঞ্জিনিয়ারিং ব্লগ/)
+  await expect(page.getByLabel('Engineering blog topics')).toBeVisible()
+})
+
+test('single header nav, no second section strip', async ({ page }) => {
+  await page.goto('/')
+  await expect(page.getByRole('navigation', { name: 'Main' })).toBeVisible()
+  await expect(page.getByLabel('Page sections')).toHaveCount(0)
+  await expect(page.getByRole('link', { name: /My Engineering Blog|ইঞ্জিনিয়ারিং ব্লগ/ }).first()).toBeVisible()
+  await expect(page.getByRole('link', { name: /Software to business|সফটওয়্যার থেকে ব্যবসা/ }).first()).toBeVisible()
 })
 
 test('language toggle switches to Bengali', async ({ page }) => {

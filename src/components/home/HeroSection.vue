@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { RouterLink } from 'vue-router'
 
-import HeroDecor from '@/components/HeroDecor.vue'
 import ProfileLinksStrip from '@/components/home/ProfileLinksStrip.vue'
 import TechMarquee from '@/components/home/TechMarquee.vue'
 import { useLocaleText } from '@/composables/useLocaleText'
@@ -12,8 +11,6 @@ const { pick } = useLocaleText()
 
 <template>
   <section id="top" class="relative overflow-hidden pb-12 pt-10 sm:pb-16 sm:pt-14">
-    <HeroDecor />
-
     <div class="page-wrap relative z-10">
       <p class="text-[0.75rem] font-semibold uppercase tracking-[0.18em] text-glow sm:text-sm">
         {{ pick(PROFILE.brandLine) }}
@@ -34,17 +31,17 @@ const { pick } = useLocaleText()
       </p>
 
       <div class="mt-7 flex flex-wrap gap-2.5 sm:gap-3">
-        <a :href="`mailto:${PROFILE.email}`" class="btn-primary">
-          {{ pick({ en: 'Hire me', bn: 'নিয়োগ করুন' }) }}
+        <a :href="PROFILE.telHref" class="btn-primary">
+          {{ pick({ en: 'Call me', bn: 'কল করুন' }) }}
         </a>
-        <RouterLink to="/systems" class="btn-ghost">
-          {{ pick({ en: 'System design guide', bn: 'সিস্টেম ডিজাইন গাইড' }) }}
-        </RouterLink>
-        <RouterLink to="/problems/solved" class="btn-ghost">
-          {{ pick({ en: 'Problems I solved', bn: 'সমাধান করা সমস্যা' }) }}
-        </RouterLink>
+        <a :href="`mailto:${PROFILE.email}`" class="btn-ghost">
+          {{ pick({ en: 'Email a brief', bn: 'ব্রিফ পাঠান' }) }}
+        </a>
         <RouterLink to="/marketing" class="btn-ghost">
-          {{ pick({ en: 'Marketing', bn: 'মার্কেটিং' }) }}
+          {{ pick({ en: 'Put me in both chairs', bn: 'দুই আসনেই রাখুন' }) }}
+        </RouterLink>
+        <RouterLink to="/systems" class="btn-ghost">
+          {{ pick({ en: 'My Engineering Blog', bn: 'ইঞ্জিনিয়ারিং ব্লগ' }) }}
         </RouterLink>
       </div>
 

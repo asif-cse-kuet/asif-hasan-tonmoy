@@ -272,6 +272,32 @@ export const PROJECTS: Project[] = [
     links: [],
     tags: ['tasks', 'kanban', 'archive'],
   },
+  {
+    slug: 'supercards',
+    tier: 'T1',
+    titles: { en: 'SuperCards', bn: 'SuperCards' },
+    summary: {
+      en: 'Production loyalty and gift-card platform: issuance, wallet top-up, and merchant operations. Live walkthrough landing next.',
+      bn: 'প্রোডাকশন লয়্যালটি ও গিফট-কার্ড প্ল্যাটফর্ম: ইস্যুয়ান্স, ওয়ালেট টপ-আপ ও মার্চেন্ট অপারেশন। লাইভ ওয়াকথ্রু শীঘ্রই।',
+    },
+    stack: ['Vue 3', 'Laravel', 'MySQL', 'REST'],
+    links: [],
+    tags: ['production', 'cards', 'fintech'],
+    featured: true,
+  },
+  {
+    slug: 'brac-social',
+    tier: 'T1',
+    titles: { en: 'BRAC Social Project', bn: 'BRAC সোশ্যাল প্রজেক্ট' },
+    summary: {
+      en: 'Production social-impact build with BRAC — programme records, field reporting, and operator dashboards. Demo assets landing next.',
+      bn: 'BRAC-এর সাথে প্রোডাকশন সোশ্যাল-ইমপ্যাক্ট বিল্ড — প্রোগ্রাম রেকর্ড, ফিল্ড রিপোর্টিং ও অপারেটর ড্যাশবোর্ড। ডেমো অ্যাসেট শীঘ্রই।',
+    },
+    stack: ['Laravel', 'Vue 3', 'MySQL'],
+    links: [],
+    tags: ['production', 'social', 'ngo'],
+    featured: true,
+  },
 ]
 
 export function getProjectsByTier(tier: ProjectTier): Project[] {
