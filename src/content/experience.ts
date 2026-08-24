@@ -23,8 +23,8 @@ export const EXPERIENCE: ExperienceEntry[] = [
     location: { en: 'Dhaka, Bangladesh', bn: 'ঢাকা, বাংলাদেশ' },
     highlights: [
       {
-        en: 'Production features on the stack the job needed: typed UI, APIs, RBAC dashboards, realtime chat, ticketing.',
-        bn: 'যে স্ট্যাক দরকার সেটাতে প্রোডাকশন ফিচার: টাইপড UI, API, RBAC ড্যাশবোর্ড, রিয়েলটাইম চ্যাট, টিকেটিং।',
+        en: 'Production Vue 3 / Quasar / Pinia features talking to Laravel APIs: RBAC dashboards, realtime chat, ticketing.',
+        bn: 'Laravel API-র সাথে Vue 3 / Quasar / Pinia প্রোডাকশন ফিচার: RBAC ড্যাশবোর্ড, রিয়েলটাইম চ্যাট, টিকেটিং।',
       },
       {
         en: 'Micro-packaging R&D: decoupled frontend modules for low-code extensibility.',
@@ -39,7 +39,7 @@ export const EXPERIENCE: ExperienceEntry[] = [
         bn: 'মেট্রিক্স ও ট্রেস দিয়ে প্রোডাকশন ফাঁদ ইনস্ট্রুমেন্ট; CI/CD এমনভাবে ডিজাইন যে রিলিজ অভ্যাস হয়ে যায়। ইঞ্জিনিয়ারিং টিমকে সেই পথে ট্রেইন - শান্ত ডিপ্লয়, দ্রুত ডেলিভারেবল।',
       },
     ],
-    tags: ['typescript', 'react', 'vue', 'node', 'laravel', 'realtime', 'rbac'],
+    tags: ['vue', 'quasar', 'pinia', 'laravel', 'php', 'javascript'],
     current: true,
   },
   {
@@ -52,15 +52,15 @@ export const EXPERIENCE: ExperienceEntry[] = [
     period: 'Aug 2023 – Nov 2024',
     highlights: [
       {
-        en: 'Taught JavaScript, Python, and C++ to students - bridging algorithms to practical engineering.',
-        bn: 'JavaScript, Python ও C++ শেখানো - অ্যালগরিদম থেকে ব্যবহারিক ইঞ্জিনিয়ারিংয়ে সেতু।',
+        en: 'Taught JavaScript OOP to students, bridging class design and practical Vue/Laravel thinking.',
+        bn: 'শিক্ষার্থীদের JavaScript OOP শেখানো - ক্লাস ডিজাইন থেকে ব্যবহারিক Vue/Laravel চিন্তায় সেতু।',
       },
       {
         en: 'Mentored debugging habits, code structure, and problem-solving communication.',
         bn: 'ডিবাগিং অভ্যাস, কোড স্ট্রাকচার ও সমস্যা সমাধানের যোগাযোগ দক্ষতা গড়ে তোলা।',
       },
     ],
-    tags: ['teaching', 'javascript', 'python', 'cpp'],
+    tags: ['teaching', 'javascript', 'oop'],
   },
   {
     id: 'upwork',

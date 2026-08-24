@@ -22,12 +22,12 @@ export type ProofMetric = {
 export const PROFILE = {
   name: 'Asif Hasan Tonmoy',
   brandLine: {
-    en: 'Software Architect · AI Systems · Observability · Software to Business Consultant · Business Consultant (B2B, B2C, C2C)',
-    bn: 'সফটওয়্যার আর্কিটেক্ট · এআই সিস্টেম · অবজারভেবিলিটি · সফটওয়্যার-টু-বিজনেস কনসালট্যান্ট · বিজনেস কনসালট্যান্ট (B2B, B2C, C2C)',
+    en: 'Vue.js · Quasar · Pinia · Laravel · PHP · JavaScript OOP · Software to Business Consultant',
+    bn: 'Vue.js · Quasar · Pinia · Laravel · PHP · JavaScript OOP · সফটওয়্যার-টু-বিজনেস কনসালট্যান্ট',
   } satisfies LocaleText,
   tagline: {
-    en: 'I architect production software around how a business actually runs, not around a stack I happen to like.',
-    bn: 'আমি ব্যবসা যেভাবে চলে সেই হিসেবে প্রোডাকশন সফটওয়্যারের আর্কিটেকচার করি, যে স্ট্যাকে অভ্যস্ত সেই হিসেবে নয়।',
+    en: 'I ship production Vue and Laravel software around how a business actually runs, not around a stack fashion cycle.',
+    bn: 'আমি ব্যবসা যেভাবে চলে সেই হিসেবে Vue ও Laravel প্রোডাকশন সফটওয়্যার শিপ করি, ফ্যাশন স্ট্যাকের হিসেবে নয়।',
   } satisfies LocaleText,
   email: 'asifhasan.cse75@gmail.com',
   phone: '+880 1937-181793',
@@ -41,8 +41,8 @@ export const PROFILE = {
     bn: 'খুলনা প্রকৌশল ও প্রযুক্তি বিশ্ববিদ্যালয় (কুয়েট), CSE, ২০১৮–২০২৩',
   } satisfies LocaleText,
   shortBio: {
-    en: 'I design the system a company can operate: platforms, APIs, data paths, and the failure modes between them. The stack follows the problem: typed UI on React, Next, Vue, or Nuxt; services on Node, Express, Nest, Laravel, Spring Boot, .NET, Python, or FastAPI. I watch production where it actually hurts (metrics, traces, the pitfalls that hide in p99) and I design the CI/CD path so a change leaves the laptop without a war room. I have trained multiple software-engineering teams to work that way, which makes deployment smoother and deliverables faster. When AI is on the brief I ship a pipeline you can measure: Python, FastAPI, LangChain, LangGraph, RAG, agentic RAG, vector stores such as Pinecone, evals, and a fallback when retrieval is empty. I do that work in Cursor, Claude, Codex, and Antigravity as part of the engineering loop, not as a party trick. Eight years growing 50+ brands means the architecture already knows what the market will demand of it.',
-    bn: 'আমি এমন সিস্টেম ডিজাইন করি যা কোম্পানি চালাতে পারে: প্ল্যাটফর্ম, API, ডেটা পথ, আর মাঝখানের ব্যর্থতাগুলো। স্ট্যাক সমস্যাকে অনুসরণ করে: React, Next, Vue বা Nuxt-এ টাইপড UI; Node, Express, Nest, Laravel, Spring Boot, .NET, Python বা FastAPI-তে সার্ভিস। প্রোডাকশন যেখানে আসলে ব্যথা করে সেখানে দেখি (মেট্রিক্স, ট্রেস, p99-এ লুকানো ফাঁদ) এবং এমন CI/CD ডিজাইন করি যাতে চেঞ্জ ওয়ার-রুম ছাড়াই ল্যাপটপ ছাড়ে। একাধিক সফটওয়্যার ইঞ্জিনিয়ারিং টিমকে সেই পথে ট্রেইন করেছি, যাতে ডিপ্লয়মেন্ট মসৃণ হয় এবং ডেলিভারেবল দ্রুত আসে। ব্রিফে AI থাকলে মাপযোগ্য পাইপলাইন শিপ করি: Python, FastAPI, LangChain, LangGraph, RAG, agentic RAG, Pinecone-এর মতো ভেক্টর স্টোর, ইভ্যাল, আর রিট্রিভাল খালি হলে ফলব্যাক। সেই কাজ Cursor, Claude, Codex ও Antigravity-তে ইঞ্জিনিয়ারিং লুপের অংশ হিসেবে করি, শোপিস হিসেবে নয়। ৮+ বছরে ৫০+ ব্র্যান্ড বাড়ানোর অর্থ: আর্কিটেকচার আগেই জানে বাজার কী চাইবে।',
+    en: 'I build the system a company can operate on Vue 3, Quasar, Pinia, Laravel, and PHP, with JavaScript OOP at the core of the client. Production features go from MySQL row to pixel: RBAC dashboards, realtime chat, ticketing, and the failure modes between the SPA and the API. I watch where it actually hurts (slow queries, duplicate submits, session bugs) and I design the Git/CI path so a change leaves the laptop without a war room. I have trained engineering teams to work that way, which makes deployment smoother and deliverables faster. Eight years growing 50+ brands means the Vue/Laravel product already knows what the market will demand of it.',
+    bn: 'আমি এমন সিস্টেম বানাই যা কোম্পানি চালাতে পারে: Vue 3, Quasar, Pinia, Laravel ও PHP, ক্লায়েন্টে JavaScript OOP। প্রোডাকশন ফিচার MySQL সারি থেকে পিক্সেল পর্যন্ত যায়: RBAC ড্যাশবোর্ড, রিয়েলটাইম চ্যাট, টিকেটিং, আর SPA ও API-এর মাঝের ব্যর্থতা। যেখানে আসলে ব্যথা করে সেখানে দেখি (ধীর কোয়েরি, ডুপ্লিকেট সাবমিট, সেশন বাগ) এবং Git/CI এমনভাবে সাজাই যাতে চেঞ্জ ওয়ার-রুম ছাড়াই ল্যাপটপ ছাড়ে। ইঞ্জিনিয়ারিং টিমকে সেই পথে ট্রেইন করেছি, যাতে ডিপ্লয়মেন্ট মসৃণ হয় ও ডেলিভারেবল দ্রুত আসে। ৮+ বছরে ৫০+ ব্র্যান্ড বাড়ানোর অর্থ: Vue/Laravel পণ্য আগেই জানে বাজার কী চাইবে।',
   } satisfies LocaleText,
 } as const
 

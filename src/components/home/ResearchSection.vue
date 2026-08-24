@@ -10,7 +10,7 @@ const { pick } = useLocaleText()
   <SectionShell
     id="research"
     :eyebrow="pick({ en: 'Research', bn: 'গবেষণা' })"
-    :title="pick({ en: 'Published AI research', bn: 'প্রকাশিত এআই গবেষণা' })"
+    :title="pick({ en: 'Published research', bn: 'প্রকাশিত গবেষণা' })"
     :lead="pick(THESIS_LINEAGE)"
   >
     <article

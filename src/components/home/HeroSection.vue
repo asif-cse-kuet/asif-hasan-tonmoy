@@ -56,8 +56,8 @@ const { pick } = useLocaleText()
         <p class="mb-2.5 text-[0.75rem] font-semibold uppercase tracking-[0.18em] text-mist/70">
           {{
             pick({
-              en: 'Stack, DevOps, monitoring, logging & metrics',
-              bn: 'স্ট্যাক, DevOps, মনিটরিং, লগিং ও মেট্রিক্স',
+              en: 'Vue, Quasar, Pinia, Laravel, PHP & JS OOP',
+              bn: 'Vue, Quasar, Pinia, Laravel, PHP ও JS OOP',
             })
           }}
         </p>

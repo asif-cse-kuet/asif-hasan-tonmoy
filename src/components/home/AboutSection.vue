@@ -29,8 +29,8 @@ const facts = [
 
 const teaching = [
   {
-    en: 'Programming instructor at Timedoor Academy - JavaScript, Python, and C++ for beginners through project work.',
-    bn: 'Timedoor Academy-তে প্রোগ্রামিং ইন্সট্রাক্টর - প্রজেক্টভিত্তিক শিক্ষায় JavaScript, Python ও C++।',
+    en: 'Programming instructor at Timedoor Academy - JavaScript OOP through project work.',
+    bn: 'Timedoor Academy-তে প্রোগ্রামিং ইন্সট্রাক্টর - প্রজেক্টভিত্তিক শিক্ষায় JavaScript OOP।',
   },
   {
     en: 'Head of Physics at Interaid - curriculum delivery and explaining hard ideas simply.',

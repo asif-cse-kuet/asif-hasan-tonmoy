@@ -57,6 +57,6 @@ export const RESEARCH_PUBLICATIONS: ResearchPublication[] = [
 ]
 
 export const THESIS_LINEAGE: LocaleText = {
-  en: 'KUET CSE thesis (2018–2023) to ICCIT 2025 publication: academic NLP research carried into production AI pipelines.',
-  bn: 'KUET CSE থিসিস (২০১৮–২০২৩) থেকে ICCIT 2025 প্রকাশনা: একাডেমিক NLP গবেষণা প্রোডাকশন AI পাইপলাইনে নিয়ে যাওয়া।',
+  en: 'KUET CSE thesis (2018–2023) to ICCIT 2025 publication: academic NLP research, listed here as a paper, not as a production AI skill.',
+  bn: 'KUET CSE থিসিস (২০১৮–২০২৩) থেকে ICCIT 2025 প্রকাশনা: একাডেমিক NLP গবেষণা, এখানে পেপার হিসেবে, প্রোডাকশন এআই স্কিল হিসেবে নয়।',
 }

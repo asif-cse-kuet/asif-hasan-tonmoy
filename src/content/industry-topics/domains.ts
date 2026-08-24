@@ -174,30 +174,6 @@ export const DOMAINS: IndustryDomain[] = [
     },
   },
   {
-    id: 'ai-rag-agents',
-    slug: 'ai-rag-agents',
-    titles: {
-      en: 'AI systems, RAG & agents',
-      bn: 'এআই সিস্টেম, আরএজি ও এজেন্ট',
-    },
-    summary: {
-      en: 'RAG, agentic retrieval, vector stores, prompt injection, evals, and the production path for LLM products.',
-      bn: 'আরএজি, এজেন্টিক রিট্রিভাল, ভেক্টর স্টোর, প্রম্পট ইনজেকশন, ইভ্যাল-এলএলএম পণ্যের প্রোডাকশন পথ।',
-    },
-  },
-  {
-    id: 'data-pipelines-ml',
-    slug: 'data-pipelines-ml',
-    titles: {
-      en: 'Data pipelines & ML serving',
-      bn: 'ডেটা পাইপলাইন ও এমএল সার্ভিং',
-    },
-    summary: {
-      en: 'ETL/ELT, feature stores, backfills, training-serving skew, and contracts that keep models honest.',
-      bn: 'ইটিএল/ইএলটি, ফিচার স্টোর, ব্যাকফিল, ট্রেনিং-সার্ভিং স্কিউ-মডেলকে সৎ রাখে এমন চুক্তি।',
-    },
-  },
-  {
     id: 'product-platform',
     slug: 'product-platform',
     titles: {

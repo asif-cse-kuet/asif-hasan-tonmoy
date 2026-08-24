@@ -96,7 +96,9 @@ export const TOPICS: IndustryTopic[] = sortCurriculum(
     Object.keys(modules)
       .sort()
       .flatMap((key) => modules[key] ?? []),
-  ).map(applyCurriculumDifficulty),
+  )
+    .filter((topic) => topic.domain !== 'ai-rag-agents' && topic.domain !== 'data-pipelines-ml')
+    .map(applyCurriculumDifficulty),
 ).map((topic, index) => ({ ...topic, lesson: index + 1, status: 'full' }))
 
 export function getTopicBySlug(slug: string): IndustryTopic | undefined {

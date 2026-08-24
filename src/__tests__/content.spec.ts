@@ -13,8 +13,8 @@ import { MARKETING_TECH_GROUPS, TECH_GROUPS, resolveTechIcon } from '@/content/t
 import { getBrandIcon } from '@/lib/brandIcons'
 
 describe('industry knowledge library', () => {
-  it('has 15 domains', () => {
-    expect(DOMAINS.length).toBe(15)
+  it('has 13 domains', () => {
+    expect(DOMAINS.length).toBe(13)
   })
 
   it('keeps homepage topic count in sync with the catalog', () => {
@@ -134,8 +134,8 @@ describe('tech stack presentation', () => {
 })
 
 describe('capabilities', () => {
-  it('covers six practice areas with keyword clusters', () => {
-    expect(CAPABILITIES.length).toBe(6)
+  it('covers five practice areas with keyword clusters', () => {
+    expect(CAPABILITIES.length).toBe(5)
     for (const capability of CAPABILITIES) {
       expect(capability.clusters.length).toBeGreaterThanOrEqual(2)
       for (const cluster of capability.clusters) {

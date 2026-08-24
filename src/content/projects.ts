@@ -89,27 +89,6 @@ export const PROJECTS: Project[] = [
     featured: true,
   },
   {
-    slug: 'transmentalnet-research',
-    tier: 'T1',
-    titles: {
-      en: 'TransMentalNet-6 - Bengali Mental Health NLP',
-      bn: 'TransMentalNet-6 - বাংলা মানসিক স্বাস্থ্য NLP',
-    },
-    summary: {
-      en: 'ICCIT 2025 paper: optimized transformer for imbalanced Bengali mental illness classification (F1 66.35%).',
-      bn: 'ICCIT 2025 পেপার: imbalanced বাংলা মানসিক রোগ শ্রেণীবিভাগের জন্য অপ্টিমাইজড ট্রান্সফরমার (F1 ৬৬.৩৫%)।',
-    },
-    stack: ['Python', 'Transformers', 'BanglaBERT', 'PyTorch'],
-    links: [
-      {
-        label: 'DOI',
-        url: 'https://doi.org/10.1109/ICCIT68739.2025.11490477',
-      },
-    ],
-    tags: ['research', 'nlp', 'ai', 'bengali'],
-    featured: true,
-  },
-  {
     slug: 'quasar-dashboard',
     tier: 'T1',
     titles: {
@@ -187,18 +166,6 @@ export const PROJECTS: Project[] = [
     stack: ['C++', 'Algorithms'],
     links: [],
     tags: ['algorithms', 'cpp'],
-  },
-  {
-    slug: 'employee-management',
-    tier: 'T2',
-    titles: { en: 'Employee Management (C#)', bn: 'এমপ্লয়ি ম্যানেজমেন্ট (C#)' },
-    summary: {
-      en: 'Desktop employee CRUD and reporting with C# WinForms patterns.',
-      bn: 'C# WinForms প্যাটার্নে ডেস্কটপ এমপ্লয়ি CRUD ও রিপোর্টিং।',
-    },
-    stack: ['C#', '.NET', 'MySQL'],
-    links: [],
-    tags: ['csharp', 'desktop'],
   },
   {
     slug: 'harmonymatch',
