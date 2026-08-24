@@ -1,6 +1,21 @@
 <script setup lang="ts">
 import { onBeforeUnmount, onMounted, ref } from 'vue'
-import * as THREE from 'three'
+import {
+  AdditiveBlending,
+  BufferAttribute,
+  BufferGeometry,
+  Color,
+  EdgesGeometry,
+  IcosahedronGeometry,
+  LineBasicMaterial,
+  LineSegments,
+  PerspectiveCamera,
+  Points,
+  PointsMaterial,
+  Scene,
+  WebGLRenderer,
+  type Material,
+} from 'three'
 
 import { usePrefersReducedMotion } from '@/composables/usePrefersReducedMotion'
 
@@ -8,11 +23,11 @@ const { prefersReducedMotion } = usePrefersReducedMotion()
 const root = ref<HTMLElement | null>(null)
 const canvas = ref<HTMLCanvasElement | null>(null)
 
-let renderer: THREE.WebGLRenderer | undefined
-let scene: THREE.Scene | undefined
-let camera: THREE.PerspectiveCamera | undefined
-let points: THREE.Points | undefined
-let lattice: THREE.LineSegments | undefined
+let renderer: WebGLRenderer | undefined
+let scene: Scene | undefined
+let camera: PerspectiveCamera | undefined
+let points: Points | undefined
+let lattice: LineSegments | undefined
 let frame = 0
 let running = false
 const pointer = { x: 0, y: 0 }
@@ -60,9 +75,9 @@ function buildField() {
   const count = prefersReducedMotion.value ? 220 : 720
   const positions = new Float32Array(count * 3)
   const colors = new Float32Array(count * 3)
-  const teal = new THREE.Color('#3cb8a4')
-  const copper = new THREE.Color('#e25d2a')
-  const mist = new THREE.Color('#d5c9bc')
+  const teal = new Color('#3cb8a4')
+  const copper = new Color('#e25d2a')
+  const mist = new Color('#d5c9bc')
 
   for (let i = 0; i < count; i += 1) {
     const r = 18 + Math.random() * 28
@@ -79,31 +94,31 @@ function buildField() {
     colors[i * 3 + 2] = color.b
   }
 
-  const geometry = new THREE.BufferGeometry()
-  geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3))
-  geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3))
+  const geometry = new BufferGeometry()
+  geometry.setAttribute('position', new BufferAttribute(positions, 3))
+  geometry.setAttribute('color', new BufferAttribute(colors, 3))
 
-  const material = new THREE.PointsMaterial({
+  const material = new PointsMaterial({
     size: 0.11,
     vertexColors: true,
     transparent: true,
     opacity: 0.72,
     depthWrite: false,
-    blending: THREE.AdditiveBlending,
+    blending: AdditiveBlending,
   })
 
-  return new THREE.Points(geometry, material)
+  return new Points(geometry, material)
 }
 
 function buildLattice() {
-  const geometry = new THREE.IcosahedronGeometry(9.5, 1)
-  const edges = new THREE.EdgesGeometry(geometry)
-  const material = new THREE.LineBasicMaterial({
+  const geometry = new IcosahedronGeometry(9.5, 1)
+  const edges = new EdgesGeometry(geometry)
+  const material = new LineBasicMaterial({
     color: '#3cb8a4',
     transparent: true,
     opacity: 0.22,
   })
-  return new THREE.LineSegments(edges, material)
+  return new LineSegments(edges, material)
 }
 
 function tick() {
@@ -139,11 +154,11 @@ onMounted(() => {
   if (!canvas.value || !webglAvailable()) return
 
   try {
-    scene = new THREE.Scene()
-    camera = new THREE.PerspectiveCamera(55, 1, 0.1, 120)
+    scene = new Scene()
+    camera = new PerspectiveCamera(55, 1, 0.1, 120)
     camera.position.z = 28
 
-    renderer = new THREE.WebGLRenderer({
+    renderer = new WebGLRenderer({
       canvas: canvas.value,
       antialias: true,
       alpha: true,
@@ -172,9 +187,9 @@ onBeforeUnmount(() => {
   window.removeEventListener('touchstart', onTouch)
   window.removeEventListener('resize', resize)
   points?.geometry.dispose()
-  ;(points?.material as THREE.Material | undefined)?.dispose()
+  ;(points?.material as Material | undefined)?.dispose()
   lattice?.geometry.dispose()
-  ;(lattice?.material as THREE.Material | undefined)?.dispose()
+  ;(lattice?.material as Material | undefined)?.dispose()
   renderer?.dispose()
 })
 </script>

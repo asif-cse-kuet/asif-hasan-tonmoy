@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest'
 
 import { CAPABILITIES, SERVICE_PITCHES } from '@/content/capabilities'
+import { TOPIC_COUNT } from '@/content/catalog-stats'
 import { DOMAINS, getTopicsByDomain } from '@/content/industry-topics'
 import { TOPICS } from '@/content/industry-topics/topics'
 import { PRIMARY_LINKS, PROFILE_LINKS, PROOF_METRICS } from '@/content/profile'
@@ -13,6 +14,10 @@ import { getBrandIcon } from '@/lib/brandIcons'
 describe('industry knowledge library', () => {
   it('has 15 domains', () => {
     expect(DOMAINS.length).toBe(15)
+  })
+
+  it('keeps homepage topic count in sync with the catalog', () => {
+    expect(TOPIC_COUNT).toBe(TOPICS.length)
   })
 
   it('has no duplicate topic slugs', () => {

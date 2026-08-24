@@ -1,9 +1,11 @@
 <script setup lang="ts">
+import { defineAsyncComponent } from 'vue'
 import { RouterView } from 'vue-router'
 
-import SiteAtmosphere from '@/components/SiteAtmosphere.vue'
 import AppFooter from '@/components/layout/AppFooter.vue'
 import AppHeader from '@/components/layout/AppHeader.vue'
+
+const SiteAtmosphere = defineAsyncComponent(() => import('@/components/SiteAtmosphere.vue'))
 </script>
 
 <template>

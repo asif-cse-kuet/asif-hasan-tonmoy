@@ -4,8 +4,8 @@ import { RouterLink } from 'vue-router'
 
 import SectionShell from '@/components/home/SectionShell.vue'
 import { useLocaleText } from '@/composables/useLocaleText'
+import { TOPIC_COUNT } from '@/content/catalog-stats'
 import { SOLVED_PROBLEMS } from '@/content/solved-problems'
-import { TOPICS } from '@/content/industry-topics'
 
 const { pick } = useLocaleText()
 
@@ -29,7 +29,7 @@ const cards = computed(() => [
       en: 'A documentation-style library of industry-critical failures and the designs that survive them - English and Bengali.',
       bn: 'ইন্ডাস্ট্রি-ক্রিটিক্যাল ব্যর্থতা ও যে ডিজাইনগুলো টিকে থাকে - ডকুমেন্টেশন স্টাইলে, ইংরেজি ও বাংলায়।',
     }),
-    count: `${TOPICS.length}+`,
+    count: `${TOPIC_COUNT}+`,
     countLabel: pick({ en: 'topics', bn: 'টপিক' }),
   },
   {
