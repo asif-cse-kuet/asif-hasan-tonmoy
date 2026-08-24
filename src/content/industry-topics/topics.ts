@@ -1,0 +1,368 @@
+import type { DomainSlug } from './domains'
+import type { LocaleText, TopicDifficulty, TopicStatus } from '../types'
+
+export type IndustryTopic = {
+  id: string
+  slug: string
+  domain: DomainSlug
+  titles: LocaleText
+  summary: LocaleText
+  tags: string[]
+  difficulty: TopicDifficulty
+  status: TopicStatus
+  related: string[]
+  systemsLinks: string[]
+}
+
+export const TOPICS: IndustryTopic[] = [
+  {
+    id: 'cap-theorem-tradeoffs',
+    slug: 'cap-theorem-tradeoffs',
+    domain: 'distributed-systems',
+    titles: {
+      en: 'CAP theorem tradeoffs in real outages',
+      bn: 'আসল outage-এ CAP theorem tradeoff',
+    },
+    summary: {
+      en: 'Why partition tolerance is non-negotiable and what you actually choose between consistency and availability.',
+      bn: 'partition tolerance কেন non-negotiable এবং consistency vs availability-এ আসলে কী বেছে নেন।',
+    },
+    tags: ['cap', 'consistency', 'availability', 'partitions'],
+    difficulty: 'intermediate',
+    status: 'partial',
+    related: ['split-brain-recovery'],
+    systemsLinks: ['cap-theorem'],
+  },
+  {
+    id: 'split-brain-recovery',
+    slug: 'split-brain-recovery',
+    domain: 'distributed-systems',
+    titles: {
+      en: 'Split brain detection and recovery',
+      bn: 'Split brain শনাক্ত ও recovery',
+    },
+    summary: {
+      en: 'Quorum loss, dual primaries, and the operational playbook before data diverges.',
+      bn: 'quorum loss, dual primary, ডেটা diverge হওয়ার আগে operational playbook।',
+    },
+    tags: ['split-brain', 'consensus', 'quorum'],
+    difficulty: 'advanced',
+    status: 'stub',
+    related: ['cap-theorem-tradeoffs'],
+    systemsLinks: ['split-brain'],
+  },
+  {
+    id: 'database-deadlocks-under-load',
+    slug: 'database-deadlocks-under-load',
+    domain: 'data-storage',
+    titles: {
+      en: 'Database deadlocks under concurrent load',
+      bn: 'concurrent load-এ database deadlock',
+    },
+    summary: {
+      en: 'Lock ordering, index gaps, and why retry logic must be idempotent.',
+      bn: 'lock ordering, index gap, retry logic idempotent হতে হবে কেন।',
+    },
+    tags: ['deadlock', 'locking', 'mysql', 'postgres'],
+    difficulty: 'intermediate',
+    status: 'stub',
+    related: [],
+    systemsLinks: ['idempotency-keys'],
+  },
+  {
+    id: 'cache-invalidation-strategies',
+    slug: 'cache-invalidation-strategies',
+    domain: 'caching-cdn',
+    titles: {
+      en: 'Cache invalidation strategies that survive deploys',
+      bn: 'deploy টিকে cache invalidation strategy',
+    },
+    summary: {
+      en: 'TTL vs event-driven purge vs versioned keys — pick wrong and users see ghosts.',
+      bn: 'TTL vs event-driven purge vs versioned key — ভুল pick করলে user ghost দেখে।',
+    },
+    tags: ['cache', 'invalidation', 'cdn'],
+    difficulty: 'intermediate',
+    status: 'stub',
+    related: ['cache-stampede-mitigation'],
+    systemsLinks: ['cache-stampede'],
+  },
+  {
+    id: 'exactly-once-delivery-illusion',
+    slug: 'exactly-once-delivery-illusion',
+    domain: 'messaging-async',
+    titles: {
+      en: 'The exactly-once delivery illusion',
+      bn: 'exactly-once delivery-এর illusion',
+    },
+    summary: {
+      en: 'At-least-once plus idempotent consumers is the practical ceiling — and why brokers lie gently.',
+      bn: 'at-least-once + idempotent consumer practical ceiling — broker কেন gently lie করে।',
+    },
+    tags: ['messaging', 'exactly-once', 'idempotency'],
+    difficulty: 'advanced',
+    status: 'partial',
+    related: ['backpressure-queue-design'],
+    systemsLinks: ['exactly-once-illusion'],
+  },
+  {
+    id: 'backpressure-queue-design',
+    slug: 'backpressure-queue-design',
+    domain: 'messaging-async',
+    titles: {
+      en: 'Backpressure in queue-heavy architectures',
+      bn: 'queue-heavy architecture-এ backpressure',
+    },
+    summary: {
+      en: 'When producers outrun consumers and your queue becomes a delay bomb.',
+      bn: 'producer consumer-এর চেয়ে এগোলে queue delay bomb হয়ে যায়।',
+    },
+    tags: ['backpressure', 'queues', 'slo'],
+    difficulty: 'intermediate',
+    status: 'stub',
+    related: ['exactly-once-delivery-illusion'],
+    systemsLinks: ['backpressure'],
+  },
+  {
+    id: 'circuit-breaker-cascades',
+    slug: 'circuit-breaker-cascades',
+    domain: 'api-integration',
+    titles: {
+      en: 'Circuit breaker cascades across services',
+      bn: 'service জুড়ে circuit breaker cascade',
+    },
+    summary: {
+      en: 'Stopping retry storms without hiding the real upstream failure.',
+      bn: 'upstream failure লুকিয়ে retry storm থামানো।',
+    },
+    tags: ['circuit-breaker', 'retries', 'integration'],
+    difficulty: 'intermediate',
+    status: 'stub',
+    related: ['retry-storm-prevention'],
+    systemsLinks: ['circuit-breaker'],
+  },
+  {
+    id: 'oauth-token-lifecycle',
+    slug: 'oauth-token-lifecycle',
+    domain: 'auth-security',
+    titles: {
+      en: 'OAuth token lifecycle and tenant isolation',
+      bn: 'OAuth token lifecycle ও tenant isolation',
+    },
+    summary: {
+      en: 'Refresh rotation, revocation gaps, and the bugs that leak data across tenants.',
+      bn: 'refresh rotation, revocation gap, tenant-এর মধ্যে data leak-এর বাগ।',
+    },
+    tags: ['oauth', 'tokens', 'tenancy', 'security'],
+    difficulty: 'intermediate',
+    status: 'stub',
+    related: [],
+    systemsLinks: ['rate-limiting'],
+  },
+  {
+    id: 'micro-packaging-modules',
+    slug: 'micro-packaging-modules',
+    domain: 'frontend-architecture',
+    titles: {
+      en: 'Micro-packaging decoupled frontend modules',
+      bn: 'Micro-packaging decoupled frontend module',
+    },
+    summary: {
+      en: 'Package boundaries, lazy registries, and low-code extensibility without monolith coupling.',
+      bn: 'package boundary, lazy registry, monolith coupling ছাড়া low-code extensibility।',
+    },
+    tags: ['micro-packaging', 'micro-frontends', 'modularity'],
+    difficulty: 'advanced',
+    status: 'full',
+    related: ['websocket-state-at-scale'],
+    systemsLinks: ['feature-flags'],
+  },
+  {
+    id: 'websocket-state-at-scale',
+    slug: 'websocket-state-at-scale',
+    domain: 'frontend-architecture',
+    titles: {
+      en: 'WebSocket state sync at scale',
+      bn: 'scale-এ WebSocket state sync',
+    },
+    summary: {
+      en: 'Reconnect storms, missed events, and reconciling UI state with server cursors.',
+      bn: 'reconnect storm, missed event, server cursor-এ UI state reconcile।',
+    },
+    tags: ['websocket', 'realtime', 'frontend'],
+    difficulty: 'intermediate',
+    status: 'stub',
+    related: ['micro-packaging-modules'],
+    systemsLinks: ['backpressure'],
+  },
+  {
+    id: 'k8s-rollout-failure-modes',
+    slug: 'k8s-rollout-failure-modes',
+    domain: 'devops-containers',
+    titles: {
+      en: 'Kubernetes rollout failure modes',
+      bn: 'Kubernetes rollout failure mode',
+    },
+    summary: {
+      en: 'Probes lying, surge limits, and when blue-green beats rolling updates.',
+      bn: 'probe lie, surge limit, blue-green কখন rolling update-এর চেয়ে ভালো।',
+    },
+    tags: ['kubernetes', 'deploy', 'rollouts'],
+    difficulty: 'intermediate',
+    status: 'stub',
+    related: [],
+    systemsLinks: ['blue-green-canary'],
+  },
+  {
+    id: 'nginx-edge-tls-termination',
+    slug: 'nginx-edge-tls-termination',
+    domain: 'networking-edge',
+    titles: {
+      en: 'nginx edge TLS termination pitfalls',
+      bn: 'nginx edge TLS termination-এর ফাঁদ',
+    },
+    summary: {
+      en: 'Header trust, HSTS, and why your reverse proxy is part of the security boundary.',
+      bn: 'header trust, HSTS, reverse proxy security boundary-এর অংশ কেন।',
+    },
+    tags: ['nginx', 'tls', 'edge', 'security'],
+    difficulty: 'intermediate',
+    status: 'stub',
+    related: [],
+    systemsLinks: ['rate-limiting'],
+  },
+  {
+    id: 'slo-error-budget-burn',
+    slug: 'slo-error-budget-burn',
+    domain: 'observability-sli',
+    titles: {
+      en: 'SLO error budget burn rates',
+      bn: 'SLO error budget burn rate',
+    },
+    summary: {
+      en: 'Multi-window burn alerts that page humans for a reason — not every blip.',
+      bn: 'multi-window burn alert যা কারণসহ human-কে page করে — প্রতি blip নয়।',
+    },
+    tags: ['slo', 'sli', 'error-budget', 'alerting'],
+    difficulty: 'intermediate',
+    status: 'stub',
+    related: [],
+    systemsLinks: ['golden-signals'],
+  },
+  {
+    id: 'retry-storm-prevention',
+    slug: 'retry-storm-prevention',
+    domain: 'reliability-edge-cases',
+    titles: {
+      en: 'Retry storm prevention',
+      bn: 'retry storm prevention',
+    },
+    summary: {
+      en: 'Jittered backoff, retry budgets, and coordination when every client retries at once.',
+      bn: 'jittered backoff, retry budget, সব client একসাথে retry করলে coordination।',
+    },
+    tags: ['retries', 'reliability', 'cascades'],
+    difficulty: 'intermediate',
+    status: 'stub',
+    related: ['circuit-breaker-cascades'],
+    systemsLinks: ['thundering-herd'],
+  },
+  {
+    id: 'p99-tail-latency-planning',
+    slug: 'p99-tail-latency-planning',
+    domain: 'performance-capacity',
+    titles: {
+      en: 'p99 tail latency and capacity planning',
+      bn: 'p99 tail latency ও capacity planning',
+    },
+    summary: {
+      en: "Little's Law, queueing delays, and why averages lie to executives and engineers alike.",
+      bn: "Little's Law, queueing delay, average executive ও engineer দুজনকেই lie করে কেন।",
+    },
+    tags: ['latency', 'p99', 'capacity', 'littles-law'],
+    difficulty: 'intermediate',
+    status: 'stub',
+    related: [],
+    systemsLinks: ['littles-law'],
+  },
+  {
+    id: 'rag-chunking-evals',
+    slug: 'rag-chunking-evals',
+    domain: 'ai-rag-agents',
+    titles: {
+      en: 'RAG chunking strategies and offline evals',
+      bn: 'RAG chunking strategy ও offline eval',
+    },
+    summary: {
+      en: 'Chunk size, overlap, hybrid search, and measuring retrieval before you ship agents.',
+      bn: 'chunk size, overlap, hybrid search, agent ship-এর আগে retrieval measure।',
+    },
+    tags: ['rag', 'evals', 'embeddings', 'chunking'],
+    difficulty: 'advanced',
+    status: 'partial',
+    related: ['prompt-injection-guardrails'],
+    systemsLinks: ['vector-retrieval'],
+  },
+  {
+    id: 'prompt-injection-guardrails',
+    slug: 'prompt-injection-guardrails',
+    domain: 'ai-rag-agents',
+    titles: {
+      en: 'Prompt injection guardrails in production',
+      bn: 'production-এ prompt injection guardrail',
+    },
+    summary: {
+      en: 'Tool sandboxing, output filtering, and trust boundaries for agentic systems.',
+      bn: 'tool sandboxing, output filtering, agentic system-এ trust boundary।',
+    },
+    tags: ['prompt-injection', 'security', 'agents'],
+    difficulty: 'advanced',
+    status: 'stub',
+    related: ['rag-chunking-evals'],
+    systemsLinks: ['feature-flags'],
+  },
+  {
+    id: 'training-serving-skew',
+    slug: 'training-serving-skew',
+    domain: 'data-pipelines-ml',
+    titles: {
+      en: 'Training–serving skew in ML pipelines',
+      bn: 'ML pipeline-এ training–serving skew',
+    },
+    summary: {
+      en: 'Feature contracts, backfills, and silent metric cliffs after deploy.',
+      bn: 'feature contract, backfill, deploy-এর পর silent metric cliff।',
+    },
+    tags: ['mlops', 'feature-store', 'pipelines'],
+    difficulty: 'advanced',
+    status: 'stub',
+    related: [],
+    systemsLinks: ['outbox-pattern'],
+  },
+  {
+    id: 'multi-region-failover',
+    slug: 'multi-region-failover',
+    domain: 'product-platform',
+    titles: {
+      en: 'Multi-region failover without dual writes',
+      bn: 'dual write ছাড়া multi-region failover',
+    },
+    summary: {
+      en: 'Active-passive, DNS steering, and data replication lag users actually feel.',
+      bn: 'active-passive, DNS steering, user feel-এ data replication lag।',
+    },
+    tags: ['multi-region', 'failover', 'platform'],
+    difficulty: 'advanced',
+    status: 'stub',
+    related: [],
+    systemsLinks: ['multi-region'],
+  },
+]
+
+export function getTopicBySlug(slug: string): IndustryTopic | undefined {
+  return TOPICS.find((topic) => topic.slug === slug)
+}
+
+export function getTopicsByDomain(domain: DomainSlug): IndustryTopic[] {
+  return TOPICS.filter((topic) => topic.domain === domain)
+}
