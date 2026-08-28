@@ -51,13 +51,8 @@ const { pick } = useLocaleText()
       <a :href="PROFILE.telHref" class="btn-primary">
         {{ pick({ en: 'Call now', bn: 'এখনই কল' }) }} · {{ PROFILE.phone }}
       </a>
-      <a
-        href="https://www.upwork.com/workwith/asifhasantonmoy"
-        target="_blank"
-        rel="noopener noreferrer"
-        class="btn-ghost"
-      >
-        {{ pick({ en: 'Hire on Upwork', bn: 'Upwork-এ নিয়োগ' }) }}
+      <a :href="`mailto:${PROFILE.email}`" class="btn-ghost">
+        {{ pick({ en: 'Email a brief', bn: 'ব্রিফ পাঠান' }) }}
       </a>
     </div>
   </SectionShell>

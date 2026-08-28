@@ -109,13 +109,6 @@ export const PROFILE_LINKS: ProfileLink[] = [
     icon: 'gitlab',
   },
   {
-    id: 'upwork-direct',
-    label: 'Work with me (Upwork)',
-    url: 'https://www.upwork.com/workwith/asifhasantonmoy',
-    kind: 'upwork',
-    icon: 'upwork',
-  },
-  {
     id: 'google-site',
     label: 'Legacy marketing site',
     url: 'https://sites.google.com/view/asifhasan/home',

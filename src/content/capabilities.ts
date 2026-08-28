@@ -22,20 +22,6 @@ export const CAPABILITIES: Capability[] = [
     },
     clusters: [
       {
-        titles: { en: 'Application layer', bn: 'অ্যাপ্লিকেশন স্তর' },
-        items: [
-          'Typed UI (TypeScript)',
-          'Component systems (React, Vue)',
-          'App routers (Next.js, Nuxt)',
-          'Client state design',
-          'SSR / hydration strategy',
-          'Vite / bundler pipelines',
-          'Design-to-code (Figma)',
-          'Accessibility in components',
-          'Responsive layout systems',
-        ],
-      },
-      {
         titles: { en: 'Service layer', bn: 'সার্ভিস স্তর' },
         items: [
           'Node.js & Express services',
@@ -47,6 +33,20 @@ export const CAPABILITIES: Capability[] = [
           'Auth, session, RBAC',
           'Middleware, validation, errors',
           'Third-party integrations',
+        ],
+      },
+      {
+        titles: { en: 'Application layer', bn: 'অ্যাপ্লিকেশন স্তর' },
+        items: [
+          'Typed UI (TypeScript)',
+          'Component systems (React, Vue)',
+          'App routers (Next.js, Nuxt)',
+          'Client state design',
+          'SSR / hydration strategy',
+          'Vite / bundler pipelines',
+          'Design-to-code (Figma)',
+          'Accessibility in components',
+          'Responsive layout systems',
         ],
       },
       {
