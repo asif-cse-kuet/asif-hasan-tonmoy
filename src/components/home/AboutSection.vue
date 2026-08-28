@@ -54,8 +54,8 @@ const teaching = [
     <div class="mb-6 flex flex-col items-start gap-5 sm:flex-row sm:items-center">
       <ProfilePortrait
         variant="about"
-        src="/images/profile/hero-mall.png"
-        alt="Asif Hasan Tonmoy in a modern city setting"
+        src="/images/profile/about-ai.png"
+        alt="Asif Hasan Tonmoy — elegant about portrait"
       />
       <p class="max-w-xl text-sm leading-relaxed text-mist">
         {{

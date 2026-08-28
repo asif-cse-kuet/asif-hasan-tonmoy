@@ -13,8 +13,10 @@ const { pick } = useLocaleText()
 <template>
   <section id="top" class="relative overflow-hidden pb-12 pt-10 sm:pb-16 sm:pt-14">
     <div class="page-wrap relative z-10">
-      <div class="grid items-end gap-8 lg:grid-cols-[minmax(0,1fr)_auto] lg:gap-10">
-        <div class="min-w-0">
+      <div
+        class="grid items-center gap-8 lg:grid-cols-[minmax(0,1.05fr)_minmax(14rem,0.72fr)] lg:gap-6 xl:gap-10"
+      >
+        <div class="min-w-0 order-2 lg:order-1">
           <h1
             class="font-display text-[2.6rem] font-bold leading-[1.05] text-paper sm:text-6xl lg:text-7xl"
           >
@@ -52,11 +54,13 @@ const { pick } = useLocaleText()
           </div>
         </div>
 
-        <ProfilePortrait
-          variant="hero"
-          src="/images/profile/about-panjabi.png"
-          alt="Asif Hasan Tonmoy — professional portrait, relaxed formal wear"
-        />
+        <div class="order-1 flex justify-center lg:order-2 lg:justify-end lg:self-stretch lg:items-end">
+          <ProfilePortrait
+            variant="hero"
+            src="/images/profile/hero-ai.png"
+            alt="Asif Hasan Tonmoy — chill, elegant portfolio portrait"
+          />
+        </div>
       </div>
 
       <div class="mt-9">
