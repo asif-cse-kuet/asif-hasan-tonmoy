@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import GlassAvatar from '@/components/GlassAvatar.vue'
 import BrandIcon from '@/components/BrandIcon.vue'
 import SectionShell from '@/components/home/SectionShell.vue'
 import { useLocaleText } from '@/composables/useLocaleText'
@@ -14,14 +15,19 @@ const { pick } = useLocaleText()
     :title="pick({ en: 'Reach me today', bn: 'আজই যোগাযোগ করুন' })"
     :lead="
       pick({
-        en: 'Call, email, or open my Upwork profile. I answer like an owner — with a next step, not a brochure.',
-        bn: 'কল, ইমেইল বা Upwork প্রোফাইল। পরবর্তী ধাপ দিয়ে উত্তর — ব্রোশার নয়।',
+        en: 'Call or email. I answer like an owner — with a next step, not a brochure.',
+        bn: 'কল বা ইমেইল করুন। পরবর্তী ধাপ দিয়ে উত্তর — ব্রোশার নয়।',
       })
     "
   >
-    <div class="flex flex-wrap gap-3">
-      <a :href="PROFILE.telHref" class="btn-primary">{{ pick({ en: 'Call', bn: 'কল' }) }} {{ PROFILE.phone }}</a>
-      <a :href="`mailto:${PROFILE.email}`" class="btn-ghost">{{ PROFILE.email }}</a>
+    <div class="mb-7 flex flex-wrap items-center gap-4">
+      <GlassAvatar src="/images/profile/avatars/avatar-lean.png?v=6" />
+      <div class="flex flex-wrap gap-3">
+        <a :href="PROFILE.telHref" class="btn-primary">
+          {{ pick({ en: 'Call', bn: 'কল' }) }} {{ PROFILE.phone }}
+        </a>
+        <a :href="`mailto:${PROFILE.email}`" class="btn-ghost">{{ PROFILE.email }}</a>
+      </div>
     </div>
 
     <ul class="mt-7 grid gap-2.5 sm:grid-cols-2 lg:grid-cols-3">

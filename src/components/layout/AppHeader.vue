@@ -21,10 +21,10 @@ const items = computed<NavItem[]>(() => [
   { label: 'Expertise', hash: '#expertise' },
   { label: 'Projects', hash: '#projects' },
   { label: 'Experience', hash: '#experience' },
-  { label: 'Life & travel', to: '/life' },
   { label: 'Problems solved', to: '/problems/solved' },
   { label: 'My Engineering Blog', to: '/systems' },
   { label: 'Software to business', to: '/marketing' },
+  { label: 'Life & travel', to: '/life' },
 ])
 
 const isBlog = computed(() => isEngineeringBlogRoute(route.path))
@@ -88,6 +88,12 @@ onBeforeUnmount(() => {
         >
           Call
         </a>
+        <a
+          :href="`mailto:${PROFILE.email}`"
+          class="hidden rounded-md border border-steel px-3 py-1.5 text-sm font-semibold text-paper no-underline hover:border-glow hover:text-glow md:inline-block"
+        >
+          Email
+        </a>
         <RouterLink
           :to="{ path: '/', hash: '#contact' }"
           class="hidden rounded-md bg-accent px-3.5 py-1.5 text-sm font-semibold text-paper no-underline hover:bg-accent-soft hover:text-ink sm:inline-block"
@@ -138,6 +144,13 @@ onBeforeUnmount(() => {
           @click="ui.closeMobileNav()"
         >
           Call me · {{ PROFILE.phone }}
+        </a>
+        <a
+          :href="`mailto:${PROFILE.email}`"
+          class="block rounded-lg px-3 py-2.5 text-sm no-underline hover:bg-steel/30"
+          @click="ui.closeMobileNav()"
+        >
+          Email · {{ PROFILE.email }}
         </a>
         <RouterLink
           :to="{ path: '/', hash: '#contact' }"

@@ -22,12 +22,20 @@ export type ProofMetric = {
 export const PROFILE = {
   name: 'Asif Hasan Tonmoy',
   brandLine: {
-    en: 'Vue.js · Quasar · Pinia · Laravel · PHP · JavaScript OOP · Software to Business Consultant',
-    bn: 'Vue.js · Quasar · Pinia · Laravel · PHP · JavaScript OOP · সফটওয়্যার-টু-বিজনেস কনসালট্যান্ট',
+    en: 'AI-backed delivery · Backend · Frontend · Deploy · Scale · Monitoring & observability · Software-to-business consultant',
+    bn: 'AI-backed ডেলিভারি · ব্যাকএন্ড · ফ্রন্টএন্ড · ডিপ্লয় · স্কেল · মনিটরিং ও অবজারভেবিলিটি · সফটওয়্যার-টু-বিজনেস কনসালট্যান্ট',
   } satisfies LocaleText,
   tagline: {
-    en: 'I ship production Vue and Laravel software around how a business actually runs, not around a stack fashion cycle.',
-    bn: 'আমি ব্যবসা যেভাবে চলে সেই হিসেবে Vue ও Laravel প্রোডাকশন সফটওয়্যার শিপ করি, ফ্যাশন স্ট্যাকের হিসেবে নয়।',
+    en: 'I sit with owners, CEOs, and CTOs — turn business goals into architecture, then ship the product customers actually use.',
+    bn: 'মালিক, CEO ও CTO-র সাথে বসি — ব্যবসার লক্ষ্যকে আর্কিটেকচারে আনি, তারপর গ্রাহকরা যে পণ্য ব্যবহার করে সেটা শিপ করি।',
+  } satisfies LocaleText,
+  designation: {
+    en: 'Solution Architect & Software-to-Business Consultant — business problem → architecture → ship → scale',
+    bn: 'সলিউশন আর্কিটেক্ট ও সফটওয়্যার-টু-বিজনেস কনসালট্যান্ট — ব্যবসার সমস্যা → আর্কিটেকচার → শিপ → স্কেল',
+  } satisfies LocaleText,
+  aboutLead: {
+    en: 'AI, software, and business in one seat — I architect what to build, own the client conversation, and stay through production scale.',
+    bn: 'AI, সফটওয়্যার ও ব্যবসা এক আসনে — কী বানাতে হবে আর্কিটেক্ট করি, ক্লায়েন্ট কথা সামলাই, প্রোডাকশন স্কেল পর্যন্ত থাকি।',
   } satisfies LocaleText,
   email: 'asifhasan.cse75@gmail.com',
   phone: '+880 1937-181793',
@@ -41,8 +49,8 @@ export const PROFILE = {
     bn: 'খুলনা প্রকৌশল ও প্রযুক্তি বিশ্ববিদ্যালয় (কুয়েট), CSE, ২০১৮–২০২৩',
   } satisfies LocaleText,
   shortBio: {
-    en: 'I build systems companies can run on Vue 3, Quasar, Pinia, Laravel, and PHP, with JavaScript OOP on the client. Production features go from database row to pixel — RDBMS like MySQL or PostgreSQL, NoSQL like MongoDB when the shape fits — plus RBAC dashboards, realtime chat, ticketing, and the failure modes between SPA and API. I watch where it actually hurts (slow queries, duplicate submits, session bugs) and design Git/CI so a change leaves the laptop without a war room. I have trained engineering teams that way, which makes deployment smoother and deliverables faster. Eight years growing 50+ brands means the Vue/Laravel product already knows what the market will demand.',
-    bn: 'আমি এমন সিস্টেম বানাই যা কোম্পানি চালাতে পারে: Vue 3, Quasar, Pinia, Laravel ও PHP, ক্লায়েন্টে JavaScript OOP। প্রোডাকশন ফিচার MySQL সারি থেকে পিক্সেল পর্যন্ত যায়: RBAC ড্যাশবোর্ড, রিয়েলটাইম চ্যাট, টিকেটিং, আর SPA ও API-এর মাঝের ব্যর্থতা। যেখানে আসলে ব্যথা করে সেখানে দেখি (ধীর কোয়েরি, ডুপ্লিকেট সাবমিট, সেশন বাগ) এবং Git/CI এমনভাবে সাজাই যাতে চেঞ্জ ওয়ার-রুম ছাড়াই ল্যাপটপ ছাড়ে। ইঞ্জিনিয়ারিং টিমকে সেই পথে ট্রেইন করেছি, যাতে ডিপ্লয়মেন্ট মসৃণ হয় ও ডেলিভারেবল দ্রুত আসে। ৮+ বছরে ৫০+ ব্র্যান্ড বাড়ানোর অর্থ: Vue/Laravel পণ্য আগেই জানে বাজার কী চাইবে।',
+    en: 'I handle clients, run projects, and architect solutions from the business problem — not from a framework checklist. Comfortable across stacks and languages; deepest shipping hours sit in Vue, Quasar, Pinia, Laravel, PHP, and JavaScript OOP. AI where it speeds delivery, then backend → frontend → deploy → scale → monitoring so the system stays honest in production. Eight years and 50+ brands means I already know what the market will ask for next.',
+    bn: 'ক্লায়েন্ট হ্যান্ডেল, প্রজেক্ট ম্যানেজ, আর ব্যবসার সমস্যা থেকে সলিউশন আর্কিটেক্ট করি — ফ্রেমওয়ার্ক চেকলিস্ট থেকে নয়। সব স্ট্যাক ও ভাষায় কাজ করতে পারি; সবচেয়ে বেশি শিপ Vue, Quasar, Pinia, Laravel, PHP ও JavaScript OOP-এ। যেখানে AI ডেলিভারি ত্বরান্বিত করে সেখানে ব্যবহার, তারপর ব্যাকএন্ড → ফ্রন্টএন্ড → ডিপ্লয় → স্কেল → মনিটরিং যাতে প্রোডাকশনে সিস্টেম সৎ থাকে। ৮+ বছর ও ৫০+ ব্র্যান্ড মানে বাজার পরের ধাপে কী চাইবে সেটা আগেই জানি।',
   } satisfies LocaleText,
 } as const
 

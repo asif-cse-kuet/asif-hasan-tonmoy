@@ -1,87 +1,121 @@
-# Multi-aspect portrait generation prompts
+# Portrait regeneration — prompts + model research
 
-Recommended model: **`gemini-3-pro-image`** (Nano Banana Pro). Fallback: `gemini-3.1-flash-image`.
+## What we used in Cursor for this project
 
-Attach **one** primary face/body reference per run (smaller JPEG ≤1.2MB). Do **not** use the cafe panjabi photo for seated “about” shots if that look failed before — prefer mall / campus / roadside / beach close-up.
+| Tool | Role | Face-lock quality |
+|------|------|-------------------|
+| **Cursor `GenerateImage`** (current session) | Fast regenerate with 1 reference | Medium — can drift face; hair crown sometimes clipped |
+| **Gemini 3 Pro Image (`gemini-3-pro-image` / Nano Banana Pro)** | Best hosted edit/regen for wardrobe + grade | Strong when prompt has hard IDENTITY LOCK + 1–2 face refs |
+| **Gemini 3.1 Flash Image** | Faster hosted fallback | Good; slightly weaker ID than Pro |
 
-Shared rules for every prompt below (paste under each aspect prompt):
+**Gemini API key was not available in this environment**, so gens were done via Cursor’s image tool. For your own best runs: [Google AI Studio](https://aistudio.google.com) → Image → attach cafe/campus/beach face refs → paste prompts below → **3:4**.
+
+---
+
+## Best face-preserving stacks (2025–2026 research / HF)
+
+Use these when you need **exact face** while changing skin tone / dress / pose:
+
+| Priority | Model / method | Where | Notes |
+|----------|----------------|-------|-------|
+| 1 | **InfiniteYou (InfU)** on FLUX | [bytedance/InfiniteYou](https://github.com/bytedance/InfiniteYou) | SOTA ID similarity + text alignment on Flux; less “face paste” than older PuLID |
+| 2 | **PuLID-FLUX** | HF / ComfyUI | Strong Flux face lock; watch copy-paste artifacts |
+| 3 | **InstantID** (SDXL) | [InstantX/InstantID](https://huggingface.co/InstantX/InstantID) | IdentityNet + IP-Adapter + keypoints; great multi-shot consistency |
+| 4 | **IP-Adapter FaceID Plus V2** | [h94/IP-Adapter-FaceID](https://huggingface.co/h94/IP-Adapter-FaceID) | Lightweight; match FaceID model + LoRA pair |
+| 5 | **Diff-PC** (paper 2026) | [alphaXiv 2602.00639](https://www.alphaxiv.org/abs/2602.00639) | 3D-aware ID control; beats PhotoMaker-V2 / FlashFace on reported metrics |
+| 6 | **ReActor** (post) | ComfyUI | Face *swap onto* an already good body/wardrobe render |
+
+**Practical recipe for this portfolio:**  
+1) Gemini 3 Pro Image with IDENTITY LOCK prompt (fast), **or**  
+2) ComfyUI: InstantID *or* PuLID-FLUX → wardrobe prompt → optional ReActor only if ID slipped.  
+Never rembg-only for hero cutouts.
+
+---
+
+## Hard rules (every prompt)
 
 ```
-IDENTITY LOCK: Same South Asian man as the attached reference. Preserve eye spacing, nose, lips, jaw, short groomed dark beard, hairline and side volume. No face morph, no beautify-into-stranger.
+IDENTITY LOCK (non-negotiable):
+- Copy the attached reference face 1:1 — eye spacing, lids, brows, nose bridge/tip,
+  lip thickness, philtrum, jaw width, cheekbones, ear set, beard map, mustache.
+- Do NOT slim, beautify, Westernize, or average the face into a different person.
+- Unique markers to keep: [describe from your photo — e.g. brow arch, smile asymmetry].
 
-SKIN (photometric, not “realistic” as a vague word):
-- Target: Fitzpatrick III–IV very light brown / light wheat.
-- Melanin: warmer on zygoma + nose tip + ear rims; cooler on mandibular plane + under-eye.
-- Texture: visible pores on cheek at 100% crop; fine peach-fuzz along beard edge; no plastic SSS melt.
-- Specular: small highlights only on forehead + nose bridge (≈2–4% of face area), not oily sheet.
-- White balance: neutral daylight; forbid orange cafe cast and grey corpse cast.
+HAIR SILHOUETTE:
+- Preserve FULL crown height and side volume from reference.
+- Forbidden: flattened top, cropped crown, missing hair chunks, balding halo.
 
-ANTI-ARTIFACT: Five correct fingers; no melted ears; no double watch; no white halo on black; no jagged rembg edge; no warped collar.
+SKIN vs DRESS (forsha / dominant skin):
+- Target Fitzpatrick III very light brown / light wheat.
+- Skin luminance MUST read LIGHTER and more luminous than the shirt fabric
+  (especially vs sky-blue or navy cloth). Warm zygoma; cooler jaw; visible pores.
+- Not orange cafe cast; not grey; not plastic SSS.
 
-BACKGROUND: Pure #000000 void OR soft charcoal→black gradient. Soft optical hair edges. No environment props.
-
-GRADE: Soft S-curve; open skin midtones; controlled blacks; restrained teal-shadow / warm-skin separation. Magazine still, not HDR crunch.
+ANTI-ARTIFACT:
+- Full hair outline soft-edged; zero white halo; zero jagged rembg; five correct fingers.
 ```
 
 ---
 
-## 01 — Standing hero (3:4) — site primary style
-Reference: campus full-body (preferred) or first good linen hero.
+## Aspect prompts
 
+### A — Life & Travel intro (sky shirt, chill) — 3:4
 ```
-POSE: Mid-thigh→crown. Camera 8–12cm below eye height. Weight on back leg; front knee soft. Pelvis neutral, lumbar slight lordosis, scapulae down-back. Left hand loosely in pocket (thumb out). Soft closed-mouth smile, eyes to camera.
-WARDROBE: Ivory linen shirt, top button open, sleeves rolled once; charcoal trousers; rose-gold watch dark strap. No suit/tie/sneakers.
-OUTPUT: 3:4 PNG cutout for dark website hero right of name.
-```
-
-## 02 — Seated about (3:4) — biomechanics
-Reference: mall crossed-arms OR beach close-up. **Never** cafe panjabi for this slot if regenerating.
-
-```
-POSE (sitting physics): Sit-bones bearing weight on invisible stool. Pelvis posterior tilt 5–8° (not perched on thighs). Femurs angle down ~15°; knees ≈ hip height or slightly below. Torso stacked over pelvis — thoracic NOT collapsed. Forearms on thighs, elbows ~100–110°. Head over spine, chin level. Camera slightly below eyes so torso reads long.
-WARDROBE: Stone-beige cotton pique polo (no logo) OR soft sage polo; charcoal trousers; rose-gold watch.
+[HARD RULES above]
+POSE: Standing mid-thigh→crown, slight low camera, left hand in pocket, soft smile, tall.
+WARDROBE: Sky-blue fine oxford/micro-check, top button OPEN, sleeves rolled mid-forearm,
+charcoal trousers, rose-gold watch dark strap.
+BG: Solid #000000 only (no white, no park). Soft full hair silhouette.
 ```
 
-## 03 — Crossed arms (3:4)
+### B — Formal buttoned sky — 3:4
 ```
-POSE: Standing mid-thigh crop. Arms crossed loosely (not defensive clamp). Watch visible on left wrist. Tall posture, low camera.
-WARDROBE: Pale sage / mint pique polo; charcoal trousers.
-```
-
-## 04 — Oxford standing (3:4)
-```
-POSE: 3/4 body angle, left hand pocket, tall open chest.
-WARDROBE: Light-blue micro-check oxford, sleeves rolled; charcoal trousers; rose-gold watch.
+[HARD RULES]
+POSE: Same standing tall.
+WARDROBE: Sky-blue oxford with ALL buttons fastened including TOP collar button
+(closed formal collar). Charcoal trousers, rose-gold watch. No tie/blazer.
+BG: #000000. Full hair crown.
 ```
 
-## 05 — Headshot square (1:1)
+### C — Formal buttoned white — 3:4
 ```
-POSE: Head-and-shoulders; neck long; shoulders down; soft smile.
-WARDROBE: Ivory linen collar only.
-BG: Soft charcoal→black gradient.
-```
-
-## 06 — Tall vertical (9:16)
-```
-POSE: Knees→crown vertical. Low camera. One hand pocket; loafers tip may show.
-WARDROBE: Ivory linen untucked or lightly tucked; charcoal trousers; dark loafers; rose-gold watch.
+[HARD RULES]
+WARDROBE: Crisp white poplin, ALL buttons incl. top closed. Charcoal trousers, thin dark belt,
+rose-gold watch. Skin clearly fairer than white cloth midtones via soft key (not blown).
 ```
 
-## 07 — Lean landscape (4:3)
+### D — Formal navy seated — 3:4
 ```
-POSE: Light hip lean on invisible ledge; elbows soft; torso still upright.
-WARDROBE: Cream knit crewneck + white shirt collar peek; charcoal trousers.
+[HARD RULES]
+POSE: Sit-bones on stool; pelvis posterior tilt 5–8°; femurs down ~15°; torso stacked (not hunched);
+hands on thighs; soft smile; camera slightly low.
+WARDROBE: Deep navy shirt ALL buttons closed; charcoal trousers; rose-gold watch.
+BG: #000000. Full hair.
+```
+
+### E — Hero linen (open collar chill) — 3:4
+```
+[HARD RULES]
+WARDROBE: Ivory linen open collar, sleeves rolled; charcoal trousers; rose-gold watch.
+Skin lighter than ivory midtone via careful key (avoid matching shirt L*).
+BG: #000000.
 ```
 
 ---
 
-## QA before accepting
+## Site vs archive
+
+| Path | GitHub? |
+|------|---------|
+| `public/images/profile/*` | Yes — only deployed portraits |
+| `private/generated-portraits/*` | **No** — `/private/` in `.gitignore` |
+
+After regenerating in AI Studio, drop keepers into `private/generated-portraits/`, then tell the agent which file to promote to `public/images/profile/`.
+
+## QA checklist
 - [ ] Face matches reference at 100% zoom  
-- [ ] Skin is light wheat, not dark orange  
-- [ ] Tall read (low angle + open posture)  
-- [ ] Seated shots pass sit-bone / femur check  
-- [ ] No white edge halo  
-- [ ] Hands correct  
-- [ ] Looks photographic, not AI plastic  
-
-Unused keepers → `private/generated-portraits/` (gitignored). Only `public/images/profile/*` ships to GitHub.
+- [ ] Full hair crown present  
+- [ ] Skin lighter / more luminous than shirt  
+- [ ] Formal shots: top button visibly closed  
+- [ ] Background solid dark — no white holes  
+- [ ] Hands correct; no plastic skin  

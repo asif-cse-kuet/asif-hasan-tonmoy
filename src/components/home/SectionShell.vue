@@ -1,9 +1,13 @@
 <script setup lang="ts">
+import ExpandableText from '@/components/ExpandableText.vue'
+
 defineProps<{
   id: string
   eyebrow?: string
   title: string
   lead?: string
+  /** Mobile line-clamp for section lead (default 3). */
+  leadMaxLines?: number
 }>()
 </script>
 
@@ -21,9 +25,12 @@ defineProps<{
       >
         {{ title }}
       </h2>
-      <p v-if="lead" class="mt-3 max-w-3xl text-base text-mist sm:text-lg">
-        {{ lead }}
-      </p>
+      <ExpandableText
+        v-if="lead"
+        :text="lead"
+        :max-lines="leadMaxLines ?? 3"
+        class="mt-3 max-w-3xl text-base text-mist sm:text-lg"
+      />
 
       <div class="mt-8 sm:mt-10">
         <slot />

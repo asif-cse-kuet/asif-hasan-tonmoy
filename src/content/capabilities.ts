@@ -311,9 +311,9 @@ export const SERVICE_PITCHES: ServicePitch[] = [
       bn: 'একজন ফাউন্ডার এলোমানা প্রক্রিয়া নিয়ে আসেন। বেরোনোর সময় টিম যে সিস্টেম ব্যবহার করে সেটি হাতে থাকে।',
     },
     bullets: [
-      { en: 'Customer-facing apps, admin desks, and internal tools', bn: 'কাস্টমার অ্যাপ, অ্যাডমিন ডেস্ক ও ইন্টারনাল টুল' },
-      { en: 'APIs that other vendors can plug into without a war room', bn: 'অন্য ভেন্ডর সহজে প্লাগ করতে পারে এমন API' },
-      { en: 'Vue, Quasar, Pinia, Laravel, and PHP features with tests and a clean deploy path', bn: 'Vue, Quasar, Pinia, Laravel ও PHP ফিচার — টেস্ট ও পরিষ্কার ডিপ্লয় পথসহ' },
+      { en: 'Customer-facing apps, admin desks, and internal tools your team will actually open', bn: 'কাস্টমার অ্যাপ, অ্যাডমিন ডেস্ক ও ইন্টারনাল টুল — টিম সত্যি খুলবে' },
+      { en: 'APIs other vendors can plug into without a war room', bn: 'অন্য ভেন্ডর সহজে প্লাগ করতে পারে এমন API' },
+      { en: 'From business brief → architecture → shipped feature, with a clean deploy path', bn: 'বিজনেস ব্রিফ → আর্কিটেকচার → শিপ করা ফিচার, পরিষ্কার ডিপ্লয় পথসহ' },
     ],
   },
   {

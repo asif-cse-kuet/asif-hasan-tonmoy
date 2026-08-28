@@ -97,20 +97,21 @@ export const TECH_GROUPS: TechGroup[] = [
   },
 ]
 
-/** Compact marquee row for the hero area. */
+/** Compact marquee row for the hero area — AI → backend → frontend → deploy → scale → observe. */
 export const HERO_TECH: TechItem[] = [
+  { name: 'AI tooling', icon: null },
+  { name: 'Laravel', icon: 'laravel' },
+  { name: 'PHP', icon: 'php' },
+  { name: 'MySQL', icon: 'mysql' },
+  { name: 'Redis', icon: 'redis' },
   { name: 'Vue 3', icon: 'vuedotjs' },
   { name: 'Quasar', icon: 'quasar' },
   { name: 'Pinia', icon: 'pinia' },
-  { name: 'Laravel', icon: 'laravel' },
-  { name: 'PHP', icon: 'php' },
   { name: 'JavaScript', icon: 'javascript' },
-  { name: 'JS OOP', icon: null },
-  { name: 'MySQL', icon: 'mysql' },
-  { name: 'Redis', icon: 'redis' },
-  { name: 'Vite', icon: 'vite' },
-  { name: 'Git', icon: 'git' },
   { name: 'Docker', icon: 'docker' },
+  { name: 'CI/CD', icon: null },
+  { name: 'Nginx', icon: 'nginx' },
+  { name: 'Observability', icon: null },
 ]
 
 const ICON_ALIASES: Record<string, string | null> = {

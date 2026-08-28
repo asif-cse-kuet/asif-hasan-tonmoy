@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import GlassAvatar from '@/components/GlassAvatar.vue'
 import SectionShell from '@/components/home/SectionShell.vue'
 import { useLocaleText } from '@/composables/useLocaleText'
 import { HIRE_SEATS, SERVICE_PITCHES } from '@/content/capabilities'
@@ -14,11 +15,23 @@ const { pick } = useLocaleText()
     :title="pick({ en: 'Three seats. One hire.', bn: 'তিন আসন। এক নিয়োগ।' })"
     :lead="
       pick({
-        en: 'Owners usually split Tech Lead and Marketing Director across two people who then argue. I already speak both dialects.',
-        bn: 'মালিকরা সাধারণত টেক লিড ও মার্কেটিং ডিরেক্টর দুইজনে ভাগ করেন, তারপর তারা তর্ক করেন। আমি দুই ভাষাই বলি।',
+        en: 'Owners usually split product, engineering, and growth across people who then argue. I take the brief, own the plan, and ship the outcome.',
+        bn: 'মালিকরা সাধারণত প্রোডাক্ট, ইঞ্জিনিয়ারিং ও গ্রোথ আলাদা লোকে ভাগ করেন, তারপর তারা তর্ক করেন। আমি ব্রিফ নিই, প্ল্যান মালিকানা করি, আউটকাম শিপ করি।',
       })
     "
   >
+    <div class="mb-8 flex items-center gap-3.5 sm:gap-4">
+      <GlassAvatar src="/images/profile/avatars/avatar-crossed.png?v=6" />
+      <p class="text-sm text-mist/80 sm:text-base">
+        {{
+          pick({
+            en: 'Same person for the client call, the architecture, and the ship date — calm delivery, clear next step.',
+            bn: 'ক্লায়েন্ট কল, আর্কিটেকচার ও শিপ ডেট — একই মানুষ; শান্ত ডেলিভারি, পরিষ্কার পরের ধাপ।',
+          })
+        }}
+      </p>
+    </div>
+
     <div class="grid gap-4 md:grid-cols-3">
       <article
         v-for="pitch in SERVICE_PITCHES"
