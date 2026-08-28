@@ -50,7 +50,7 @@ export const TECH_GROUPS: TechGroup[] = [
       { name: 'Laravel', icon: 'laravel' },
       { name: 'PHP', icon: 'php' },
       { name: 'REST', icon: null },
-      { name: 'Eloquent ORM', icon: 'laravel' },
+      { name: 'Eloquent, Query Builder & SQL', icon: 'laravel' },
       { name: 'Auth & RBAC', icon: null },
       { name: 'Middleware', icon: null },
       { name: 'Queues & jobs', icon: null },
@@ -62,7 +62,8 @@ export const TECH_GROUPS: TechGroup[] = [
     id: 'data',
     titles: { en: 'Data & storage', bn: 'ডেটা ও স্টোরেজ' },
     items: [
-      { name: 'MySQL', icon: 'mysql' },
+      { name: 'RDBMS (MySQL, PostgreSQL)', icon: 'mysql' },
+      { name: 'NoSQL (MongoDB)', icon: null },
       { name: 'Redis', icon: 'redis' },
       { name: 'Schema design', icon: null },
       { name: 'Query tuning', icon: null },

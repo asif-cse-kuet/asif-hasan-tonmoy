@@ -1,14 +1,33 @@
 import { createRouter, createWebHistory, type RouteRecordRaw } from 'vue-router'
 
+import i18n from '@/i18n'
+import { isEngineeringBlogRoute } from '@/composables/useLocaleText'
+
+const LOCALE_KEY = 'portfolio-locale'
+
+function syncSiteLocale(path: string) {
+  if (isEngineeringBlogRoute(path)) {
+    const stored = localStorage.getItem(LOCALE_KEY)
+    i18n.global.locale.value = stored === 'bn' ? 'bn' : 'en'
+  } else {
+    i18n.global.locale.value = 'en'
+  }
+}
+
 /**
- * IA: the landing page carries the full profile. Only three subjects get their own
- * pages because they keep growing: marketing, solved problems, and the system design guide.
+ * IA: the landing page carries the full profile. Dedicated pages cover marketing,
+ * solved problems, life & travel, and the engineering blog.
  */
 const routes: RouteRecordRaw[] = [
   {
     path: '/',
     name: 'home',
     component: () => import('@/views/HomeView.vue'),
+  },
+  {
+    path: '/life',
+    name: 'life',
+    component: () => import('@/views/LifeView.vue'),
   },
   {
     path: '/marketing',
@@ -51,6 +70,8 @@ const routes: RouteRecordRaw[] = [
       },
     ],
   },
+  { path: '/travel', redirect: '/life' },
+  { path: '/activities', redirect: '/life' },
   { path: '/engineering', redirect: '/#expertise' },
   { path: '/architecture', redirect: '/#expertise' },
   { path: '/ai', redirect: '/#expertise' },
@@ -89,5 +110,8 @@ const router = createRouter({
   },
   routes,
 })
+
+router.afterEach((to) => syncSiteLocale(to.path))
+syncSiteLocale(window.location.pathname)
 
 export default router
