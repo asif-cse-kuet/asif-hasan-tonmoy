@@ -43,3 +43,6 @@ playwright-report/
 
 # local screenshot output
 .screenshots/
+
+# Local AI portrait archive — keep off GitHub; only public/images/* ships
+/private/

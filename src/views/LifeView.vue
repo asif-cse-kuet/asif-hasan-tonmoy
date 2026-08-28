@@ -18,7 +18,7 @@ const sorted = [...LIFE_MOMENTS].sort((a, b) => b.when.localeCompare(a.when))
     <div class="mb-10 flex flex-col items-start gap-6 rounded-2xl border border-steel/60 bg-ink-soft/50 p-5 sm:flex-row sm:items-center">
       <ProfilePortrait
         variant="about"
-        src="/images/profile/hero-ai-alt.png"
+        src="/images/profile/life-intro-ai.png"
         alt="Asif Hasan Tonmoy — life & travel intro"
       />
       <p class="max-w-2xl text-sm leading-relaxed text-mist sm:text-base">
