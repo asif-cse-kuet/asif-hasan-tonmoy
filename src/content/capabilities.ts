@@ -22,20 +22,6 @@ export const CAPABILITIES: Capability[] = [
     },
     clusters: [
       {
-        titles: { en: 'Vue application layer', bn: 'Vue অ্যাপ্লিকেশন স্তর' },
-        items: [
-          'Vue 3 composition API',
-          'Quasar component systems',
-          'Pinia stores',
-          'Vue Router lazy routes',
-          'Axios + CSRF cookies',
-          'Vite build pipelines',
-          'Form validation in SPA',
-          'Accessibility in components',
-          'Responsive Quasar layouts',
-        ],
-      },
-      {
         titles: { en: 'Laravel service layer', bn: 'Laravel সার্ভিস স্তর' },
         items: [
           'Laravel / PHP services',
@@ -47,6 +33,20 @@ export const CAPABILITIES: Capability[] = [
           'File uploads',
           'Mail and notifications',
           'Third-party integrations',
+        ],
+      },
+      {
+        titles: { en: 'Vue application layer', bn: 'Vue অ্যাপ্লিকেশন স্তর' },
+        items: [
+          'Vue 3 composition API',
+          'Quasar component systems',
+          'Pinia stores',
+          'Vue Router lazy routes',
+          'Axios + CSRF cookies',
+          'Vite build pipelines',
+          'Form validation in SPA',
+          'Accessibility in components',
+          'Responsive Quasar layouts',
         ],
       },
       {
@@ -97,6 +97,19 @@ export const CAPABILITIES: Capability[] = [
     },
     clusters: [
       {
+        titles: { en: 'Structural patterns', bn: 'স্ট্রাকচারাল প্যাটার্ন' },
+        items: [
+          'Modular Laravel vs extra services',
+          'Quasar module boundaries',
+          'Micro-packaging / low-code extensibility',
+          'Bounded contexts in PHP',
+          'Form request contracts',
+          'Jobs and listeners',
+          'API versioning',
+          'Anti-corruption at HTTP edges',
+        ],
+      },
+      {
         titles: { en: 'Vue + Laravel foundations', bn: 'Vue + Laravel ভিত্তি' },
         items: [
           'Modular Laravel apps',
@@ -108,19 +121,6 @@ export const CAPABILITIES: Capability[] = [
           'Tenant-aware queries',
           'Idempotent HTTP posts',
           'SPA and API contracts',
-        ],
-      },
-      {
-        titles: { en: 'Structural patterns', bn: 'স্ট্রাকচারাল প্যাটার্ন' },
-        items: [
-          'Modular Laravel vs extra services',
-          'Quasar module boundaries',
-          'Micro-packaging / low-code extensibility',
-          'Bounded contexts in PHP',
-          'Form request contracts',
-          'Jobs and listeners',
-          'API versioning',
-          'Anti-corruption at HTTP edges',
         ],
       },
       {
@@ -317,7 +317,7 @@ export const SERVICE_PITCHES: ServicePitch[] = [
     bullets: [
       { en: 'Customer-facing apps, admin desks, and internal tools', bn: 'কাস্টমার অ্যাপ, অ্যাডমিন ডেস্ক ও ইন্টারনাল টুল' },
       { en: 'APIs that other vendors can plug into without a war room', bn: 'অন্য ভেন্ডর সহজে প্লাগ করতে পারে এমন API' },
-      { en: 'RAG, agentic RAG, and vector search that cite sources, not chat for chat’s sake', bn: 'RAG, agentic RAG ও ভেক্টর সার্চ যা উৎস দেখায়, শুধু চ্যাট নয়' },
+      { en: 'Vue, Quasar, Pinia, Laravel, and PHP features with tests and a clean deploy path', bn: 'Vue, Quasar, Pinia, Laravel ও PHP ফিচার — টেস্ট ও পরিষ্কার ডিপ্লয় পথসহ' },
     ],
   },
   {

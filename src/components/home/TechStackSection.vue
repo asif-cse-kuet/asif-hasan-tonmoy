@@ -14,8 +14,8 @@ const { pick } = useLocaleText()
     :title="pick({ en: 'Tech stack & technical vocabulary', bn: 'টেক স্ট্যাক ও কৌশলগত পরিভাষা' })"
     :lead="
       pick({
-        en: 'Languages, frameworks, infrastructure, and system concepts I work with, listed plainly, without invented skill scores.',
-        bn: 'যে ভাষা, ফ্রেমওয়ার্ক, ইনফ্রা ও সিস্টেম ধারণা নিয়ে কাজ করি, বানানো স্কোর ছাড়াই সরাসরি তালিকা।',
+        en: 'Stack-agnostic in practice: I ramp quickly on new languages and frameworks. These are the tools I ship with most often today — listed plainly, without invented skill scores.',
+        bn: 'স্ট্যাক-অ্যাগনস্টিক: নতুন ভাষা ও ফ্রেমওয়ার্কে দ্রুত ওঠি। নিচে আজকে যেগুলো দিয়ে বেশি শিপ করি — বানানো স্কোর ছাড়াই সরাসরি তালিকা।',
       })
     "
   >
@@ -26,9 +26,9 @@ const { pick } = useLocaleText()
           <li
             v-for="item in group.items"
             :key="item.name"
-            class="flex items-center gap-1.5 rounded-md border border-steel/60 bg-ink/40 px-2.5 py-1.5 text-xs text-paper/90"
+            class="flex items-center gap-2 rounded-md border border-steel/60 bg-ink/40 px-2.5 py-2 text-xs text-paper/90"
           >
-            <span class="text-mist"><BrandIcon :name="item.name" :slug="item.icon" :size="14" /></span>
+            <span class="text-mist"><BrandIcon :name="item.name" :slug="item.icon" :size="20" /></span>
             {{ item.name }}
           </li>
         </ul>

@@ -14,22 +14,14 @@ const { pick } = useLocaleText()
     :title="pick({ en: 'Reach me today', bn: 'আজই যোগাযোগ করুন' })"
     :lead="
       pick({
-        en: 'Call, email, or Upwork. I answer like an owner - with a next step, not a brochure.',
-        bn: 'কল, ইমেইল বা Upwork। পরবর্তী ধাপ দিয়ে উত্তর - ব্রোশার নয়।',
+        en: 'Call, email, or open my Upwork profile. I answer like an owner — with a next step, not a brochure.',
+        bn: 'কল, ইমেইল বা Upwork প্রোফাইল। পরবর্তী ধাপ দিয়ে উত্তর — ব্রোশার নয়।',
       })
     "
   >
     <div class="flex flex-wrap gap-3">
       <a :href="PROFILE.telHref" class="btn-primary">{{ pick({ en: 'Call', bn: 'কল' }) }} {{ PROFILE.phone }}</a>
       <a :href="`mailto:${PROFILE.email}`" class="btn-ghost">{{ PROFILE.email }}</a>
-      <a
-        href="https://www.upwork.com/workwith/asifhasantonmoy"
-        target="_blank"
-        rel="noopener noreferrer"
-        class="btn-ghost"
-      >
-        {{ pick({ en: 'Hire on Upwork', bn: 'Upwork-এ নিয়োগ' }) }}
-      </a>
     </div>
 
     <ul class="mt-7 grid gap-2.5 sm:grid-cols-2 lg:grid-cols-3">

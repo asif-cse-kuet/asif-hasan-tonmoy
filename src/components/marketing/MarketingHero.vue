@@ -4,7 +4,7 @@ import { UPWORK_METRICS } from '@/content/marketing-seed'
 
 const { pick } = useLocaleText()
 
-const hireUrl = UPWORK_METRICS.hireUrl
+const profileUrl = UPWORK_METRICS.profileUrl
 </script>
 
 <template>
@@ -27,7 +27,7 @@ const hireUrl = UPWORK_METRICS.hireUrl
     </p>
     <div class="mt-6 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
       <a
-        :href="hireUrl"
+        :href="profileUrl"
         target="_blank"
         rel="noopener noreferrer"
         class="btn-primary min-h-11 text-center"

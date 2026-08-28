@@ -1,13 +1,26 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 
+import BrandIcon from '@/components/BrandIcon.vue'
 import SkillMark from '@/components/SkillMark.vue'
 import SectionShell from '@/components/home/SectionShell.vue'
 import { useLocaleText } from '@/composables/useLocaleText'
 import { CAPABILITIES } from '@/content/capabilities'
+import { resolveTechIcon } from '@/content/tech-stack'
 
 const { pick } = useLocaleText()
 const activeId = ref(CAPABILITIES[0]?.id ?? '')
+
+const lead = computed(() =>
+  pick({
+    en: `${CAPABILITIES.length} practice areas I work in. Brand icons mark frameworks and libraries; craft marks mark concepts. Click an area to read the language I use there.`,
+    bn: `${CAPABILITIES.length}টি কাজের ক্ষেত্র। ফ্রেমওয়ার্ক ও লাইব্রেরিতে ব্র্যান্ড আইকন; ধারণায় ক্রাফট মার্ক। একটি ক্ষেত্র বেছে নিন।`,
+  }),
+)
+
+function iconSlug(item: string) {
+  return resolveTechIcon(item)
+}
 </script>
 
 <template>
@@ -15,12 +28,7 @@ const activeId = ref(CAPABILITIES[0]?.id ?? '')
     id="expertise"
     :eyebrow="pick({ en: 'Depth', bn: 'গভীরতা' })"
     :title="pick({ en: 'How I actually work a problem', bn: 'একটা সমস্যা আমি কীভাবে ভাঙি' })"
-    :lead="
-      pick({
-        en: 'Six rooms I sit in. Each chip is a craft mark, not a score. Click a room, read the language I use there.',
-        bn: 'ছয়টি ঘর। প্রতিটি চিপ একটি ক্রাফট মার্ক, স্কোর নয়।',
-      })
-    "
+    :lead="lead"
   >
     <div
       class="-mx-4 flex gap-2 overflow-x-auto px-4 pb-2 sm:mx-0 sm:flex-wrap sm:px-0"
@@ -50,7 +58,7 @@ const activeId = ref(CAPABILITIES[0]?.id ?? '')
           {{ pick(cap.headline) }}
         </p>
 
-        <div class="mt-6 grid gap-5 md:grid-cols-3">
+        <div class="mt-6 grid gap-5 md:grid-cols-2 xl:grid-cols-4">
           <div v-for="cluster in cap.clusters" :key="cluster.titles.en" class="surface-card p-5">
             <h3 class="text-xs font-semibold uppercase tracking-[0.14em] text-glow">
               {{ pick(cluster.titles) }}
@@ -59,9 +67,17 @@ const activeId = ref(CAPABILITIES[0]?.id ?? '')
               <li
                 v-for="item in cluster.items"
                 :key="item"
-                class="flex items-center gap-2 rounded-md border border-steel/40 bg-ink/30 px-2.5 py-1.5 text-sm text-paper/90"
+                class="flex items-center gap-2.5 rounded-md border border-steel/40 bg-ink/30 px-2.5 py-2 text-sm text-paper/90"
               >
-                <SkillMark :label="item" />
+                <span class="shrink-0 text-mist">
+                  <BrandIcon
+                    v-if="iconSlug(item)"
+                    :name="item"
+                    :slug="iconSlug(item)"
+                    :size="24"
+                  />
+                  <SkillMark v-else :label="item" />
+                </span>
                 <span>{{ item }}</span>
               </li>
             </ul>

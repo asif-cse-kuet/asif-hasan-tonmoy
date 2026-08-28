@@ -25,7 +25,6 @@ export const UPWORK_METRICS = {
   pinterestCampaigns: '40+',
   instagramCampaigns: '50+',
   profileUrl: 'https://www.upwork.com/freelancers/~01a37597d55b982d60',
-  hireUrl: 'https://www.upwork.com/workwith/asifhasantonmoy',
 } as const
 
 export const MARKETING_CASE_METRICS: MarketingMetric[] = [
