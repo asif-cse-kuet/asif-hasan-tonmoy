@@ -1,6 +1,8 @@
 <script setup lang="ts">
+import { ref } from 'vue'
 import { RouterLink } from 'vue-router'
 
+import ExpandableText from '@/components/ExpandableText.vue'
 import ProfilePortrait from '@/components/ProfilePortrait.vue'
 import ProfileLinksStrip from '@/components/home/ProfileLinksStrip.vue'
 import TechMarquee from '@/components/home/TechMarquee.vue'
@@ -8,6 +10,7 @@ import { useLocaleText } from '@/composables/useLocaleText'
 import { PROFILE } from '@/content/profile'
 
 const { pick } = useLocaleText()
+const stackExpanded = ref(false)
 </script>
 
 <template>
@@ -23,32 +26,37 @@ const { pick } = useLocaleText()
             {{ PROFILE.name }}
           </h1>
 
-          <p class="mt-4 max-w-4xl text-sm font-semibold leading-relaxed text-glow sm:text-base">
-            {{ pick(PROFILE.brandLine) }}
-          </p>
+          <ExpandableText
+            :text="pick(PROFILE.brandLine)"
+            :max-lines="2"
+            :min-chars="80"
+            class="mt-4 max-w-4xl text-sm font-semibold leading-relaxed text-glow sm:text-base"
+          />
 
           <p class="mt-5 max-w-2xl text-lg leading-relaxed text-mist sm:text-xl">
             {{ pick(PROFILE.tagline) }}
           </p>
 
-          <p class="mt-3 max-w-3xl text-sm leading-relaxed text-mist/80 sm:text-base">
-            {{ pick(PROFILE.shortBio) }}
-          </p>
+          <ExpandableText
+            :text="pick(PROFILE.shortBio)"
+            :max-lines="3"
+            class="mt-3 max-w-3xl text-sm leading-relaxed text-mist/80 sm:text-base"
+          />
 
-          <div class="mt-7 flex flex-wrap gap-2.5 sm:gap-3">
+          <div class="mt-7 flex flex-wrap gap-2 sm:gap-3">
             <a :href="PROFILE.telHref" class="btn-primary">
               {{ pick({ en: 'Call me', bn: 'কল করুন' }) }}
             </a>
             <a :href="`mailto:${PROFILE.email}`" class="btn-ghost">
               {{ pick({ en: 'Email a brief', bn: 'ব্রিফ পাঠান' }) }}
             </a>
-            <RouterLink to="/marketing" class="btn-ghost">
+            <RouterLink to="/marketing" class="btn-ghost max-sm:hidden">
               {{ pick({ en: 'Put me in both chairs', bn: 'দুই আসনেই রাখুন' }) }}
             </RouterLink>
-            <RouterLink to="/life" class="btn-ghost">
+            <RouterLink to="/life" class="btn-ghost max-sm:hidden">
               {{ pick({ en: 'Life & travel', bn: 'জীবন ও ভ্রমণ' }) }}
             </RouterLink>
-            <RouterLink to="/systems" class="btn-ghost">
+            <RouterLink to="/systems" class="btn-ghost max-sm:hidden">
               {{ pick({ en: 'My Engineering Blog', bn: 'ইঞ্জিনিয়ারিং ব্লগ' }) }}
             </RouterLink>
           </div>
@@ -58,7 +66,7 @@ const { pick } = useLocaleText()
           <ProfilePortrait
             variant="hero"
             src="/images/profile/hero-ai.png"
-            alt="Asif Hasan Tonmoy — chill, elegant portfolio portrait"
+            alt="Asif Hasan Tonmoy — portfolio portrait"
           />
         </div>
       </div>
@@ -74,12 +82,29 @@ const { pick } = useLocaleText()
         <p class="mb-2.5 text-[0.75rem] font-semibold uppercase tracking-[0.18em] text-mist/70">
           {{
             pick({
-              en: 'Vue, Quasar, Pinia, Laravel, PHP & JS OOP',
-              bn: 'Vue, Quasar, Pinia, Laravel, PHP ও JS OOP',
+              en: 'Comfortable on any stack — deepest hours here',
+              bn: 'যেকোনো স্ট্যাকে স্বাচ্ছন্দ্য — সবচেয়ে বেশি ঘণ্টা এখানে',
             })
           }}
         </p>
-        <TechMarquee />
+        <div :class="stackExpanded ? '' : 'hidden sm:block'">
+          <TechMarquee />
+        </div>
+        <button
+          type="button"
+          class="expandable-text__toggle mt-1 inline-flex min-h-9 items-center gap-1.5 text-sm font-semibold text-glow sm:hidden"
+          :aria-expanded="stackExpanded"
+          @click="stackExpanded = !stackExpanded"
+        >
+          <span class="text-base leading-none" aria-hidden="true">{{ stackExpanded ? '−' : '⋯' }}</span>
+          {{
+            pick(
+              stackExpanded
+                ? { en: 'Hide stack', bn: 'স্ট্যাক লুকান' }
+                : { en: 'Show stack', bn: 'স্ট্যাক দেখুন' },
+            )
+          }}
+        </button>
       </div>
     </div>
   </section>

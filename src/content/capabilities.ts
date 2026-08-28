@@ -375,9 +375,9 @@ export const SERVICE_PITCHES: ServicePitch[] = [
       bn: 'একজন ফাউন্ডার এলোমানা প্রক্রিয়া নিয়ে আসেন। বেরোনোর সময় টিম যে সিস্টেম ব্যবহার করে সেটি হাতে থাকে।',
     },
     bullets: [
-      { en: 'Customer-facing apps, admin desks, and internal tools', bn: 'কাস্টমার অ্যাপ, অ্যাডমিন ডেস্ক ও ইন্টারনাল টুল' },
-      { en: 'APIs that other vendors can plug into without a war room', bn: 'অন্য ভেন্ডর সহজে প্লাগ করতে পারে এমন API' },
-      { en: 'RAG, agentic RAG, and vector search that cite sources, not chat for chat’s sake', bn: 'RAG, agentic RAG ও ভেক্টর সার্চ যা উৎস দেখায়, শুধু চ্যাট নয়' },
+      { en: 'Customer-facing apps, admin desks, and internal tools your team will actually open', bn: 'কাস্টমার অ্যাপ, অ্যাডমিন ডেস্ক ও ইন্টারনাল টুল — টিম সত্যি খুলবে' },
+      { en: 'APIs other vendors can plug into without a war room', bn: 'অন্য ভেন্ডর সহজে প্লাগ করতে পারে এমন API' },
+      { en: 'RAG, agentic RAG, and vector search that cite sources — from business brief to shipped feature', bn: 'RAG, agentic RAG ও ভেক্টর সার্চ যা উৎস দেখায় — বিজনেস ব্রিফ থেকে শিপ করা ফিচার' },
     ],
   },
   {
