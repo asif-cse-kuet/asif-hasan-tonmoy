@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import ProfilePortrait from '@/components/ProfilePortrait.vue'
 import SectionShell from '@/components/home/SectionShell.vue'
 import { useLocaleText } from '@/composables/useLocaleText'
 import { PROFILE } from '@/content/profile'
@@ -29,8 +30,8 @@ const facts = [
 
 const teaching = [
   {
-    en: 'Programming instructor at Timedoor Academy - JavaScript, Python, and C++ for beginners through project work.',
-    bn: 'Timedoor Academy-তে প্রোগ্রামিং ইন্সট্রাক্টর - প্রজেক্টভিত্তিক শিক্ষায় JavaScript, Python ও C++।',
+    en: 'Programming instructor at Timedoor Academy - JavaScript OOP through project work.',
+    bn: 'Timedoor Academy-তে প্রোগ্রামিং ইন্সট্রাক্টর - প্রজেক্টভিত্তিক শিক্ষায় JavaScript OOP।',
   },
   {
     en: 'Head of Physics at Interaid - curriculum delivery and explaining hard ideas simply.',
@@ -50,6 +51,22 @@ const teaching = [
     :title="pick({ en: 'The short version', bn: 'সংক্ষেপে' })"
     :lead="pick(PROFILE.shortBio)"
   >
+    <div class="mb-6 flex flex-col items-start gap-5 sm:flex-row sm:items-center">
+      <ProfilePortrait
+        variant="about"
+        src="/images/profile/hero-mall.png"
+        alt="Asif Hasan Tonmoy in a modern city setting"
+      />
+      <p class="max-w-xl text-sm leading-relaxed text-mist">
+        {{
+          pick({
+            en: 'Educated, skilled, and public-facing without the suit-and-tie act — I show up the way I ship: clear, calm, and ready to work.',
+            bn: 'শিক্ষিত, দক্ষ, আর suit-tie ছাড়াই presentable — যেভাবে শিপ করি, সেভাবেই দেখা দিই।',
+          })
+        }}
+      </p>
+    </div>
+
     <div class="grid gap-5 lg:grid-cols-2">
       <dl class="surface-card divide-y divide-steel/50 p-5">
         <div

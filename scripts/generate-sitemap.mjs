@@ -47,7 +47,7 @@ async function readConceptRoutes() {
   return matchAll(source, /^\s*slug: '([a-z0-9-]+)'/gm).map((slug) => `/systems/concepts/${slug}`)
 }
 
-const staticRoutes = ['/', '/marketing', '/problems/solved', '/systems']
+const staticRoutes = ['/', '/life', '/marketing', '/problems/solved', '/systems']
 
 const routes = [
   ...staticRoutes,

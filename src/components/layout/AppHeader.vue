@@ -3,13 +3,12 @@ import { computed, onBeforeUnmount, watch } from 'vue'
 import { RouterLink, useRoute } from 'vue-router'
 
 import LangToggle from '@/components/LangToggle.vue'
-import { isEngineeringBlogRoute, useLocaleText } from '@/composables/useLocaleText'
+import { isEngineeringBlogRoute } from '@/composables/useLocaleText'
 import { PROFILE } from '@/content/profile'
 import { useUiStore } from '@/stores/ui'
 
 const ui = useUiStore()
 const route = useRoute()
-const { pick } = useLocaleText()
 
 type NavItem = {
   label: string
@@ -17,13 +16,15 @@ type NavItem = {
   to?: string
 }
 
+/** Site chrome stays English; only engineering blog content toggles BN. */
 const items = computed<NavItem[]>(() => [
-  { label: pick({ en: 'Expertise', bn: 'দক্ষতা' }), hash: '#expertise' },
-  { label: pick({ en: 'Projects', bn: 'প্রজেক্ট' }), hash: '#projects' },
-  { label: pick({ en: 'Experience', bn: 'অভিজ্ঞতা' }), hash: '#experience' },
-  { label: pick({ en: 'Problems solved', bn: 'সমাধান' }), to: '/problems/solved' },
-  { label: pick({ en: 'My Engineering Blog', bn: 'ইঞ্জিনিয়ারিং ব্লগ' }), to: '/systems' },
-  { label: pick({ en: 'Software to business', bn: 'সফটওয়্যার থেকে ব্যবসা' }), to: '/marketing' },
+  { label: 'Expertise', hash: '#expertise' },
+  { label: 'Projects', hash: '#projects' },
+  { label: 'Experience', hash: '#experience' },
+  { label: 'Life & travel', to: '/life' },
+  { label: 'Problems solved', to: '/problems/solved' },
+  { label: 'My Engineering Blog', to: '/systems' },
+  { label: 'Software to business', to: '/marketing' },
 ])
 
 const isBlog = computed(() => isEngineeringBlogRoute(route.path))
@@ -85,13 +86,13 @@ onBeforeUnmount(() => {
           :href="PROFILE.telHref"
           class="hidden rounded-md border border-steel px-3 py-1.5 text-sm font-semibold text-paper no-underline hover:border-glow hover:text-glow md:inline-block"
         >
-          {{ pick({ en: 'Call', bn: 'কল' }) }}
+          Call
         </a>
         <RouterLink
           :to="{ path: '/', hash: '#contact' }"
           class="hidden rounded-md bg-accent px-3.5 py-1.5 text-sm font-semibold text-paper no-underline hover:bg-accent-soft hover:text-ink sm:inline-block"
         >
-          {{ pick({ en: 'Hire me', bn: 'নিয়োগ' }) }}
+          Hire me
         </RouterLink>
         <button
           type="button"
@@ -100,7 +101,7 @@ onBeforeUnmount(() => {
           aria-controls="mobile-nav"
           @click="ui.toggleMobileNav()"
         >
-          {{ ui.mobileNavOpen ? $t('nav.close') : $t('nav.menu') }}
+          {{ ui.mobileNavOpen ? 'Close' : 'Menu' }}
         </button>
       </div>
     </div>
@@ -114,7 +115,7 @@ onBeforeUnmount(() => {
       <button
         type="button"
         class="absolute inset-0 bg-ink/65 backdrop-blur-[2px]"
-        :aria-label="pick({ en: 'Close menu', bn: 'মেনু বন্ধ' })"
+        aria-label="Close menu"
         @click="ui.closeMobileNav()"
       />
       <nav
@@ -136,14 +137,14 @@ onBeforeUnmount(() => {
           class="block rounded-lg px-3 py-2.5 text-sm no-underline hover:bg-steel/30"
           @click="ui.closeMobileNav()"
         >
-          {{ pick({ en: 'Call me', bn: 'কল করুন' }) }} · {{ PROFILE.phone }}
+          Call me · {{ PROFILE.phone }}
         </a>
         <RouterLink
           :to="{ path: '/', hash: '#contact' }"
           class="mt-1 block rounded-lg bg-accent px-3 py-2.5 text-center text-sm font-semibold text-paper no-underline"
           @click="ui.closeMobileNav()"
         >
-          {{ pick({ en: 'Hire me', bn: 'নিয়োগ' }) }}
+          Hire me
         </RouterLink>
       </nav>
     </div>

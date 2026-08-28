@@ -36,11 +36,11 @@ test('portfolio section lists projects and filters', async ({ page }) => {
   await expect(section.getByRole('heading', { level: 2 })).toBeVisible()
   await expect(section.locator('article').first()).toBeVisible()
   await section.getByRole('button', { name: /All|সব/ }).click()
-  await expect(section.locator('article')).toHaveCount(20)
+  await expect(section.locator('article')).toHaveCount(18)
 })
 
-test('the three dedicated pages render', async ({ page }) => {
-  for (const path of ['/marketing', '/problems/solved', '/systems']) {
+test('the dedicated pages render', async ({ page }) => {
+  for (const path of ['/marketing', '/life', '/problems/solved', '/systems']) {
     await page.goto(path)
     await expect(page.locator('#main-content')).toBeVisible()
     await expect(page.getByRole('contentinfo')).toBeVisible()

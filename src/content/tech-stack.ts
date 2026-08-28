@@ -91,8 +91,8 @@ export const TECH_GROUPS: TechGroup[] = [
     id: 'data',
     titles: { en: 'Data & storage', bn: 'ডেটা ও স্টোরেজ' },
     items: [
-      { name: 'MySQL', icon: 'mysql' },
-      { name: 'PostgreSQL', icon: 'postgresql' },
+      { name: 'RDBMS (MySQL, PostgreSQL)', icon: 'mysql' },
+      { name: 'NoSQL (MongoDB)', icon: null },
       { name: 'SQLite', icon: 'sqlite' },
       { name: 'Redis', icon: 'redis' },
       { name: 'Oracle', icon: null },
