@@ -129,6 +129,10 @@ describe('tech stack presentation', () => {
   it('resolves free-form stack strings used by project cards', () => {
     expect(resolveTechIcon('Vue 3')).toBe('vuedotjs')
     expect(resolveTechIcon('Laravel')).toBe('laravel')
+    expect(resolveTechIcon('Laravel / PHP')).toBe('laravel')
+    expect(resolveTechIcon('FastAPI')).toBe('fastapi')
+    expect(resolveTechIcon('Python')).toBe('python')
+    expect(resolveTechIcon('FastAPI (AI services)')).toBe('fastapi')
     expect(resolveTechIcon('Totally Unknown Thing')).toBeNull()
   })
 })

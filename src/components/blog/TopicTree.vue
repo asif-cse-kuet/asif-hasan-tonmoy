@@ -3,6 +3,7 @@ import { computed, ref } from 'vue'
 import { RouterLink, useRoute } from 'vue-router'
 
 import { useLocaleText } from '@/composables/useLocaleText'
+import SearchField from '@/components/SearchField.vue'
 import { formatLesson, TOPICS } from '@/content/industry-topics'
 import { SYSTEM_CONCEPTS, getSystemConceptBySlug } from '@/content/systems'
 import type { TopicDifficulty } from '@/content/types'
@@ -62,10 +63,9 @@ const conceptHits = computed(() => {
           })
         }}
       </p>
-      <input
+      <SearchField
         v-model="query"
-        type="search"
-        class="mt-2 w-full rounded-md border border-steel/70 bg-ink px-3 py-2 text-sm text-paper placeholder:text-mist/50"
+        input-class="mt-2 w-full rounded-md border border-steel/70 bg-ink px-3 py-2 text-sm text-paper placeholder:text-mist/50"
         :placeholder="pick({ en: 'Filter numbered topics…', bn: 'নম্বর দিয়ে টপিক খুঁজুন…' })"
       />
     </div>

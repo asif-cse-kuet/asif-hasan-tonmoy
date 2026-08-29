@@ -300,7 +300,9 @@ const ICON_ALIASES: Record<string, string | null> = {
   codex: null,
   antigravity: null,
   langchain: 'langchain',
-  langgraph: null,
+  langgraph: 'langchain',
+  'fastapi (ai services)': 'fastapi',
+  'laravel / php': 'laravel',
   llamaindex: null,
   html: 'html5',
   tailwind: 'tailwindcss',
@@ -348,11 +350,44 @@ const NAME_TO_ICON: Map<string, string | null> = (() => {
   return map
 })()
 
+/** Recognize a brand inside compound capability labels (e.g. "Laravel / PHP"). */
+const BRAND_NEEDLES: readonly (readonly [string, string])[] = [
+  ['spring boot', 'springboot'],
+  ['node.js', 'nodedotjs'],
+  ['next.js', 'nextdotjs'],
+  ['langgraph', 'langchain'],
+  ['langchain', 'langchain'],
+  ['fastapi', 'fastapi'],
+  ['laravel', 'laravel'],
+  ['nestjs', 'nestjs'],
+  ['express', 'express'],
+  ['python', 'python'],
+  ['pytorch', 'pytorch'],
+  ['graphql', 'graphql'],
+  ['docker', 'docker'],
+  ['kubernetes', 'kubernetes'],
+  ['react', 'react'],
+  ['typescript', 'typescript'],
+  ['javascript', 'javascript'],
+  ['php', 'php'],
+  ['node', 'nodedotjs'],
+  ['.net', 'dotnet'],
+  ['vue', 'vuedotjs'],
+  ['nuxt', 'nuxt'],
+  ['redis', 'redis'],
+  ['mysql', 'mysql'],
+  ['nginx', 'nginx'],
+]
+
 /** Best-effort logo lookup for free-form stack strings on project cards. */
 export function resolveTechIcon(name: string): string | null {
   const key = name.trim().toLowerCase()
   const exact = NAME_TO_ICON.get(key)
   if (exact !== undefined) return exact
+
+  for (const [needle, slug] of BRAND_NEEDLES) {
+    if (key.includes(needle)) return slug
+  }
 
   for (const [candidate, slug] of NAME_TO_ICON) {
     if (!slug || candidate.length < 4) continue
