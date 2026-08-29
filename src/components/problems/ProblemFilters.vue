@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { useLocaleText } from '@/composables/useLocaleText'
+import SearchField from '@/components/SearchField.vue'
 
 const query = defineModel<string>('query', { default: '' })
 const activeTag = defineModel<string | null>('activeTag', { default: null })
@@ -15,10 +16,9 @@ const { pick } = useLocaleText()
   <div class="space-y-4">
     <label class="block">
       <span class="sr-only">{{ pick({ en: 'Search problems', bn: 'সমস্যা খুঁজুন' }) }}</span>
-      <input
+      <SearchField
         v-model="query"
-        type="search"
-        class="min-h-11 w-full rounded-md border border-steel/80 bg-ink-soft/80 px-4 py-2 text-paper placeholder:text-mist/60 focus:border-glow focus:outline-none"
+        input-class="min-h-11 w-full rounded-md border border-steel/80 bg-ink-soft/80 px-4 py-2 text-paper placeholder:text-mist/60 focus:border-glow focus:outline-none"
         :placeholder="pick({ en: 'Search by title, stack, or tag…', bn: 'title, stack বা tag দিয়ে খুঁজুন…' })"
       />
     </label>

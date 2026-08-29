@@ -4,6 +4,7 @@ import { RouterLink } from 'vue-router'
 
 import DisclaimerBanner from '@/components/DisclaimerBanner.vue'
 import PageHero from '@/components/PageHero.vue'
+import SearchField from '@/components/SearchField.vue'
 import { useLocaleText } from '@/composables/useLocaleText'
 import { DOMAINS, formatLesson, getTopicCountByDomain, TOPICS } from '@/content/industry-topics'
 import type { TopicDifficulty } from '@/content/types'
@@ -82,10 +83,9 @@ const filteredDomains = computed(() => {
 
     <label class="mb-8 block">
       <span class="sr-only">{{ pick({ en: 'Search lessons', bn: 'পাঠ খুঁজুন' }) }}</span>
-      <input
+      <SearchField
         v-model="query"
-        type="search"
-        class="min-h-11 w-full rounded-md border border-steel/80 bg-ink-soft/80 px-4 py-2 text-paper placeholder:text-mist/60 focus:border-glow focus:outline-none"
+        input-class="min-h-11 w-full rounded-md border border-steel/80 bg-ink-soft/80 px-4 py-2 text-paper placeholder:text-mist/60 focus:border-glow focus:outline-none"
         :placeholder="pick({ en: 'Search numbered lessons…', bn: 'নম্বর করা পাঠ খুঁজুন…' })"
       />
     </label>
