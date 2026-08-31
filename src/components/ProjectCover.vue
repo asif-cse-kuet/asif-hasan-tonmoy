@@ -8,8 +8,7 @@ const props = defineProps<{
 }>()
 
 const COVERS: Record<string, string> = {
-  'ticketing-system':
-    'https://images.unsplash.com/photo-1553877522-43269d4ea984?auto=format&fit=crop&w=1400&q=80',
+  'ticketing-system': '/images/projects/supportpro-live.png',
   'docker-gmail-registration-api':
     'https://images.unsplash.com/photo-1667372393119-3d4c48d07fc9?auto=format&fit=crop&w=1400&q=80',
   'proficient-production':

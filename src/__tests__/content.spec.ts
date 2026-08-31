@@ -105,6 +105,24 @@ describe('profile content', () => {
     expect(PROOF_METRICS.length).toBeGreaterThanOrEqual(6)
     expect(PROJECTS.some((project) => project.featured)).toBe(true)
   })
+
+  it('lists SupportPro with GitHub repos and business-value highlights', () => {
+    const supportPro = PROJECTS.find((project) => project.slug === 'ticketing-system')
+    expect(supportPro).toBeDefined()
+    expect(supportPro!.featured).toBe(true)
+    expect(supportPro!.highlights?.length).toBeGreaterThanOrEqual(7)
+    expect(supportPro!.links.map((link) => link.url)).toEqual(
+      expect.arrayContaining([
+        'https://ticketing-system-fe-aht4.vercel.app/',
+        'https://github.com/asif-cse-kuet/Ticketing_System_FE',
+        'https://github.com/asif-cse-kuet/Ticketing_System_BE',
+      ]),
+    )
+    const blob = supportPro!.highlights!.map((h) => h.en).join(' ')
+    for (const role of ['Superadmin', 'Admin', 'Agents', 'Customer']) {
+      expect(blob).toContain(role)
+    }
+  })
 })
 
 describe('tech stack presentation', () => {

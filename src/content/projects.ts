@@ -10,6 +10,8 @@ export type Project = {
   tier: ProjectTier
   titles: LocaleText
   summary: LocaleText
+  /** Optional compact capability bullets (business-value / edge cases). */
+  highlights?: LocaleText[]
   stack: string[]
   links: ProjectLink[]
   tags: string[]
@@ -21,18 +23,58 @@ export const PROJECTS: Project[] = [
     slug: 'ticketing-system',
     tier: 'T1',
     titles: {
-      en: 'Ticketing System - Frontend & Backend',
-      bn: 'টিকেটিং সিস্টেম - ফ্রন্টএন্ড ও ব্যাকএন্ড',
+      en: 'SupportPro — Multi-tenant Support Desk',
+      bn: 'SupportPro — মাল্টি-টেন্যান্ট সাপোর্ট ডেস্ক',
     },
     summary: {
-      en: 'Full-stack support ticketing with Vue/Quasar frontend and Laravel backend - chat integration and role-aware workflows.',
-      bn: 'Vue/Quasar ফ্রন্টএন্ড ও Laravel ব্যাকএন্ডে ফুলস্ট্যাক সাপোর্ট টিকেটিং - চ্যাট ইন্টিগ্রেশন ও রোল-অবগত ওয়ার্কফ্লো।',
+      en: 'Production-shaped help desk for SaaS and agencies: each workspace owns its projects, staff, and customer queue — so one product can sell many isolated support desks without data bleed.',
+      bn: 'SaaS ও এজেন্সির জন্য প্রোডাকশন-রেডি হেল্প ডেস্ক: প্রতি ওয়ার্কস্পেস নিজের প্রজেক্ট, স্টাফ ও কাস্টমার কিউ রাখে — এক পণ্যে অনেক আইসোলেটেড সাপোর্ট ডেস্ক, ডেটা লিক ছাড়াই।',
     },
-    stack: ['Vue 3', 'Quasar', 'Pinia', 'Laravel', 'MySQL'],
-    links: [
-      { label: 'Frontend repo', url: 'https://github.com/asif-cse-kuet/Ticketing_System_FE' },
+    highlights: [
+      {
+        en: 'Roles: Superadmin · Workspace Admin · Project Owner/Admin · Agents (custom perms) · Customer',
+        bn: 'রোল: Superadmin · Workspace Admin · Project Owner/Admin · Agents (কাস্টম পারমিশন) · Customer',
+      },
+      {
+        en: 'Hard tenant isolation — admins never see another workspace’s projects or tickets',
+        bn: 'কঠোর টেন্যান্ট আইসোলেশন — এক অ্যাডমিন অন্য ওয়ার্কস্পেসের প্রজেক্ট/টিকেট দেখে না',
+      },
+      {
+        en: 'Project RBAC + custom roles; invite by email or role-bound join codes',
+        bn: 'প্রজেক্ট RBAC + কাস্টম রোল; ইমেইল ইনভাইট বা রোল-বাউন্ড জয়েন কোড',
+      },
+      {
+        en: 'Branded /{slug}/support pages — customers register and only see their own cases',
+        bn: 'ব্র্যান্ডেড /{slug}/support — কাস্টমার রেজিস্টার করে শুধু নিজের টিকেট দেখে',
+      },
+      {
+        en: 'Full ticket lifecycle: status, priority, assign, watchers, visibility, comments, attachments',
+        bn: 'পূর্ণ টিকেট লাইফসাইকেল: স্ট্যাটাস, প্রায়োরিটি, অ্যাসাইন, ওয়াচার, ভিজিবিলিটি, কমেন্ট, অ্যাটাচমেন্ট',
+      },
+      {
+        en: 'Soft-delete trash + Superadmin purge; retention jobs (tickets ~6mo, tenants ~2yr)',
+        bn: 'সফট-ডিলিট ট্র্যাশ + Superadmin purge; রিটেনশন (টিকেট ~৬ মাস, টেন্যান্ট ~২ বছর)',
+      },
+      {
+        en: 'Leadership dashboard + on-demand analytics (search after filters — no accidental load)',
+        bn: 'লিডারশিপ ড্যাশবোর্ড + অন-ডিমান্ড অ্যানালিটিক্স (ফিল্টারের পর Search — অপ্রয়োজনীয় লোড নেই)',
+      },
+      {
+        en: 'Safety caps: owned/joined project limits; demo sandboxes can’t invite and wipe session projects on logout',
+        bn: 'সেফটি ক্যাপ: owned/joined প্রজেক্ট সীমা; ডেমো স্যান্ডবক্সে ইনভাইট বন্ধ, লগআউটে সেশন প্রজেক্ট মুছে যায়',
+      },
+      {
+        en: 'Hidden Superadmin portal (/superad) separate from main login — platform ops without staff confusion',
+        bn: 'আলাদা Superadmin পোর্টাল (/superad) — প্ল্যাটফর্ম অপস, স্টাফ লগইন থেকে আলাদা',
+      },
     ],
-    tags: ['fullstack', 'support', 'vue', 'laravel'],
+    stack: ['Vue 3', 'Quasar', 'Pinia', 'Laravel', 'MySQL', 'Redis', 'Elasticsearch'],
+    links: [
+      { label: 'Live demo', url: 'https://ticketing-system-fe-aht4.vercel.app/' },
+      { label: 'Frontend (GitHub)', url: 'https://github.com/asif-cse-kuet/Ticketing_System_FE' },
+      { label: 'Backend (GitHub)', url: 'https://github.com/asif-cse-kuet/Ticketing_System_BE' },
+    ],
+    tags: ['fullstack', 'support', 'rbac', 'multi-tenant', 'vue', 'laravel'],
     featured: true,
   },
   {

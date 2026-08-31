@@ -64,6 +64,7 @@ const visible = computed(() => {
         v-for="project in visible"
         :key="project.slug"
         class="surface-card flex flex-col overflow-hidden transition-colors hover:border-glow/40"
+        :class="project.highlights?.length ? 'sm:col-span-2 lg:col-span-2' : ''"
       >
         <ProjectCover :slug="project.slug" :title="pick(project.titles)" :tags="project.tags" />
         <div class="flex flex-1 flex-col p-5">
@@ -77,7 +78,20 @@ const visible = computed(() => {
               {{ project.tier }}
             </span>
           </div>
-          <p class="mt-2.5 flex-1 text-sm leading-relaxed text-mist">{{ pick(project.summary) }}</p>
+          <p class="mt-2.5 text-sm leading-relaxed text-mist">{{ pick(project.summary) }}</p>
+          <ul
+            v-if="project.highlights?.length"
+            class="mt-3 space-y-1.5 border-t border-steel/40 pt-3 text-[0.8rem] leading-snug text-paper/80"
+          >
+            <li
+              v-for="(line, index) in project.highlights"
+              :key="index"
+              class="flex gap-2"
+            >
+              <span class="mt-1.5 size-1 shrink-0 rounded-full bg-accent/80" aria-hidden="true" />
+              <span>{{ pick(line) }}</span>
+            </li>
+          </ul>
           <ul class="mt-4 flex flex-wrap gap-1.5">
             <li
               v-for="tech in project.stack"
