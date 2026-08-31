@@ -70,7 +70,7 @@ export const PROJECTS: Project[] = [
     ],
     stack: ['Vue 3', 'Quasar', 'Pinia', 'Laravel', 'MySQL', 'Redis', 'Elasticsearch'],
     links: [
-      { label: 'Live demo', url: 'https://ticketing-system-fe-aht4.vercel.app/' },
+      { label: 'Live demo', url: 'https://ticketing-system-fe-eight.vercel.app/' },
       { label: 'Frontend (GitHub)', url: 'https://github.com/asif-cse-kuet/Ticketing_System_FE' },
       { label: 'Backend (GitHub)', url: 'https://github.com/asif-cse-kuet/Ticketing_System_BE' },
     ],

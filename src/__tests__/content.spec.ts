@@ -113,7 +113,7 @@ describe('profile content', () => {
     expect(supportPro!.highlights?.length).toBeGreaterThanOrEqual(7)
     expect(supportPro!.links.map((link) => link.url)).toEqual(
       expect.arrayContaining([
-        'https://ticketing-system-fe-aht4.vercel.app/',
+        'https://ticketing-system-fe-eight.vercel.app/',
         'https://github.com/asif-cse-kuet/Ticketing_System_FE',
         'https://github.com/asif-cse-kuet/Ticketing_System_BE',
       ]),
