@@ -5,6 +5,7 @@ import ExpandableText from '@/components/ExpandableText.vue'
 import GlassAvatar from '@/components/GlassAvatar.vue'
 import SectionShell from '@/components/home/SectionShell.vue'
 import { useLocaleText } from '@/composables/useLocaleText'
+import { PORTRAITS } from '@/content/portraits'
 import { PROFILE } from '@/content/profile'
 
 const { pick } = useLocaleText()
@@ -61,7 +62,7 @@ const teaching = [
     :lead-max-lines="2"
   >
     <div class="glass-panel mb-6 flex flex-col items-start gap-5 p-5 sm:flex-row sm:items-center">
-      <GlassAvatar src="/images/profile/avatars/avatar-campus.png?v=6" alt="Asif Hasan Tonmoy" size="lg" />
+      <GlassAvatar :src="PORTRAITS.avatars.about" alt="Asif Hasan Tonmoy" size="lg" />
       <p class="max-w-xl text-sm leading-relaxed text-mist">
         {{
           pick({

@@ -2,6 +2,7 @@
 import { computed, ref } from 'vue'
 
 import BrandIcon from '@/components/BrandIcon.vue'
+import ImageLightbox from '@/components/ImageLightbox.vue'
 import ProjectCover from '@/components/ProjectCover.vue'
 import SectionShell from '@/components/home/SectionShell.vue'
 import { useLocaleText } from '@/composables/useLocaleText'
@@ -22,12 +23,46 @@ const filters = computed<{ id: Filter; label: string }[]>(() => [
 ])
 
 const active = ref<Filter>('featured')
+const lightboxOpen = ref(false)
+const lightboxIndex = ref(0)
+const lightboxImages = ref<string[]>([])
+const lightboxAlt = ref('')
+
+function liveLinkScore(project: (typeof PROJECTS)[number]) {
+  return project.links.some((link) => !link.url.includes('github.com')) ? 0 : project.links.length ? 1 : 2
+}
 
 const visible = computed(() => {
-  if (active.value === 'all') return PROJECTS
-  if (active.value === 'featured') return PROJECTS.filter((project) => project.featured)
-  return PROJECTS.filter((project) => project.tier === active.value)
+  let list = PROJECTS
+  if (active.value === 'featured') list = PROJECTS.filter((project) => project.featured)
+  else if (active.value !== 'all') list = PROJECTS.filter((project) => project.tier === active.value)
+
+  return [...list].sort((a, b) => liveLinkScore(a) - liveLinkScore(b))
 })
+
+function projectImages(project: (typeof PROJECTS)[number]) {
+  const cover = coverFor(project.slug)
+  const gallery = project.gallery ?? []
+  return cover ? [cover, ...gallery.filter((src) => src !== cover)] : gallery
+}
+
+function coverFor(slug: string) {
+  const map: Record<string, string> = {
+    'ticketing-system': '/images/projects/supportpro-live.png',
+    supercards: '/images/projects/supercards-dashboard.png',
+    'tree-explorer': '/images/projects/tree-explorer.png',
+  }
+  return map[slug]
+}
+
+function openGallery(project: (typeof PROJECTS)[number], start = 0) {
+  const images = projectImages(project)
+  if (!images.length) return
+  lightboxImages.value = images
+  lightboxIndex.value = start
+  lightboxAlt.value = pick(project.titles)
+  lightboxOpen.value = true
+}
 </script>
 
 <template>
@@ -37,8 +72,8 @@ const visible = computed(() => {
     :title="pick({ en: 'Things that left the laptop', bn: 'ল্যাপটপ ছেড়ে যাওয়া কাজ' })"
     :lead="
       pick({
-        en: 'Production platforms first. Demos and repos where they exist - SuperCards and the BRAC social build sit at the end until their live walkthroughs land.',
-        bn: 'আগে প্রোডাকশন প্ল্যাটফর্ম। SuperCards ও BRAC সোশ্যাল বিল্ড তালিকার শেষে - লাইভ ওয়াকথ্রু আসবে।',
+        en: 'Live products first — then demos and repos where they exist. Company builds like SuperCards ship without public code.',
+        bn: 'আগে লাইভ প্রোডাক্ট — তারপর ডেমো ও রিপো। SuperCards-এর মতো কোম্পানি বিল্ডে পাবলিক কোড নেই।',
       })
     "
   >
@@ -59,14 +94,40 @@ const visible = computed(() => {
       </button>
     </div>
 
-    <div class="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+    <div class="mt-6 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
       <article
         v-for="project in visible"
         :key="project.slug"
         class="surface-card flex flex-col overflow-hidden transition-colors hover:border-glow/40"
-        :class="project.highlights?.length ? 'sm:col-span-2 lg:col-span-2' : ''"
       >
-        <ProjectCover :slug="project.slug" :title="pick(project.titles)" :tags="project.tags" />
+        <button
+          type="button"
+          class="block w-full text-left"
+          :class="project.gallery?.length ? 'cursor-zoom-in' : 'cursor-default'"
+          :disabled="!project.gallery?.length"
+          @click="project.gallery?.length ? openGallery(project, 0) : undefined"
+        >
+          <ProjectCover :slug="project.slug" :title="pick(project.titles)" :tags="project.tags" />
+        </button>
+        <div
+          v-if="project.gallery?.length"
+          class="grid grid-cols-2 gap-1 border-b border-steel/40 bg-ink/30 p-2 md:grid-cols-4"
+        >
+          <button
+            v-for="(shot, shotIndex) in project.gallery"
+            :key="shot"
+            type="button"
+            class="group overflow-hidden rounded border border-steel/50 hover:border-glow/60"
+            @click="openGallery(project, shotIndex + 1)"
+          >
+            <img
+              :src="shot"
+              :alt="`${pick(project.titles)} screenshot`"
+              class="h-20 w-full object-cover object-top transition-transform duration-200 group-hover:scale-[1.03]"
+              loading="lazy"
+            />
+          </button>
+        </div>
         <div class="flex flex-1 flex-col p-5">
           <div class="flex items-start justify-between gap-3">
             <h3 class="font-display text-lg font-semibold leading-snug text-paper">
@@ -114,8 +175,23 @@ const visible = computed(() => {
               {{ link.label }} ↗
             </a>
           </div>
+          <button
+            v-if="project.gallery?.length"
+            type="button"
+            class="mt-4 self-start text-sm font-semibold text-glow hover:text-accent-soft"
+            @click="openGallery(project, 0)"
+          >
+            {{ pick({ en: 'View screenshots', bn: 'স্ক্রিনশট দেখুন' }) }}
+          </button>
         </div>
       </article>
     </div>
+
+    <ImageLightbox
+      v-model:open="lightboxOpen"
+      v-model:index="lightboxIndex"
+      :images="lightboxImages"
+      :alt="lightboxAlt"
+    />
   </SectionShell>
 </template>

@@ -3,6 +3,7 @@ import GlassAvatar from '@/components/GlassAvatar.vue'
 import SectionShell from '@/components/home/SectionShell.vue'
 import { useLocaleText } from '@/composables/useLocaleText'
 import { HIRE_SEATS, SERVICE_PITCHES } from '@/content/capabilities'
+import { PORTRAITS } from '@/content/portraits'
 import { PROFILE } from '@/content/profile'
 
 const { pick } = useLocaleText()
@@ -21,7 +22,7 @@ const { pick } = useLocaleText()
     "
   >
     <div class="mb-8 flex items-center gap-3.5 sm:gap-4">
-      <GlassAvatar src="/images/profile/avatars/avatar-crossed.png?v=6" />
+      <GlassAvatar :src="PORTRAITS.avatars.services" />
       <p class="text-sm text-mist/80 sm:text-base">
         {{
           pick({

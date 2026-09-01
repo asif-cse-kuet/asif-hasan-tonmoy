@@ -3,6 +3,7 @@ import GlassAvatar from '@/components/GlassAvatar.vue'
 import BrandIcon from '@/components/BrandIcon.vue'
 import SectionShell from '@/components/home/SectionShell.vue'
 import { useLocaleText } from '@/composables/useLocaleText'
+import { PORTRAITS } from '@/content/portraits'
 import { PROFILE, PROFILE_LINKS } from '@/content/profile'
 
 const { pick } = useLocaleText()
@@ -21,7 +22,7 @@ const { pick } = useLocaleText()
     "
   >
     <div class="mb-7 flex flex-wrap items-center gap-4">
-      <GlassAvatar src="/images/profile/avatars/avatar-lean.png?v=6" />
+      <GlassAvatar :src="PORTRAITS.avatars.contact" />
       <div class="flex flex-wrap gap-3">
         <a :href="PROFILE.telHref" class="btn-primary">
           {{ pick({ en: 'Call', bn: 'কল' }) }} {{ PROFILE.phone }}

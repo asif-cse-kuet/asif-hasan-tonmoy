@@ -13,8 +13,7 @@ const COVERS: Record<string, string> = {
     'https://images.unsplash.com/photo-1667372393119-3d4c48d07fc9?auto=format&fit=crop&w=1400&q=80',
   'proficient-production':
     'https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=1400&q=80',
-  'tree-explorer':
-    'https://images.unsplash.com/photo-1502082553048-f009c37129b9?auto=format&fit=crop&w=1400&q=80',
+  'tree-explorer': '/images/projects/tree-explorer.png',
   'transmentalnet-research':
     'https://images.unsplash.com/photo-1677442136019-21780ecad995?auto=format&fit=crop&w=1400&q=80',
   'quasar-dashboard':
@@ -42,8 +41,7 @@ const COVERS: Record<string, string> = {
     'https://images.unsplash.com/photo-1561070791-2526d30994b5?auto=format&fit=crop&w=1400&q=80',
   'task-management':
     'https://images.unsplash.com/photo-1484480974693-6ca0a78fb36b?auto=format&fit=crop&w=1400&q=80',
-  supercards:
-    'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?auto=format&fit=crop&w=1400&q=80',
+  supercards: '/images/projects/supercards-dashboard.png',
   'brac-social':
     'https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?auto=format&fit=crop&w=1400&q=80',
 }
@@ -81,7 +79,7 @@ const motif = computed(() => {
       v-if="src"
       :src="src"
       :alt="title"
-      class="absolute inset-0 h-full w-full object-cover"
+      class="absolute inset-0 h-full w-full object-cover object-top"
       loading="lazy"
     />
     <div class="absolute inset-0 bg-gradient-to-t from-ink/85 via-ink/25 to-ink/10" />

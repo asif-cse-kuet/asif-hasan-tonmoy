@@ -5,26 +5,11 @@ import PageHero from '@/components/PageHero.vue'
 import ProfilePortrait from '@/components/ProfilePortrait.vue'
 import { useLocaleText } from '@/composables/useLocaleText'
 import { LIFE_INTRO, LIFE_MOMENTS } from '@/content/life'
+import { PORTRAITS } from '@/content/portraits'
 
 const { pick } = useLocaleText()
 
 const sorted = [...LIFE_MOMENTS].sort((a, b) => b.when.localeCompare(a.when))
-
-/** Studio strip — skip oxford (already in intro above). */
-const studioShots = [
-  {
-    src: '/images/profile/portrait-01-campus.png',
-    label: { en: 'Campus linen — tall & calm', bn: 'ক্যাম্পাস linen — লম্বা ও শান্ত' },
-  },
-  {
-    src: '/images/profile/portrait-06-tall.png',
-    label: { en: 'Full frame — loafers optional', bn: 'ফুল ফ্রেম' },
-  },
-  {
-    src: '/images/profile/portrait-07-lean.png',
-    label: { en: 'Knit layer — quiet hour', bn: 'নিট লেয়ার — শান্ত সময়' },
-  },
-]
 </script>
 
 <template>
@@ -34,8 +19,8 @@ const studioShots = [
     <div class="glass-panel mb-10 flex flex-col items-start gap-6 p-5 sm:flex-row sm:items-center">
       <ProfilePortrait
         variant="about"
-        src="/images/profile/life-intro-ai.png"
-        alt="Asif Hasan Tonmoy — sky blue oxford"
+        :src="PORTRAITS.lifeIntro"
+        alt="Asif Hasan Tonmoy — professional portrait"
       />
       <p class="max-w-2xl text-sm leading-relaxed text-mist sm:text-base">
         {{
@@ -45,20 +30,6 @@ const studioShots = [
           })
         }}
       </p>
-    </div>
-
-    <div class="mb-12 grid gap-4 sm:grid-cols-3">
-      <figure v-for="shot in studioShots" :key="shot.src" class="glass-panel p-4">
-        <div class="flex min-h-64 items-end justify-center bg-transparent">
-          <img
-            :src="shot.src"
-            :alt="pick(shot.label)"
-            class="max-h-72 w-auto bg-transparent object-contain"
-            loading="lazy"
-          />
-        </div>
-        <figcaption class="mt-3 text-center text-xs text-mist">{{ pick(shot.label) }}</figcaption>
-      </figure>
     </div>
 
     <div class="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">

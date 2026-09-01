@@ -73,16 +73,6 @@ export const CAPABILITIES: Capability[] = [
         ],
       },
     ],
-    proof: [
-      {
-        en: '~10× latency reduction on critical endpoints at Proficient Information System.',
-        bn: 'Proficient Information System-এ ক্রিটিক্যাল এন্ডপয়েন্টে ~১০× লেটেন্সি হ্রাস।',
-      },
-      {
-        en: 'Realtime chat with read/unread and favorites for 200+ active users.',
-        bn: '২০০+ সক্রিয় ব্যবহারকারীর জন্য read/unread ও favorites সহ রিয়েলটাইম চ্যাট।',
-      },
-    ],
   },
   {
     id: 'architecture',

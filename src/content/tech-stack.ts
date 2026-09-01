@@ -23,6 +23,10 @@ export const TECH_GROUPS: TechGroup[] = [
     items: [
       { name: 'JavaScript', icon: 'javascript' },
       { name: 'PHP', icon: 'php' },
+      { name: 'C', icon: 'c' },
+      { name: 'C++', icon: 'cplusplus' },
+      { name: 'Python', icon: 'python' },
+      { name: 'Java', icon: 'openjdk' },
       { name: 'SQL', icon: null },
       { name: 'HTML5', icon: 'html5' },
       { name: 'CSS3', icon: 'css' },
@@ -34,6 +38,7 @@ export const TECH_GROUPS: TechGroup[] = [
     titles: { en: 'Frontend', bn: 'ফ্রন্টএন্ড' },
     items: [
       { name: 'Vue 3', icon: 'vuedotjs' },
+      { name: 'React', icon: 'react' },
       { name: 'Quasar', icon: 'quasar' },
       { name: 'Pinia', icon: 'pinia' },
       { name: 'Vite', icon: 'vite' },
@@ -48,6 +53,7 @@ export const TECH_GROUPS: TechGroup[] = [
     titles: { en: 'Backend & APIs', bn: 'ব্যাকএন্ড ও API' },
     items: [
       { name: 'Laravel', icon: 'laravel' },
+      { name: 'Node.js', icon: 'nodedotjs' },
       { name: 'PHP', icon: 'php' },
       { name: 'REST', icon: null },
       { name: 'Eloquent, Query Builder & SQL', icon: 'laravel' },
@@ -71,12 +77,16 @@ export const TECH_GROUPS: TechGroup[] = [
     ],
   },
   {
-    id: 'delivery',
-    titles: { en: 'Delivery', bn: 'ডেলিভারি' },
+    id: 'devops',
+    titles: { en: 'DevOps & infrastructure', bn: 'ডেভঅপস ও ইনফ্রা' },
     items: [
+      { name: 'AWS', icon: null },
+      { name: 'Docker', icon: 'docker' },
+      { name: 'Kubernetes', icon: 'kubernetes' },
+      { name: 'GitHub Actions', icon: 'githubactions' },
+      { name: 'GitLab CI', icon: 'gitlab' },
       { name: 'Git', icon: 'git' },
       { name: 'GitHub', icon: 'github' },
-      { name: 'Docker', icon: 'docker' },
       { name: 'Linux', icon: 'linux' },
       { name: 'Nginx', icon: 'nginx' },
       { name: 'CI/CD', icon: null },
