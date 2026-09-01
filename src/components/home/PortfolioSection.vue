@@ -32,6 +32,13 @@ function liveLinkScore(project: (typeof PROJECTS)[number]) {
   return project.links.some((link) => !link.url.includes('github.com')) ? 0 : project.links.length ? 1 : 2
 }
 
+/** Large production builds get a full row on desktop — nothing else shares that row. */
+const FULL_ROW_SLUGS = new Set(['supercards', 'ticketing-system'])
+
+function isFullRowProject(slug: string) {
+  return FULL_ROW_SLUGS.has(slug)
+}
+
 const visible = computed(() => {
   let list = PROJECTS
   if (active.value === 'featured') list = PROJECTS.filter((project) => project.featured)
@@ -99,6 +106,7 @@ function openGallery(project: (typeof PROJECTS)[number], start = 0) {
         v-for="project in visible"
         :key="project.slug"
         class="surface-card flex flex-col overflow-hidden transition-colors hover:border-glow/40"
+        :class="isFullRowProject(project.slug) ? 'md:col-span-2 xl:col-span-3' : ''"
       >
         <button
           type="button"
