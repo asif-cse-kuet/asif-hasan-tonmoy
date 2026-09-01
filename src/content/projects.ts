@@ -10,6 +10,10 @@ export type Project = {
   tier: ProjectTier
   titles: LocaleText
   summary: LocaleText
+  /** Optional compact capability bullets (business-value / edge cases). */
+  highlights?: LocaleText[]
+  /** Extra UI screenshots shown under the cover card. */
+  gallery?: string[]
   stack: string[]
   links: ProjectLink[]
   tags: string[]
@@ -17,6 +21,50 @@ export type Project = {
 }
 
 export const PROJECTS: Project[] = [
+  {
+    slug: 'supercards',
+    tier: 'T1',
+    titles: { en: 'SuperCards', bn: 'SuperCards' },
+    summary: {
+      en: 'Enterprise multi-tenant platform I ship on at TeamSlice — RBAC across tenants, CMS, visual site builder, and Jira-style project management in one product. Tenants publish sites on custom domains; our backend resolves the host and renders the right site.',
+      bn: 'TeamSlice-এ শিপ করা এন্টারপ্রাইজ মাল্টি-টেন্যান্ট প্ল্যাটফর্ম — RBAC, CMS, ভিজুয়াল সাইট বিল্ডার ও Jira-স্টাইল প্রজেক্ট ম্যানেজমেন্ট এক পণ্যে। টেন্যান্ট কাস্টম ডোমেইনে সাইট প্রকাশ করে; ব্যাকএন্ড হোস্ট রিজলভ করে সঠিক সাইট রেন্ডার করে।',
+    },
+    highlights: [
+      {
+        en: 'Multi-tenant RBAC — workspace roles, project tags, custom permissions, and tenant-scoped data isolation',
+        bn: 'মাল্টি-টেন্যান্ট RBAC — ওয়ার্কস্পেস রোল, প্রজেক্ট ট্যাগ, কাস্টম পারমিশন ও টেন্যান্ট-স্কোপড ডেটা আইসোলেশন',
+      },
+      {
+        en: 'CMS + site builder — drag-and-drop pages, preview, publish; map a custom domain and serve from our backend',
+        bn: 'CMS + সাইট বিল্ডার — ড্র্যাগ-অ্যান্ড-ড্রপ পেজ, প্রিভিউ, পাবলিশ; কাস্টম ডোমেইন ম্যাপ করে ব্যাকএন্ড থেকে সার্ভ',
+      },
+      {
+        en: 'Agile PM — cards table, sprints, epics, priorities, starred/watching tasks, time entries, release planning',
+        bn: 'Agile PM — কার্ড টেবিল, স্প্রিন্ট, এপিক, প্রায়োরিটি, starred/watching টাস্ক, টাইম এন্ট্রি, রিলিজ প্ল্যানিং',
+      },
+      {
+        en: 'Ops modules — attendance & day logs, service desk, e-commerce, customers, chat, inbox, files, quiz',
+        bn: 'অপস মডিউল — অ্যাটেনড্যান্স ও ডে লগ, সার্ভিস ডেস্ক, ই-কমার্স, কাস্টমার, চ্যাট, ইনবক্স, ফাইল, কুইজ',
+      },
+      {
+        en: 'SSO-ready login — email/password plus Google, Facebook, GitLab, Apple, and Microsoft sign-in',
+        bn: 'SSO-রেডি লগইন — ইমেইল/পাসওয়ার্ড এবং Google, Facebook, GitLab, Apple, Microsoft সাইন-ইন',
+      },
+    ],
+    gallery: [
+      '/images/projects/supercards-login.png',
+      '/images/projects/supercards-dashboard.png',
+      '/images/projects/supercards-cards-table.png',
+      '/images/projects/supercards-sites.png',
+    ],
+    stack: ['Vue 3', 'Quasar', 'Pinia', 'Laravel', 'MySQL', 'Redis', 'REST'],
+    links: [
+      { label: 'Live app', url: 'https://app.supercards.ca/' },
+      { label: 'CMS / v5', url: 'https://v5.supercards.ca/' },
+    ],
+    tags: ['production', 'multi-tenant', 'cms', 'rbac', 'site-builder'],
+    featured: true,
+  },
   {
     slug: 'ticketing-system',
     tier: 'T1',
@@ -271,19 +319,6 @@ export const PROJECTS: Project[] = [
     stack: ['JavaScript', 'localStorage'],
     links: [],
     tags: ['tasks', 'kanban', 'archive'],
-  },
-  {
-    slug: 'supercards',
-    tier: 'T1',
-    titles: { en: 'SuperCards', bn: 'SuperCards' },
-    summary: {
-      en: 'Production loyalty and gift-card platform: issuance, wallet top-up, and merchant operations. Live walkthrough landing next.',
-      bn: 'প্রোডাকশন লয়্যালটি ও গিফট-কার্ড প্ল্যাটফর্ম: ইস্যুয়ান্স, ওয়ালেট টপ-আপ ও মার্চেন্ট অপারেশন। লাইভ ওয়াকথ্রু শীঘ্রই।',
-    },
-    stack: ['Vue 3', 'Laravel', 'MySQL', 'REST'],
-    links: [],
-    tags: ['production', 'cards', 'fintech'],
-    featured: true,
   },
   {
     slug: 'brac-social',

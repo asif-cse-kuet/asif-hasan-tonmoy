@@ -7,6 +7,7 @@ import ProfilePortrait from '@/components/ProfilePortrait.vue'
 import ProfileLinksStrip from '@/components/home/ProfileLinksStrip.vue'
 import TechMarquee from '@/components/home/TechMarquee.vue'
 import { useLocaleText } from '@/composables/useLocaleText'
+import { heroPortraitSrc } from '@/content/portraits'
 import { PROFILE } from '@/content/profile'
 
 const { pick } = useLocaleText()
@@ -14,7 +15,7 @@ const stackExpanded = ref(false)
 </script>
 
 <template>
-  <section id="top" class="relative overflow-hidden pb-12 pt-10 sm:pb-16 sm:pt-14">
+  <section id="top" class="relative overflow-hidden pb-10 pt-6 sm:pb-16 sm:pt-14">
     <div class="page-wrap relative z-10">
       <div
         class="grid items-center gap-8 lg:grid-cols-[minmax(0,1.05fr)_minmax(14rem,0.72fr)] lg:gap-6 xl:gap-10"
@@ -65,7 +66,7 @@ const stackExpanded = ref(false)
         <div class="order-1 flex justify-center lg:order-2 lg:justify-end lg:self-stretch lg:items-end">
           <ProfilePortrait
             variant="hero"
-            src="/images/profile/hero-ai.png"
+            :src="heroPortraitSrc()"
             alt="Asif Hasan Tonmoy — portfolio portrait"
           />
         </div>

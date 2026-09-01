@@ -42,8 +42,14 @@ defineProps<{
 }
 
 /* Soft fade so transparent cutout blends into site atmosphere */
+.profile-portrait--hero {
+  width: min(14rem, 58vw);
+  margin-inline: auto;
+  max-height: min(22rem, 46vh);
+}
+
 .profile-portrait--hero img {
-  max-height: min(34rem, 72vh);
+  max-height: min(22rem, 46vh);
   width: auto;
   margin-inline: auto;
   -webkit-mask-image: linear-gradient(
@@ -56,16 +62,46 @@ defineProps<{
   mask-image: linear-gradient(to bottom, transparent 0%, #000 6%, #000 88%, transparent 100%);
 }
 
-.profile-portrait--hero {
-  width: min(20rem, 78vw);
-  margin-inline: auto;
-  max-height: min(34rem, 72vh);
+@media (min-width: 640px) {
+  .profile-portrait--hero {
+    width: min(20rem, 78vw);
+    max-height: min(34rem, 72vh);
+  }
+
+  .profile-portrait--hero img {
+    max-height: min(34rem, 72vh);
+    width: auto;
+    margin-inline: auto;
+    -webkit-mask-image: linear-gradient(
+      to bottom,
+      transparent 0%,
+      #000 6%,
+      #000 88%,
+      transparent 100%
+    );
+    mask-image: linear-gradient(to bottom, transparent 0%, #000 6%, #000 88%, transparent 100%);
+  }
 }
 
 @media (min-width: 1024px) {
   .profile-portrait--hero {
     width: min(24rem, 34vw);
     margin-inline: 0;
+    max-height: min(34rem, 72vh);
+  }
+
+  .profile-portrait--hero img {
+    max-height: min(34rem, 72vh);
+    width: auto;
+    margin-inline: auto;
+    -webkit-mask-image: linear-gradient(
+      to bottom,
+      transparent 0%,
+      #000 6%,
+      #000 88%,
+      transparent 100%
+    );
+    mask-image: linear-gradient(to bottom, transparent 0%, #000 6%, #000 88%, transparent 100%);
   }
 }
 

@@ -16,9 +16,9 @@ import TechStackSection from '@/components/home/TechStackSection.vue'
 <template>
   <HeroSection />
   <ProofSection />
-  <CapabilitiesSection />
   <TechStackSection />
   <PortfolioSection />
+  <CapabilitiesSection />
   <ExperienceSection />
   <ResearchSection />
   <CodingSection />

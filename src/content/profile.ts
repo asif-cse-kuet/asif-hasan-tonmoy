@@ -22,8 +22,8 @@ export type ProofMetric = {
 export const PROFILE = {
   name: 'Asif Hasan Tonmoy',
   brandLine: {
-    en: 'AI-backed delivery · Backend · Frontend · Deploy · Scale · Monitoring & observability · Software Architect · Software-to-Business Consultant',
-    bn: 'AI-backed ডেলিভারি · ব্যাকএন্ড · ফ্রন্টএন্ড · ডিপ্লয় · স্কেল · মনিটরিং ও অবজারভেবিলিটি · সফটওয়্যার আর্কিটেক্ট · সফটওয়্যার-টু-বিজনেস কনসালট্যান্ট',
+    en: 'Software-to-Business Consultant | Fullstack (Backend+Frontend) Software Engineer',
+    bn: 'সফটওয়্যার-টু-বিজনেস কনসালট্যান্ট | ফুলস্ট্যাক (ব্যাকএন্ড+ফ্রন্টএন্ড) সফটওয়্যার ইঞ্জিনিয়ার',
   } satisfies LocaleText,
   tagline: {
     en: 'I sit with owners, CEOs, and CTOs — turn business goals into architecture, then ship systems that scale in production.',
