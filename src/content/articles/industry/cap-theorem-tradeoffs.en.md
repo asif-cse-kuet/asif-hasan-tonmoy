@@ -1,7 +1,5 @@
 # CAP theorem tradeoffs in real outages
 
-*Educational overview - distributed systems fundamentals.*
-
 ## The theorem in one paragraph
 
 The CAP theorem states that during a **network partition**, a distributed system cannot simultaneously guarantee both **Consistency** (every read returns the latest write) and **Availability** (every request receives a non-error response). In practice, partition tolerance is not optional on real networks - you choose how consistency and availability degrade.

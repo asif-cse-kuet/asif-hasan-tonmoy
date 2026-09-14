@@ -2,7 +2,6 @@
 import { computed } from 'vue'
 import { useRoute, RouterLink } from 'vue-router'
 
-import DisclaimerBanner from '@/components/DisclaimerBanner.vue'
 import PageHero from '@/components/PageHero.vue'
 import { useLocaleText } from '@/composables/useLocaleText'
 import { getDomainForTopic, getTopicBySlug } from '@/content/industry-topics'
@@ -38,7 +37,6 @@ const relatedLinks = computed(() => {
 
     <template v-if="concept">
       <PageHero :title="pick(concept.titles)" :subtitle="pick(concept.summary)" />
-      <DisclaimerBanner />
 
       <section v-if="relatedLinks.length" class="mt-8">
         <h2 class="font-display text-lg font-semibold text-paper">

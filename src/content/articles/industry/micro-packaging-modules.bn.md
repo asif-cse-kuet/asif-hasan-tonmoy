@@ -1,7 +1,5 @@
 # Micro-packaging decoupled frontend module
 
-*শিক্ষামূলক সংক্ষিপ্ত বিবরণ - প্রচলিত frontend architecture pattern.*
-
 ## Package boundary কেন গুরুত্বপূর্ণ
 
 Monolithic frontend বিভিন্ন cadence-এ feature ship করতে ব্যয়বহুল হয়। **Micro-packaging** (micro-frontend strategy-র অংশ) UI module-এর মধ্যে স্পষ্ট boundary টানে যাতে shared runtime assumption ভাঙা ছাড়াই independent deploy সম্ভব হয়।

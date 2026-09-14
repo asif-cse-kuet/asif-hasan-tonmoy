@@ -33,7 +33,6 @@ const messages = {
       hire: 'Hire',
       readMore: 'Read more',
       comingSoon: 'Coming soon',
-      disclaimer: 'Disclaimer',
       search: 'Search',
       filter: 'Filter',
       all: 'All',
@@ -47,8 +46,6 @@ const messages = {
       stubNotice: 'This topic is a stub - full article coming soon.',
       partialNotice: 'Partial article - more depth in progress.',
       deepCaseStudies: 'Deep case studies coming',
-      educationalNote:
-        'Educational industry knowledge - not personal ownership claims.',
     },
     pages: {
       home: 'Home',
@@ -91,10 +88,6 @@ const messages = {
     footer: {
       copyright: '© {year} {name}. All rights reserved.',
     },
-    disclaimer: {
-      title: 'Educational reference',
-      body: 'Industry topics summarize widely known engineering concepts for learning. They are not claims of personal authorship or proprietary knowledge.',
-    },
   },
   bn: {
     nav: {
@@ -126,7 +119,6 @@ const messages = {
       hire: 'হায়ার',
       readMore: 'আরও পড়ুন',
       comingSoon: 'শীঘ্রই আসছে',
-      disclaimer: 'দাবিত্যাগ',
       search: 'অনুসন্ধান',
       filter: 'ফিল্টার',
       all: 'সব',
@@ -140,7 +132,6 @@ const messages = {
       stubNotice: 'এটি stub - সম্পূর্ণ নিবন্ধ শীঘ্রই আসছে।',
       partialNotice: 'আংশিক নিবন্ধ - আরও গভীরতা চলছে।',
       deepCaseStudies: 'গভীর case study শীঘ্রই আসছে',
-      educationalNote: 'শিক্ষামূলক ইন্ডাস্ট্রি জ্ঞান - ব্যক্তিগত দাবি নয়।',
     },
     pages: {
       home: 'হোম',
@@ -182,10 +173,6 @@ const messages = {
     },
     footer: {
       copyright: '© {year} {name}. সর্বস্বত্ব সংরক্ষিত।',
-    },
-    disclaimer: {
-      title: 'শিক্ষামূলক রেফারেন্স',
-      body: 'ইন্ডাস্ট্রি টপিকগুলো শেখার জন্য প্রচলিত ইঞ্জিনিয়ারিং ধারণার সারসংক্ষেপ। এগুলো ব্যক্তিগত লেখকত্ব বা মালিকানার দাবি নয়।',
     },
   },
 } as const

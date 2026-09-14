@@ -3,7 +3,6 @@ import { computed, ref, watch } from 'vue'
 import { RouterLink, useRoute } from 'vue-router'
 
 import ArticleRenderer from '@/components/ArticleRenderer.vue'
-import DisclaimerBanner from '@/components/DisclaimerBanner.vue'
 import PageHero from '@/components/PageHero.vue'
 import SystemsTopicNav from '@/components/systems/SystemsTopicNav.vue'
 import { useLocaleText } from '@/composables/useLocaleText'
@@ -100,8 +99,6 @@ watch(blogLocale, (locale) => {
         <span class="chip">{{ difficultyLabel }}</span>
         <span v-for="tag in topic.tags" :key="tag" class="chip">{{ tag }}</span>
       </div>
-
-      <DisclaimerBanner />
 
       <div class="my-6 flex flex-wrap items-center gap-3">
         <span class="text-xs font-semibold uppercase tracking-[0.14em] text-mist/70">

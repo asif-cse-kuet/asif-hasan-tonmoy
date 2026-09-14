@@ -1,7 +1,5 @@
 # আসল outage-এ CAP theorem tradeoff
 
-*শিক্ষামূলক সংক্ষিপ্ত বিবরণ - distributed systems মৌলিক ধারণা.*
-
 ## এক অনুচ্ছেদে theorem
 
 CAP theorem বলে **network partition**-এর সময় distributed system একসাথে **Consistency** (প্রতিটি read সর্বশেষ write দেখায়) ও **Availability** (প্রতিটি request non-error response পায়) guarantee করতে পারে না। বাস্তবে partition tolerance real network-এ optional নয় - consistency ও availability কীভাবে degrade হবে সেটাই বেছে নেন।

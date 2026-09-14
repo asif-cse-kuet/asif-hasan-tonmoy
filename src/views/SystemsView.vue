@@ -2,7 +2,6 @@
 import { computed, ref } from 'vue'
 import { RouterLink } from 'vue-router'
 
-import DisclaimerBanner from '@/components/DisclaimerBanner.vue'
 import PageHero from '@/components/PageHero.vue'
 import SearchField from '@/components/SearchField.vue'
 import { useLocaleText } from '@/composables/useLocaleText'
@@ -78,8 +77,6 @@ const filteredDomains = computed(() => {
         })
       "
     />
-
-    <DisclaimerBanner />
 
     <label class="mb-8 block">
       <span class="sr-only">{{ pick({ en: 'Search lessons', bn: 'পাঠ খুঁজুন' }) }}</span>
