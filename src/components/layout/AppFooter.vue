@@ -1,19 +1,22 @@
 <script setup lang="ts">
 import { computed } from 'vue'
-import { RouterLink } from 'vue-router'
+import { RouterLink, useRoute } from 'vue-router'
 
 import BrandIcon from '@/components/BrandIcon.vue'
 import { useLocaleText } from '@/composables/useLocaleText'
-import { PROFILE, PROFILE_LINKS } from '@/content/profile'
+import { PROFILE, VISIBLE_PROFILE_LINKS } from '@/content/profile'
+import { SITE_PAGES, isSitePageActive } from '@/content/site-pages'
 
 const { pick } = useLocaleText()
+const route = useRoute()
 
-const pages = computed(() => [
-  { to: '/', label: pick({ en: 'Home', bn: 'হোম' }) },
-  { to: '/problems/solved', label: pick({ en: 'Problems solved', bn: 'সমাধান করা সমস্যা' }) },
-  { to: '/systems', label: pick({ en: 'My Engineering Blog', bn: 'ইঞ্জিনিয়ারিং ব্লগ' }) },
-  { to: '/marketing', label: pick({ en: 'Software to business', bn: 'সফটওয়্যার থেকে ব্যবসা' }) },
-])
+const pages = computed(() =>
+  SITE_PAGES.map((page) => ({
+    to: page.to,
+    label: pick(page.label),
+    current: isSitePageActive(route.path, page.to),
+  })),
+)
 </script>
 
 <template>
@@ -37,7 +40,12 @@ const pages = computed(() => [
           </p>
           <ul class="mt-3 space-y-1.5">
             <li v-for="page in pages" :key="page.to">
-              <RouterLink :to="page.to" class="text-sm text-mist no-underline hover:text-glow">
+              <RouterLink
+                :to="page.to"
+                class="text-sm no-underline"
+                :class="page.current ? 'font-semibold text-glow' : 'text-mist hover:text-glow'"
+                :aria-current="page.current ? 'page' : undefined"
+              >
                 {{ page.label }}
               </RouterLink>
             </li>
@@ -47,7 +55,7 @@ const pages = computed(() => [
 
       <nav class="mt-8 flex flex-wrap gap-x-4 gap-y-2 border-t border-steel/40 pt-6" aria-label="Profiles">
         <a
-          v-for="link in PROFILE_LINKS"
+          v-for="link in VISIBLE_PROFILE_LINKS"
           :key="link.id"
           :href="link.url"
           target="_blank"

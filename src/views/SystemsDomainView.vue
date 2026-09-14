@@ -2,7 +2,6 @@
 import { computed, ref } from 'vue'
 import { useRoute, RouterLink } from 'vue-router'
 
-import DisclaimerBanner from '@/components/DisclaimerBanner.vue'
 import PageHero from '@/components/PageHero.vue'
 import TopicCard from '@/components/TopicCard.vue'
 import { useLocaleText } from '@/composables/useLocaleText'
@@ -35,7 +34,6 @@ const topics = computed(() => {
 
     <template v-if="domain">
       <PageHero :title="pick(domain.titles)" :subtitle="pick(domain.summary)" />
-      <DisclaimerBanner />
 
       <p class="mb-6 text-sm text-mist">
         {{ allTopics.length }} {{ pick({ en: 'topics in this domain', bn: 'topic এই domain-এ' }) }}

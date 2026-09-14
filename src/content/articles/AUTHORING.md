@@ -67,5 +67,4 @@ Links to sibling topics using site-relative paths:
 ## Tone
 
 Written for a senior engineer who is debugging at 2am: concrete, specific numbers,
-no marketing language. These are educational write-ups about industry-wide problems,
-not claims that the author personally shipped each fix.
+no marketing language.

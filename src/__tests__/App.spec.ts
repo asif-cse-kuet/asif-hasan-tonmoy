@@ -9,7 +9,13 @@ import { PROFILE } from '../content/profile'
 
 const router = createRouter({
   history: createWebHistory(),
-  routes: [{ path: '/', component: { template: '<div>Home</div>' } }],
+  routes: [
+    { path: '/', component: { template: '<div>Home</div>' } },
+    { path: '/problems/solved', component: { template: '<div />' } },
+    { path: '/systems', component: { template: '<div />' } },
+    { path: '/marketing', component: { template: '<div />' } },
+    { path: '/life', component: { template: '<div />' } },
+  ],
 })
 
 describe('App', () => {

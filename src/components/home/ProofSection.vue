@@ -11,7 +11,7 @@ const { pick } = useLocaleText()
       <p class="text-xs font-semibold uppercase tracking-[0.22em] text-accent-soft">
         {{ pick({ en: 'Verifiable proof', bn: 'যাচাইযোগ্য প্রমাণ' }) }}
       </p>
-      <dl class="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-4">
+      <dl class="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
         <div
           v-for="metric in PROOF_METRICS"
           :key="metric.id"

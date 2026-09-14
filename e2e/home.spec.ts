@@ -75,10 +75,19 @@ test('engineering blog tree lists a numbered beginner path', async ({ page }) =>
 
 test('single header nav, no second section strip', async ({ page }) => {
   await page.goto('/')
-  await expect(page.getByRole('navigation', { name: 'Main' })).toBeVisible()
+  const nav = page.getByRole('navigation', { name: 'Main' })
+  await expect(nav).toBeVisible()
   await expect(page.getByLabel('Page sections')).toHaveCount(0)
-  await expect(page.getByRole('link', { name: /My Engineering Blog|ইঞ্জিনিয়ারিং ব্লগ/ }).first()).toBeVisible()
-  await expect(page.getByRole('link', { name: /Software to business|সফটওয়্যার থেকে ব্যবসা/ }).first()).toBeVisible()
+  await expect(nav.getByRole('link', { name: 'Home' })).toHaveAttribute('aria-current', 'page')
+  await expect(nav.getByRole('link', { name: /My Engineering Blog/ })).toBeVisible()
+  await expect(nav.getByRole('link', { name: /Software to business/ })).toBeVisible()
+
+  await page.goto('/marketing')
+  await expect(nav.getByRole('link', { name: /Software to business/ })).toHaveAttribute(
+    'aria-current',
+    'page',
+  )
+  await expect(nav.getByRole('link', { name: 'Home' })).not.toHaveAttribute('aria-current')
 })
 
 test('language toggle lives only on the engineering blog', async ({ page }) => {

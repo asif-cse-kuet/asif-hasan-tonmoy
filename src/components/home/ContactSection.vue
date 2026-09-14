@@ -4,7 +4,7 @@ import BrandIcon from '@/components/BrandIcon.vue'
 import SectionShell from '@/components/home/SectionShell.vue'
 import { useLocaleText } from '@/composables/useLocaleText'
 import { PORTRAITS } from '@/content/portraits'
-import { PROFILE, PROFILE_LINKS } from '@/content/profile'
+import { PROFILE, VISIBLE_PROFILE_LINKS } from '@/content/profile'
 
 const { pick } = useLocaleText()
 </script>
@@ -32,7 +32,7 @@ const { pick } = useLocaleText()
     </div>
 
     <ul class="mt-7 grid gap-2.5 sm:grid-cols-2 lg:grid-cols-3">
-      <li v-for="link in PROFILE_LINKS" :key="link.id">
+      <li v-for="link in VISIBLE_PROFILE_LINKS" :key="link.id">
         <a
           :href="link.url"
           target="_blank"

@@ -5,37 +5,19 @@ import { RouterLink, useRoute } from 'vue-router'
 import LangToggle from '@/components/LangToggle.vue'
 import { isEngineeringBlogRoute } from '@/composables/useLocaleText'
 import { PROFILE } from '@/content/profile'
+import { SITE_PAGES, isSitePageActive } from '@/content/site-pages'
 import { useUiStore } from '@/stores/ui'
 
 const ui = useUiStore()
 const route = useRoute()
 
-type NavItem = {
-  label: string
-  hash?: string
-  to?: string
-}
-
 /** Site chrome stays English; only engineering blog content toggles BN. */
-const items = computed<NavItem[]>(() => [
-  { label: 'Expertise', hash: '#expertise' },
-  { label: 'Projects', hash: '#projects' },
-  { label: 'Experience', hash: '#experience' },
-  { label: 'Problems solved', to: '/problems/solved' },
-  { label: 'My Engineering Blog', to: '/systems' },
-  { label: 'Software to business', to: '/marketing' },
-  { label: 'Life & travel', to: '/life' },
-])
+const items = SITE_PAGES.map((page) => ({ to: page.to, label: page.label.en }))
 
 const isBlog = computed(() => isEngineeringBlogRoute(route.path))
 
-function target(item: NavItem) {
-  return item.to ?? { path: '/', hash: item.hash }
-}
-
-function isActive(item: NavItem) {
-  if (!item.to) return false
-  return route.path === item.to || route.path.startsWith(`${item.to}/`)
+function isActive(to: string) {
+  return isSitePageActive(route.path, to)
 }
 
 function onKey(event: KeyboardEvent) {
@@ -68,13 +50,14 @@ onBeforeUnmount(() => {
         {{ PROFILE.name }}
       </RouterLink>
 
-      <nav class="hidden items-center lg:flex" aria-label="Main">
+      <nav class="hidden items-center gap-0.5 lg:flex" aria-label="Main">
         <RouterLink
           v-for="item in items"
-          :key="item.label"
-          :to="target(item)"
-          class="rounded px-2 py-1.5 text-[0.8rem] font-medium no-underline transition-colors lg:text-sm"
-          :class="isActive(item) ? 'text-glow' : 'text-mist hover:text-paper'"
+          :key="item.to"
+          :to="item.to"
+          class="rounded-md px-2.5 py-1.5 text-[0.8rem] font-medium no-underline transition-colors lg:text-sm"
+          :class="isActive(item.to) ? 'bg-steel/55 text-glow' : 'text-mist hover:text-paper'"
+          :aria-current="isActive(item.to) ? 'page' : undefined"
         >
           {{ item.label }}
         </RouterLink>
@@ -131,9 +114,11 @@ onBeforeUnmount(() => {
       >
         <RouterLink
           v-for="item in items"
-          :key="item.label"
-          :to="target(item)"
-          class="block rounded-lg px-3 py-2.5 text-sm no-underline hover:bg-steel/30"
+          :key="item.to"
+          :to="item.to"
+          class="block rounded-lg px-3 py-2.5 text-sm no-underline"
+          :class="isActive(item.to) ? 'bg-steel/50 text-glow' : 'hover:bg-steel/30'"
+          :aria-current="isActive(item.to) ? 'page' : undefined"
           @click="ui.closeMobileNav()"
         >
           {{ item.label }}

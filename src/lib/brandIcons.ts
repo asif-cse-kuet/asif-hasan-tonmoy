@@ -49,6 +49,8 @@ export const BRAND_ICONS: Record<string, BrandIconData> = {
   chartdotjs: icons.siChartdotjs,
   nodedotjs: icons.siNodedotjs,
   vercel: icons.siVercel,
+  netlify: icons.siNetlify,
+  render: icons.siRender,
   cloudflare: icons.siCloudflare,
   quasar: icons.siQuasar,
   pinia: icons.siPinia,

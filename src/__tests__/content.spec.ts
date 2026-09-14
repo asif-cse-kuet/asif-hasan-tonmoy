@@ -6,6 +6,7 @@ import { TOPIC_COUNT } from '@/content/catalog-stats'
 import { DOMAINS, getTopicsByDomain } from '@/content/industry-topics'
 import { TOPICS } from '@/content/industry-topics/topics'
 import { PRIMARY_LINKS, PROFILE_LINKS, PROOF_METRICS } from '@/content/profile'
+import { isSitePageActive } from '@/content/site-pages'
 import { PROJECTS } from '@/content/projects'
 import { SOLVED_PROBLEMS } from '@/content/solved-problems'
 import { SYSTEM_CONCEPTS } from '@/content/systems'
@@ -102,8 +103,15 @@ describe('profile content', () => {
   })
 
   it('has proof metrics and featured projects', () => {
-    expect(PROOF_METRICS.length).toBeGreaterThanOrEqual(6)
+    expect(PROOF_METRICS.length).toBeGreaterThanOrEqual(5)
+    expect(PROOF_METRICS.some((metric) => metric.id === 'upwork-rated')).toBe(false)
     expect(PROJECTS.some((project) => project.featured)).toBe(true)
+  })
+
+  it('treats Home as exact-path only so it is not selected on other pages', () => {
+    expect(isSitePageActive('/', '/')).toBe(true)
+    expect(isSitePageActive('/marketing', '/')).toBe(false)
+    expect(isSitePageActive('/systems/frontend-architecture', '/systems')).toBe(true)
   })
 
   it('lists SupportPro with GitHub repos and business-value highlights', () => {

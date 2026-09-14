@@ -45,6 +45,8 @@ const names = [
   'siChartdotjs',
   'siNodedotjs',
   'siVercel',
+  'siNetlify',
+  'siRender',
   'siCloudflare',
   'siQuasar',
   'siPinia',

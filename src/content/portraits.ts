@@ -1,8 +1,8 @@
 /** Portrait assets — flip `heroPortrait` to switch the landing hero back to the AI cutout. */
 export const PORTRAITS = {
-  heroPortrait: 'ai' as 'me' | 'ai',
+  heroPortrait: 'me' as 'me' | 'ai',
   hero: {
-    me: '/images/profile/hero-me.png?v=1',
+    me: '/images/profile/portrait-me1-formal.png?v=2',
     ai: '/images/profile/hero-ai.png?v=6',
   },
   avatars: {

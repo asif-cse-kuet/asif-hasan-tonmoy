@@ -1,7 +1,5 @@
 # Micro-packaging decoupled frontend modules
 
-*Educational overview - widely practiced frontend architecture patterns.*
-
 ## Why package boundaries matter
 
 Monolithic frontends become expensive when multiple teams ship features on different cadences. **Micro-packaging** (sometimes grouped under micro-frontend strategies) draws explicit boundaries between UI modules so teams can deploy independently without breaking shared runtime assumptions.

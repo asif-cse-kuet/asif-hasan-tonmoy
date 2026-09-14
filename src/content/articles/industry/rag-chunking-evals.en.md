@@ -1,7 +1,5 @@
 # RAG chunking and evaluation loops
 
-Educational notes for building retrieval-augmented generation systems that stay useful in production.
-
 ## Why chunking matters
 
 Embedding quality is bounded by what you feed the model. Too-large chunks dilute relevance; too-small chunks lose context. Hybrid strategies (fixed size + semantic splits + overlap) usually beat naive paragraph cuts.
